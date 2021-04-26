@@ -12,7 +12,6 @@ COMMON_DIR = common
 LIB = lib
 TESTAPI = testapi
 
-#CROSS = ../../crossgcc/armv5-eabi--glibc--stable/bin/armv5-glibc-linux-
 CROSS = ../../crossgcc/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin/arm-none-eabi-
 ifneq ($(CROSS),)
 CC = $(CROSS)gcc
@@ -29,7 +28,6 @@ TARGET = rom
 LD_FILE = rom.ld
 LD_SRC = script/rom.ldi
 LDFLAGS = -T $(LD_FILE)
-#LDFLAGS_COM  = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -lgcc
 LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dirname `$(CC) -print-file-name=libc.a`) -lstdc++ -lm -lc -lgcc
 
 CFLAGS += -MMD -O1
