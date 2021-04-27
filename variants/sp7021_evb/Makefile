@@ -93,6 +93,7 @@ $(BIN)/$(TARGET).dis: $(BIN)/$(TARGET)
 
 $(BIN)/$(TARGET): $(OBJS) $(LD_FILE)
 	$(Pecho) "  LD   $@"
+	$P mkdir -p $(BIN)
 	$P $(LD) $(OBJS) -o $(BIN)/$(TARGET) -Map $(BIN)/$(TARGET).map $(LDFLAGS) $(LDFLAGS_COM)
 
 #$(LD_FILE): $(LD_SRC)
