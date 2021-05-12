@@ -1,7 +1,10 @@
 
 #include "irq_ctrl.h"
 #include "sp7021_arm926.h"
+#include "sp7021_hal_def.h"
 #include "sp70xx.h"
+#include "cmsis_compiler.h"
+
 
 #ifndef IRQ_GIC_LINE_COUNT
 #define IRQ_GIC_LINE_COUNT      (200U)
@@ -46,13 +49,13 @@ __STATIC_INLINE uint32_t GIC_GetIRQPolarity(IRQn_Type IRQn){
 	return (SP_IRQ_CTRL->polarity[IRQn / 32U] >> (IRQn % 32U)) & 1UL;
 }
 
-__STATIC_INLINE uint32_t GIC_SetIRQPirority(IRQn_Type IRQn IRQn, uint32t priority)
+__STATIC_INLINE uint32_t GIC_SetIRQPirority(IRQn_Type IRQn, uint32_t priority)
 {
 	SP_IRQ_CTRL->priority[IRQn/32U] = 1 << (IRQn%32U);
 
 }
 
-__STATIC_INLINE uint32_t GIC_GetIRQPirority(IRQn_Type IRQn IRQn)
+__STATIC_INLINE uint32_t GIC_GetIRQPirority(IRQn_Type IRQn)
 {
 	return (SP_IRQ_CTRL->priority[IRQn / 32U] >> (IRQn % 32U)) & 1UL;
 
@@ -156,10 +159,10 @@ uint32_t IRQ_GetEnableState (IRQn_ID_t irqn){
  
  int32_t IRQ_SetMode (IRQn_ID_t irqn, uint32_t mode){
 	int32_t status = 0;
-
+	uint32_t val = 0;
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT)){
 		val = mode & 0x07;
-		GIC_SetIRQType(mode);	
+		GIC_SetIRQType(irqn, val);	
 		status = 0;
 	}else
 		status = -1;
@@ -243,7 +246,7 @@ void IRQ_HANDLE(void)
 	IRQ_Clear(irqn);
 	if (h)
 		(h)();
-	ISR_RESTORE_CONTEXT
+	ISR_RESTORE_CONTEXT();
 }
 
 void FIQ_HANDLE(void)
@@ -256,7 +259,7 @@ void FIQ_HANDLE(void)
 	IRQ_Clear(irqn);
 	if (h)
 		(h)();
-	ISR_RESTORE_CONTEXT
+	ISR_RESTORE_CONTEXT();
 }
 
 void RESET_HANDLE(void)

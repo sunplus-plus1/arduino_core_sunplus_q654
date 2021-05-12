@@ -720,7 +720,6 @@ __STATIC_FORCEINLINE  void __disable_irq(void)
 			  "BX	  R14"					  /* Return back to thumb.		  */
 	  #endif
 			  );
-  );
 }
 
 

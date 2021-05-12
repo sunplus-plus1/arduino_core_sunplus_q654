@@ -5,7 +5,6 @@
  extern "C" {
 #endif
 
-#include "sp70xx.h"
 #include <stdio.h>
 
 typedef enum 

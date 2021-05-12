@@ -13,8 +13,7 @@
         ((uint32_t) 1 << x)
 
 typedef enum IRQn
- {
-                                */
+{
  /******  SP7021 Q628 specific Interrupt Numbers ************************************************************************/
    TEGN_INIT_FIELD_START_IRQn  = 0,     /*!< TEGN START                                           			      */
    TEGN_INIT_FIELD_END_IRQn    = 1,     /*!< TEGN END                                    						  */ 
@@ -186,7 +185,7 @@ typedef enum IRQn
    STC_AV2_TIMER3_IRQn 		   = 167,		/*!< STC TIMER 2 interrupt													*/ 
    STC_AV0_TIMER_W_IRQn		   = 168,	  /*!< STC TIMER W interrupt													*/
    RESERVED_169                = 169,    /*!< RESERVED interrupt                                                  */	
-   RESERVED_170                = 170    /*!< RESERVED interrupt                                                  */	
+   RESERVED_170                = 170,    /*!< RESERVED interrupt                                                  */	
    RESERVED_171                = 171,    /*!< RESERVED interrupt                                                  */	
    RESERVED_172                = 172,    /*!< RESERVED interrupt                                                  */	
    RESERVED_173                = 173,    /*!< RESERVED interrupt                                                  */	
@@ -217,8 +216,7 @@ typedef enum IRQn
    C_CHIP_CPU0_IRQn			   = 199,	  /*!< C Chip Direct interrupt													*/		
    P_CHIP_IRQn			       = 200,	  /*!< C Chip Direct interrupt													*/		
    MAX_IRQ_n
-
- } IRQn_Type;
+} IRQn_Type;
 
  
 #define __FPU_PRESENT             0       
@@ -231,6 +229,23 @@ typedef enum IRQn
 #include "core_armv5.h"
 
 #include <stdint.h>
+
+
+typedef struct{
+	__IM uint32_t stamp_id; 						/*!< \brief chip reversion and stamp id*/
+	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
+	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
+	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
+	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
+}GROUP0_Type;
+
+typedef struct{
+	__IM uint32_t test_mode_config; 				/*!< \brief chip test mode config*/
+	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
+	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
+	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
+	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
+}GROUP1_Type;
 
 
 typedef struct
@@ -248,7 +263,78 @@ typedef struct
   __IM uint32_t group; 
 }  IRQ_Ctrl_Type;
 
-#define SP_IRQ_CTRL  (*(IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
+
+
+typedef struct 
+{
+	__IOM uint32_t control;   			/*!< \brief timer control register for >*/
+	__IOM uint32_t prescale_val;			/*!< \brief 16-bit prescale for timer>*/
+	__IOM uint32_t reload_val;			/*!< \brief when count reaches to 0, the value will reload to the count >*/
+	__IOM uint32_t counter_val;					/*!< \brief 16-bit counter , it down to 0, the timer will generate the interrupt*/
+}TIM_TypeDef;
+
+
+
+#define SP_IRQ_CTRL  ((IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
+
+
+
+#define DRAM_BASE 			0x00000000
+#define EXTERNAL_ROM_BASE 	0x98000000
+#define PERIPH_BASE 		0x9C000000
+#define RUBS_BASE			(PERIPH_BASE+0)
+#define AXI_BUS_BASE		(PERIPH_BASE+0x101000)
+#define INTERNEL_ROM_BASE 	0x9E000000
+#define SRAM_BASE 			0x9E800000
+
+#define RF_GRP(_grp, _reg) ((((_grp) * 32 + (_reg)) * 4) + RUBS_BASE)
+#define RF_AXI_GRP(_grp, _reg) ((((_grp) * 4096 + (_reg)) * 4) + AXI_BUS_BASE)
+
+/*APB RBUS register group*/
+#define MOON0_GROUP_NO 		(0)
+#define MOON1_GROUP_NO		(1)
+#define MOON2_GROUP_NO		(2)
+#define MOON3_GROUP_NO		(3)
+#define MOON4_GROUP_NO		(4)
+#define MOON5_GROUP_NO		(5)
+#define GPIOXT0_GROUP_NO	(6)
+#define GPIOXT1_GROUP_NO	(7)
+#define IOP_GROUP_NO		(8)
+#define INT_CTRL0_GROUP_NO	(9)  //for ARM926
+#define INT_CTRL1_GROUP_NO	(10)
+#define TSENT_GROUP_NO		(11)
+
+#define INT_CTRL2_GROUP_NO	(15) //for C-Chip
+#define INT_CTRL3_GROUP_NO	(23)
+
+/*TIMER0 & TIMER1 is a group*/
+#define TIM0_BASE RF_GRP(12, 16)
+#define TIM1_BASE RF_GRP(12, 20)
+
+/*TIMER2 & TIMER3 is a group*/
+#define TIM2_BASE RF_GRP(96, 16)
+#define TIM3_BASE RF_GRP(96, 20)
+
+/*TIMER4 & TIMER5 is a group*/
+#define TIM4_BASE RF_GRP(97, 16)
+#define TIM5_BASE RF_GRP(97, 20)
+
+/*TIMER6 & TIMER7 is a group*/
+#define TIM6_BASE RF_GRP(99, 16)
+#define TIM7_BASE RF_GRP(99, 20)
+
+#define TIM0	((TIM_TypeDef *) TIM0_BASE)
+#define TIM1	((TIM_TypeDef *) TIM1_BASE)
+#define TIM2	((TIM_TypeDef *) TIM2_BASE)
+#define TIM3	((TIM_TypeDef *) TIM3_BASE)
+#define TIM4	((TIM_TypeDef *) TIM4_BASE)
+#define TIM5	((TIM_TypeDef *) TIM5_BASE)
+#define TIM6	((TIM_TypeDef *) TIM6_BASE)
+#define TIM7	((TIM_TypeDef *) TIM7_BASE)
+
+
+
+
 
 
 
