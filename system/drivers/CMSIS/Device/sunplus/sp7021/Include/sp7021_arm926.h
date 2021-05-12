@@ -263,6 +263,17 @@ typedef struct
   __IM uint32_t group; 
 }  IRQ_Ctrl_Type;
 
+typedef struct{
+	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
+	__IOM uint32_t stc_16_31;				 /*!< \brief  standard time clock counter, 16~31 bit */
+	__IOM uint32_t stc_64;					 /*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
+	__IOM uint32_t stc_prescale_val;		
+	RESERVED(0[3], uint32_t)
+	__IOM uint32_t stc_config;	
+	RESERVED(1[6], uint32_t)
+	__IOM uint32_t stc_47_32;	
+	__IOM uint32_t stc_48_63;
+}STC_TypeDef;
 
 
 typedef struct 
@@ -307,6 +318,8 @@ typedef struct
 #define INT_CTRL2_GROUP_NO	(15) //for C-Chip
 #define INT_CTRL3_GROUP_NO	(23)
 
+
+
 /*TIMER0 & TIMER1 is a group*/
 #define TIM0_BASE RF_GRP(12, 16)
 #define TIM1_BASE RF_GRP(12, 20)
@@ -335,7 +348,41 @@ typedef struct
 
 
 
+/******************************************************************************/
+/*                                                                            */
+/*                        Standard time clock                                 */
+/*                                                                            */
+/******************************************************************************/
 
+
+/********************  Bit definition for STC register  ********************/
+
+#define STC_PRESCALER_Pos 	(0U)
+#define STC_PRESCALER_Msk	(0x7FFU << STC_PRESCALER_Pos) 	/*0x000007FF*/
+#define STC_PRESCALER		STC_PRESCALER_Msk				/*STC prescale value */
+#define STC_TRIG_SRC_Pos 	(15U)							
+#define STC_TRIG_SRC_Msk	(1U << STC_TRIG_SRC_Pos)		/*0x00008000*/
+#define STC_TRIG_SRC		STC_TRIG_SRC_Msk				/*The triger source of the STC counter. 0:system clock; 1:externl clock*/
+#define STC_EXT_DIV_Pos		(0U)	
+#define STC_EXT_DIV_Msk		(0xFFU << STC_EXT_DIV_Pos)		/*0x000000FF*/
+#define STC_EXT_DIV			(STC_EXT_DIV_Msk)				/*The external clock divder for STC*/		
+
+
+/******************************************************************************/
+/*                                                                            */
+/*                        timer/counter			                              */
+/*                                                                            */
+/******************************************************************************/
+/********************  Bit definition for timer register  ********************/
+#define TIMER_GO_Pos 			(0)
+#define TIMER_GO_Msk 			(1U << TIMER_GO_Pos)			/*0x00000001*/
+#define TIMER_GO				TIMER_GO_Msk					/*timer go. 1:start;0:stop*/	
+#define TIMER_RPT_pos			(1U)
+#define TIMER_RPT_Msk			(1U << TIMER_RPT_pos)			/*0x00000002*/	
+#define TIMER_RPT				TIMER_RPT_Msk					/*timer repeat operation. 0:one shot;1: repeation*/
+#define TIMER_TRIG_SRC_Pos		(2U)
+#define TIMER_TRIG_SRC_Msk		(7U << TIMER_TRIG_SRC_Pos)		/*0x0000001C*/
+#define TIMER_TRIG_SRC			TIMER_TRIG_SRC_Msk				/*timer triger source selection. 0:systemclock triger;1:stc triger;2:rtc_triger;3:external clk triger;4:in a group timer prescale triger;5:in a group timer triger*/
 
 
 
