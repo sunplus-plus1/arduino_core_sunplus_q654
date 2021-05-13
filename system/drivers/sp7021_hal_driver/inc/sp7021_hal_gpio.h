@@ -7,13 +7,18 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "sp7021_hal_def.h"
+#include "sp7021_arm926.h"
 
 typedef struct
 {
-  u8 Mode;             /* 0:input          1:output                                     */  
-  u8 opendrain;        /* 0:disable        1:enable ;set opendrain the Mode is unused   */
-  u8 default_value;    /* 0:low            1:high                                       */
-  u32 Pin;             /* pin number: one of pin_0--pin_71                              */ 
+  /* set input/output mode                         GPIO_INPUT_MODE:input          GPIO_OUTPUT_MODE:output   */
+  uint8_t Mode;
+  /* set OD status. enable OD,the Mode is unused.  GPIO_OD_DISABLE:disable        GPIO_OD_ENABLE:enable     */
+  uint8_t opendrain;
+  /* set default value.for output mode/enable OD,  GPIO_OUT_LOW:low               GPIO_OUT_HIGH:high        */ 
+  uint8_t default_value;
+  /* set pin number: one of GPIO_P0_00--GPIO_P8_07  */
+  uint32_t Pin;
 }GPIO_InitTypeDef;
 
 /** 
@@ -117,7 +122,7 @@ typedef void          GPIO_TypeDef;
 #define IS_GPIO_PIN_ACTION(pin)   gpio_first_val_get(pin)
 #define IS_GPIO_PIN(pin)  (((pin) >= GPIO_P0_00) && ((pin) <= GPIO_P8_07))
 
-#define gpio_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR] %s %d\n",__FUNCTION__, __LINE__)))
+#define gpio_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR]: file %s on line %d\r\n",__FUNCTION__, __LINE__)))
 
 
 struct g6_regs {
@@ -146,13 +151,13 @@ struct g101_regs {
 #define GPIO_OD(X)      (RF_GRP(7, (16+X)))
 
 void              HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init);
-void              HAL_GPIO_DeInit(u16 GPIO_Pin);
-GPIO_PinState     HAL_GPIO_ReadPin(u16 GPIO_Pin);
-void              HAL_GPIO_WritePin(u16 GPIO_Pin, GPIO_PinState PinState);
-void              HAL_GPIO_TogglePin(u16 GPIO_Pin);
-HAL_StatusTypeDef HAL_GPIO_LockPin(u16 GPIO_Pin);
-void              HAL_GPIO_EXTI_IRQHandler(u16 GPIO_Pin);
-void              HAL_GPIO_EXTI_Callback(u16 GPIO_Pin);
+void              HAL_GPIO_DeInit(uint16_t GPIO_Pin);
+GPIO_PinState     HAL_GPIO_ReadPin(uint16_t GPIO_Pin);
+void              HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState);
+void              HAL_GPIO_TogglePin(uint16_t GPIO_Pin);
+HAL_StatusTypeDef HAL_GPIO_LockPin(uint16_t GPIO_Pin);
+void              HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin);
+void              HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 #ifdef __cplusplus
 }

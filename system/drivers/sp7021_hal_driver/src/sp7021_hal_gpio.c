@@ -1,8 +1,8 @@
 #include "sp7021_hal_gpio.h"
-#include "sp7021_hal_def.h"
-int gpio_input_invert_val_set(u32 bit,int invert_set)
+
+int gpio_input_invert_val_set(uint32_t bit,int invert_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -26,9 +26,9 @@ int gpio_input_invert_val_set(u32 bit,int invert_set)
 }
 
 
-u32 gpio_input_invert_val_get(u32 bit)
+uint32_t gpio_input_invert_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -43,9 +43,9 @@ u32 gpio_input_invert_val_get(u32 bit)
 }
 
 
-int gpio_output_invert_val_set(u32 bit,int invert_set)
+int gpio_output_invert_val_set(uint32_t bit,int invert_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -66,9 +66,9 @@ int gpio_output_invert_val_set(u32 bit,int invert_set)
 	return 0;
 }
 
-u32 gpio_output_invert_val_get(u32 bit)
+uint32_t gpio_output_invert_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -81,9 +81,9 @@ u32 gpio_output_invert_val_get(u32 bit)
 	return ((reg_val & value) ? 1 : 0);
 }
 
-int gpio_open_drain_val_set(u32 bit,int od_set)
+int gpio_open_drain_val_set(uint32_t bit,int od_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -106,9 +106,9 @@ int gpio_open_drain_val_set(u32 bit,int od_set)
 	return 0;
 }
 
-u32 gpio_open_drain_val_get(u32 bit)
+uint32_t gpio_open_drain_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -125,9 +125,9 @@ u32 gpio_open_drain_val_get(u32 bit)
    1: pin set in GPIO mode
    0: pin set in pinmux mode
 */
-int gpio_first_val_set(u32 bit,int firset_set)
+int gpio_first_val_set(uint32_t bit,int firset_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 5;
 	if (idx > 4) {
@@ -151,9 +151,9 @@ int gpio_first_val_set(u32 bit,int firset_set)
 	return 0;
 }
 
-u32 gpio_first_val_get(u32 bit)
+uint32_t gpio_first_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 5;
 	if (idx > 5) {
@@ -171,9 +171,9 @@ u32 gpio_first_val_get(u32 bit)
    1: gpio control by gpio register
    0: gpio control by IOP
 */
-int gpio_master_val_set(u32 bit,int master_set)
+int gpio_master_val_set(uint32_t bit,int master_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -200,9 +200,9 @@ int gpio_master_val_set(u32 bit,int master_set)
    1: GPIO Group control mode 
    0: IOP control mode
 */
-u32 gpio_master_val_get(u32 bit)
+uint32_t gpio_master_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -220,9 +220,9 @@ u32 gpio_master_val_get(u32 bit)
    1: output mode
    0: input mode
 */
-int gpio_oe_val_set(u32 bit,int oe_set)
+int gpio_oe_val_set(uint32_t bit,int oe_set)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -249,9 +249,9 @@ int gpio_oe_val_set(u32 bit,int oe_set)
    1: output mode
    0: input mode
 */
-u32 gpio_oe_val_get(u32 bit)
+uint32_t gpio_oe_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -266,9 +266,9 @@ u32 gpio_oe_val_get(u32 bit)
 }
 
 /****** gpio output mode, set output value ****/
-int gpio_out_val_set(u32 bit, u32 gpio_out_value)
+int gpio_out_val_set(uint32_t bit, uint32_t gpio_out_value)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -291,9 +291,9 @@ int gpio_out_val_set(u32 bit, u32 gpio_out_value)
 }
 
 /****** gpio output mode, get output value ****/
-u32 gpio_out_val_get(u32 bit)
+uint32_t gpio_out_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 4;
 	if (idx > 8) {
@@ -308,9 +308,9 @@ u32 gpio_out_val_get(u32 bit)
 }
 
 /****** gpio input mode, get input value ****/
-u32 gpio_in_val_get(u32 bit)
+uint32_t gpio_in_val_get(uint32_t bit)
 {
-	u32 idx, value, reg_val;
+	uint32_t idx, value, reg_val;
 	
 	idx = bit >> 5;
 	if (idx > 5) {
@@ -324,7 +324,7 @@ u32 gpio_in_val_get(u32 bit)
 	return ((reg_val & value) ? 1 : 0);
 }
 
-u8 gpio_is_output(u32 GPIO_Pin)
+uint8_t gpio_is_output(uint32_t GPIO_Pin)
 {
 	if(gpio_open_drain_val_get(GPIO_Pin) || gpio_oe_val_get(GPIO_Pin))
 		return 1;
@@ -363,7 +363,7 @@ void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 	}
 }
 
-void HAL_GPIO_DeInit(u16 GPIO_Pin)
+void HAL_GPIO_DeInit(uint16_t GPIO_Pin)
 {
 	gpio_assert_param(IS_GPIO_PIN(GPIO_Pin));
 
@@ -391,7 +391,7 @@ void HAL_GPIO_DeInit(u16 GPIO_Pin)
 
 }
 
-GPIO_PinState  HAL_GPIO_ReadPin(u16 GPIO_Pin)
+GPIO_PinState  HAL_GPIO_ReadPin(uint16_t GPIO_Pin)
 {
 
 	GPIO_PinState bitstatus;
@@ -409,7 +409,7 @@ GPIO_PinState  HAL_GPIO_ReadPin(u16 GPIO_Pin)
 	return bitstatus;
 }
 
-void HAL_GPIO_WritePin(u16 GPIO_Pin, GPIO_PinState PinState)
+void HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState)
 {
 
 	gpio_assert_param(IS_GPIO_PIN(GPIO_Pin));
@@ -424,7 +424,7 @@ void HAL_GPIO_WritePin(u16 GPIO_Pin, GPIO_PinState PinState)
 	}
 }
 
-void HAL_GPIO_TogglePin(u16 GPIO_Pin)
+void HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
 {
 	gpio_assert_param(IS_GPIO_PIN(GPIO_Pin));
 	/* get input/output mode. write data in output mode only 
@@ -436,17 +436,17 @@ void HAL_GPIO_TogglePin(u16 GPIO_Pin)
 	}
 }
 
-HAL_StatusTypeDef HAL_GPIO_LockPin(u16 GPIO_Pin)
+HAL_StatusTypeDef HAL_GPIO_LockPin(uint16_t GPIO_Pin)
 {
 	return HAL_OK;
 }
 
-void HAL_GPIO_EXTI_IRQHandler(u16 GPIO_Pin)
+void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
 {
  	HAL_GPIO_EXTI_Callback(GPIO_Pin);
 }
 
-__weak void HAL_GPIO_EXTI_Callback(u16 GPIO_Pin)
+__weak void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  
 }

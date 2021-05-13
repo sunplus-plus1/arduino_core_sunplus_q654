@@ -33,7 +33,7 @@ LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dir
 
 CMSIS_HEADER += $(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include
 CMSIS_DEVICE_HEADER += $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Include
-HAL_DRIVER_HEADER += $(TOP)/system/drivers//sp7021_hal_driver/inc
+HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
 ARDUNIO_HEADER += $(TOP)/cores/arduino
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
@@ -75,7 +75,10 @@ CSOURCES += $(COMMON_DIR)/common.c
 # interrupt
 CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
-CSOURCES += sp7021_hal_irq_ctrl.c
+
+# HAL
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
+
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
 
@@ -121,6 +124,7 @@ $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 %.o: %.S
 	$(Pecho) "  CC   $<"
 	$P $(CC) $(CFLAGS) -c -o $@ $<
+
 
 %.o: %.c*
 	$(Pecho) "  CC   $<"

@@ -1,5 +1,9 @@
 
-#include "sp7021_hal.h"
+#include "irq_ctrl.h"
+#include "sp7021_arm926.h"
+#include "sp7021_hal_def.h"
+#include "sp70xx.h"
+#include "cmsis_compiler.h"
 
 __IO uint32_t uwTick = 0;
 HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;
