@@ -232,21 +232,38 @@ typedef enum IRQn
 
 
 typedef struct{
-	__IM uint32_t stamp_id; 						/*!< \brief chip reversion and stamp id*/
+	__IM uint32_t stamp_id; 						   /*!< \brief chip reversion and stamp id*/
 	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
 	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
-	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
+	__IOM uint32_t reset[10];						   /*!< \brief devices reset bit*/
 	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
 }GROUP0_Type;
 
 typedef struct{
-	__IM uint32_t test_mode_config; 				/*!< \brief chip test mode config*/
-	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
-	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
-	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
-	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
+	__IM uint32_t test_mode_config; 				  /*!< \brief chip test mode config*/
+	__IOM uint32_t pinmux_cfg[4]; 				  /*!< \brief pinmux config */
+	__IOM uint32_t reserved[17];			        /*!< reserved */
 }GROUP1_Type;
 
+typedef struct{
+   __IOM uint32_t pinmux_net[11];             /*!< \brief ethernet pinmux config */
+   __IOM uint32_t pinmux_sdio[3];             /*!< \brief sdio pinmux config */
+   __IOM uint32_t pinmux_pwm[4];              /*!< \brief pwm pinmux config */
+   __IOM uint32_t pinmux_icm[4];              /*!< \brief icm pinmux config */
+   __IOM uint32_t pinmux_spim[10];            /*!< \brief spi master pinmux config */
+}GROUP2_Type;
+
+typedef struct{
+   __IOM uint32_t pinmux_spis[10];             /*!< \brief spi salver pinmux config */
+   __IOM uint32_t pinmux_i2cm[4];              /*!< \brief i2cm pinmux config */
+   __IOM uint32_t pinmux_ua1[2];               /*!< \brief uart1 pinmux config */
+   __IOM uint32_t pinmux_ua2[2];               /*!< \brief uart2 pinmux config */
+   __IOM uint32_t pinmux_ua3[2];               /*!< \brief uart3 pinmux config */
+   __IOM uint32_t pinmux_ua4[2];               /*!< \brief uart4 pinmux config */
+   __IOM uint32_t pinmux_timer_int[2];         /*!< \brief timer interrupt master pinmux config */
+   __IOM uint32_t pinmux_gpio_int[4];          /*!< \brief gpio interrupt pinmux config */
+   __IOM uint32_t reserved[14];                /*!< reserved */
+}GROUP3_Type;
 
 typedef struct
 {
@@ -285,9 +302,7 @@ typedef struct
 }TIM_TypeDef;
 
 
-
 #define SP_IRQ_CTRL  ((IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
-
 
 
 #define DRAM_BASE 			0x00000000
@@ -300,6 +315,10 @@ typedef struct
 
 #define RF_GRP(_grp, _reg) ((((_grp) * 32 + (_reg)) * 4) + RUBS_BASE)
 #define RF_AXI_GRP(_grp, _reg) ((((_grp) * 4096 + (_reg)) * 4) + AXI_BUS_BASE)
+
+#define RF_MASK_V(_mask, _val)       (((_mask) << 16) | (_val))
+#define RF_MASK_V_SET(_mask)         (((_mask) << 16) | (_mask))
+#define RF_MASK_V_CLR(_mask)         (((_mask) << 16) | 0)
 
 /*APB RBUS register group*/
 #define MOON0_GROUP_NO 		(0)
