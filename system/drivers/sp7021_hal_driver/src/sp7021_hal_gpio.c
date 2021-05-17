@@ -203,14 +203,13 @@ int gpio_master_val_set(uint32_t bit,int master_set)
 uint32_t gpio_master_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
-	
+
 	idx = bit >> 4;
 	if (idx > 8) {
 		return -1;
 	}
-	
+
 	value = 1 << (bit & 0x0f);
-	
 	reg_val = *((volatile unsigned int *)(GPIO_MASTER(idx)));
 
 	return ((reg_val & value) ? 1 : 0);
@@ -336,6 +335,7 @@ uint8_t gpio_is_output(uint32_t GPIO_Pin)
 void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 { 
 
+	gpio_assert_param(GPIO_Init);
 	gpio_assert_param(IS_GPIO_PIN(GPIO_Init->Pin));
 
 	/* set pin to gpio mode */
@@ -434,19 +434,4 @@ void HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
 	{
 		gpio_out_val_set(GPIO_Pin,!(gpio_out_val_get(GPIO_Pin)));
 	}
-}
-
-HAL_StatusTypeDef HAL_GPIO_LockPin(uint16_t GPIO_Pin)
-{
-	return HAL_OK;
-}
-
-void HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin)
-{
- 	HAL_GPIO_EXTI_Callback(GPIO_Pin);
-}
-
-__weak void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
- 
 }

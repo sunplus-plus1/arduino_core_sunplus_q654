@@ -155,9 +155,6 @@ void              HAL_GPIO_DeInit(uint16_t GPIO_Pin);
 GPIO_PinState     HAL_GPIO_ReadPin(uint16_t GPIO_Pin);
 void              HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState);
 void              HAL_GPIO_TogglePin(uint16_t GPIO_Pin);
-HAL_StatusTypeDef HAL_GPIO_LockPin(uint16_t GPIO_Pin);
-void              HAL_GPIO_EXTI_IRQHandler(uint16_t GPIO_Pin);
-void              HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 #ifdef __cplusplus
 }
