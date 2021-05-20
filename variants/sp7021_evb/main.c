@@ -37,21 +37,41 @@ u8	tx_buf[255];
 #define INTR_SAMPLE
 #ifdef INTR_SAMPLE
 
-void gpio_int_0_callback(void)
+void gpio_int_fiq_callback(void)
 {
-	printf("GPIO_INT_0 callback\n");
+	printf("FIQ callback\n");
+}
 
+void gpio_int_irq_callback(void)
+{
+    printf("IRQ callback\n");
+
+}
+
+void create_IRQ()
+{
+	EXTI_InitTypeDef *pEXTI_IRQ;
+	HAL_EXTI_Data(pEXTI_IRQ);
+	pEXTI_IRQ->pin = 38;
+	pEXTI_IRQ->EXTIn = 1;		//use EXTI1,irqn=121
+	HAL_EXTI_Init(pEXTI_IRQ, &gpio_int_irq_callback);
+}
+
+void create_FIQ()
+{
+	EXTI_InitTypeDef *pEXTI_FIQ;
+	HAL_EXTI_Data(pEXTI_FIQ);    // default IRQ high-level
+	pEXTI_FIQ->pin = 39;
+	pEXTI_FIQ->EXTIn = 0;		//use EXTI0,irqn=120
+	pEXTI_FIQ->priority = 0;    //FIQ
+	HAL_EXTI_Init(pEXTI_FIQ, &gpio_int_fiq_callback);
 }
 
 void EXTI_TEST()
 {
-	EXTI_InitTypeDef *pEXTI_TEMP;
-	printf("entry_GPIO\n");
-	pEXTI_TEMP->pin = 39;
-	pEXTI_TEMP->EXTIn = 0;		//use EXTI0,irqn=120
-	pEXTI_TEMP->trig = IRQ_MODE_TRIG_LEVEL_HIGH;
-
-	HAL_EXTI_Init(pEXTI_TEMP, &gpio_int_0_callback);
+	printf("entry EXTI_TEST\n");
+	create_IRQ();
+	create_FIQ();
 }
 #endif
 

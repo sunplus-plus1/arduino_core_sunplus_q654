@@ -3,13 +3,20 @@
 void HAL_EXTI_Init(EXTI_InitTypeDef *pEXTI_Init, IRQHandler_t pEXTI_callback)
 {
 	pEXTI_Init->irqn = pEXTI_Init->EXTIn + 120;
-	setGPIO_exti(pEXTI_Init);				//set PIN_MUX GPIO_EXIT
-	IRQ_SetHandler(pEXTI_Init->irqn,pEXTI_callback);		//sethandler
-	IRQ_SetMode(pEXTI_Init->irqn, pEXTI_Init->trig);		
-	IRQ_Enable(pEXTI_Init->irqn);
+	EXTI_set_gpio(pEXTI_Init);							//set GPIO pin
+	IRQ_SetHandler(pEXTI_Init->irqn, pEXTI_callback);	//set handler
+	IRQ_SetPriority(pEXTI_Init->irqn, pEXTI_Init->priority);
+	IRQ_SetMode(pEXTI_Init->irqn, pEXTI_Init->trig);	//set trig type
+	IRQ_Enable(pEXTI_Init->irqn);						//enable 
 }
 
-void setGPIO_exti(EXTI_InitTypeDef *pEXTI_Init)
+void HAL_EXTI_Data(EXTI_InitTypeDef *pEXTI_Init)
+{
+	pEXTI_Init->trig = IRQ_MODE_TRIG_LEVEL_HIGH;
+	pEXTI_Init->priority = 1;
+}
+
+void EXTI_set_gpio(EXTI_InitTypeDef *pEXTI_Init)
 {   
     uint32_t reg_val = pEXTI_Init->pin - 7;         //G_MX = val(x) + 7
 	if((pEXTI_Init->EXTIn + 1) % 2)

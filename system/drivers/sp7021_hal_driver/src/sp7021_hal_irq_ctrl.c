@@ -173,7 +173,7 @@ uint32_t IRQ_GetEnableState (IRQn_ID_t irqn)
 	}
 	else
 	{
-		enable = 0;
+		enable = -1;
 	}
 
 	return (enable);
@@ -279,9 +279,9 @@ IRQn_ID_t IRQ_GetActiveFIQ (void)
 
 void IRQ_HANDLE(void)
 {
+	ISR_SAVE_CONTEXT();
 	IRQHandler_t h = 0;
 	IRQn_ID_t irqn = 0;
-	ISR_SAVE_CONTEXT();
 	irqn = GIC_GetActiveIRQ();
 	h = IRQ_GetHandler(irqn);
 	IRQ_Clear(irqn);
@@ -292,9 +292,9 @@ void IRQ_HANDLE(void)
 
 void FIQ_HANDLE(void)
 {
+	ISR_SAVE_CONTEXT();
 	IRQHandler_t h = 0;
 	IRQn_ID_t irqn = 0;
-	ISR_SAVE_CONTEXT();
 	irqn = GIC_GetActiveFIQ();
 	h = IRQ_GetHandler(irqn);
 	IRQ_Clear(irqn);
