@@ -20,6 +20,7 @@
 #define _WIRING_INTERRUPTS_
 
 #include <stdint.h>
+#include <interrupt.h>
 
 #ifdef __cplusplus
   #include <functional>

@@ -7,7 +7,7 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
-#include "sp7021_hal_exti.h"
+#include "WInterrupts.h"
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -33,6 +33,19 @@ u8	data_buf[255];
 u8	tx_buf[255];
 #endif
 
+//#define ARDUINO_INTR_SAMPEL
+#ifdef ARDUINO_INTR_SAMPEL
+void gpio_int_irq_callback(void)
+{
+    printf("IRQ callback\n");
+
+}
+
+void arduino_intr_test(void)
+{
+	attachInterrupt(0, gpio_int_irq_callback, HIGH);
+}
+#endif
 
 #define INTR_SAMPLE
 #ifdef INTR_SAMPLE
@@ -53,7 +66,7 @@ void create_IRQ()
 	EXTI_InitTypeDef *pEXTI_IRQ;
 	HAL_EXTI_Data(pEXTI_IRQ);
 	pEXTI_IRQ->pin = 38;
-	pEXTI_IRQ->EXTIn = 1;		//use EXTI1,irqn=121
+	pEXTI_IRQ->id = 1;		//use EXTI1,irqn=121
 	HAL_EXTI_Init(pEXTI_IRQ, &gpio_int_irq_callback);
 }
 
@@ -62,7 +75,7 @@ void create_FIQ()
 	EXTI_InitTypeDef *pEXTI_FIQ;
 	HAL_EXTI_Data(pEXTI_FIQ);    // default IRQ high-level
 	pEXTI_FIQ->pin = 39;
-	pEXTI_FIQ->EXTIn = 0;		//use EXTI0,irqn=120
+	pEXTI_FIQ->id = 0;		//use EXTI0,irqn=120
 	pEXTI_FIQ->priority = 0;    //FIQ
 	HAL_EXTI_Init(pEXTI_FIQ, &gpio_int_fiq_callback);
 }
@@ -187,6 +200,10 @@ int main(void)
 	uart_isr_init();
 #ifdef INTR_SAMPLE
 	EXTI_TEST();
+#endif
+
+#ifdef ARDUINO_INTR_SAMPLE
+	arduino_intr_test();
 #endif
 
 #ifdef RS485_TEST

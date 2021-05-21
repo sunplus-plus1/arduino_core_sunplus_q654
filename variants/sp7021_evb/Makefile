@@ -34,14 +34,16 @@ LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dir
 CMSIS_HEADER += $(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include
 CMSIS_DEVICE_HEADER += $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Include
 HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
-ARDUNIO_HEADER += $(TOP)/cores/arduino
+ARDUINO_HEADER += $(TOP)/cores/arduino
+ARDUINO_SUNPLUS_HEADER += $(TOP)/cores/arduino/sunplus
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
-ARDUNIO_SRC = $(TOP)/cores/arduino
-#INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
+ARDUINO_SRC = $(TOP)/cores/arduino
+WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
+#INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUINO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUINO_SRC):$(WRAPPER_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUINO_SRC):$(WRAPPER_SRC)
 
 CFLAGS += -MMD -O1
 CFLAGS += -nostdlib -fno-builtin
@@ -55,7 +57,8 @@ CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g
 CFLAGS += -I$(CMSIS_HEADER)
 CFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CFLAGS += -I$(HAL_DRIVER_HEADER)
-CFLAGS += -I$(ARDUNIO_HEADER)
+CFLAGS += -I$(ARDUINO_HEADER)
+CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
 
 #-mthumb -mthumb-interwork
 
@@ -81,6 +84,7 @@ CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
 
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
+#CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
 CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w
