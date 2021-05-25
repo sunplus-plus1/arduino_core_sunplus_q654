@@ -13,6 +13,7 @@ LIB = lib
 TESTAPI = testapi
 
 CROSS = ../../../../crossgcc/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin/arm-none-eabi-
+#CROSS = /home/xt.hu/test/cortex-m4/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-
 TOP = ../..
 ifneq ($(CROSS),)
 CC = $(CROSS)gcc
@@ -51,7 +52,7 @@ CFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
 CFLAGS += -fno-partial-inlining -fno-jump-tables
 CFLAGS += -static
 CFLAGS += -nodefaultlibs
-CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -ffunction-sections -fdata-sections 
 CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
 CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
 CFLAGS += -I$(CMSIS_HEADER)
@@ -81,10 +82,12 @@ ASOURCES += $(COMMON_DIR)/vectors.S
 
 # HAL
 CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
+#CSOURCES += $(ARDUINO_SRC)/WInterrupts.c
 
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
-#CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
+CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
+#CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
 CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w

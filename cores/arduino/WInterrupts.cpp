@@ -20,11 +20,11 @@
 
 /*
   parameter id is 0~7 correspond exti0~exti7. The pin and 
-  extern intr correspondence can be modified in interrupt.h.
-  mode is 
+  extern intr correspondence can be modified in interrupt.h. 
 */
 
-void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode)
+//void attachInterrupt1(uint32_t pin, callback_function_t callback, uint32_t mode)
+void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
 	uint32_t id = pin;
 	uint32_t it_mode = mode;
@@ -51,11 +51,11 @@ void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode)
 	sunplus_interrupt_enable(id, callback, it_mode);
 }
 
-void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
-{
-	callback_function_t _c = callback;
-	attachInterrupt(pin, _c, mode);
-}
+//void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
+//{
+//	std::function<void(void)> _c = callback;
+//	attachInterrupt1(pin, _c, mode);
+//}
 
 void detachInterrupt(uint32_t pin)
 {

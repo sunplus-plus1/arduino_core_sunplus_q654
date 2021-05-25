@@ -24,7 +24,7 @@ typedef struct
 	uint32_t pin;   			//GPIO selection(pin_mux)
 } EXTI_InitTypeDef;
 
-void EXTI_SetGPIO(uint32_t pin, uint32_t id);
+void EXTI_SetPinMux(uint32_t pin, uint32_t id);
 void HAL_EXTI_Init(EXTI_InitTypeDef *pEXTI_Init, IRQHandler_t pEXTI_callback);
 void HAL_EXTI_Data(EXTI_InitTypeDef *pEXTI_Init);
 #ifdef __cplusplus

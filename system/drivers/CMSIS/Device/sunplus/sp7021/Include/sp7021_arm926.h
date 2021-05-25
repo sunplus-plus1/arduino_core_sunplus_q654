@@ -226,7 +226,21 @@ typedef enum IRQn
 
 #define IRQ_CTRL_BASE    0x9C000480
 
-#include "core_armv5.h"
+//#include "core_armv5.h"
+/* IO definitions (access restrictions to peripheral registers) */
+#ifdef __cplusplus
+  #define   __I     volatile             /*!<rief Defines 'read only' permissions */
+#else
+  #define   __I     volatile const       /*!<rief Defines 'read only' permissions */
+#endif
+#define     __O     volatile             /*!<rief Defines 'write only' permissions */
+#define     __IO    volatile             /*!<rief Defines 'read / write' permissions */
+
+/* following defines should be used for structure members */
+#define     __IM     volatile const      /*!<rief Defines 'read only' structure member permissions */
+#define     __OM     volatile            /*!<rief Defines 'write only' structure member permissions */
+#define     __IOM    volatile            /*!<rief Defines 'read / write' structure member permissions */
+#define RESERVED(N, T) T RESERVED##N;    // placeholder struct members used for "reserved" areas
 
 #include <stdint.h>
 

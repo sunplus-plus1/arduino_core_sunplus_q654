@@ -7,7 +7,6 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
-#include "WInterrupts.h"
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -33,8 +32,11 @@ u8	data_buf[255];
 u8	tx_buf[255];
 #endif
 
-//#define ARDUINO_INTR_SAMPEL
-#ifdef ARDUINO_INTR_SAMPEL
+#define ARDUINO_INTR_SAMPLE
+#ifdef ARDUINO_INTR_SAMPLE
+
+#include "WInterrupts.h"
+
 void gpio_int_irq_callback(void)
 {
     printf("IRQ callback\n");
@@ -43,11 +45,11 @@ void gpio_int_irq_callback(void)
 
 void arduino_intr_test(void)
 {
-	attachInterrupt(0, gpio_int_irq_callback, HIGH);
+	attachInterrupt(0, &gpio_int_irq_callback, HIGH);
 }
 #endif
 
-#define INTR_SAMPLE
+//#define INTR_SAMPLE
 #ifdef INTR_SAMPLE
 
 void gpio_int_fiq_callback(void)
