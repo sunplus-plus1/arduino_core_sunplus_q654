@@ -25,4 +25,3 @@ void FIQ_HANDLE( void ) __attribute__ ((naked));
 #endif
 
 #endif 
-

@@ -9,6 +9,18 @@
 static IRQHandler_t IRQTable[IRQ_GIC_LINE_COUNT] = { 0U };
 static uint32_t	 IRQ_ID0 = 0;
 
+__STATIC_INLINE void __reset_irq()
+{
+	int i = 0;
+	for (i = 0; i < 7; i++)
+	{
+		SP_IRQ_CTRL->type[i] = ~0;
+		SP_IRQ_CTRL->polarity[i] = 0;
+		SP_IRQ_CTRL->priority[i] = ~0;
+		SP_IRQ_CTRL->mask[i] = 0;
+	}
+}
+
 __STATIC_INLINE void GIC_EnableIRQ(IRQn_Type IRQn)
 {
 	SP_IRQ_CTRL->mask[IRQn/32U] |= (1 << (IRQn%32U));
@@ -101,6 +113,8 @@ int32_t IRQ_Initialize (void)
 	{
 		IRQTable[i] = (IRQHandler_t)NULL;
 	}
+	__disable_irq();
+	__reset_irq();
 	__enable_irq();
 }
 
@@ -229,7 +243,6 @@ uint32_t IRQ_GetMode (IRQn_ID_t irqn)
 	return (mode);
 }
 
- 
 int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority)
 {
 	int32_t status;
@@ -242,10 +255,8 @@ int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority)
 	{
 		status = -1;
 	}
-	return (status);	
-
+	return (status);
 }
- 
 
 uint32_t IRQ_GetPriority (IRQn_ID_t irqn)
 {
@@ -256,13 +267,20 @@ uint32_t IRQ_GetPriority (IRQn_ID_t irqn)
 
 	return 0;
 }
- 
-void IRQ_Clear(IRQn_ID_t irqn)
+
+int32_t IRQ_Clear(IRQn_ID_t irqn)
 {
+	int32_t status;
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
 		GIC_ClearIRQ(irqn);
+		status = 0;
 	}
+	else
+	{
+		status = -1;
+	}
+	return (status);
 }
 
 

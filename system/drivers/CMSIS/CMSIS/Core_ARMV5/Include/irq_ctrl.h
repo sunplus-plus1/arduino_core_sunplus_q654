@@ -103,10 +103,10 @@ IRQn_ID_t IRQ_GetActiveIRQ (void);
 IRQn_ID_t IRQ_GetActiveFIQ (void);
 
 
-/// Clear interrupt pending flag.
+/// Clear interrupt flag.
 /// \param[in]     irqn          interrupt ID number
 /// \return 0 on success, -1 on error.
-int32_t IRQ_ClearPending (IRQn_ID_t irqn);
+int32_t IRQ_Clear (IRQn_ID_t irqn);
 
 /// Set interrupt priority value.
 /// \param[in]     irqn          interrupt ID number
