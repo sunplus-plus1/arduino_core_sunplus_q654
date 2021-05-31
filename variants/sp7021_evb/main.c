@@ -32,7 +32,7 @@ u8	data_buf[255];
 u8	tx_buf[255];
 #endif
 
-#define ARDUINO_INTR_SAMPLE
+//#define ARDUINO_INTR_SAMPLE
 #ifdef ARDUINO_INTR_SAMPLE
 
 #include "WInterrupts.h"
@@ -40,7 +40,6 @@ u8	tx_buf[255];
 void gpio_int_irq_callback(void)
 {
     printf("IRQ callback\n");
-
 }
 
 void arduino_intr_test(void)
@@ -52,6 +51,8 @@ void arduino_intr_test(void)
 //#define INTR_SAMPLE
 #ifdef INTR_SAMPLE
 
+#include "sp7021_hal_exti.h"
+static cnt = 0;
 void gpio_int_fiq_callback(void)
 {
 	printf("FIQ callback\n");
@@ -60,22 +61,30 @@ void gpio_int_fiq_callback(void)
 void gpio_int_irq_callback(void)
 {
     printf("IRQ callback\n");
-
+    cnt++;
+    printf("cnt=%d\n", cnt);
+    if(6 == cnt)
+    {
+		printf("121 TRIG=%d\n", IRQ_GetMode(121));
+		IRQ_Disable(121);
+    }
 }
 
 void create_IRQ()
 {
 	EXTI_InitTypeDef *pEXTI_IRQ;
-	HAL_EXTI_Data(pEXTI_IRQ);
+	//HAL_EXTI_Data(pEXTI_IRQ);
+	pEXTI_IRQ->priority = 1;
 	pEXTI_IRQ->pin = 38;
 	pEXTI_IRQ->id = 1;		//use EXTI1,irqn=121
+	pEXTI_IRQ->trig = IRQ_MODE_TRIG_EDGE_RISING;  //EDGE_RISING
 	HAL_EXTI_Init(pEXTI_IRQ, &gpio_int_irq_callback);
 }
 
 void create_FIQ()
 {
 	EXTI_InitTypeDef *pEXTI_FIQ;
-	HAL_EXTI_Data(pEXTI_FIQ);    // default IRQ high-level
+	HAL_EXTI_Data(pEXTI_FIQ);    // default LEVEL_HIGH
 	pEXTI_FIQ->pin = 39;
 	pEXTI_FIQ->id = 0;		//use EXTI0,irqn=120
 	pEXTI_FIQ->priority = 0;    //FIQ
@@ -84,9 +93,23 @@ void create_FIQ()
 
 void EXTI_TEST()
 {
+	int flag1 = 2;
+	int flag2 = 2;
 	printf("entry EXTI_TEST\n");
 	create_IRQ();
 	create_FIQ();
+	while(1)
+	{
+		if(cnt > 6)
+		{
+			flag1 = IRQ_GetEnableState(121);
+			IRQ_Disable(121);
+			IRQ_Clear(121);
+			flag2 = IRQ_GetEnableState(121);
+			printf("previous flag = %d,flag =%d\n", flag1, flag2);
+			while(1);
+		}
+	}
 }
 #endif
 
@@ -176,6 +199,68 @@ void uart_isr_init(void)
 	//interrupt_register(53, "UART0", uart_isr, 1);
 }
 
+//#define TIMER_TEST
+#ifdef TIMER_TEST
+#include "sp7021_hal_irq_ctrl.h"
+
+#define TIMER3_TICKS        (9 - 1)     /* 1s */
+#define TIMER2_TICKS        (90 - 1)        /* 1s */
+
+#define TIMER_CONFIG_SYS    (0 << 2)    /* src: system clock */
+#define TIMER_CONFIG_STC    (1 << 2)    /* src: stc */
+#define TIMER_ONESHOT       (0 << 1)    /* timer one-shot operation*/
+#define TIMER_RELOAD        (1 << 1)    /* timer auto reload */
+#define TIMER_RUN           (1 << 0)    /* timer run */
+#define TIMER_STOP          (0 << 0)    /* timer stop */
+
+#define TIMER_1MS_PRES_VALUE    (9)     // 1ms=1.1us*(TIMER_1MS_PRES_VALUE+1)*(TIMER2_TICKS+1)
+
+#define TIMER3_INT  (154)
+#define TIMER2_INT  (153)
+
+static volatile unsigned int g_repeat_cnt = 0;
+
+void timer3_callback(int vector)
+{
+    printf("@Hello[%d]\n", ++g_repeat_cnt);
+}
+
+void timer_test_init()
+{
+#ifdef QCH_TEST
+    isr_t isr = qch_timer_callback;
+#else
+    isr_t isr = timer3_callback;
+#endif
+    STC_REG->timer3_ctl = TIMER_CONFIG_STC | TIMER_RELOAD;
+    STC_REG->timer3_pres_val = 999;
+    STC_REG->timer3_reload = TIMER3_TICKS;
+    STC_REG->timer3_cnt = TIMER3_TICKS;
+    IRQ_SetHandler(TIMER3_INT, timer3_callback);
+    IRQ_SetMode(TIMER3_INT, IRQ_MODE_TRIG_EDGE_RISING);
+    IRQ_Enable(TIMER3_INT);
+}
+
+void timer_test()
+{
+    unsigned int dwMask;
+    printf("Timer test start!\n");
+
+    g_repeat_cnt = 0;
+
+    STC_REG->timer3_ctl |= TIMER_RUN;
+
+    while (g_repeat_cnt < 6);
+
+    IRQ_Disable(TIMER3_INT);
+
+    STC_REG->timer3_ctl &= ~TIMER_RUN;
+
+    printf("Timer3 interrupt test finished\n");
+
+}
+#endif
+
 int main(void)
 {
 #if 0 // MALLOC_TEST
@@ -195,9 +280,13 @@ int main(void)
 	/*initial interrupt vector table*/
 	int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
 
-	sp_interrupt_setup();
+	IRQ_Initialize();
 
-	//timer_test_init();
+#ifdef TIMER_TEST
+	timer_test_init();
+	timer_test();
+#endif
+
 	//cbdma_test_init();
 	uart_isr_init();
 #ifdef INTR_SAMPLE
@@ -208,21 +297,8 @@ int main(void)
 	arduino_intr_test();
 #endif
 
-#ifdef RS485_TEST
-	rs485_init(10,11,12);	//G_MX[10]_TX --> DI, G_MX[11]_RX --> RO ,G_MX[12]_RTS
-#endif 
-
-	//timer_test();
 
 	printf("NonOS boot OK!!!\n");
-	//task_dbg();
-#if 0
-    GPIO_F_SET(21,1);
-    GPIO_M_SET(21,1);
-    GPIO_E_SET(21,1);
-    GPIO_O_SET(21,1);
-#endif
-	//Marlin_main();
 	while(1);
 
 	//Never get here

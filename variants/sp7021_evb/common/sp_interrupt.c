@@ -108,7 +108,7 @@ void sp_interrupt_disable()
 /* invoked by interrupt driver */
 int interrupt_register(int vector, const char *name, isr_t isr, int type)
 {
-    isr_table[vector] = isr;
+    //isr_table[vector] = isr;
 	hal_interrupt_configure(vector, type, 1); // level high/edge rising
 	hal_interrupt_unmask(vector); // enable intr
 	printf("Registered IRQ_%d %s!\n", vector, name);
@@ -128,7 +128,7 @@ void hal_interrupt_configure(int vector, int level, int up)
 {
     unsigned int dwRegValue;
 
-    // 0:level-type, 1: edge-type
+    // dwRegValue 0:level-type, 1: edge-type
     HAL_READ_UINT32(SPINTC_TYPE + ((vector / 32) * 4), dwRegValue);
     if (level)
     {

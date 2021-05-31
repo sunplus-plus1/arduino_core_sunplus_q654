@@ -104,7 +104,7 @@ DEPS = $(OBJS:.o=.d)
 
 .PHONY: clean all
 
-all: $(BIN)/$(SPI_ALL)
+all: $(BIN)/$(SPI_ALL) $(BIN)/$(TARGET).dis
 
 $(BIN)/$(TARGET).bin: $(BIN)/$(TARGET)
 	$P $(OBJCOPY) -O binary -S $< $@

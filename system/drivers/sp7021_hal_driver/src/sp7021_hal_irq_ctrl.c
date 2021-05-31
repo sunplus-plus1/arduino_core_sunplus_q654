@@ -1,7 +1,6 @@
 #include "sp7021_hal_irq_ctrl.h"
 #include "common_all.h"
 
-
 #ifndef IRQ_GIC_LINE_COUNT
 #define IRQ_GIC_LINE_COUNT      (200U)
 #endif
@@ -78,7 +77,7 @@ __STATIC_INLINE uint32_t GIC_GetIRQPirority(IRQn_Type IRQn)
 
 __STATIC_INLINE void GIC_ClearIRQ(IRQn_Type IRQn)
 {
-	SP_IRQ_CTRL->clear[IRQn/32U] &= ~(1 << (IRQn%32U));
+	SP_IRQ_CTRL->clear[IRQn/32U] = (1 << (IRQn%32U));
 }
 
 __STATIC_INLINE uint32_t GIC_GetActiveIRQ(void)
@@ -298,7 +297,7 @@ IRQn_ID_t IRQ_GetActiveFIQ (void)
 void IRQ_HANDLE(void)
 {
 	ISR_SAVE_CONTEXT();
-	IRQHandler_t h = 0;
+	IRQHandler_t h = NULL;
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveIRQ();
 	h = IRQ_GetHandler(irqn);
