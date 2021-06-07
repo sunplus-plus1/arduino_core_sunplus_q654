@@ -90,13 +90,30 @@ __STATIC_INLINE uint32_t GIC_GetActiveFIQ(void)
 	return i;
 }
 
+
+__STATIC_INLINE void __reset_irq()
+{
+         int i = 0;
+         for (i = 0; i < 7; i++)
+         {
+                   SP_IRQ_CTRL->type[i] = ~0;
+                   SP_IRQ_CTRL->polarity[i] = 0;
+                   SP_IRQ_CTRL->priority[i] = ~0;
+                   SP_IRQ_CTRL->mask[i] = 0;
+         }
+}
+
+
 int32_t IRQ_Initialize (void) {
 	uint32_t i = 0;
 
 	for (i=0; i<IRQ_GIC_LINE_COUNT; i++ ){
 		IRQTable[i] = (IRQHandler_t)NULL;
 	}
+	__disable_irq();
+	__reset_irq();
 	__enable_irq();
+	return 0;
 }
 
  int32_t IRQ_SetHandler (IRQn_ID_t irqn, IRQHandler_t handler)	{

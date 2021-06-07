@@ -7,6 +7,7 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
+#include "HardwareTimer.h"
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -167,7 +168,9 @@ int main(void)
 	
 	/*initial interrupt vector table*/
 	int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
-	sp_interrupt_setup();
+	//sp_interrupt_setup();
+//nt32_t IRQ_Initialize (void)
+	IRQ_Initialize();
 
 	//timer_test_init();
 	//cbdma_test_init();
@@ -177,9 +180,12 @@ int main(void)
 	rs485_init(10,11,12);	//G_MX[10]_TX --> DI, G_MX[11]_RX --> RO ,G_MX[12]_RTS
 #endif 
 
-	//timer_test();
+	
 
 	printf("NonOS boot OK!!!\n");
+	
+	extern void loop(void);
+	loop();
 	//task_dbg();
 #if 0
     GPIO_F_SET(21,1);
@@ -187,6 +193,11 @@ int main(void)
     GPIO_E_SET(21,1);
     GPIO_O_SET(21,1);
 #endif
+	
+	
+	
+
+
 	//Marlin_main();
 	while(1);
 

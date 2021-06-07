@@ -33,15 +33,19 @@ LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dir
 
 CMSIS_HEADER += $(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include
 CMSIS_DEVICE_HEADER += $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Include
-HAL_DRIVER_HEADER += $(TOP)/system/drivers//sp7021_hal_driver/inc
+HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
+#HAL_DRIVER_HEADER += $(TOP)/system/sp7021
 ARDUNIO_HEADER += $(TOP)/cores/arduino
+#ARDUNIO_HEADER += $(TOP)/variants/sp7021_evb
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
+LIB_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
+TEST_SRC = $(TOP)/libraries/test
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(LIB_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(TEST_SRC)
 
 CFLAGS += -MMD -O1
 CFLAGS += -nostdlib -fno-builtin
@@ -55,7 +59,31 @@ CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g
 CFLAGS += -I$(CMSIS_HEADER)
 CFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CFLAGS += -I$(HAL_DRIVER_HEADER)
+CFLAGS += -I$(ARDUNIO_HEADER)/sunplus
+CFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CFLAGS += -I$(ARDUNIO_HEADER)
+CFLAGS += -I$(TOP)/system/sp7021
+CFLAGS += -I$(TOP)/variants/sp7021_evb
+CFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
+
+CXXFLAGS += -MMD -O1
+CXXFLAGS += -nostdlib -fno-builtin
+CXXFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
+CXXFLAGS += -fno-partial-inlining -fno-jump-tables
+CXXFLAGS += -static
+CXXFLAGS += -nodefaultlibs
+CXXFLAGS += -ffunction-sections -fdata-sections
+CXXFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
+CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
+CXXFLAGS += -I$(CMSIS_HEADER)
+CXXFLAGS += -I$(CMSIS_DEVICE_HEADER)
+CXXFLAGS += -I$(HAL_DRIVER_HEADER)
+CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus
+CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
+CXXFLAGS += -I$(ARDUNIO_HEADER)
+CXXFLAGS += -I$(TOP)/system/sp7021
+CXXFLAGS += -I$(TOP)/variants/sp7021_evb
+
 
 #-mthumb -mthumb-interwork
 
@@ -75,12 +103,16 @@ CSOURCES += $(COMMON_DIR)/common.c
 # interrupt
 CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
-CSOURCES += sp7021_hal_irq_ctrl.c
+CSOURCES += sp7021_hal_irq_ctrl.c 
+CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
+CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
+
+
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
 
 # Marlin
-CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w
+CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
 #CFLAGS += -IMarlin/include -IMarlin/arduino
 #CFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
 #CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 

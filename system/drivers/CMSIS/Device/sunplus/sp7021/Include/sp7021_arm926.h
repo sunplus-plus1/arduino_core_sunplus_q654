@@ -165,25 +165,25 @@ typedef enum IRQn
    RESERVED_147                = 147,    /*!< RESERVED interrupt                                                  */	
    SECURIYT_IRQn               = 148,    /*!< Securiyt interrupt                                                  */	
    SPI_NAND_IRQn               = 149,    /*!< SPI Nand interrupt                                                  */	
-   STC_TIMER_W_IRQn            = 150,    /*!< STC TIMER W interrupt                                                  */	
+   STC_TIMER_W_IRQn            = 150,    /*!< STC Wathcdog interrupt                                                  */	
    STC_TIMER0_IRQn             = 151,    /*!< STC TIMER 0 interrupt                                                  */	
    STC_TIMER1_IRQn             = 152,    /*!< STC TIMER 1 interrupt                                                  */	
    STC_TIMER2_IRQn             = 153,    /*!< STC TIMER 2 interrupt                                                  */	
-   STC_TIMER3_IRQn             = 154,    /*!< STC TIMER 2 interrupt                                                  */	
+   STC_TIMER3_IRQn             = 154,    /*!< STC TIMER 3 interrupt                                                  */	
    STC_AV0_TIMER0_IRQn 		   = 155,	  /*!< STC TIMER 0 interrupt												  */ 
    STC_AV0_TIMER1_IRQn 		   = 156,	  /*!< STC TIMER 1 interrupt												  */ 
    STC_AV0_TIMER2_IRQn 		   = 157,	  /*!< STC TIMER 2 interrupt												  */ 
-   STC_AV0_TIMER3_IRQn 		   = 158,	  /*!< STC TIMER 2 interrupt												  */ 
+   STC_AV0_TIMER3_IRQn 		   = 158,	  /*!< STC TIMER 3 interrupt												  */ 
    STC_AV1_TIMER0_IRQn 		   = 159,	   /*!< STC TIMER 0 interrupt												   */ 
    STC_AV1_TIMER1_IRQn 		   = 160,	   /*!< STC TIMER 1 interrupt												   */ 
    STC_AV1_TIMER2_IRQn 		   = 161,	   /*!< STC TIMER 2 interrupt												   */ 
-   STC_AV1_TIMER3_IRQn 		   = 162,	   /*!< STC TIMER 2 interrupt												   */ 
+   STC_AV1_TIMER3_IRQn 		   = 162,	   /*!< STC TIMER 3 interrupt												   */ 
    RTC_IRQn 		           = 163,	   /*!< RTC TIMER  interrupt												   */ 							
    STC_AV2_TIMER0_IRQn 		   = 164,		/*!< STC TIMER 0 interrupt													*/ 
    STC_AV2_TIMER1_IRQn 		   = 165,		/*!< STC TIMER 1 interrupt													*/ 
    STC_AV2_TIMER2_IRQn 		   = 166,		/*!< STC TIMER 2 interrupt													*/ 
-   STC_AV2_TIMER3_IRQn 		   = 167,		/*!< STC TIMER 2 interrupt													*/ 
-   STC_AV0_TIMER_W_IRQn		   = 168,	  /*!< STC TIMER W interrupt													*/
+   STC_AV2_TIMER3_IRQn 		   = 167,		/*!< STC TIMER 3 interrupt													*/ 
+   STC_AV0_TIMER_W_IRQn		   = 168,	  /*!< STC TWatchdog interrupt													*/
    RESERVED_169                = 169,    /*!< RESERVED interrupt                                                  */	
    RESERVED_170                = 170,    /*!< RESERVED interrupt                                                  */	
    RESERVED_171                = 171,    /*!< RESERVED interrupt                                                  */	
@@ -218,6 +218,180 @@ typedef enum IRQn
    MAX_IRQ_n
 } IRQn_Type;
 
+
+typedef enum {
+	/*group 0*/
+	SYSTEM 			= 0,							/* !< System bus ID*/
+	RESERVED0 		= 1,
+	RTC				= 2,							/* !< RTC moudle ID */
+	IOCTL 			= 3,							/* !< IO Ctrl module ID */ 
+	IOP				= 4,							/* !< IOP module ID */ 
+	OTPRX			= 5, 							/* !< OTP RX moudle ID */
+	NOC				= 6, 							/* !< NOC moudle ID */
+	BR				= 7, 							/* !< BootROM Wrap moudle ID */
+	RBUS_L00		= 8,							/* !< RBUS Level 0 moudle ID */ 
+	SPI_FLASH		= 9, 							/* !< SPI Flash moudle ID */
+	SDCTRL0			= 10, 							/* !< SD Ctrl moudle ID */
+	PERI0			= 11, 							/* !< PREI0 moudle ID */
+	RESERVED1		= 12,
+	ARM926			= 13, 							/* !< ARM926 moudle ID */			
+	UMCTL2			= 14, 							/* !< UMCTRL2 moudle ID */
+	PERI1			= 15, 							/* !< PERI1 moudle ID */
+	/*group 1*/
+	DDR_PHY0		= 16, 							/* !< DDR PHY moudle ID */
+	RESERVED2		= 17, 
+	C_CHIP			= 18,							/* !< For C Chip module ID */
+	RESERVED3		= 19, 									
+	STC0			= 20, 							/* !< Standard time clock 0 moudle ID */
+	STC_AV0			= 21, 							/* !< standard time clock AV0 moudle ID */
+	STC_AV1			= 22, 							/* !< standard time clock AV1 moudle ID */
+	STC_AV2			= 23, 							/* !< standard time clock AV2 module ID */
+	UART0			= 24, 							/* !< UART0 moudle ID */
+	UART1 			= 25, 							/* !< UART1 moudle ID */
+	UART2			= 26, 							/* !< UART2 moudle ID */ 
+	UART3 			= 27, 							/* !< UART3 module ID */
+	UART4			= 28, 							/* !< UART4 moudle ID */
+	HWUA			= 29, 							/* !< Hardware uart moudle ID */
+	DDC0			= 30, 							/* !< DDC0 moudle ID */
+	UADMA			= 31, 
+	/*group 2*/
+	CBDMA0			= 32, 							/* !< CBDMA0 module ID*/
+	CBDMA1			= 33,							/* !< CBDMA1 module ID*/
+	SPI_COMBO0		= 34, 							/* !< SPI Combo 0 moudle ID */
+	SPI_COMBO1		= 35, 							/* !< SPI Combo 1 moudle ID */
+	SPI_COMBO2		= 36, 							/* !< SPI Combo 2 moudle ID */
+	SPI_COMBO3		= 37, 							/* !< SPI Combo 3 moudle ID */
+	AUD				= 38, 							/* !< Audio moudle ID	*/
+	RESERVED4       = 39, 
+	RESERVED5		= 40, 
+	RESERVED6		= 41, 							
+	USBCTRL0		= 42, 							/* !< USB Controller 0 moudle ID */	
+	USBCTRL1		= 43,							/* !< USB Controller 1 moudle ID */
+	RESERVED7		= 44, 						
+	USBPHY0			= 45, 							/* !< USB Phy 0 moudle ID */
+	USBPHY1			= 46,							/* !< USB Phy 1 moudle ID */
+	RESERVED8		= 47,
+	/*group 3*/
+	I2CM0			= 48, 							/* !< I2C Master0 moudle ID */
+	I2CM1			= 49, 							/* !< I2C Master1 moudle ID */
+	I2CM2			= 50, 							/* !< I2C Master2 moudle ID */
+	I2CM3			= 51, 							/* !< I2C Master3 moudle ID */
+	RESERVED9		= 52,
+	RESERVED10		= 53,
+	RESERVED11		= 54,
+	RESERVED12		= 55,
+	RESERVED13		= 56,
+	RESERVED14		= 57,
+	RESERVED15		= 58,
+	RESERVED16		= 59,
+	RESERVED17		= 60,
+	PMC_QCHANEL		= 61,							/* !< PMC Q-chanel moudle ID */
+	CARD_CTL0		= 62,							/* !< SD Card Controller moudle ID */
+	CARD_CTL1		= 63,							/* !< SD Card Controller moudle ID */
+	/*group 4*/
+	RESERVED18		= 64,
+	RESERVED19		= 65,						
+	CARD_CTL4		= 66,							/* !< SD Card Controller moudle ID */					
+	RESERVED20		= 67,
+	BCH				= 68,							/* !< BCH for spi nand moudle ID */
+	RESERVED21		= 69,
+	RESERVED22		= 70,
+	RESERVED23		= 71,
+	RESERVED24		= 72,
+	RESERVED25		= 73,
+	RESERVED26		= 74,
+	DDFCH			= 75,							/* !< DDFCH module ID */
+	CSIIW0			= 76, 							/* !< CSI IW 0 moudle ID */
+	CSIIW1			= 77, 							/* !< CSI IW 0 moudle ID */
+	MIPICSI0 		= 78, 							/* !< MIPICSI 0 moudle ID */
+	MIPICSI1		= 79, 							/* !< MIPICSI 1 moudle ID */
+	/*group 5*/
+	HDMI_TX			= 80, 							/* !< HDMI TX moudle ID */
+	RESERVED27		= 81, 
+	RESERVED28		= 82,
+	RESERVED29		= 83,
+	RESERVED30		= 84,
+	VPOST			= 85, 							/* !< Video POST moudle ID*/
+	RESERVED31		= 86,
+	RESERVED32		= 87,
+	RESERVED33		= 88,
+	RESERVED34		= 89,
+	RESERVED35		= 90,
+	RESERVED36		= 91,
+	RESERVED37		= 92,
+	RESERVED38		= 93,
+	RESERVED39		= 94,
+	RESERVED40		= 95,
+	/*group 6*/
+	TGEN			= 96, 							/* !< TGEN module ID */
+	DMIX			= 97, 							/* !< DMIX moudle ID */
+	RESERVED41		= 98,
+	RESERVED42		= 99,
+	RESERVED43		= 100,
+	RESERVED44		= 101,
+	RESERVED45		= 102,
+	RESERVED46		= 103,
+	RESERVED47		= 104,
+	RESERVED48		= 105,
+	TCON			= 106,							/* !< TCON moudle ID */
+	RESERVED49		= 107,
+	RESERVED50		= 108,
+	RESERVED51		= 109,
+	RESERVED52		= 110,
+	IRQCTRL			= 111,
+	/*group 7*/
+	RGST			= 112, 							/* !< Register bus moudle ID */
+	RESERVED53		= 113,
+	RESERVED54		= 114,
+	GPIO			= 115, 							/* !< GPIO moudle ID */
+	RBUS_TOP		= 116, 							/* !< Register top bus moudle ID */
+	RESERVED55		= 117,
+	RESERVED56		= 118,
+	RESERVED57		= 119,
+	RESERVED58		= 120,
+	RESERVED59		= 121,
+	RESERVED60		= 122,
+	RESERVED61		= 123,
+	RESERVED62		= 124,
+	RESERVED63		= 125,
+	RESERVED64		= 126,
+	RESERVED65		= 127,
+	/*group 8*/
+	RESERVED66		= 128,
+	RESERVED67		= 129,
+	RESERVED68		= 130,
+	RESERVED69		= 131,
+	RESERVED70		= 132,
+	RESERVED71		= 133,
+	MAILBOX			= 134, 							/* !< Mailbox module ID */
+	RESERVED72		= 135,
+	RESERVED73		= 136,
+	RESERVED74		= 137,
+	SPI_NAND		= 138, 							/* !< SPI Nand moudle ID */
+	I2C2CBUS		= 139, 							/* !< I2C to Bus moudule ID */
+	GDMA			= 140,							/* !< GDMA module ID */
+	SECURIYT		= 141, 							/* !< Securiyt module ID */
+	DVE				= 142, 							/* !< DVE moudle ID */
+	GPOST0			= 143, 							/* !< GPOST0 module ID */
+	/*group 9*/
+	OSD0 			= 144, 							/* !< OSD 0 module ID */
+	RESERVED75		= 145,
+	PWM				= 146,							/* !< PWM moudle ID */
+	UADBG			= 147,							/* !< UART Debug module ID */
+	DUMMY_MASTER	= 148,							/* !< Dummy master module ID */
+	FIO_CTRL		= 149, 							/* !< FIO controller module ID */
+	FPGA			= 150,							/* !< FPGA controller module ID */
+	L2SW			= 151, 							/* !< Ethernet switch module ID */
+	ICM				= 152, 							/* !< Input capture module ID */
+	AXI_GLOBAL		= 153,							/* !< AXI moniter module ID */
+	RESERVED76		= 154,	
+	RESERVED77		= 155,
+	RESERVED78		= 156,
+	RESERVED79		= 157,
+	RESERVED80		= 158,
+	RESERVED81		= 159,
+	
+}MODULE_ID_Type;
  
 #define __FPU_PRESENT             0       
 #define __TIM_PRESENT 			  0		  
@@ -231,21 +405,22 @@ typedef enum IRQn
 #include <stdint.h>
 
 
-typedef struct{
-	__IM uint32_t stamp_id; 						/*!< \brief chip reversion and stamp id*/
-	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
-	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
-	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
-	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
-}GROUP0_Type;
+
 
 typedef struct{
-	__IM uint32_t test_mode_config; 				/*!< \brief chip test mode config*/
-	__IOM uint32_t clock_enable[10]; 				/*!< \brief devices clock enable bit*/
+	__IOM uint32_t clock_enable[10];				/*!< \brief devices clock enable bit*/
+}Module_Clock_En_type;
+
+typedef struct{
 	__IOM uint32_t clock_gate_enable[10];			/*!< \brief devices clock gate enable bit*/
-	__IOM uint32_t reset[10];						/*!< \brief devices reset bit*/
-	__IOM uint32_t hw_config;							/*!< \brief hardware config for boot mode*/
-}GROUP1_Type;
+}Module_Clock_Gate_Type;
+
+typedef struct{
+	__IOM uint32_t reset[10];			/*!< \brief devices clock gate enable bit*/
+}Module_Reset_Type;
+
+
+
 
 
 typedef struct
@@ -319,6 +494,16 @@ typedef struct
 #define INT_CTRL3_GROUP_NO	(23)
 
 
+/*SP7021 module clock enable bit*/
+#define MODULE_CLK_EN_BASE	RF_GRP(0, 1)
+
+/*SP7021 module clock enable bit*/
+#define MODULE_CLK_GATE_BASE RF_GRP(0, 11)
+
+/*SP7021 module rest bit*/
+#define MODULE_RESET_BASE RF_GRP(0, 21)
+
+
 
 /*TIMER0 & TIMER1 is a group*/
 #define TIM0_BASE RF_GRP(12, 16)
@@ -336,14 +521,18 @@ typedef struct
 #define TIM6_BASE RF_GRP(99, 16)
 #define TIM7_BASE RF_GRP(99, 20)
 
-#define TIM0	((TIM_TypeDef *) TIM0_BASE)
-#define TIM1	((TIM_TypeDef *) TIM1_BASE)
-#define TIM2	((TIM_TypeDef *) TIM2_BASE)
-#define TIM3	((TIM_TypeDef *) TIM3_BASE)
-#define TIM4	((TIM_TypeDef *) TIM4_BASE)
-#define TIM5	((TIM_TypeDef *) TIM5_BASE)
-#define TIM6	((TIM_TypeDef *) TIM6_BASE)
-#define TIM7	((TIM_TypeDef *) TIM7_BASE)
+
+#define CLK_EN			((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
+#define CLK_GATE		((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
+#define MODULE_REST		((Module_Reset_Type*) MODULE_RESET_BASE)
+#define TIM0			((TIM_TypeDef *) TIM0_BASE)
+#define TIM1			((TIM_TypeDef *) TIM1_BASE)
+#define TIM2			((TIM_TypeDef *) TIM2_BASE)
+#define TIM3			((TIM_TypeDef *) TIM3_BASE)
+#define TIM4			((TIM_TypeDef *) TIM4_BASE)
+#define TIM5			((TIM_TypeDef *) TIM5_BASE)
+#define TIM6			((TIM_TypeDef *) TIM6_BASE)
+#define TIM7			((TIM_TypeDef *) TIM7_BASE)
 
 
 
@@ -381,9 +570,21 @@ typedef struct
 #define TIMER_RPT_Msk			(1U << TIMER_RPT_pos)			/*0x00000002*/	
 #define TIMER_RPT				TIMER_RPT_Msk					/*timer repeat operation. 0:one shot;1: repeation*/
 #define TIMER_TRIG_SRC_Pos		(2U)
-#define TIMER_TRIG_SRC_Msk		(7U << TIMER_TRIG_SRC_Pos)		/*0x0000001C*/
+#define TIMER_TRIG_SRC_Msk		(0xF << TIMER_TRIG_SRC_Pos)		/*0x0000003C*/
 #define TIMER_TRIG_SRC			TIMER_TRIG_SRC_Msk				/*timer triger source selection. 0:systemclock triger;1:stc triger;2:rtc_triger;3:external clk triger;4:in a group timer prescale triger;5:in a group timer triger*/
 
+
+
+
+/****************** TIM Instances : All supported instances *******************/
+#define IS_TIM_INSTANCE(INSTANCE)       (((INSTANCE) == TIM0)   || \
+										 ((INSTANCE) == TIM1)   || \
+                                         ((INSTANCE) == TIM2)   || \
+                                         ((INSTANCE) == TIM3)   || \
+                                         ((INSTANCE) == TIM4)   || \
+                                         ((INSTANCE) == TIM5)   || \
+                                         ((INSTANCE) == TIM6)   || \
+                                         ((INSTANCE) == TIM7))
 
 
 #ifdef __cplusplus

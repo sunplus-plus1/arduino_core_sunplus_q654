@@ -55,3 +55,31 @@ void HAL_ResumeTick(void)
 
 }
 
+void HAL_Module_Clock_enable(MODULE_ID_Type id, uint32_t enable)
+{
+	if (enable == 1)
+		CLK_EN->clock_enable[id/16] = (1<<(id%16)<<16)| (1<<(id%16));
+	else
+		CLK_EN->clock_enable[id/16] = (1<<(id%16)<<16)| (0<<(id%16));
+	
+}
+
+void HAL_Module_Clock_gate(MODULE_ID_Type id, uint32_t enable)
+{
+	if (enable == 1)
+		CLK_GATE->clock_gate_enable[id/16] = (1<<(id%16)<<16)| (1<<(id%16));
+	else
+		CLK_GATE->clock_gate_enable[id/16] = (1<<(id%16)<<16)| (0<<(id%16));
+	
+}
+
+
+void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable)
+{
+	if (enable == 1)
+		MODULE_REST->reset[id/16] = (1<<(id%16)<<16)| (1<<(id%16));
+	else
+		MODULE_REST->reset[id/16] = (1<<(id%16)<<16)| (0<<(id%16));
+	
+}
+

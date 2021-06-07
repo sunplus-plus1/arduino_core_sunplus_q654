@@ -35,7 +35,7 @@ typedef char                SINT8;
 #define PASS 				0
 #define PASS2				1
 #define FAIL				2
-#define SUCCESS			3
+//#define SUCCESS			3
 #define WAIT_FLAG_FAIL	4
 #define PACKAGE_216	5
 #define PACKAGE_216_PIN	6
