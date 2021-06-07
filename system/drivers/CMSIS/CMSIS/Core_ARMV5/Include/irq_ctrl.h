@@ -47,10 +47,10 @@ typedef void (*IRQHandler_t) (void);
 typedef int32_t IRQn_ID_t;
 #endif
 
-#define IRQ_MODE_TRIG_LEVEL         (0x00UL) ///< Trigger: level triggered interrupt
+#define IRQ_MODE_TRIG_LEVEL_HIGH    (0x00UL) ///< Trigger: high level triggered interrupt
 #define IRQ_MODE_TRIG_LEVEL_LOW     (0x01UL) ///< Trigger: low level triggered interrupt
-#define IRQ_MODE_TRIG_LEVEL_HIGH    (0x02UL) ///< Trigger: high level triggered interrupt
-#define IRQ_MODE_TRIG_EDGE_RISING          (0x04UL) ///< Trigger: edge triggered interrupt,Q628 only support rasing edge
+#define IRQ_MODE_TRIG_EDGE_RISING   (0x02UL) ///< Trigger: edge triggered interrupt,Q628 only support rasing edge
+#define IRQ_MODE_TRIG_EDGE_FALLING  (0x03UL)
 
 #define IRQ_TYPE_IRQ	0x1
 #define IRQ_TYPE_FIQ	0x0
@@ -105,10 +105,10 @@ IRQn_ID_t IRQ_GetActiveIRQ (void);
 IRQn_ID_t IRQ_GetActiveFIQ (void);
 
 
-/// Clear interrupt pending flag.
+/// Clear interrupt flag.
 /// \param[in]     irqn          interrupt ID number
 /// \return 0 on success, -1 on error.
-int32_t IRQ_ClearPending (IRQn_ID_t irqn);
+int32_t IRQ_Clear (IRQn_ID_t irqn);
 
 /// Set interrupt priority value.
 /// \param[in]     irqn          interrupt ID number

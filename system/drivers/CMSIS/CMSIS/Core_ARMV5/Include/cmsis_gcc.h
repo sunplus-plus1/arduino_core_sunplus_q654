@@ -693,7 +693,7 @@ __STATIC_FORCEINLINE void __enable_irq(void)
 	__ASM volatile (
 			  "STMDB  SP!, {R0} 	  \n\t"   /* Push R0.					  */
 			  "MRS	  R0, CPSR		  \n\t"   /* Get CPSR.					  */  
-			  "BIC	  R0, R0, #0xC0   \n\t"   /* Disable IRQ, FIQ.			  */  
+			  "BIC	  R0, R0, #0xC0   \n\t"   /* Enable IRQ, FIQ.			  */  
 			  "MSR	  CPSR, R0		  \n\t"   /* Write back modified value.   */
 			  "LDMIA  SP!, {R0} 		  "   /* Pop R0.					  */
 	  #ifdef THUMB_INTERWORK

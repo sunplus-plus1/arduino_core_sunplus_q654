@@ -40,12 +40,13 @@ ARDUNIO_HEADER += $(TOP)/cores/arduino
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
-LIB_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
+WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
 TEST_SRC = $(TOP)/libraries/test
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(LIB_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(TEST_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(TEST_SRC)
+
 
 CFLAGS += -MMD -O1
 CFLAGS += -nostdlib -fno-builtin
@@ -53,7 +54,7 @@ CFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
 CFLAGS += -fno-partial-inlining -fno-jump-tables
 CFLAGS += -static
 CFLAGS += -nodefaultlibs
-CFLAGS += -ffunction-sections -fdata-sections
+CFLAGS += -ffunction-sections -fdata-sections 
 CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
 CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
 CFLAGS += -I$(CMSIS_HEADER)
@@ -83,8 +84,8 @@ CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CXXFLAGS += -I$(ARDUNIO_HEADER)
 CXXFLAGS += -I$(TOP)/system/sp7021
 CXXFLAGS += -I$(TOP)/variants/sp7021_evb
-
-
+CFLAGS += -I$(ARDUINO_HEADER)
+CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
 #-mthumb -mthumb-interwork
 
 SPI_ALL := spi_all.bin
@@ -103,13 +104,20 @@ CSOURCES += $(COMMON_DIR)/common.c
 # interrupt
 CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
-CSOURCES += sp7021_hal_irq_ctrl.c 
-CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
+#CSOURCES += sp7021_hal_irq_ctrl.c 
+#CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
+CSOURCES += sunplus_def.c
+CXXSOURCES += WInterrupts.cpp interrupt.cpp
 CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
 
 
+# HAL
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
+
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
+#CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
+#CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
 CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
@@ -126,7 +134,7 @@ DEPS = $(OBJS:.o=.d)
 
 .PHONY: clean all
 
-all: $(BIN)/$(SPI_ALL)
+all: $(BIN)/$(SPI_ALL) $(BIN)/$(TARGET).dis
 
 $(BIN)/$(TARGET).bin: $(BIN)/$(TARGET)
 	$P $(OBJCOPY) -O binary -S $< $@
@@ -153,6 +161,7 @@ $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 %.o: %.S
 	$(Pecho) "  CC   $<"
 	$P $(CC) $(CFLAGS) -c -o $@ $<
+
 
 %.o: %.c*
 	$(Pecho) "  CC   $<"
