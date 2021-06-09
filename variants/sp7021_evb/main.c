@@ -7,7 +7,11 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
+<<<<<<< HEAD
 #include "icm.h"
+=======
+#include "HardwareTimer.h"
+>>>>>>> 639c705d8b69b29497d141cec75a57cb3e610cf7
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -320,6 +324,7 @@ int main(void)
 	/*initial interrupt vector table*/
 	int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
 
+
 	IRQ_Initialize();
 
 #ifdef TIMER_TEST
@@ -341,8 +346,25 @@ int main(void)
 	arduino_intr_test();
 #endif
 
+	
 
 	printf("NonOS boot OK!!!\n");
+	
+	extern void loop(void);
+	loop();
+	//task_dbg();
+#if 0
+    GPIO_F_SET(21,1);
+    GPIO_M_SET(21,1);
+    GPIO_E_SET(21,1);
+    GPIO_O_SET(21,1);
+#endif
+	
+	
+	
+
+
+	//Marlin_main();
 	while(1);
 
 	//Never get here

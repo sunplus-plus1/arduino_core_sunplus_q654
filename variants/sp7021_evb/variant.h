@@ -1,4 +1,4 @@
-void SystemClock_Config(void)
+void SystemClock_Config(void);
 
 
 

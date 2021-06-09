@@ -4,6 +4,8 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
+#include "sp7021_hal_conf.h"
+#include "sp7021_arm926.h"
 
 
 typedef enum

@@ -514,6 +514,8 @@ __STATIC_FORCEINLINE uint8_t __log2_up(uint32_t n)
 */
 __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t maint)
 {
+
+#if 0
   uint32_t Dummy;
   uint32_t ccsidr;
   uint32_t num_sets;
@@ -549,6 +551,7 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
     }
   }
   __DMB();
+#endif  
 }
 
 /** \brief  Clean and Invalidate the entire data or unified cache
@@ -556,6 +559,8 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
 * \param [in] op 0 - invalidate, 1 - clean, otherwise - invalidate and clean
 */
 __STATIC_FORCEINLINE void L1C_CleanInvalidateCache(uint32_t op) {
+
+#if 0
   uint32_t clidr;
   uint32_t cache_type;
   clidr =  __get_CLIDR();
@@ -567,6 +572,7 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateCache(uint32_t op) {
       __L1C_MaintainDCacheSetWay(i, op);
     }
   }
+#endif 
 }
 
 /** \brief  Clean and Invalidate the entire data or unified cache

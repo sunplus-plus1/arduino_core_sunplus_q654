@@ -37,6 +37,8 @@
 #define IRQHANDLER_T
 /// Interrupt handler data type
 typedef void (*IRQHandler_t) (void);
+
+
 #endif
 
 #ifndef IRQN_ID_T
