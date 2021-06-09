@@ -24,11 +24,6 @@
 #include <wiring_constants.h>
 
 #ifdef __cplusplus
-//  #include <functional>
-//
-//  typedef std::function<void(void)> callback_function_t;
-//  void attachInterrupt1(uint32_t pin, callback_function_t callback, uint32_t mode);
-
 extern "C"{
 #endif
 

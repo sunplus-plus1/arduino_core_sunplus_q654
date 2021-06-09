@@ -7,11 +7,10 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
-<<<<<<< HEAD
+
 #include "icm.h"
-=======
+
 #include "HardwareTimer.h"
->>>>>>> 639c705d8b69b29497d141cec75a57cb3e610cf7
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
