@@ -263,7 +263,8 @@ typedef struct{
    __IOM uint32_t pinmux_net[11];             /*!< \brief ethernet pinmux config */
    __IOM uint32_t pinmux_sdio[3];             /*!< \brief sdio pinmux config */
    __IOM uint32_t pinmux_pwm[4];              /*!< \brief pwm pinmux config */
-   __IOM uint32_t pinmux_icm[4];              /*!< \brief icm pinmux config */
+   __IOM uint32_t pinmux_icm_data[2];         /*!< \brief icm data pinmux config */
+   __IOM uint32_t pinmux_icm_clk[2];          /*!< \brief icm clk pinmux config */
    __IOM uint32_t pinmux_spim[10];            /*!< \brief spi master pinmux config */
 }GROUP2_Type;
 
@@ -292,7 +293,7 @@ typedef struct
   __IOM uint32_t dsp_mask[7];		   /*!< \brief  mask dsp interrupt bit 0:masked(default) 1:pass */
   RESERVED(2[3], uint32_t)
   __IM uint32_t group; 
-}  IRQ_Ctrl_Type;
+}IRQ_Ctrl_Type;
 
 typedef struct{
 	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
@@ -336,7 +337,7 @@ typedef struct
 
 /*APB RBUS register group*/
 #define MOON0_GROUP_NO 		(0)
-#define MOON1_GROUP_NO		(1)
+#define MOON1_GROUP_NO     (1)
 #define MOON2_GROUP_NO		(2)
 #define MOON3_GROUP_NO		(3)
 #define MOON4_GROUP_NO		(4)

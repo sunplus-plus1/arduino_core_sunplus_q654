@@ -7,6 +7,7 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
+#include "icm.h"
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -261,6 +262,45 @@ void timer_test()
 }
 #endif
 
+#if 0
+typedef struct
+{
+	volatile uint32_t cfg0;
+	volatile uint32_t b;
+	volatile uint32_t c;
+}ICM_CTRL_REG;
+//9C002880
+#define SP_ICM0_REG ((ICM_CTRL_REG *) 0x9C002880)
+
+typedef struct
+{
+	ICM_CTRL_REG *instance;
+}ICM_InitTypeDef;
+
+HAL_TEST(ICM_InitTypeDef *test)
+{
+	//printf("entry\n");
+	int a = test->instance->cfg0;
+	//printf("exit\n");
+}
+
+void icm_test()
+{
+	printf("icm Build @%s, %s\n", __DATE__, __TIME__);
+	ICM_InitTypeDef test;
+	test.instance = SP_ICM0_REG;
+	printf(">>>test.instance\n");
+	test.instance->cfg0 = 0x01c00100;
+	printf("(%d)cfg0=%x\n", __LINE__, test.instance->cfg0);
+	test.instance->cfg0 = 0x01c00140;
+	printf("(%d)cfg0=%x\n", __LINE__, test.instance->cfg0);
+	test.instance->cfg0 = 0x01c00180;
+	printf("(%d)cfg0=%x\n", __LINE__, test.instance->cfg0);
+
+	HAL_TEST(&test);
+}
+#endif
+
 int main(void)
 {
 #if 0 // MALLOC_TEST
@@ -286,6 +326,10 @@ int main(void)
 	timer_test_init();
 	timer_test();
 #endif
+	//icm_test();
+
+
+	//ICM_Initialization();
 
 	//cbdma_test_init();
 	uart_isr_init();

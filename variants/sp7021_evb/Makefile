@@ -81,7 +81,7 @@ CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
 
 # HAL
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
 #CSOURCES += $(ARDUINO_SRC)/WInterrupts.c
 
 # ardunio C source

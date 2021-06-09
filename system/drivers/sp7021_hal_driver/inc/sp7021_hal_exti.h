@@ -1,5 +1,5 @@
 #ifndef __SP7021_HAL_EXTI_H
-#define __SP7021_HAL_ExTI_H
+#define __SP7021_HAL_EXTI_H
 
 #ifdef __cplusplus
 	extern "C" {
@@ -9,8 +9,8 @@
 #include "sp7021_hal_gpio.h"
 #include "sp7021_hal_irq_ctrl.h"
 
-#define EXTI(X) (RF_GRP(3, (24+(X/2))))
-#define REG_EXTI(X) (*((volatile unsigned int *)EXTI(X)))
+#define REG_EXTI(X) (RF_GRP(3, (24+(X/2))))
+#define REG_VAL_EXTI(X) (*((volatile unsigned int *)REG_EXTI(X)))
 
 #define RF_MASK_V(_mask, _val)          (((_mask) << 16) | (_val))
 
