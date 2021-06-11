@@ -23,14 +23,6 @@
 
 #define EXTI_IRQ IRQ_TYPE_IRQ
 
-#ifdef __cplusplus
-
-//	#include <functional>
-//	typedef std::function<void(void)> callback_function_t;
-//	void sunplus_interrupt_enable(uint32_t id, callback_function_t callback, uint32_t mode);
-
-#endif
-
 void sunplus_interrupt_enable(uint32_t id, void (*callback)(void), uint32_t mode);
 void sunplus_interrupt_disable(uint32_t id);
 
