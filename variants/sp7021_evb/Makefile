@@ -112,14 +112,9 @@ CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
 
 
 # HAL
-<<<<<<< HEAD
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(WRAPPER_SRC)))
-=======
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
-#CSOURCES += $(ARDUINO_SRC)/WInterrupts.c
 
->>>>>>> 26e27b5a6164547d8264cbdfcc2d162e3bd2c1c1
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
+
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
 #CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp

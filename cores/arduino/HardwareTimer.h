@@ -59,6 +59,7 @@ class HardwareTimer {
 		void pause(void);  
 		void resume(void);
 		void setClockSource(CLK_SRC src=CLK_SYS_SRC);
+		uint32_t getClockSource(void);
 	 	void setPrescaleFactor(uint32_t prescaler);
 		uint32_t getPrescaleFactor(void);
 		void setCount(uint32_t val, TimerFormat_t format = TICK_FORMAT);
