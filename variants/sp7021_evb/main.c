@@ -351,6 +351,8 @@ int main(void)
 	
 	extern void loop(void);
 	loop();
+	void uart_test(void);
+	uart_test();
 	//task_dbg();
 #if 0
     GPIO_F_SET(21,1);

@@ -106,9 +106,10 @@ CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
-CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c
+CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
-CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
+CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp
 
 
 # HAL
