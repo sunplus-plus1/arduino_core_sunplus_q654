@@ -1,5 +1,4 @@
-#include "sp70xx.h"
-#include "sp7021_hal.h"
+
 #include "sp7021_hal_tim.h"
 
 
@@ -182,15 +181,18 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 
-	 if (htim->State == HAL_TIM_STATE_RESET)
-	 {
+	if (htim->State == HAL_TIM_STATE_RESET)
+	{
 		htim->Lock = HAL_UNLOCKED;
 		irqn = HAL_TIM_GetIRQ(htim->Instance);
 		IRQ_SetHandler(irqn, htim->IrqHandle);
 		IRQ_Enable(irqn);
-	 }
+	}
 	htim->State = HAL_TIM_STATE_BUSY;
-
+	htim->Instance->control = 0;
+	htim->Instance->prescale_val = 0;
+	htim->Instance->reload_val = 0;
+	htim->Instance->counter_val = 0;
 	TIM_SetConfig(htim->Instance, &htim->Init);
 	
 	/* Initialize the TIM state*/

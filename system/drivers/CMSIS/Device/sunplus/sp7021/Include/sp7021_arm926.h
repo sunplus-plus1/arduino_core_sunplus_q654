@@ -242,7 +242,7 @@ typedef enum {
 	RESERVED2		= 17, 
 	C_CHIP			= 18,							/* !< For C Chip module ID */
 	RESERVED3		= 19, 									
-	STC0			= 20, 							/* !< Standard time clock 0 moudle ID */
+	STC				= 20, 							/* !< Standard time clock 0 moudle ID */
 	STC_AV0			= 21, 							/* !< standard time clock AV0 moudle ID */
 	STC_AV1			= 22, 							/* !< standard time clock AV1 moudle ID */
 	STC_AV2			= 23, 							/* !< standard time clock AV2 module ID */
@@ -472,14 +472,22 @@ typedef struct
 
 typedef struct{
 	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
-	__IOM uint32_t stc_16_31;				 /*!< \brief  standard time clock counter, 16~31 bit */
+	__IOM uint32_t stc_31_16;				 /*!< \brief  standard time clock counter, 16~31 bit */
 	__IOM uint32_t stc_64;					 /*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
 	__IOM uint32_t stc_prescale_val;		
 	RESERVED(0[3], uint32_t)
 	__IOM uint32_t stc_config;	
 	RESERVED(1[6], uint32_t)
 	__IOM uint32_t stc_47_32;	
-	__IOM uint32_t stc_48_63;
+	__IOM uint32_t stc_63_48;
+	RESERVED(2[8], uint32_t)
+	__IOM uint32_t stcl_15_0;	
+	__IOM uint32_t stcl_31_16;
+	__IOM uint32_t stcl_32;
+	__IOM uint32_t atc_15_0;
+	__IOM uint32_t atc_31_16;
+	__IOM uint32_t atc_33_32;
+	RESERVED(3[2], uint32_t)
 }STC_TypeDef;
 
 
@@ -556,6 +564,12 @@ typedef struct
 #define TIM7_BASE RF_GRP(99, 20)
 
 
+/*Standard Time Clock (STC)*/
+#define STC0_BASE  RF_GRP(12, 0)
+#define STC1_BASE  RF_GRP(96, 0)
+#define STC2_BASE  RF_GRP(97, 0)
+#define STC3_BASE  RF_GRP(99, 0)
+
 #define CLK_EN			((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
 #define CLK_GATE		((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
 #define MODULE_REST		((Module_Reset_Type*) MODULE_RESET_BASE)
@@ -567,6 +581,13 @@ typedef struct
 #define TIM5			((TIM_TypeDef *) TIM5_BASE)
 #define TIM6			((TIM_TypeDef *) TIM6_BASE)
 #define TIM7			((TIM_TypeDef *) TIM7_BASE)
+
+#define STC0		((STC_TypeDef *)STC0_BASE)
+#define STC1		((STC_TypeDef *)STC1_BASE)
+#define STC2		((STC_TypeDef *)STC2_BASE)
+#define STC3		((STC_TypeDef *)STC3_BASE)
+
+
 
 
 
@@ -581,7 +602,7 @@ typedef struct
 /********************  Bit definition for STC register  ********************/
 
 #define STC_PRESCALER_Pos 	(0U)
-#define STC_PRESCALER_Msk	(0x7FFU << STC_PRESCALER_Pos) 	/*0x000007FF*/
+#define STC_PRESCALER_Msk	(0x7FFFU << STC_PRESCALER_Pos) 	/*0x000007FF*/
 #define STC_PRESCALER		STC_PRESCALER_Msk				/*STC prescale value */
 #define STC_TRIG_SRC_Pos 	(15U)							
 #define STC_TRIG_SRC_Msk	(1U << STC_TRIG_SRC_Pos)		/*0x00008000*/
@@ -589,6 +610,12 @@ typedef struct
 #define STC_EXT_DIV_Pos		(0U)	
 #define STC_EXT_DIV_Msk		(0xFFU << STC_EXT_DIV_Pos)		/*0x000000FF*/
 #define STC_EXT_DIV			(STC_EXT_DIV_Msk)				/*The external clock divder for STC*/		
+
+/****************** STC Instances : All supported instances *******************/
+#define IS_STC_INSTANCE(INSTANCE)       (((INSTANCE) == STC0)   || \
+										 ((INSTANCE) == STC1)   || \
+                                         ((INSTANCE) == STC2)   || \
+                                         ((INSTANCE) == STC3))
 
 
 /******************************************************************************/

@@ -106,14 +106,14 @@ CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
-CSOURCES += sunplus_def.c
+CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
 CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
 
 
 # HAL
 CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC)))
-
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(WRAPPER_SRC)))
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
 #CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp

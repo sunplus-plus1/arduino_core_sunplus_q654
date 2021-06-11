@@ -8,6 +8,8 @@ extern "C" {
 #include "sp7021_arm926.h"
 #include "sp7021_hal_def.h"
 #include "irq_ctrl.h"
+#include "sp70xx.h"
+#include "sp7021_hal.h"
 
 typedef enum {
 	CLK_SYS_SRC = 0,				 /* !< System clock is tiger source */

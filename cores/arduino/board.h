@@ -5,6 +5,7 @@
  * Core and peripherals registers definitions
 */
 
+#include "clock.h"
 
 
 #ifdef __cplusplus

@@ -28,7 +28,7 @@ typedef enum
 typedef enum 
 {
 	ERROR = 0,
-	//SUCCESS = !ERROR
+	SUCCESS = !ERROR
 } ErrorStatus;
 
 #define SET_BIT(REG, BIT)     ((REG) |= (BIT))

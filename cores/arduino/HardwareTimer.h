@@ -58,11 +58,14 @@ class HardwareTimer {
 		~HardwareTimer(void);
 		void pause(void);  
 		void resume(void);
+		void setClockSource(CLK_SRC src=CLK_SYS_SRC);
 	 	void setPrescaleFactor(uint32_t prescaler);
 		uint32_t getPrescaleFactor(void);
 		void setCount(uint32_t val, TimerFormat_t format = TICK_FORMAT);
 		uint32_t getCount(TimerFormat_t format = TICK_FORMAT); 
 		void setPreloadEnable(bool value);
+		void setOverflow(uint32_t val, TimerFormat_t format = TICK_FORMAT); // set AutoReload register depending on format provided
+		uint32_t getOverflow(TimerFormat_t format = TICK_FORMAT); // return overflow depending on format provided
 		//void attachInterrupt(callback_function_t callback); 
 		void attachInterrupt(void (*callback)(void));
 		void detachInterrupt(); 
