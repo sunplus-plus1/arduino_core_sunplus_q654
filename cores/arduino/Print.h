@@ -26,6 +26,8 @@
 #include "WString.h"
 #include "Printable.h"
 
+#include "uart.h"
+
 #define DEC 10
 #define HEX 16
 #define OCT 8
@@ -55,6 +57,7 @@ class Print {
     }
 
     virtual size_t write(uint8_t) = 0;
+    virtual size_t writeByteS(const uint8_t*,size_t) = 0;
     size_t write(const char *str)
     {
       if (str == NULL) {
