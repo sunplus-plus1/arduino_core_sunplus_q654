@@ -298,6 +298,9 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
 HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
+HAL_StatusTypeDef HAL_UART_AbortTransmit(UART_HandleTypeDef *huart);
+HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart);
+HAL_StatusTypeDef HAL_UART_Abort(UART_HandleTypeDef *huart);
 HAL_StatusTypeDef HAL_UART_Config_DMA_Buf(uint32_t* dma_start_addr);
 uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart);
 

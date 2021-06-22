@@ -724,6 +724,39 @@ typedef struct {
 }UART_TxGdma;
 
 
+typedef struct{
+   // SPI_MASTER
+   __IOM uint32_t mst_tx_data_addr;
+   __IOM uint32_t mst_tx_data_3_2_1_0;
+   __IOM uint32_t mst_tx_data_7_6_5_4;
+   __IOM uint32_t mst_tx_data_11_10_9_8;
+   __IOM uint32_t mst_tx_data_15_14_13_12;
+   RESERVED(0[4], uint32_t);
+   __IOM uint32_t mst_rx_data_3_2_1_0;
+   __IOM uint32_t mst_rx_data_7_6_5_4;
+   __IOM uint32_t mst_rx_data_11_10_9_8;
+   __IOM uint32_t mst_rx_data_15_14_13_12;
+   __IOM uint32_t fifo_data;
+   __IOM uint32_t spi_status;
+   __IOM uint32_t spi_config;
+  RESERVED(1[1], uint32_t);
+   __IOM uint32_t spi_ctl_clk_sel;
+   __IOM uint32_t spi_byte_no;
+   __IOM uint32_t spi_int_busy;
+   __IOM uint32_t spi_dma_ctrl;
+   __IOM uint32_t spi_dma_length;
+   __IOM uint32_t spi_dma_addr;
+   RESERVED(2[1], uint32_t);
+   __IOM uint32_t spi_dma_status;
+   RESERVED(3[1], uint32_t);
+   __IOM uint32_t uart_dma_ctrl;
+   RESERVED(4[1], uint32_t);
+   __IOM uint32_t spi_mst_debug_sel;
+   __IOM uint32_t spi_combo_debug_sel;
+   __IOM uint32_t spi_extra_cycle;
+   __IOM uint32_t spi_dma_data_rdy;
+}SPI_TypeDef;
+
 
 #define STATIC_ASSERT(b) extern int _static_assert[b ? 1 : -1]
 
@@ -841,8 +874,8 @@ typedef struct {
 #define MOON3_GROUP_BASE    RF_GRP(3,0)
 #define PINMUX_3_CFG    ((GROUP3_Type*) MOON3_GROUP_BASE)
 
-#define PWM_BASE     RF_GRP(244, 0)
-#define PWM_CTRL_REG ((volatile PWM_TypeDef *)PWM_BASE)
+#define PWM_BASE            RF_GRP(244, 0)
+#define PWM_CTRL_REG    ((PWM_TypeDef *)PWM_BASE)
 
 
 /*TIMER0 & TIMER1 is a group*/
@@ -918,6 +951,18 @@ typedef struct {
 
 #define SP_UART_TXGDMA0_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA0_BASE)
 #define SP_UART_TXGDMA1_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA1_BASE)
+
+
+#define SPI0_BASE      RF_GRP(91, 0)
+#define SPI1_BASE      RF_GRP(489, 0)
+#define SPI2_BASE      RF_GRP(492, 0)
+#define SPI3_BASE      RF_GRP(495, 0)
+
+
+#define SPI0        ((SPI_TypeDef *)SPI0_BASE)
+#define SPI1        ((SPI_TypeDef *)SPI1_BASE)
+#define SPI2        ((SPI_TypeDef *)SPI2_BASE)
+#define SPI3        ((SPI_TypeDef *)SPI3_BASE)
 
 
 /*
