@@ -852,6 +852,9 @@ HAL_StatusTypeDef HAL_UART_Config_DMA_Buf(uint32_t* dma_start_addr)
 
 HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 {
+
+	uart_assert_param(IS_UART_INSTANCE(huart->Instance));
+	
 	/* step 1: config pinmux */
 	if(huart->Instance == SP_UART0)
 	{
@@ -909,6 +912,8 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 
   /* Check the parameters */
   uart_assert_param(huart->Instance);
+  uart_assert_param(IS_UART_INSTANCE(huart->Instance));
+
   if(huart->txdma_buf == g_dma_buffer[0].tx_buffer)
   {
   	memset(&g_dma_buffer[0],0,sizeof(DMA_Buffer_t));

@@ -45,34 +45,8 @@ typedef enum
 
 #define IS_GPIO_PIN_ACTION(pin)   gpio_first_val_get(pin)
 
-
 #define gpio_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR]: file %s on line %d\r\n",__FUNCTION__, __LINE__)))
 
-
-struct g6_regs {
-  unsigned int sft_cfg[32];
-};
-
-struct g7_regs {
-  unsigned int sft_cfg[32];
-};
-
-struct g101_regs {
-  unsigned int sft_cfg[32];
-};
-
-#define G6_REG ((volatile struct g6_regs *)RF_GRP(6, 0))
-#define G7_REG ((volatile struct g7_regs *)RF_GRP(7, 0))
-#define G101_REG ((volatile struct g101_regs *)RF_GRP(101, 0))
-
-#define GPIO_FIRST(X)   (RF_GRP(101, (25+X)))
-#define GPIO_MASTER(X)  (RF_GRP(6, (0+X)))
-#define GPIO_OE(X)      (RF_GRP(6, (8+X)))
-#define GPIO_OUT(X)     (RF_GRP(6, (16+X)))
-#define GPIO_IN(X)      (RF_GRP(6, (24+X)))
-#define GPIO_I_INV(X)   (RF_GRP(7, (0+X)))
-#define GPIO_O_INV(X)   (RF_GRP(7, (8+X)))
-#define GPIO_OD(X)      (RF_GRP(7, (16+X)))
 
 void              HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init);
 void              HAL_GPIO_DeInit(uint16_t GPIO_Pin);

@@ -65,13 +65,15 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 	  return HAL_ERROR;
 	}
 
+	assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
+
     assert_param(IS_SPI_CPOL(hspi->Init.CLKPolarity));
     assert_param(IS_SPI_CPHA(hspi->Init.CLKPhase));
 	assert_param(IS_SPI_FIRST_BIT(hspi->Init.FirstBit));
-	assert_param(IS_VALID_FREQ(hspi->Init.freq));
+	assert_param(IS_VALID_FREQ(hspi->Init.spiclk));
 
 	/*  spi config set */
-	div = SPI_CLK_RATE / hspi->Init.freq ;
+	div = SPI_CLK_RATE / hspi->Init.spiclk ;
 	div = (div / 2) - 1;
 	
 	/* config full duplex mode */
@@ -103,6 +105,26 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
   	return HAL_OK;
 }
 
+HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
+{
+  if (hspi == NULL)
+  {
+    return HAL_ERROR;
+  }
+
+  assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
+
+  hspi->Instance->spi_config &= CLEAN_FLUG_MASK;
+  /* reset regist ,clear fifo data */
+  hspi->Instance->spi_status |= SPI_SW_RST;
+
+  hspi->ErrorCode = HAL_SPI_ERROR_NONE;
+  hspi->State = HAL_SPI_STATE_RESET;
+
+  __HAL_UNLOCK(hspi);
+
+  return HAL_OK;
+}
 
 HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
@@ -461,7 +483,7 @@ void HAL_SPI_IRQHandler(void *arg)
 
 	if ( fd_status & RX_FULL_FLAG) rx_cnt = SPI_FIFO_MAX_LENGTH;
 
-	tx_cnt = min( tx_len - hspi->TxXferCount,SPI_FIFO_MAX_LENGTH - tx_cnt);
+	tx_cnt = (tx_len - hspi->TxXferCount)<(SPI_FIFO_MAX_LENGTH - tx_cnt)?(tx_len - hspi->TxXferCount):(SPI_FIFO_MAX_LENGTH - tx_cnt);
 
 	//DBG_INF( "fd_st=0x%x rx_c:%d tx_c:%d tx_l:%d", fd_status, rx_cnt, tx_cnt, tx_len);
 

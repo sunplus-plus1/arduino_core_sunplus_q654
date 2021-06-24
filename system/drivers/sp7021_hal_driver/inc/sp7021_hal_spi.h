@@ -28,7 +28,7 @@ typedef enum
 
 typedef struct
 {
-  uint32_t freq;
+  uint32_t spiclk;
   uint32_t CLKPolarity;
   uint32_t CLKPhase;
   uint32_t FirstBit;
@@ -65,7 +65,6 @@ typedef struct __SPI_HandleTypeDef
 
 } SPI_HandleTypeDef;
 
-#define min(X,Y) ((X) < (Y) ? (X) : (Y))
 
 #define HAL_SPI_ERROR_NONE              (0x00000000U)
 #define HAL_SPI_ERROR_MODF              (0x00000001U)
@@ -104,57 +103,14 @@ typedef struct __SPI_HandleTypeDef
 
 /* SPI MST STATUS */
 
-#define GET_LEN(x)     ((x>>24) & 0xFF)
-#define GET_TX_LEN(x)  ((x>>16) & 0xFF)
-#define GET_RX_CNT(x)  ((x>>12) & 0x0F)
-#define GET_TX_CNT(x)  ((x>>8)  & 0x0F)
-
-#define TOTAL_LENGTH(x)        (x<<24)
-#define TX_LENGTH(x)           (x<<16)
-#define RX_CNT                 (0x0F<<12)
-#define TX_CNT                 (0x0F<<12)
-#define SPI_BUSY               (1<<7)
-#define FINISH_FLAG            (1<<6)
-#define RX_FULL_FLAG           (1<<5)
-#define RX_EMP_FLAG            (1<<4)
-#define TX_FULL_FLAG           (1<<3)
-#define TX_EMP_FLAG            (1<<2)
-#define SPI_SW_RST             (1<<1)
-#define SPI_START_FD           (1<<0)
 
 #define CLEAN_FLUG_MASK (~0xF800)
-
-
-/* SPI MST CONFIG */
-#define CLK_DIVIDER(x)         (x<<16)
-#define FINISH_FLAG_MASK       (1<<15)
-#define RX_FULL_FLAG_MASK      (1<<14)
-#define RX_EMP_FLAG_MASK       (1<<13)
-#define TX_FULL_FLAG_MASK      (1<<12)
-#define TX_EMP_FLAG_MASK       (1<<11)
-#define WRITE_BYTE(x)          (x<<9)
-#define READ_BYTE(x)           (x<<7)
-#define FD_SEL                 (1<<6)
-#define CS_SEL                 (1<<5)
-#define LSB_SEL                (1<<4)
-#define DELAY_ENABLE           (1<<3)
-#define CPHA_W                 (1<<2)
-#define CPHA_R                 (1<<1)
-#define CPOL                   (1<<0)
-
-#define CLEAR_MASTER_INT (1<<6)
 
 #define CLEAR_IRQ_MASK         (~0xF800)
 #define CLEAN_RW_BYTE          (~0x780)
 #define CLEAN_SPI_MODE         (~0x7)
 
-#define SPI_FD_INTR            (1<<7)
-#define SPI_MASTER_NUM         (4)
-#define SPI_MSG_DATA_SIZE      (255)
-
 #define SPI_CLK_RATE           202500000
-#define SPI_INIT_FREQ          5000000
-#define SPI_MAX_FREQ           25000000
 
 
 #define IS_SPI_CPOL(__CPOL__)      (((__CPOL__) == SPI_POLARITY_LOW) || \
@@ -168,6 +124,9 @@ typedef struct __SPI_HandleTypeDef
 
 #define IS_VALID_FREQ(__freq__)  (((__freq__) >= SPI_FREQ_MIN) && \
                                     ((__freq__) <= SPI_FREQ_MAX))
+
+HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi);
+HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi);
 
 HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);

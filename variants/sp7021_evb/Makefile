@@ -41,11 +41,12 @@ CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
 WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
+SPI_SRC = $(TOP)/libraries/SPI/src
 TEST_SRC = $(TOP)/libraries/test
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(TEST_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(TEST_SRC)
 
 
 CFLAGS += -MMD -O1
@@ -106,15 +107,15 @@ CSOURCES += $(COMMON_DIR)/sp_interrupt.c
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
-CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c
+CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c wiring_digital.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
 CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp
-CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp
 
 
 # HAL
 
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility))
 
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c

@@ -916,6 +916,17 @@ typedef struct {
 #define STC3		((STC_TypeDef *)STC3_BASE)
 
 
+/*  gpio register */
+
+#define GPIO_FIRST(X)   (RF_GRP(101, (25+X)))
+#define GPIO_MASTER(X)  (RF_GRP(6, (0+X)))
+#define GPIO_OE(X)      (RF_GRP(6, (8+X)))
+#define GPIO_OUT(X)     (RF_GRP(6, (16+X)))
+#define GPIO_IN(X)      (RF_GRP(6, (24+X)))
+#define GPIO_I_INV(X)   (RF_GRP(7, (0+X)))
+#define GPIO_O_INV(X)   (RF_GRP(7, (8+X)))
+#define GPIO_OD(X)      (RF_GRP(7, (16+X)))
+
 
 /* uart register */
 
@@ -1024,6 +1035,45 @@ UART LCR register BIT
 
 
 
+/* SPI MST CONFIG */
+#define CLK_DIVIDER(x)         (x<<16)
+#define FINISH_FLAG_MASK       (1<<15)
+#define RX_FULL_FLAG_MASK      (1<<14)
+#define RX_EMP_FLAG_MASK       (1<<13)
+#define TX_FULL_FLAG_MASK      (1<<12)
+#define TX_EMP_FLAG_MASK       (1<<11)
+#define WRITE_BYTE(x)          (x<<9)
+#define READ_BYTE(x)           (x<<7)
+#define FD_SEL                 (1<<6)
+#define CS_SEL                 (1<<5)
+#define LSB_SEL                (1<<4)
+#define DELAY_ENABLE           (1<<3)
+#define CPHA_W                 (1<<2)
+#define CPHA_R                 (1<<1)
+#define CPOL                   (1<<0)
+
+#define CLEAR_MASTER_INT      (1<<6)
+
+#define GET_LEN(x)            ((x>>24) & 0xFF)
+#define GET_TX_LEN(x)         ((x>>16) & 0xFF)
+#define GET_RX_CNT(x)         ((x>>12) & 0x0F)
+#define GET_TX_CNT(x)         ((x>>8)  & 0x0F)
+
+#define TOTAL_LENGTH(x)        (x<<24)
+#define TX_LENGTH(x)           (x<<16)
+#define RX_CNT                 (0x0F<<12)
+#define TX_CNT                 (0x0F<<12)
+#define SPI_BUSY               (1<<7)
+#define FINISH_FLAG            (1<<6)
+#define RX_FULL_FLAG           (1<<5)
+#define RX_EMP_FLAG            (1<<4)
+#define TX_FULL_FLAG           (1<<3)
+#define TX_EMP_FLAG            (1<<2)
+#define SPI_SW_RST             (1<<1)
+#define SPI_START_FD           (1<<0)
+
+#define SPI_TOTAL_SIZE         TOTAL_LENGTH(0xFF)     
+#define SPI_TX_SIZE            TX_LENGTH(0xFF)         
 
 /******************************************************************************/
 /*                                                                            */
@@ -1046,10 +1096,20 @@ UART LCR register BIT
 
 /****************** STC Instances : All supported instances *******************/
 #define IS_STC_INSTANCE(INSTANCE)       (((INSTANCE) == STC0)   || \
-										 ((INSTANCE) == STC1)   || \
+										           ((INSTANCE) == STC1)   || \
                                          ((INSTANCE) == STC2)   || \
                                          ((INSTANCE) == STC3))
 
+#define IS_SPI_ALL_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SPI0) || \
+                                           ((__INSTANCE__) == SPI1) || \
+                                           ((__INSTANCE__) == SPI2) || \
+                                           ((__INSTANCE__) == SPI3))
+
+#define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART0) || \
+                                    ((__INSTANCE__) == SP_UART1) || \
+                                    ((__INSTANCE__) == SP_UART2) || \
+                                    ((__INSTANCE__) == SP_UART3)  || \
+                                    ((__INSTANCE__) == SP_UART4))
 
 /******************************************************************************/
 /*                                                                            */

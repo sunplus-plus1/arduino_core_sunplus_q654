@@ -34,7 +34,8 @@ class HardwareSerial : public Stream {
 
   public:
     HardwareSerial(uint32_t _rx, uint32_t _tx);
-    HardwareSerial(UART_CTRL_Type* reg_base);
+    HardwareSerial(void);
+    HardwareSerial(void* peripheral);
     void begin(unsigned long baud);
     void end();
     virtual int available(void);
@@ -71,6 +72,7 @@ class HardwareSerial : public Stream {
     bool _rx_enabled;
     uint8_t _config;
     unsigned long _baud;
+    void init(uint32_t _rx, uint32_t _tx);
 
 };
 
