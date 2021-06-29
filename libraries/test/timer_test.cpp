@@ -40,10 +40,15 @@ void loop(void)
 	timer0->setOverflow(10000-1, TICK_FORMAT);
 	//timer0->setCount(999, TICK_FORMAT);
 	printf("counter = %d\n", timer0->getCount(TICK_FORMAT));
+#if 1
 	timer0->attachInterrupt(tim0_callback);
 	start = (uint32_t)HAL_GetTick();
 	timer0->resume();
  	//HAL_lreg(12);
+#else // openamp echo test
+	extern int rpmsg_echo_main(int argc, char *argv[]);
+	rpmsg_echo_main(0, NULL);
+#endif
 }
 
 

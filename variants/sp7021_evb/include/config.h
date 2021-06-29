@@ -1,3 +1,5 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
 #define REG_BASE                0x9c000000
 #define RGST_BASE               REG_BASE
@@ -7,3 +9,5 @@
 
 //FIXME
 //#define PLATFORM_3502  // enable to build 3502-compatible version
+
+#endif // __CONFIG_H__

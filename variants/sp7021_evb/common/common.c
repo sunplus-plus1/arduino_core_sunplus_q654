@@ -1,5 +1,15 @@
 #include <common_all.h>
-
+#if 1
+void __sync_synchronize(void)
+{
+}
+void __atomic_compare_exchange_1(void)
+{
+}
+void __atomic_compare_exchange_4(void)
+{
+}
+#endif
 #if 0
 int memcmp(UINT8 *s1, UINT8 *s2, int n)
 {
@@ -72,13 +82,7 @@ int _getpid(void)
 #ifdef USE_PSPRINTF
 char linebuf[300];
 #else
-int _write(int fd, const void *buf, int count)
-{
-	int ret = count;
-	while (count--) UART_putc_nl(*(char *)(buf++));
-	return ret;
-}
-
+#if 0
 int _read(int fd, void *buf, int count)
 {
 	return -1;
@@ -92,6 +96,16 @@ int _close(int fd)
 int _open(const char *filename, int flags)
 {
 	return 0;
+}
+
+int _write(int fd, const void *buf, int count)
+#else
+int __write(int fd, const char *buf, int count)
+#endif
+{
+	int ret = count;
+	while (count--) UART_putc_nl(*(char *)(buf++));
+	return ret;
 }
 
 int _isatty(int fd)

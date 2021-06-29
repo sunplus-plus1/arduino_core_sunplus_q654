@@ -56,6 +56,7 @@ CFLAGS += -static
 CFLAGS += -nodefaultlibs
 CFLAGS += -ffunction-sections -fdata-sections 
 CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
+CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu11
 CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
 CFLAGS += -I$(CMSIS_HEADER)
 CFLAGS += -I$(CMSIS_DEVICE_HEADER)
@@ -116,13 +117,54 @@ CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp
 
 CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
 
+# OpenAMP
+MW_DIR = $(TOP)/system/Middlewares
+OPENAMP_SRC = $(MW_DIR)/OpenAMP/open-amp
+LIBMETAL_SRC = $(MW_DIR)/OpenAMP/libmetal/lib
+CFLAGS += -I$(LIBMETAL_SRC)/include -I$(OPENAMP_SRC)/lib/include -I$(OPENAMP_SRC)/apps/machine/a926
+
+# open-amp
+CSOURCES += $(OPENAMP_SRC)/lib/virtio/virtio.c \
+            $(OPENAMP_SRC)/lib/virtio/virtqueue.c \
+            $(OPENAMP_SRC)/lib/rpmsg/rpmsg.c \
+            $(OPENAMP_SRC)/lib/rpmsg/rpmsg_virtio.c \
+            $(OPENAMP_SRC)/lib/remoteproc/elf_loader.c \
+            $(OPENAMP_SRC)/lib/remoteproc/remoteproc.c \
+            $(OPENAMP_SRC)/lib/remoteproc/remoteproc_virtio.c \
+            $(OPENAMP_SRC)/lib/remoteproc/rsc_table_parser.c \
+            $(OPENAMP_SRC)/lib/proxy/rpmsg_retarget.c \
+            $(OPENAMP_SRC)/apps/machine/a926/a926_rproc.c \
+            $(OPENAMP_SRC)/apps/machine/a926/platform_info.c \
+            $(OPENAMP_SRC)/apps/machine/a926/rsc_table.c \
+            $(OPENAMP_SRC)/apps/examples/echo/rpmsg-echo.c \
+
+# libmetal
+CFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
+CSOURCES += $(LIBMETAL_SRC)/dma.c \
+            $(LIBMETAL_SRC)/device.c \
+            $(LIBMETAL_SRC)/init.c \
+            $(LIBMETAL_SRC)/io.c \
+            $(LIBMETAL_SRC)/irq.c \
+            $(LIBMETAL_SRC)/log.c \
+            $(LIBMETAL_SRC)/shmem.c \
+            $(LIBMETAL_SRC)/shmem-provider.c \
+            $(LIBMETAL_SRC)/softirq.c \
+            $(LIBMETAL_SRC)/version.c \
+            $(LIBMETAL_SRC)/system/generic/condition.c \
+            $(LIBMETAL_SRC)/system/generic/device.c \
+            $(LIBMETAL_SRC)/system/generic/init.c \
+            $(LIBMETAL_SRC)/system/generic/io.c \
+            $(LIBMETAL_SRC)/system/generic/irq.c \
+            $(LIBMETAL_SRC)/system/generic/time.c \
+            $(LIBMETAL_SRC)/system/generic/a926/sys.c \
+
+
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
 #CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
 #CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
-CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
 #CFLAGS += -IMarlin/include -IMarlin/arduino
 #CFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
 #CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 
@@ -165,9 +207,13 @@ $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 	$P $(CC) $(CFLAGS) -c -o $@ $<
 
 
-%.o: %.c*
+%.o: %.c
 	$(Pecho) "  CC   $<"
 	$P $(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.cpp
+	$(Pecho) "  CXX  $<"
+	$P $(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	$P -rm -f $(OBJS) $(DEPS) rom.d >/dev/null
