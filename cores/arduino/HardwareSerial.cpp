@@ -24,34 +24,35 @@
   #endif
 #endif 
 
-HardwareSerial::HardwareSerial(UART_CTRL_Type* reg_base)
+HardwareSerial::HardwareSerial(void* peripheral)
 {
-    _serial.uart = reg_base;
-
+  _serial.uart = (UART_CTRL_Type *)peripheral;
+  
     #if defined(PIN_SERIAL_TX)
-    _serial.pin_rx = PIN_SERIAL_RX;
-    _serial.pin_tx = PIN_SERIAL_TX;
+    init(PIN_SERIAL_RX,PIN_SERIAL_TX);
+    #endif
+}
+
+HardwareSerial::HardwareSerial(void)
+{
+    
+    #if defined(HAVE_HWSERIAL1)
+    _serial.uart = SP_UART1;
+    #elif defined(HAVE_HWSERIAL2)
+    _serial.uart = SP_UART2;
+    #elif defined(HAVE_HWSERIAL3)
+    _serial.uart = SP_UART3;
+    #elif defined(HAVE_HWSERIAL4)
+    _serial.uart = SP_UART4;
     #endif
 
-    _serial.rx_head = 0;
-    _serial.rx_tail = 0;
-    _serial.tx_buff = _tx_buffer;
-    _serial.tx_head = 0;
-    _serial.tx_tail = 0;
-    _serial.rx_buff = _rx_buffer;
+    #if defined(PIN_SERIAL_TX)
+    init(PIN_SERIAL_RX,PIN_SERIAL_TX);
+    #endif
+ 
 }
 HardwareSerial::HardwareSerial(uint32_t _rx, uint32_t _tx)
 {
-
-	_serial.pin_rx = _rx;
-	_serial.pin_tx = _tx;
-
-	_serial.rx_head = 0;
-	_serial.rx_tail = 0;
-	_serial.tx_buff = _tx_buffer;
-	_serial.tx_head = 0;
-	_serial.tx_tail = 0;
-  _serial.rx_buff = _rx_buffer;
 
 #ifdef HAVE_HWSERIAL1
 	_serial.uart = SP_UART1;
@@ -63,6 +64,23 @@ HardwareSerial::HardwareSerial(uint32_t _rx, uint32_t _tx)
 	_serial.uart = SP_UART4;  
 #endif
 
+  init(_rx,_tx);
+}
+
+void HardwareSerial::init(uint32_t _rx, uint32_t _tx)
+{
+  if (_rx == _tx) {
+    _serial.pin_rx = -1;
+  } else {
+    _serial.pin_rx = _rx;
+  }
+  _serial.pin_tx = _tx;
+  _serial.rx_buff = _rx_buffer;
+  _serial.rx_head = 0;
+  _serial.rx_tail = 0;
+  _serial.tx_buff = _tx_buffer;
+  _serial.tx_head = 0;
+  _serial.tx_tail = 0;
 }
 
 void HardwareSerial::_rx_complete_irq(serial_t *obj)

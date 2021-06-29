@@ -181,30 +181,25 @@ void uart_deinit(serial_t *obj)
   	case UART0_INDEX:
 	    HAL_Module_Clock_enable(UART0, 0);
   		HAL_Module_Clock_gate(UART0, 0);
-  		HAL_Module_Reset(UART0, 0);
       break;  	
     case UART1_INDEX:
 	    HAL_Module_Clock_enable(UART1, 0);
   		HAL_Module_Clock_gate(UART1, 0);
-  		HAL_Module_Reset(UART1, 0);
       break;
 
     case UART2_INDEX:
 	    HAL_Module_Clock_enable(UART2, 0);
   		HAL_Module_Clock_gate(UART2, 0);
-  		HAL_Module_Reset(UART2, 0);
       break;
 
     case UART3_INDEX:
 	    HAL_Module_Clock_enable(UART3, 0);
   		HAL_Module_Clock_gate(UART3, 0);
-  		HAL_Module_Reset(UART3, 0);
       break;
 
     case UART4_INDEX:
 	    HAL_Module_Clock_enable(UART4, 0);
   		HAL_Module_Clock_gate(UART4, 0);
-  		HAL_Module_Reset(UART4, 0);
       break;
   }
 
