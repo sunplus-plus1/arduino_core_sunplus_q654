@@ -970,10 +970,10 @@ typedef struct {
 #define SPI3_BASE      RF_GRP(495, 0)
 
 
-#define SPI0        ((SPI_TypeDef *)SPI0_BASE)
-#define SPI1        ((SPI_TypeDef *)SPI1_BASE)
-#define SPI2        ((SPI_TypeDef *)SPI2_BASE)
-#define SPI3        ((SPI_TypeDef *)SPI3_BASE)
+#define SPI0        ((volatile SPI_TypeDef *)SPI0_BASE)
+#define SPI1        ((volatile SPI_TypeDef *)SPI1_BASE)
+#define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
+#define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
 
 
 /*
