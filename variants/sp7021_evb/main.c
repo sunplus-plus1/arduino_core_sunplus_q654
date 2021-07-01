@@ -319,12 +319,17 @@ int main(void)
 #endif
 	printf("Build @%s, %s\n", __DATE__, __TIME__);
 	hw_init();
+	//mmu_init();
+	//HAL_DCACHE_ENABLE();
+	SystemInit();
+
+
 	//AV1_STC_init();
 	/*initial interrupt vector table*/
-	int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
+	//int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
 
 
-	IRQ_Initialize();
+	//IRQ_Initialize();
 
 #ifdef TIMER_TEST
 	timer_test_init();

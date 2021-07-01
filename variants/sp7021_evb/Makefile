@@ -34,7 +34,7 @@ LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dir
 CMSIS_HEADER += $(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include
 CMSIS_DEVICE_HEADER += $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Include
 HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
-#HAL_DRIVER_HEADER += $(TOP)/system/sp7021
+SYSTEM_SP7021_SRC += $(TOP)/system/sp7021
 ARDUNIO_HEADER += $(TOP)/cores/arduino
 #ARDUNIO_HEADER += $(TOP)/variants/sp7021_evb
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
@@ -65,7 +65,7 @@ CFLAGS += -I$(HAL_DRIVER_HEADER)
 CFLAGS += -I$(ARDUNIO_HEADER)/sunplus
 CFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CFLAGS += -I$(ARDUNIO_HEADER)
-CFLAGS += -I$(TOP)/system/sp7021
+CFLAGS += -I$(SYSTEM_SP7021_SRC)
 CFLAGS += -I$(TOP)/variants/sp7021_evb
 CFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
 
@@ -84,7 +84,7 @@ CXXFLAGS += -I$(HAL_DRIVER_HEADER)
 CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus
 CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CXXFLAGS += -I$(ARDUNIO_HEADER)
-CXXFLAGS += -I$(TOP)/system/sp7021
+CXXFLAGS += -I$(SYSTEM_SP7021_SRC)
 CXXFLAGS += -I$(TOP)/variants/sp7021_evb
 CFLAGS += -I$(ARDUINO_HEADER)
 CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
@@ -98,13 +98,13 @@ ASOURCES = start.S
 CSOURCES = main.c
 
 # common
-CSOURCES += $(COMMON_DIR)/common.c
+CSOURCES += $(COMMON_DIR)/common.c $(COMMON_DIR)/cpu_util.c
 
 # mon
 #CSOURCES += mon/monitor.c
 
 # interrupt
-CSOURCES += $(COMMON_DIR)/sp_interrupt.c
+#CSOURCES += $(COMMON_DIR)/sp_interrupt.c 
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
@@ -116,7 +116,7 @@ CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SP
 
 # HAL
 
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility))
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility $(SYSTEM_SP7021_SRC)))
 
 # OpenAMP
 MW_DIR = $(TOP)/system/Middlewares
@@ -166,6 +166,7 @@ CSOURCES += $(LIBMETAL_SRC)/dma.c \
 #CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
+CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
 #CFLAGS += -IMarlin/include -IMarlin/arduino
 #CFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
 #CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 
