@@ -6,7 +6,7 @@
 #define pwm_printf(s ...)
 #endif
 
-static void pwm_reg_init(void)
+static void __PWM_Register_Init(void)
 {
 	static int init_flag = 0;
 
@@ -33,7 +33,7 @@ static void pwm_reg_init(void)
 	}
 }
 
-static int get_available_new_dd(int pwm_num,uint32_t dd_freq)
+static int __Get_available_new_dd(int pwm_num,uint32_t dd_freq)
 {
     int i;
     uint32_t tmp2;
@@ -87,7 +87,7 @@ static int get_available_new_dd(int pwm_num,uint32_t dd_freq)
 }
 
 /*frequency = (1 / sys clk * PWM DD0(16bit)) * 256    freq = 12Hz~791Khz*/
-static int pwm_set_by_period(int pwm_num,uint32_t freq,uint32_t duty_cycle)
+static int __PWM_Set_by_period(int pwm_num,uint32_t freq,uint32_t duty_cycle)
 {
 	uint32_t dd_sel_new = ePWM_DD_MAX;
 	uint32_t duty = 0, dd_freq = 0;
@@ -106,7 +106,7 @@ static int pwm_set_by_period(int pwm_num,uint32_t freq,uint32_t duty_cycle)
 	if (dd_freq == 0)
 		return -1;
 
-	dd_sel_new = get_available_new_dd(pwm_num,dd_freq);
+	dd_sel_new = __Get_available_new_dd(pwm_num,dd_freq);
 
 	if(dd_sel_new == -1){
 		pwm_printf("pwm%d Can't found clk source[0x%x(%d)/256].\n",pwm_num, dd_freq, dd_freq);
@@ -143,20 +143,21 @@ int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init)
 
 	pwm_assert_param(PWM_Init);
 	pwm_assert_param(PWM_Init->pwm_freq);
-	pwm_assert_param(IS_PWM_PIN_VALID(PWM_Init->Pin));
 	pwm_assert_param(IS_PWM_NUM_VALID(PWM_Init->pwm_num));
 	pwm_assert_param(IS_PWM_DUTY_VALID(PWM_Init->duty_cycle));
-
+	
+	PWM_Init->Pin = GPIO_TO_PINMUX(PWM_Init->Pin);
+	if(IS_VALID_PINMUX(PWM_Init->Pin) == 0)
+	{
+		return -1;
+	}
 	/* set pwm pinmux */
-	if((PWM_Init->pwm_num % 2) == 0)
-		PINMUX_CFG_2_REG->pinmux_pwm[PWM_Init->pwm_num/2] |= RF_MASK_V((0x3f), PWM_Init->Pin); 
-	else
-		PINMUX_CFG_2_REG->pinmux_pwm[PWM_Init->pwm_num/2] |= RF_MASK_V((0x3f << 8), (PWM_Init->Pin << 8)); 
+	HAL_PINMUX_Cfg((PINMUX_PWM0+PWM_Init->pwm_num),PWM_Init->Pin);
 
 	/* only init the pwm ctrl regster once */
-	pwm_reg_init();
+	__PWM_Register_Init();
 
-	return pwm_set_by_period(PWM_Init->pwm_num,PWM_Init->pwm_freq,PWM_Init->duty_cycle);
+	return __PWM_Set_by_period(PWM_Init->pwm_num,PWM_Init->pwm_freq,PWM_Init->duty_cycle);
 }
 
 

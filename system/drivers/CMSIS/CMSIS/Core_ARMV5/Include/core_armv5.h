@@ -1019,6 +1019,660 @@ __STATIC_INLINE void MMU_InvalidateTLB(void)
 }
 
 
+/* ##########################  MMU functions  ###################################### */
+#define SECTION_DESCRIPTOR      (0x2)
+#define SECTION_MASK            (0xFFFFFFFC)
+
+#define SECTION_TEXCB_MASK      (0xFFFF8FF3)
+#define SECTION_B_SHIFT         (2)
+#define SECTION_C_SHIFT         (3)
+#define SECTION_TEX0_SHIFT      (12)			//ARM926 must be 0
+#define SECTION_TEX1_SHIFT      (13)			//ARM926 must be 0
+#define SECTION_TEX2_SHIFT      (14)			//ARM926 must be 0
+
+#define SECTION_XN_MASK         (0xFFFFFFEF)	//ARM926 not use, must be 1 , 1 not excute domain, 0 excutable domain
+#define SECTION_XN_SHIFT        (4)
+
+#define SECTION_DOMAIN_MASK     (0xFFFFFE1F)
+#define SECTION_DOMAIN_SHIFT    (5)	
+
+#define SECTION_P_MASK          (0xFFFFFDFF)	//ARM926 must be 0, ARM926 not have ECC fucntion
+#define SECTION_P_SHIFT         (9)
+
+//#define SECTION_AP_MASK         (0xFFFF73FF)
+#define SECTION_AP_MASK         (0xFFFFF3FF)
+#define SECTION_AP_SHIFT        (10)
+//#define SECTION_AP2_SHIFT       (15)			//ARM926 not have the bit ,it must be 0
+
+#define SECTION_S_MASK          (0xFFFEFFFF)
+#define SECTION_S_SHIFT         (16)			//ARM926 not have the bit ,it must be 0
+
+#define SECTION_NG_MASK         (0xFFFDFFFF)
+#define SECTION_NG_SHIFT        (17)			//ARM926 not have the bit ,it must be 0
+
+#define SECTION_NS_MASK         (0xFFF7FFFF)
+#define SECTION_NS_SHIFT        (19)			//ARM926 not have the bit ,it must be 0,no secure
+
+#define PAGE_L1_DESCRIPTOR      (0x1)
+#define PAGE_L1_MASK            (0xFFFFFFFC)
+
+#define PAGE_L2_4K_DESC         (0x2)
+#define PAGE_L2_4K_MASK         (0xFFFFFFFD)
+
+#define PAGE_L2_64K_DESC        (0x1)
+#define PAGE_L2_64K_MASK        (0xFFFFFFFC)
+
+#define PAGE_4K_TEXCB_MASK      (0xFFFFF003)
+#define PAGE_4K_B_SHIFT         (2)
+#define PAGE_4K_C_SHIFT         (3)
+#define PAGE_4K_AP0_SHIFT		(4)
+#define PAGE_4K_AP1_SHIFT		(6)
+#define PAGE_4K_AP2_SHIFT		(8)
+#define PAGE_4K_AP3_SHIFT		(10)
+#define PAGE_4K_TEX0_SHIFT      (6)			//ARM926 not have the bit
+#define PAGE_4K_TEX1_SHIFT      (7)			//ARM926 not have the bit
+#define PAGE_4K_TEX2_SHIFT      (8)			//ARM926 not have the bit
+
+#define PAGE_64K_TEXCB_MASK     (0xFFFFF003)
+#define PAGE_64K_B_SHIFT        (2)
+#define PAGE_64K_C_SHIFT        (3)
+#define PAGE_64K_AP0_SHIFT		(4)
+#define PAGE_64K_AP1_SHIFT		(6)
+#define PAGE_64K_AP2_SHIFT		(8)
+#define PAGE_64K_AP3_SHIFT		(10)
+#define PAGE_64K_TEX0_SHIFT     (12)
+#define PAGE_64K_TEX1_SHIFT     (13)
+#define PAGE_64K_TEX2_SHIFT     (14)
+
+#define PAGE_TEXCB_MASK         (0xFFFF8FF3)
+#define PAGE_B_SHIFT            (2)
+#define PAGE_C_SHIFT            (3)
+#define PAGE_TEX_SHIFT          (12)			//ARM926 not have the bit 
+
+#define PAGE_XN_4K_MASK         (0xFFFFFFFE)	
+#define PAGE_XN_4K_SHIFT        (0)				//ARM926 not have the bit 
+#define PAGE_XN_64K_MASK        (0xFFFF7FFF)
+#define PAGE_XN_64K_SHIFT       (15)			//ARM926 not have the bit 	
+
+#define PAGE_DOMAIN_MASK        (0xFFFFFE1F)	 
+#define PAGE_DOMAIN_SHIFT       (5)				//ARM926 not have the bit
+
+#define PAGE_P_MASK             (0xFFFFFDFF)	
+#define PAGE_P_SHIFT            (9)				//ARM926 not have the bit
+
+#define PAGE_AP_MASK            (0xFFFFF00F)
+#define PAGE_AP_SHIFT           (4)	
+#define PAGE_AP1_SHIFT          (6)	
+#define PAGE_AP2_SHIFT          (8)	
+#define PAGE_AP3_SHIFT          (10)
+
+
+
+
+#define PAGE_S_MASK             (0xFFFFFBFF)
+#define PAGE_S_SHIFT            (10)			//ARM926 not have the bit
+
+#define PAGE_NG_MASK            (0xFFFFF7FF)
+#define PAGE_NG_SHIFT           (11)			//ARM926 not have the bit
+
+#define PAGE_NS_MASK            (0xFFFFFFF7)
+#define PAGE_NS_SHIFT           (3)				//ARM926 not have the bit
+
+#define OFFSET_1M               (0x00100000)
+#define OFFSET_64K              (0x00010000)
+#define OFFSET_4K               (0x00001000)
+
+#define DESCRIPTOR_FAULT        (0x00000000)
+
+/* Attributes enumerations */
+
+/* Region size attributes */
+typedef enum
+{
+   SECTION,
+   PAGE_4k,
+   PAGE_64k,
+} mmu_region_size_Type;
+
+/* Region type attributes */
+typedef enum
+{
+   NORMAL,
+   DEVICE,
+   SHARED_DEVICE,
+   NON_SHARED_DEVICE,
+   STRONGLY_ORDERED
+} mmu_memory_Type;
+
+/* Region cacheability attributes */
+typedef enum
+{
+   NON_CACHEABLE,
+   WB_WA,
+   WT,
+   WB_NO_WA,
+} mmu_cacheability_Type;
+
+
+/* Region parity check attributes */
+typedef enum
+{
+   ECC_DISABLED,
+   ECC_ENABLED,
+} mmu_ecc_check_Type;
+   
+
+/* Region execution attributes */
+typedef enum
+{
+   EXECUTE,
+   NON_EXECUTE,
+} mmu_execute_Type;
+
+/* Region global attributes */
+typedef enum
+{
+   GLOBAL,
+   NON_GLOBAL,
+} mmu_global_Type;
+
+/* Region shareability attributes */
+typedef enum
+{
+   NON_SHARED,
+   SHARED,
+} mmu_shared_Type;
+
+/* Region security attributes */
+typedef enum
+{
+   SECURE,
+   NON_SECURE,
+} mmu_secure_Type;
+
+/* Region access attributes */
+typedef enum
+{
+   NO_ACCESS,
+   RW,
+   READ,
+} mmu_access_Type;
+
+
+/* Memory Region definition */
+typedef struct RegionStruct {
+    mmu_region_size_Type rg_t;
+    mmu_memory_Type mem_t;
+    uint8_t domain;
+    mmu_cacheability_Type inner_norm_t;
+//  mmu_cacheability_Type outer_norm_t;
+//  mmu_ecc_check_Type e_t;
+//  mmu_execute_Type xn_t;
+//  mmu_global_Type g_t;
+//  mmu_secure_Type sec_t;
+    mmu_access_Type priv_t;
+    mmu_access_Type user_t;
+//  mmu_shared_Type sh_t;
+
+} mmu_region_attributes_Type;
+
+
+//Following macros define the descriptors and attributes
+//Sect_Normal. Outer & inner wb/wa, non-shareable, executable, rw, domain 0
+#define section_normal(descriptor_l1, region)     region.rg_t = SECTION; \
+                                   region.domain = 0x0; \
+                                   region.inner_norm_t = WB_NO_WA; \
+                                   region.mem_t = NORMAL; \
+                                   region.priv_t = RW; \
+                                   region.user_t = RW; \
+                                   MMU_GetSectionDescriptor(&descriptor_l1, region); 
+
+//Sect_Normal_NC. Outer & inner non-cacheable, non-shareable, executable, rw, domain 0
+#define section_normal_nc(descriptor_l1, region)     region.rg_t = SECTION; \
+								  region.domain = 0x0; \
+								  region.inner_norm_t = NON_CACHEABLE; \
+								  region.mem_t = NORMAL; \
+								  region.priv_t = RW; \
+								  region.user_t = RW; \
+								  MMU_GetSectionDescriptor(&descriptor_l1, region);
+
+
+//Sect_Normal_RW. Sect_Normal_Cod, but writeable and not executable
+#define section_normal_rw(descriptor_l1, region) region.rg_t = SECTION; \
+							   region.domain = 0x0; \
+							   region.inner_norm_t = WB_WA; \
+							   region.mem_t = NORMAL; \
+							   region.priv_t = RW; \
+							   region.user_t = RW; \
+							   MMU_GetSectionDescriptor(&descriptor_l1, region);
+
+
+//Sect_SO. Strongly-ordered (therefore shareable), not executable, rw, domain 0, base addr 0
+#define section_so(descriptor_l1, region) region.rg_t = SECTION; \
+							  region.domain = 0x0; \
+							  region.inner_norm_t = NON_CACHEABLE; \
+							  region.mem_t = STRONGLY_ORDERED; \
+							  region.priv_t = RW; \
+							  region.user_t = RW; \
+							  MMU_GetSectionDescriptor(&descriptor_l1, region);
+
+
+//Sect_Device_RW. Sect_Device_RO, but writeable
+#define section_device_rw(descriptor_l1, region) region.rg_t = SECTION; \
+							region.domain = 0x0; \
+							region.inner_norm_t = NON_CACHEABLE; \
+							region.mem_t = STRONGLY_ORDERED; \
+							region.priv_t = RW; \
+							region.user_t = RW; \
+							MMU_GetSectionDescriptor(&descriptor_l1, region);
+
+//Page_4k_Device_RW.  Shared device, not executable, rw, domain 0
+#define page4k_device_rw(descriptor_l1, descriptor_l2, region) region.rg_t = PAGE_4k; \
+						   region.domain = 0x0; \
+						   region.inner_norm_t = NON_CACHEABLE; \
+						   region.priv_t = RW; \
+						   region.user_t = RW; \
+						   MMU_GetPageDescriptor(&descriptor_l1, &descriptor_l2, region);
+
+//Page_64k_Device_RW.  Shared device, not executable, rw, domain 0
+#define page64k_device_rw(descriptor_l1, descriptor_l2, region)  region.rg_t = PAGE_64k; \
+						  region.domain = 0x0; \
+						  region.inner_norm_t = NON_CACHEABLE; \
+						  region.priv_t = RW; \
+						  region.user_t = RW; \
+						  MMU_GetPageDescriptor(&descriptor_l1, &descriptor_l2, region);
+
+
+
+/** \brief  Set section domain
+
+  \param [out]    descriptor_l1  L1 descriptor.
+  \param [in]            domain  Section domain
+
+  \return          0
+*/
+__STATIC_INLINE int MMU_DomainSection(uint32_t *descriptor_l1, uint8_t domain)
+{
+  *descriptor_l1 &= SECTION_DOMAIN_MASK;
+  *descriptor_l1 |= ((domain & 0xF) << SECTION_DOMAIN_SHIFT);
+  return 0;
+}
+
+
+/** \brief  Set section access privileges
+
+  \param [out]    descriptor_l1  L1 descriptor.
+  \param [in]              user  User Level Access: NO_ACCESS, RW, READ
+  \param [in]              priv  Privilege Level Access: NO_ACCESS, RW, READ
+  \param [in]               afe  Access flag enable
+
+  \return          0
+*/
+__STATIC_INLINE int MMU_APSection(uint32_t *descriptor_l1, mmu_access_Type user, mmu_access_Type priv, uint32_t afe)
+{
+  uint32_t ap = 0;
+
+  if (afe == 0) { //full access
+    if ((priv == NO_ACCESS) && (user == NO_ACCESS)) { ap = 0x0; }
+    else if ((priv == RW) && (user == NO_ACCESS))   { ap = 0x1; }
+    else if ((priv == RW) && (user == READ))        { ap = 0x2; }
+    else if ((priv == RW) && (user == RW))          { ap = 0x3; }
+  }
+
+  else { //Simplified access
+    if ((priv == RW) && (user == NO_ACCESS))        { ap = 0x1; }
+	else if ((priv == RW) && (user == READ))        { ap = 0x2; }
+    else if ((priv == RW) && (user == RW))          { ap = 0x3; }
+  }
+
+  *descriptor_l1 &= SECTION_AP_MASK;
+  *descriptor_l1 |= (ap & 0x3) << SECTION_AP_SHIFT;
+
+  return 0;
+}
+
+
+/** \brief  Set 4k/64k page domain
+
+  \param [out]    descriptor_l1  L1 descriptor.
+  \param [in]            domain  Page domain
+
+  \return          0
+*/
+__STATIC_INLINE int MMU_DomainPage(uint32_t *descriptor_l1, uint8_t domain)
+{
+  *descriptor_l1 &= PAGE_DOMAIN_MASK;
+  *descriptor_l1 |= ((domain & 0xf) << PAGE_DOMAIN_SHIFT);
+  return 0;
+}
+
+
+/** \brief  Set 4k/64k page access privileges
+
+  \param [out]    descriptor_l2  L2 descriptor.
+  \param [in]              user  User Level Access: NO_ACCESS, RW, READ
+  \param [in]              priv  Privilege Level Access: NO_ACCESS, RW, READ
+  \param [in]               afe  Access flag enable
+
+  \return          0
+*/
+__STATIC_INLINE int MMU_APPage(uint32_t *descriptor_l2, mmu_access_Type user, mmu_access_Type priv, uint32_t afe)
+{
+  uint32_t ap = 0;
+
+  if (afe == 0) { //full access
+    if ((priv == NO_ACCESS) && (user == NO_ACCESS)) { ap = 0x0; }
+    else if ((priv == RW) && (user == NO_ACCESS))   { ap = 0x1; }
+    else if ((priv == RW) && (user == READ))        { ap = 0x2; }
+    else if ((priv == RW) && (user == RW))          { ap = 0x3; }
+  }
+
+  else { //Simplified access
+    if ((priv == RW) && (user == NO_ACCESS))        { ap = 0x1; }
+    else if ((priv == RW) && (user == RW))          { ap = 0x3; }
+  }
+
+  *descriptor_l2 &= PAGE_AP_MASK;
+  *descriptor_l2 |= (ap & 0x3) << PAGE_AP_SHIFT;
+  *descriptor_l2 |= (ap & 0x3) << PAGE_AP1_SHIFT;
+  *descriptor_l2 |= (ap & 0x3) << PAGE_AP2_SHIFT;
+  *descriptor_l2 |= (ap & 0x3) << PAGE_AP3_SHIFT;
+
+  return 0;
+}
+
+
+/** \brief  Set Section memory attributes
+
+  \param [out]    descriptor_l1  L1 descriptor.
+  \param [in]               mem  Section memory type: NORMAL, DEVICE, SHARED_DEVICE, NON_SHARED_DEVICE, STRONGLY_ORDERED
+  \param [in]             inner  Inner cacheability: NON_CACHEABLE, WB_WA, WT, WB_NO_WA,
+
+  \return          0
+*/
+
+__STATIC_INLINE int MMU_MemorySection(uint32_t *descriptor_l1, 
+ 	mmu_memory_Type mem, 
+ 	mmu_cacheability_Type inner)
+{
+  *descriptor_l1 &= SECTION_TEXCB_MASK;
+
+  if (STRONGLY_ORDERED == mem)
+  {
+    return 0;
+  }
+  else if (SHARED_DEVICE == mem)
+  {
+    *descriptor_l1 |= (1 << SECTION_B_SHIFT);
+  }
+  else if (NORMAL == mem)
+  {
+ // *descriptor_l1 |= 1 << SECTION_TEX2_SHIFT;
+   switch(inner)
+   {
+      case NON_CACHEABLE:
+        break;
+      case WB_WA:
+        *descriptor_l1 |= (1 << SECTION_B_SHIFT);
+        break;
+      case WT:
+        *descriptor_l1 |= 1 << SECTION_C_SHIFT;
+        break;
+      case WB_NO_WA:
+        *descriptor_l1 |= (1 << SECTION_B_SHIFT) | (1 << SECTION_C_SHIFT);
+        break;
+    }
+  }
+  return 0;
+}
+
+/** \brief  Set 4k/64k page memory attributes
+
+  \param [out]    descriptor_l2  L2 descriptor.
+  \param [in]               mem  4k/64k page memory type: NORMAL, DEVICE, SHARED_DEVICE, NON_SHARED_DEVICE, STRONGLY_ORDERED
+  \param [in]             outer  Outer cacheability: NON_CACHEABLE, WB_WA, WT, WB_NO_WA,
+  \param [in]             inner  Inner cacheability: NON_CACHEABLE, WB_WA, WT, WB_NO_WA,
+  \param [in]              page  Page size
+
+  \return          0
+*/
+//__STATIC_INLINE int MMU_MemoryPage(uint32_t *descriptor_l2, mmu_memory_Type mem, mmu_cacheability_Type outer, mmu_cacheability_Type inner, mmu_region_size_Type page)
+__STATIC_INLINE int MMU_MemoryPage(uint32_t *descriptor_l2, 
+ mmu_memory_Type mem, 
+ mmu_cacheability_Type inner, 
+ mmu_region_size_Type page)
+
+{
+  *descriptor_l2 &= PAGE_4K_TEXCB_MASK;
+
+  if (page == PAGE_64k)
+  {
+    //same as section
+    MMU_MemorySection(descriptor_l2, mem, inner);
+  }
+  else
+  {
+    if (STRONGLY_ORDERED == mem)
+    {
+      return 0;
+    }
+    else if (SHARED_DEVICE == mem)
+    {
+      *descriptor_l2 |= (1 << PAGE_4K_B_SHIFT);
+    }
+    else if (NORMAL == mem)
+    {
+     // *descriptor_l2 |= 1 << PAGE_4K_TEX2_SHIFT;
+      switch(inner)
+      {
+        case NON_CACHEABLE:
+          break;
+        case WB_WA:
+          *descriptor_l2 |= (1 << PAGE_4K_B_SHIFT);
+          break;
+        case WT:
+          *descriptor_l2 |= 1 << PAGE_4K_C_SHIFT;
+          break;
+        case WB_NO_WA:
+          *descriptor_l2 |= (1 << PAGE_4K_B_SHIFT) | (1 << PAGE_4K_C_SHIFT);
+          break;
+      }
+    }
+
+  }
+
+  return 0;
+}
+
+
+ 
+
+/** \brief  Create a L1 section descriptor
+
+  \param [out]     descriptor  L1 descriptor
+  \param [in]      reg  Section attributes
+  
+  \return          0
+*/
+
+
+__STATIC_INLINE int MMU_GetSectionDescriptor(uint32_t *descriptor, mmu_region_attributes_Type reg)
+{
+
+  *descriptor  = 0;
+  MMU_MemorySection(descriptor, reg.mem_t, reg.inner_norm_t);
+  MMU_DomainSection(descriptor, reg.domain);
+  MMU_APSection(descriptor, reg.priv_t, reg.user_t, 1);
+
+  *descriptor |= 1<<SECTION_XN_SHIFT; 
+  *descriptor &= SECTION_MASK;
+  *descriptor |= SECTION_DESCRIPTOR;
+  return 0;
+}
+
+/** \brief  Create a L1 and L2 4k/64k page descriptor
+
+  \param [out]       descriptor  L1 descriptor
+  \param [out]      descriptor2  L2 descriptor
+  \param [in]               reg  4k/64k page attributes
+
+  \return          0
+*/
+__STATIC_INLINE int MMU_GetPageDescriptor(uint32_t *descriptor, 
+ 	uint32_t *descriptor2, 
+ 	mmu_region_attributes_Type reg)
+{
+  *descriptor  = 0;
+  *descriptor2 = 0;
+
+  switch (reg.rg_t)
+  {
+    case PAGE_4k:
+      MMU_MemoryPage(descriptor2, reg.mem_t, reg.inner_norm_t, PAGE_4k);
+      MMU_DomainPage(descriptor, reg.domain);
+      MMU_APPage(descriptor2, reg.priv_t, reg.user_t, 1);
+      *descriptor &= PAGE_L1_MASK;
+      *descriptor |= PAGE_L1_DESCRIPTOR;
+      *descriptor2 &= PAGE_L2_4K_MASK;
+      *descriptor2 |= PAGE_L2_4K_DESC;
+      break;
+
+    case PAGE_64k:
+      MMU_MemoryPage(descriptor2, reg.mem_t, reg.inner_norm_t, PAGE_64k);
+      MMU_DomainPage(descriptor, reg.domain);
+      MMU_APPage(descriptor2, reg.priv_t, reg.user_t, 1);
+      *descriptor &= PAGE_L1_MASK;
+      *descriptor |= PAGE_L1_DESCRIPTOR;
+      *descriptor2 &= PAGE_L2_64K_MASK;
+      *descriptor2 |= PAGE_L2_64K_DESC;
+      break;
+
+    case SECTION:
+      //error
+      break;
+  }
+  
+  return 0;
+}
+
+/** \brief  Create a 1MB Section
+
+  \param [in]               ttb  Translation table base address
+  \param [in]      base_address  Section base address
+  \param [in]             count  Number of sections to create
+  \param [in]     descriptor_l1  L1 descriptor (region attributes)
+
+*/
+__STATIC_INLINE void MMU_TTSection(uint32_t *ttb, 
+ uint32_t base_address, 
+ uint32_t count, 
+ uint32_t descriptor_l1)
+{
+  uint32_t offset;
+  uint32_t entry;
+  uint32_t i;
+
+  offset = base_address >> 20;
+  entry  = (base_address & 0xFFF00000) | descriptor_l1;
+
+  //4 bytes aligned
+  ttb = ttb + offset;
+
+  for (i = 0; i < count; i++ )
+  {
+    //4 bytes aligned
+    *ttb++ = entry;
+    entry += OFFSET_1M;
+  }
+}
+
+/** \brief  Create a 4k page entry
+
+  \param [in]               ttb  L1 table base address
+  \param [in]      base_address  4k base address
+  \param [in]             count  Number of 4k pages to create
+  \param [in]     descriptor_l1  L1 descriptor (region attributes)
+  \param [in]            ttb_l2  L2 table base address
+  \param [in]     descriptor_l2  L2 descriptor (region attributes)
+
+*/
+__STATIC_INLINE void MMU_TTPage4k(uint32_t *ttb, 
+ uint32_t base_address, 
+ uint32_t count, 
+ uint32_t descriptor_l1, 
+ uint32_t *ttb_l2, 
+ uint32_t descriptor_l2 )
+{
+
+  uint32_t offset, offset2;
+  uint32_t entry, entry2;
+  uint32_t i;
+
+  offset = base_address >> 20;
+  entry  = ((int)ttb_l2 & 0xFFFFFC00) | descriptor_l1;
+
+  //4 bytes aligned
+  ttb += offset;
+  //create l1_entry
+  *ttb = entry;
+
+  offset2 = (base_address & 0xff000) >> 12;
+  ttb_l2 += offset2;
+  entry2 = (base_address & 0xFFFFF000) | descriptor_l2;
+  for (i = 0; i < count; i++ )
+  {
+    //4 bytes aligned
+    *ttb_l2++ = entry2;
+    entry2 += OFFSET_4K;
+  }
+}
+
+/** \brief  Create a 64k page entry
+
+  \param [in]               ttb  L1 table base address
+  \param [in]      base_address  64k base address
+  \param [in]             count  Number of 64k pages to create
+  \param [in]     descriptor_l1  L1 descriptor (region attributes)
+  \param [in]            ttb_l2  L2 table base address
+  \param [in]     descriptor_l2  L2 descriptor (region attributes)
+
+*/
+__STATIC_INLINE void MMU_TTPage64k(uint32_t *ttb, 
+ uint32_t base_address, 
+ uint32_t count, 
+ uint32_t descriptor_l1, 
+ uint32_t *ttb_l2, 
+ uint32_t descriptor_l2 )
+{
+  uint32_t offset, offset2;
+  uint32_t entry, entry2;
+  uint32_t i,j;
+
+
+  offset = base_address >> 20;
+  entry  = ((int)ttb_l2 & 0xFFFFFC00) | descriptor_l1;
+
+  //4 bytes aligned
+  ttb += offset;
+  //create l1_entry
+  *ttb = entry;
+
+  offset2 = (base_address & 0xff000) >> 12;
+  ttb_l2 += offset2;
+  entry2 = (base_address & 0xFFFF0000) | descriptor_l2;
+  for (i = 0; i < count; i++ )
+  {
+    //create 16 entries
+    for (j = 0; j < 16; j++)
+    {
+      //4 bytes aligned
+      *ttb_l2++ = entry2;
+    }
+    entry2 += OFFSET_64K;
+  }
+}
+
+
 #ifdef __cplusplus
 }
 #endif

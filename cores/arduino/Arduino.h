@@ -53,7 +53,7 @@ void yield(void);
 #endif // __cplusplus
 
 // Include pins variant
-//#include "pins_arduino.h"
+#include "pins_arduino.h"
 
 #endif // Arduino_h
 

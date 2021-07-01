@@ -20,6 +20,9 @@
 #ifndef _WIRING_TIME_H_
 #define _WIRING_TIME_H_
 
+#include "clock.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -210,11 +210,11 @@ void HardwareTimer::setCount(uint32_t val, TimerFormat_t format)
 	}
 
 	LL_TIM_SetCounter(_timerObj.handle.Instance, u32Count_val);
+	LL_TIM_SetAutoReload(_timerObj.handle.Instance, u32Count_val);
 }
 
 uint32_t HardwareTimer::getCount(TimerFormat_t format)
 {
-	//uint32_t count =HAL_TIM_GetCount(&(_timerObj.handle)); 
 	uint32_t count = LL_TIM_GetCounter(_timerObj.handle.Instance);
 	uint32_t Prescalerfactor = LL_TIM_GetPrescaler(_timerObj.handle.Instance)+1;;
 	uint32_t return_value;
@@ -236,6 +236,70 @@ uint32_t HardwareTimer::getCount(TimerFormat_t format)
 	return return_value;
 
 }
+
+void HardwareTimer::setOverflow(uint32_t val, TimerFormat_t format ) 
+{
+	uint32_t Prescalerfactor = 0;
+	uint32_t u32Count_val = 0;
+	
+	Prescalerfactor = LL_TIM_GetPrescaler(_timerObj.handle.Instance)+1;
+
+	switch(format){
+		case MICROSEC_FORMAT:
+			u32Count_val = ((val * (getTimerClkFreq() / 1000000)) / Prescalerfactor);
+			break;
+
+		case HERTZ_FORMAT:
+			u32Count_val = getTimerClkFreq() /(Prescalerfactor*val);
+			break;
+
+		case TICK_FORMAT:
+		default:
+			u32Count_val  = val;
+			break;
+	}
+
+	LL_TIM_SetAutoReload(_timerObj.handle.Instance, u32Count_val);
+
+}
+
+uint32_t HardwareTimer:: getOverflow(TimerFormat_t format)
+{
+	uint32_t count = LL_TIM_GetAutoReload(_timerObj.handle.Instance);
+	uint32_t Prescalerfactor = LL_TIM_GetPrescaler(_timerObj.handle.Instance)+1;;
+	uint32_t return_value;
+
+	switch(format){
+		case MICROSEC_FORMAT:
+			return_value = (uint32_t)((count * Prescalerfactor * 1000000) / getTimerClkFreq());
+			break;
+
+		case HERTZ_FORMAT:
+			return_value = (uint32_t)(getTimerClkFreq() / (count  * Prescalerfactor));
+			break;
+		case TICK_FORMAT:
+		default:
+			return_value = count;
+			break;
+	}
+
+	return return_value;
+
+
+}
+
+void HardwareTimer::setClockSource(CLK_SRC src)
+{
+	LL_TIM_SetClockSource(_timerObj.handle.Instance, src);
+}
+
+uint32_t HardwareTimer::getClockSource(void)
+{
+	return LL_TIM_GetClockSource(_timerObj.handle.Instance);
+}
+
+
+
 
 #if 0
 void HardwareTimer::attachInterrupt(callback_function_t callback)

@@ -242,7 +242,7 @@ typedef enum {
 	RESERVED2		= 17, 
 	C_CHIP			= 18,							/* !< For C Chip module ID */
 	RESERVED3		= 19, 									
-	STC0			= 20, 							/* !< Standard time clock 0 moudle ID */
+	STC				= 20, 							/* !< Standard time clock 0 moudle ID */
 	STC_AV0			= 21, 							/* !< standard time clock AV0 moudle ID */
 	STC_AV1			= 22, 							/* !< standard time clock AV1 moudle ID */
 	STC_AV2			= 23, 							/* !< standard time clock AV2 module ID */
@@ -392,6 +392,186 @@ typedef enum {
 	RESERVED81		= 159,
 	
 }MODULE_ID_Type;
+
+typedef enum{
+/*_G1.1_*/
+PINMUX_SPI_FLASH=0x0,
+PINMUX_SPI_FLASH_4BIT=0x2,
+PINMUX_SPI_NAND=0x4,
+PINMUX_CARD0_EMMC,
+PINMUX_SD_CARD,
+PINMUX_UART0,
+PINMUX_ACHIP_DEBUG,
+PINMUX_ACHIP_UA2AXI=0xA,
+PINMUX_FPGA_IFX=0xC,
+PINMUX_HDMI_TX,
+PINMUX_AUD_EXT_ADC_IFX0=0x0F,
+
+/*_G1.2_*/
+PINMUX_AUD_EXT_DAC_IFX0=0x10,
+PINMUX_AUD_TEST,
+PINMUX_AUD_IEC_RX0,
+PINMUX_IEC_TX,
+PINMUX_TDMTX_IFX0,
+PINMUX_TDMRX_IFX0,
+PINMUX_PDMRX_IFX0,
+PINMUX_PCM_IEC_TX,
+PINMUX_CLKGENA,
+PINMUX_DGB_I2C,
+PINMUX_SLV_I2C,
+PINMUX_IR_IN,
+PINMUX_UADGB,
+PINMUX_UPHY0_IF=0x1E,
+
+/*_G1.3_*/
+PINMUX_UPHY1_IF=0x20,
+PINMUX_USBC0_OTG_EN=0x22,
+PINMUX_USBC1_OTG_EN,
+PINMUX_UPHY0_DEBUG,
+PINMUX_UPHY1_DEBUG,
+PINMUX_UPHY0_EXT,
+PINMUX_PROBE_PORT,
+PINMUX_MO1_CLK27_O=0x29,
+PINMUX_MO1_PLLA_135_147_O,
+PINMUX_XCK_OUT,
+PINMUX_CLK27_OUT,
+PINMUX_HWCFG_PROB,
+PINMUX_8051_JTAG,
+/*_G1.4_*/
+PINMUX_ARM926_JTAG=0x30,
+
+/*_G2.0_*/
+PINMUX_L2SW_CLK_OUT=0x100,
+PINMUX_L2SW_MAC_SMI_MDC,
+PINMUX_L2SW_LED_FLASH0,
+PINMUX_L2SW_LED_FLASH1,
+PINMUX_L2SW_LED_ON0,
+PINMUX_L2SW_LED_ON1,
+PINMUX_L2SW_MAC_SMI_MDIO,
+PINMUX_L2SW_P0_MAC_RMII_T1,
+PINMUX_L2SW_P0_MAC_RMII_TXD0,
+PINMUX_L2SW_P0_MAC_RMII_TXD1,
+PINMUX_L2SW_P0_MAC_RMII_CRSDV,
+PINMUX_L2SW_P0_MAC_RMII_RXD0,
+PINMUX_L2SW_P0_MAC_RMII_RXD1,
+PINMUX_L2SW_P0_MAC_RMII_RXER,
+PINMUX_L2SW_P1_MAC_RMII_TXEN,
+PINMUX_L2SW_P1_MAC_RMII_TXD0,
+/*_G2.8_*/
+PINMUX_L2SW_P1_MAC_RMII_TXD1,
+PINMUX_L2SW_P1_MAC_RMII_CRSDV,
+PINMUX_L2SW_P1_MAC_RMII_RXD0,
+PINMUX_L2SW_P1_MAC_RMII_RXD1,
+PINMUX_L2SW_P1_MAC_RMII_RXER,
+PINMUX_DAISY_MODE,
+PINMUX_SDIO_CLK,
+PINMUX_SDIO_CMD,
+PINMUX_SDIO_D0,
+PINMUX_SDIO_D1,
+PINMUX_SDIO_D2,
+PINMUX_SDIO_D3,
+PINMUX_PWM0,
+PINMUX_PWM1,
+PINMUX_PWM2,
+PINMUX_PWM3,
+/*_G2.16_*/
+PINMUX_PWM4,
+PINMUX_PWM5,
+PINMUX_PWM6,
+PINMUX_PWM7,
+PINMUX_ICM0_D,
+PINMUX_ICM1_D,
+PINMUX_ICM2_D,
+PINMUX_ICM3_D,
+PINMUX_ICM0_CLK,
+PINMUX_ICM1_CLK,
+PINMUX_ICM2_CLK,
+PINMUX_ICM3_CLK,
+PINMUX_SPIM0_INT,
+PINMUX_SPIM0_CLK,
+PINMUX_SPIM0_EN,
+PINMUX_SPIM0_DO,
+/*_G2.24_*/
+PINMUX_SPIM0_DI,
+PINMUX_SPIM1_INT,
+PINMUX_SPIM1_CLK,
+PINMUX_SPIM1_CEN,
+PINMUX_SPIM1_DO,
+PINMUX_SPIM1_DI,
+PINMUX_SPIM2_INT,
+PINMUX_SPIM2_CLK,
+PINMUX_SPIM2_CEN,
+PINMUX_SPIM2_DO,
+PINMUX_SPIM2_DI,
+PINMUX_SPIM3_INT,
+PINMUX_SPIM3_CLK,
+PINMUX_SPIM3_CEN,
+/*_G2.31_*/
+PINMUX_SPIM3_DO,
+PINMUX_SPIM3_DI,
+
+/*_G3.0_*/
+PINMUX_SPI0S_INT=0x200,
+PINMUX_SPI0S_CLK,
+PINMUX_SPI0S_EN,
+PINMUX_SPI0S_DO,
+PINMUX_SPI0S_DI,
+PINMUX_SPI1S_INT,
+PINMUX_SPI1S_CLK,
+PINMUX_SPI1S_EN,
+PINMUX_SPI1S_DO,
+PINMUX_SPI1S_DI,
+PINMUX_SPI2S_INT,
+PINMUX_SPI2S_CLK,
+PINMUX_SPI2S_EN,
+PINMUX_SPI2S_DO,
+PINMUX_SPI2S_DI,
+PINMUX_SPI3S_INT,
+/*_G3.8_*/
+PINMUX_SPI3S_CLK,
+PINMUX_SPI3S_EN,
+PINMUX_SPI3S_DO,
+PINMUX_SPI3S_DI,
+PINMUX_I2CM0_CK,
+PINMUX_I2CM0_DAT,
+PINMUX_I2CM1_CK,
+PINMUX_I2CM1_DAT,
+PINMUX_I2CM2_CK,
+PINMUX_I2CM2_D,
+PINMUX_I2CM3_CK,
+PINMUX_I2CM3_D,
+PINMUX_UA1_TX,
+PINMUX_UA1_RX,
+PINMUX_UA1_CTS,
+PINMUX_UA1_RTS,
+/*_G3.16_*/
+PINMUX_UA2_TX,
+PINMUX_UA2_RX,
+PINMUX_UA2_CTS,
+PINMUX_UA2_RTS,
+PINMUX_UA3_TX,
+PINMUX_UA3_RX,
+PINMUX_UA3_CTS,
+PINMUX_UA3_RTS,
+PINMUX_UA4_TX,
+PINMUX_UA4_RX,
+PINMUX_UA4_CTS,
+PINMUX_UA4_RTS,
+PINMUX_TIMER0_INT,
+PINMUX_TIMER1_INT,
+PINMUX_TIMER2_INT,
+PINMUX_TIMER3_INT,
+/*_G3.24_*/
+PINMUX_GPIO_INT0,
+PINMUX_GPIO_INT1,
+PINMUX_GPIO_INT2,
+PINMUX_GPIO_INT3,
+PINMUX_GPIO_INT4,
+PINMUX_GPIO_INT5,
+PINMUX_GPIO_INT6,
+PINMUX_GPIO_INT7,
+
+}PINMUX_Type;
  
 #define __FPU_PRESENT             0       
 #define __TIM_PRESENT 			  0		  
@@ -436,12 +616,7 @@ typedef struct{
 }GROUP1_Type;
 
 typedef struct{
-   __IOM uint32_t pinmux_net[11];             /*!< \brief ethernet pinmux config */
-   __IOM uint32_t pinmux_sdio[3];             /*!< \brief sdio pinmux config */
-   __IOM uint32_t pinmux_pwm[4];              /*!< \brief pwm pinmux config */
-   __IOM uint32_t pinmux_icm_data[2];         /*!< \brief icm data pinmux config */
-   __IOM uint32_t pinmux_icm_clk[2];          /*!< \brief icm clk pinmux config */
-   __IOM uint32_t pinmux_spim[10];            /*!< \brief spi master pinmux config */
+   __IOM uint32_t pinmux_cfg[32];             /*!< \brief  pinmux config */
 }GROUP2_Type;
 
 typedef struct{
@@ -473,14 +648,22 @@ typedef struct
 
 typedef struct{
 	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
-	__IOM uint32_t stc_16_31;				 /*!< \brief  standard time clock counter, 16~31 bit */
+	__IOM uint32_t stc_31_16;				 /*!< \brief  standard time clock counter, 16~31 bit */
 	__IOM uint32_t stc_64;					 /*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
 	__IOM uint32_t stc_prescale_val;		
 	RESERVED(0[3], uint32_t)
 	__IOM uint32_t stc_config;	
 	RESERVED(1[6], uint32_t)
 	__IOM uint32_t stc_47_32;	
-	__IOM uint32_t stc_48_63;
+	__IOM uint32_t stc_63_48;
+	RESERVED(2[8], uint32_t)
+	__IOM uint32_t stcl_15_0;	
+	__IOM uint32_t stcl_31_16;
+	__IOM uint32_t stcl_32;
+	__IOM uint32_t atc_15_0;
+	__IOM uint32_t atc_31_16;
+	__IOM uint32_t atc_33_32;
+	RESERVED(3[2], uint32_t)
 }STC_TypeDef;
 
 
@@ -491,6 +674,161 @@ typedef struct
 	__IOM uint32_t reload_val;			/*!< \brief when count reaches to 0, the value will reload to the count >*/
 	__IOM uint32_t counter_val;					/*!< \brief 16-bit counter , it down to 0, the timer will generate the interrupt*/
 }TIM_TypeDef;
+
+
+
+typedef struct{
+    __IOM uint32_t dr;  /* data register */
+    __IOM uint32_t lsr; /* line status register */
+    __IOM uint32_t msr; /* modem status register */
+    __IOM uint32_t lcr; /* line control register */
+    __IOM uint32_t mcr; /* modem control register */
+    __IOM uint32_t div_l;
+    __IOM uint32_t div_h;
+    __IOM uint32_t isc; /* interrupt status/control */
+    __IOM uint32_t txr; /* tx residue */
+    __IOM uint32_t rxr; /* rx residue */
+    __IOM uint32_t thr; /* rx threshold */
+    __IOM uint32_t clk_src;
+}UART_CTRL_Type;
+
+typedef struct {
+   __IOM uint32_t rxdma_enable_sel;
+   __IOM uint32_t rxdma_start_addr;
+   __IOM uint32_t rxdma_timeout_set;
+   __IOM uint32_t rxdma_reserved;
+   __IOM uint32_t rxdma_wr_adr;
+   __IOM uint32_t rxdma_rd_adr;
+   __IOM uint32_t rxdma_length_thr;
+   __IOM uint32_t rxdma_end_addr;
+   __IOM uint32_t rxdma_databytes;
+   __IOM uint32_t rxdma_debug_info;
+}UART_Rxdma;
+
+typedef struct {
+   __IOM uint32_t txdma_enable;
+   __IOM uint32_t txdma_sel;
+   __IOM uint32_t txdma_start_addr;
+   __IOM uint32_t txdma_end_addr;
+   __IOM uint32_t txdma_wr_adr;
+   __IOM uint32_t txdma_rd_adr;
+   __IOM uint32_t txdma_status;
+   __IOM uint32_t txdma_tmr_unit;
+   __IOM uint32_t txdma_tmr_cnt;
+   __IOM uint32_t txdma_rst_done;
+}UART_Txdma;
+
+typedef struct {
+   __IOM uint32_t gdma_hw_ver;
+   __IOM uint32_t gdma_config;
+   __IOM uint32_t gdma_length;
+   __IOM uint32_t gdma_addr;
+   __IOM uint32_t gdma_port_mux;
+   __IOM uint32_t gdma_int_flag;
+   __IOM uint32_t gdma_int_en;
+   __IOM uint32_t gdma_software_reset_status;
+   __IOM uint32_t txdma_tmr_cnt;
+}UART_TxGdma;
+
+
+typedef struct{
+   // SPI_MASTER
+   __IOM uint32_t mst_tx_data_addr;
+   __IOM uint32_t mst_tx_data_3_2_1_0;
+   __IOM uint32_t mst_tx_data_7_6_5_4;
+   __IOM uint32_t mst_tx_data_11_10_9_8;
+   __IOM uint32_t mst_tx_data_15_14_13_12;
+   RESERVED(0[4], uint32_t);
+   __IOM uint32_t mst_rx_data_3_2_1_0;
+   __IOM uint32_t mst_rx_data_7_6_5_4;
+   __IOM uint32_t mst_rx_data_11_10_9_8;
+   __IOM uint32_t mst_rx_data_15_14_13_12;
+   __IOM uint32_t fifo_data;
+   __IOM uint32_t spi_status;
+   __IOM uint32_t spi_config;
+  RESERVED(1[1], uint32_t);
+   __IOM uint32_t spi_ctl_clk_sel;
+   __IOM uint32_t spi_byte_no;
+   __IOM uint32_t spi_int_busy;
+   __IOM uint32_t spi_dma_ctrl;
+   __IOM uint32_t spi_dma_length;
+   __IOM uint32_t spi_dma_addr;
+   RESERVED(2[1], uint32_t);
+   __IOM uint32_t spi_dma_status;
+   RESERVED(3[1], uint32_t);
+   __IOM uint32_t uart_dma_ctrl;
+   RESERVED(4[1], uint32_t);
+   __IOM uint32_t spi_mst_debug_sel;
+   __IOM uint32_t spi_combo_debug_sel;
+   __IOM uint32_t spi_extra_cycle;
+   __IOM uint32_t spi_dma_data_rdy;
+}SPI_TypeDef;
+
+typedef struct
+{
+	__IOM uint32_t pll_ctrl;			/*!< \brief sp7021 q628 system PLL set >*/
+	__IOM uint32_t clk_setting;			/*!< \brief sp7021 q628 system clock set and selection >*/
+
+}SYS_CLKDef;
+
+
+#define STATIC_ASSERT(b) extern int _static_assert[b ? 1 : -1]
+
+struct _PWM_DD_REG_ {
+   union {
+      struct {
+         uint32_t dd             :16;//b(0-15)
+         uint32_t :16;
+      };
+      uint32_t idx_all;
+   };
+};
+STATIC_ASSERT(sizeof(struct _PWM_DD_REG_) == 4);
+
+struct _PWM_DU_REG_ {
+   union {
+      struct {
+         uint32_t pwm_du            :8;   //b(0-7)
+         uint32_t pwm_du_dd_sel     :2;   //b(8-9)
+         uint32_t                :6;   //b(10-15)
+         uint32_t :16;
+      };
+      uint32_t idx_all;
+   };
+};
+STATIC_ASSERT(sizeof(struct _PWM_DU_REG_) == 4);
+
+typedef struct {
+   //GROUP 244
+   union {
+      struct {
+         uint32_t pwm_en            :8;   //b(0-7)
+         uint32_t pwm_bypass        :8;   //b(8-15)
+         uint32_t :16;
+      };
+      uint32_t grp244_0;
+   };
+   union {
+      struct {
+         uint32_t pwm_cnt0_en       :1;   //b(0)
+         uint32_t pwm_cnt1_en       :1;   //b(1)
+         uint32_t pwm_cnt2_en       :1;   //b(2)
+         uint32_t pwm_cnt3_en       :1;   //b(3)
+         uint32_t pwm_clk54_en      :1;   //b(4)
+         uint32_t                :3;   //b(5-7)
+         uint32_t pwm_dd0_sync_off  :1;   //b(8)
+         uint32_t pwm_dd1_sync_off  :1;   //b(9)
+         uint32_t pwm_dd2_sync_off  :1;   //b(10)
+         uint32_t pwm_dd3_sync_off  :1;   //b(11)
+         uint32_t                :4;   //b(12-15)
+         uint32_t :16;
+      };
+      uint32_t grp244_1;
+   };
+   struct _PWM_DD_REG_ pwm_dd[4];      //G244.2~5
+   struct _PWM_DU_REG_ pwm_du[8];      //G244.6~13
+   uint32_t grp244_14_31[18];
+}PWM_TypeDef;
 
 
 #define SP_IRQ_CTRL  ((IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
@@ -531,13 +869,27 @@ typedef struct
 
 /*SP7021 module clock enable bit*/
 #define MODULE_CLK_EN_BASE	RF_GRP(0, 1)
+#define CLK_EN       ((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
 
 /*SP7021 module clock enable bit*/
 #define MODULE_CLK_GATE_BASE RF_GRP(0, 11)
+#define CLK_GATE     ((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
 
 /*SP7021 module rest bit*/
 #define MODULE_RESET_BASE RF_GRP(0, 21)
+#define MODULE_REST     ((Module_Reset_Type*) MODULE_RESET_BASE)
 
+#define MOON1_GROUP_BASE    RF_GRP(1,0)
+#define PINMUX_1_CFG    ((GROUP1_Type*) MOON1_GROUP_BASE)
+
+#define MOON2_GROUP_BASE    RF_GRP(2,0)
+#define PINMUX_2_CFG    ((GROUP2_Type*) MOON2_GROUP_BASE)
+
+#define MOON3_GROUP_BASE    RF_GRP(3,0)
+#define PINMUX_3_CFG    ((GROUP3_Type*) MOON3_GROUP_BASE)
+
+#define PWM_BASE            RF_GRP(244, 0)
+#define PWM_CTRL_REG    ((PWM_TypeDef *)PWM_BASE)
 
 
 /*TIMER0 & TIMER1 is a group*/
@@ -557,9 +909,18 @@ typedef struct
 #define TIM7_BASE RF_GRP(99, 20)
 
 
+/*Standard Time Clock (STC)*/
+#define STC0_BASE  RF_GRP(12, 0)
+#define STC1_BASE  RF_GRP(96, 0)
+#define STC2_BASE  RF_GRP(97, 0)
+#define STC3_BASE  RF_GRP(99, 0)
+
+#define SYSCLK_BASE RF_GRP(4, 26)
+#define SYS_CLK			((SYS_CLKDef*)SYSCLK_BASE)
 #define CLK_EN			((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
 #define CLK_GATE		((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
 #define MODULE_REST		((Module_Reset_Type*) MODULE_RESET_BASE)
+
 #define TIM0			((TIM_TypeDef *) TIM0_BASE)
 #define TIM1			((TIM_TypeDef *) TIM1_BASE)
 #define TIM2			((TIM_TypeDef *) TIM2_BASE)
@@ -569,8 +930,170 @@ typedef struct
 #define TIM6			((TIM_TypeDef *) TIM6_BASE)
 #define TIM7			((TIM_TypeDef *) TIM7_BASE)
 
+#define STC0		((STC_TypeDef *)STC0_BASE)
+#define STC1		((STC_TypeDef *)STC1_BASE)
+#define STC2		((STC_TypeDef *)STC2_BASE)
+#define STC3		((STC_TypeDef *)STC3_BASE)
 
 
+/*  gpio register */
+
+#define GPIO_FIRST(X)   (RF_GRP(101, (25+X)))
+#define GPIO_MASTER(X)  (RF_GRP(6, (0+X)))
+#define GPIO_OE(X)      (RF_GRP(6, (8+X)))
+#define GPIO_OUT(X)     (RF_GRP(6, (16+X)))
+#define GPIO_IN(X)      (RF_GRP(6, (24+X)))
+#define GPIO_I_INV(X)   (RF_GRP(7, (0+X)))
+#define GPIO_O_INV(X)   (RF_GRP(7, (8+X)))
+#define GPIO_OD(X)      (RF_GRP(7, (16+X)))
+
+
+/* uart register */
+
+#define UART0_BASE      RF_GRP(18, 0)
+#define UART1_BASE      RF_GRP(19, 0)
+#define UART2_BASE      RF_GRP(16, 0)
+#define UART3_BASE      RF_GRP(17, 0)
+#define UART4_BASE      RF_GRP(271, 0)
+
+
+#define SP_UART0        ((UART_CTRL_Type *)UART0_BASE)
+#define SP_UART1        ((UART_CTRL_Type *)UART1_BASE)
+#define SP_UART2        ((UART_CTRL_Type *)UART2_BASE)
+#define SP_UART3        ((UART_CTRL_Type *)UART3_BASE)
+#define SP_UART4        ((UART_CTRL_Type *)UART4_BASE)
+
+
+#define UART_RXDMA0_BASE      RF_GRP(275, 0)
+#define UART_RXDMA1_BASE      RF_GRP(275, 16)
+
+#define SP_UART_RXDMA0_CTRL   ((volatile UART_Rxdma*) UART_RXDMA0_BASE)
+#define SP_UART_RXDMA1_CTRL   ((volatile UART_Rxdma*) UART_RXDMA1_BASE)
+
+
+#define UART_TXDMA0_BASE      RF_GRP(276, 0)
+#define UART_TXDMA1_BASE      RF_GRP(276, 16)
+
+#define SP_UART_TXDMA0_CTRL   ((volatile UART_Txdma*) UART_TXDMA0_BASE)
+#define SP_UART_TXDMA1_CTRL   ((volatile UART_Txdma*) UART_TXDMA1_BASE)
+
+#define UART_TXGDMA0_BASE     RF_GRP(273, 0)
+#define UART_TXGDMA1_BASE     RF_GRP(273, 16)
+
+#define SP_UART_TXGDMA0_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA0_BASE)
+#define SP_UART_TXGDMA1_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA1_BASE)
+
+
+#define SPI0_BASE      RF_GRP(91, 0)
+#define SPI1_BASE      RF_GRP(489, 0)
+#define SPI2_BASE      RF_GRP(492, 0)
+#define SPI3_BASE      RF_GRP(495, 0)
+
+
+#define SPI0        ((volatile SPI_TypeDef *)SPI0_BASE)
+#define SPI1        ((volatile SPI_TypeDef *)SPI1_BASE)
+#define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
+#define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
+
+
+/*
+UART LCR register BIT
+*/
+#define LCR_VOTE_BIT                (0x3 << 6)
+#define LCR_BREAK_CONDITION_BIT     (0x1 << 5)
+#define LCR_PARITY_BIT              (0x1 << 4)
+#define LCR_PARITY_ENABLE_BIT       (0x1 << 3)
+#define LCR_STOP_BIT_BIT            (0x1 << 2)
+#define LCR_WORD_LEN_BIT            (0x3 << 0)
+
+/* UART MCR register BIT */
+#define MCR_AUTO_CALIBRATE_BIT         (0x1 << 7)
+#define MCR_AUTO_CTS_BIT               (0x1 << 6)
+#define MCR_AUTO_RTS_BIT               (0x1 << 5)
+#define MCR_LOOP_BACK_BIT              (0x1 << 4)
+#define MCR_RING_INDICATOR_BIT         (0x1 << 3)
+#define MCR_DCD_BIT                    (0x1 << 2)
+#define MCR_RTS_BIT                    (0x1 << 1)
+#define MCR_DTS_BIT                    (0x1 << 0)
+
+/* interrupt */
+#define SP_UART_LSR_BC     (1 << 5) /* break condition */
+#define SP_UART_LSR_FE     (1 << 4) /* frame error */
+#define SP_UART_LSR_OE     (1 << 3) /* overrun error */
+#define SP_UART_LSR_PE     (1 << 2) /* parity error */
+#define SP_UART_LSR_RX     (1 << 1) /* 1: receive fifo not empty */
+#define SP_UART_LSR_TX     (1 << 0) /* 1: transmit fifo is not full */
+
+/* isc */
+#define SP_UART_ISC_MSM    (1 << 7) /* Modem status ctrl */
+#define SP_UART_ISC_LSM    (1 << 6) /* Line status interrupt */
+#define SP_UART_ISC_RXM    (1 << 5) /* RX interrupt, when got some input data */
+#define SP_UART_ISC_TXM    (1 << 4) /* TX interrupt, when trans start */
+#define HAS_UART_ISC_FLAGMASK 0x0F
+#define SP_UART_ISC_MS     (1 << 3)
+#define SP_UART_ISC_LS     (1 << 2)
+#define SP_UART_ISC_RX     (1 << 1)
+#define SP_UART_ISC_TX     (1 << 0)
+
+/* DMA-RX, dma_enable_sel */
+#define DMA_INT            (1 << 31)
+#define DMA_MSI_ID_SHIFT   12
+#define DMA_MSI_ID_MASK    (0x7F << DMA_MSI_ID_SHIFT)
+#define DMA_SEL_UARTX_SHIFT   8
+#define DMA_SEL_UARTX_MASK (0x07 << DMA_SEL_UARTX_SHIFT)
+#define DMA_SW_RST_B    (1 << 7)
+#define DMA_INIT        (1 << 6)
+#define DMA_GO          (1 << 5)
+#define DMA_AUTO_ENABLE    (1 << 4)
+#define DMA_TIMEOUT_INT_EN (1 << 3)
+#define DMA_P_SAFE_DISABLE (1 << 2)
+#define DMA_PBUS_DATA_SWAP (1 << 1)
+#define DMA_ENABLE         (1 << 0)
+
+#define UART_LSR_TRANSMIT_FIFO_STATUS        (1 << 0)
+#define UART_LSR_RECEIVE_FIFO_STATUS         (1 << 1)
+
+
+
+/* SPI MST CONFIG */
+#define CLK_DIVIDER(x)         (x<<16)
+#define FINISH_FLAG_MASK       (1<<15)
+#define RX_FULL_FLAG_MASK      (1<<14)
+#define RX_EMP_FLAG_MASK       (1<<13)
+#define TX_FULL_FLAG_MASK      (1<<12)
+#define TX_EMP_FLAG_MASK       (1<<11)
+#define WRITE_BYTE(x)          (x<<9)
+#define READ_BYTE(x)           (x<<7)
+#define FD_SEL                 (1<<6)
+#define CS_SEL                 (1<<5)
+#define LSB_SEL                (1<<4)
+#define DELAY_ENABLE           (1<<3)
+#define CPHA_W                 (1<<2)
+#define CPHA_R                 (1<<1)
+#define CPOL                   (1<<0)
+
+#define CLEAR_MASTER_INT      (1<<6)
+
+#define GET_LEN(x)            ((x>>24) & 0xFF)
+#define GET_TX_LEN(x)         ((x>>16) & 0xFF)
+#define GET_RX_CNT(x)         ((x>>12) & 0x0F)
+#define GET_TX_CNT(x)         ((x>>8)  & 0x0F)
+
+#define TOTAL_LENGTH(x)        (x<<24)
+#define TX_LENGTH(x)           (x<<16)
+#define RX_CNT                 (0x0F<<12)
+#define TX_CNT                 (0x0F<<12)
+#define SPI_BUSY               (1<<7)
+#define FINISH_FLAG            (1<<6)
+#define RX_FULL_FLAG           (1<<5)
+#define RX_EMP_FLAG            (1<<4)
+#define TX_FULL_FLAG           (1<<3)
+#define TX_EMP_FLAG            (1<<2)
+#define SPI_SW_RST             (1<<1)
+#define SPI_START_FD           (1<<0)
+
+#define SPI_TOTAL_SIZE         TOTAL_LENGTH(0xFF)     
+#define SPI_TX_SIZE            TX_LENGTH(0xFF)         
 
 /******************************************************************************/
 /*                                                                            */
@@ -582,7 +1105,7 @@ typedef struct
 /********************  Bit definition for STC register  ********************/
 
 #define STC_PRESCALER_Pos 	(0U)
-#define STC_PRESCALER_Msk	(0x7FFU << STC_PRESCALER_Pos) 	/*0x000007FF*/
+#define STC_PRESCALER_Msk	(0x7FFFU << STC_PRESCALER_Pos) 	/*0x000007FF*/
 #define STC_PRESCALER		STC_PRESCALER_Msk				/*STC prescale value */
 #define STC_TRIG_SRC_Pos 	(15U)							
 #define STC_TRIG_SRC_Msk	(1U << STC_TRIG_SRC_Pos)		/*0x00008000*/
@@ -591,6 +1114,22 @@ typedef struct
 #define STC_EXT_DIV_Msk		(0xFFU << STC_EXT_DIV_Pos)		/*0x000000FF*/
 #define STC_EXT_DIV			(STC_EXT_DIV_Msk)				/*The external clock divder for STC*/		
 
+/****************** STC Instances : All supported instances *******************/
+#define IS_STC_INSTANCE(INSTANCE)       (((INSTANCE) == STC0)   || \
+										           ((INSTANCE) == STC1)   || \
+                                         ((INSTANCE) == STC2)   || \
+                                         ((INSTANCE) == STC3))
+
+#define IS_SPI_ALL_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SPI0) || \
+                                           ((__INSTANCE__) == SPI1) || \
+                                           ((__INSTANCE__) == SPI2) || \
+                                           ((__INSTANCE__) == SPI3))
+
+#define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART0) || \
+                                    ((__INSTANCE__) == SP_UART1) || \
+                                    ((__INSTANCE__) == SP_UART2) || \
+                                    ((__INSTANCE__) == SP_UART3)  || \
+                                    ((__INSTANCE__) == SP_UART4))
 
 /******************************************************************************/
 /*                                                                            */
@@ -621,6 +1160,138 @@ typedef struct
                                          ((INSTANCE) == TIM6)   || \
                                          ((INSTANCE) == TIM7))
 
+
+/******************************************************************************/
+/*                                                                            */
+/*                       System clock 		                                  */
+/*                                                                            */
+/******************************************************************************/
+/********************  Bit definition for system clock register ***************/
+#define PLLSYS_NS_Pos				(0)
+#define PLLSYS_NS_Msk				(0xF << PLLSYS_NS_Pos)				/*0x0000000F*/
+#define PLLSYS_NS					PLLSYS_NS_Msk						/*PLL Feedback Divder control*/
+#define PLLSYS_ICP_Pos				(4)
+#define PLLSYS_ICP_Msk				(7U << PLLSYS_ICP_Pos)				/*0x00000070*/
+#define PLLSYS_ICP					PLLSYS_ICP_Msk						/*PLL charge pump current adjust*/
+#define PLLSYS_GAIN_Pos				(7)
+#define PLLSYS_GAIN_Msk				(3U << PLLSYS_GAIN_Pos)				/*0x00000180*/
+#define PLLSYS_BYPASS_Pos			(9)
+#define PLLSYS_BYPASS_Msk			(1 << PLLSYS_BYPASS_Pos)			/*PLL Bypass 0:normal mode; 1:output 27MHz*/
+#define PLLSYS_BYPASS				(PLLSYS_BYPASS_Msk)	
+#define PLLSYS_POWER_EN_Pos			(10)
+#define PLLSYS_POWER_EN_Msk			(1 << PLLSYS_POWER_EN_Pos)			/*0x00000400*/
+#define PLLSYS_OUTCLK_DIV_Pos		(11)
+#define PLLSYS_OUTCLK_DIV_Msk		(3U << PLLSYS_OUTCLK_DIV_Pos)		/*it only for pinmux or for pll system test mode*/
+#define PLLSYS_OUTCLK_DIV			(PLLSYS_OUTCLK_DIV_Msk)
+#define PLLSYS_CLK_BYPASS_Pos		(13)
+#define PLLSYS_CLK_BYPASS_Msk		(1U << PLLSYS_CLK_BYPASS_Pos)
+#define PLLSYS_CLK_BYPASS			(PLLSYS_CLK_BYPASS_Msk)
+
+#define CLK_27M_POLARITY_Pos			(0)
+#define CLK_27M_POLARITY_Msk			(1U << CLK_27M_POLARITY_Pos)			/*0x00000001*/
+#define CLK_27M_POLARITY				(CLK_27M_POLARITY_Msk)				/*27MHz clock polarity adjut 0: phase same as crystal, 1:phase is inversed with crystal*/
+#define CPIOCLK_POLARITY_Pos		(1)
+#define CPIOCLK_POLARITY_Msk		(1U << CPIOCLK_POLARITY_Pos)
+#define CPIOCLK_POLARITY			(CPIOCLK_POLARITY_Msk)
+#define SPINAND_CLK_SRC_Pos			(2)
+#define SPINAND_CLK_SRC_Msk			(3U << SPINAND_CLK_SRC_Pos)
+#define SPINAND_CLK_SRC				(SPINAND_CLK_SRC_Msk)
+#define SYSCLK_DIV_Pos				(4)
+#define SYSCLK_DIV_Msk				(0xF << SYSCLK_DIV_Pos)
+#define SYSCLK_DIV					(SYSCLK_DIV_Msk)
+#define	SPICLK_SRC_Pos				(8)
+#define SPICLK_SRC_Msk				(3U << SPICLK_SRC_Pos)
+#define SPICLK_SRC					(SPICLK_SRC_Msk)
+#define EXT27MCLK_EN_Pos			(10)
+#define EXT27MCLK_EN_Msk			(1U << EXT27MCLK_EN_Pos)
+#define EXT27MCLK_EN				(EXT27MCLK_EN_Msk)
+#define ARM926CLK_DIV_Pos			(11)
+#define	ARM926CLK_DIV_Msk			(0xFF << ARM926CLK_DIV_Pos)
+/******************************************************************************/
+/*                                                                            */
+/*                        gpio/pinmux define                                  */
+/*                                                                            */
+/******************************************************************************/
+#define GPIO_P0_00    0
+#define GPIO_P0_01    1
+#define GPIO_P0_02    2
+#define GPIO_P0_03    3
+#define GPIO_P0_04    4
+#define GPIO_P0_05    5
+#define GPIO_P0_06    6
+#define GPIO_P0_07    7
+#define GPIO_P1_00    8
+#define GPIO_P1_01    9
+#define GPIO_P1_02    10
+#define GPIO_P1_03    11
+#define GPIO_P1_04    12
+#define GPIO_P1_05    13
+#define GPIO_P1_06    14
+#define GPIO_P1_07    15
+#define GPIO_P2_00    16
+#define GPIO_P2_01    17
+#define GPIO_P2_02    18
+#define GPIO_P2_03    19
+#define GPIO_P2_04    20
+#define GPIO_P2_05    21
+#define GPIO_P2_06    22
+#define GPIO_P2_07    23
+#define GPIO_P3_00    24
+#define GPIO_P3_01    25
+#define GPIO_P3_02    26
+#define GPIO_P3_03    27
+#define GPIO_P3_04    28
+#define GPIO_P3_05    29
+#define GPIO_P3_06    30
+#define GPIO_P3_07    31
+#define GPIO_P4_00    32
+#define GPIO_P4_01    33
+#define GPIO_P4_02    34
+#define GPIO_P4_03    35
+#define GPIO_P4_04    36
+#define GPIO_P4_05    37
+#define GPIO_P4_06    38
+#define GPIO_P4_07    39
+#define GPIO_P5_00    40
+#define GPIO_P5_01    41
+#define GPIO_P5_02    42
+#define GPIO_P5_03    43
+#define GPIO_P5_04    44
+#define GPIO_P5_05    45
+#define GPIO_P5_06    46
+#define GPIO_P5_07    47
+#define GPIO_P6_00    48
+#define GPIO_P6_01    49
+#define GPIO_P6_02    50
+#define GPIO_P6_03    51
+#define GPIO_P6_04    52
+#define GPIO_P6_05    53
+#define GPIO_P6_06    54
+#define GPIO_P6_07    55
+#define GPIO_P7_00    56
+#define GPIO_P7_01    57
+#define GPIO_P7_02    58
+#define GPIO_P7_03    59
+#define GPIO_P7_04    60
+#define GPIO_P7_05    61
+#define GPIO_P7_06    62
+#define GPIO_P7_07    63
+#define GPIO_P8_00    64
+#define GPIO_P8_01    65
+#define GPIO_P8_02    66
+#define GPIO_P8_03    67
+#define GPIO_P8_04    68
+#define GPIO_P8_05    69
+#define GPIO_P8_06    70
+#define GPIO_P8_07    71
+
+#define IS_GPIO_PIN(pin)         (((pin) >= GPIO_P0_00) && ((pin) <= GPIO_P8_07))
+
+#define IS_PINMUX_PIN(pin)       (((pin) >= GPIO_P1_00) && ((pin) <= GPIO_P8_07))
+
+#define IS_VALID_PINMUX(pin)     (((pin) >= (GPIO_P1_00-7)) && ((pin) <= (GPIO_P8_07-7)))
+
+#define GPIO_TO_PINMUX(x)        IS_PINMUX_PIN(x)?((x)-7):-1
 
 #ifdef __cplusplus
 }

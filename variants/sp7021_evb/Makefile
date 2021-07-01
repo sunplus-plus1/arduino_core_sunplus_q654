@@ -34,18 +34,19 @@ LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dir
 CMSIS_HEADER += $(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include
 CMSIS_DEVICE_HEADER += $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Include
 HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
-#HAL_DRIVER_HEADER += $(TOP)/system/sp7021
+SYSTEM_SP7021_SRC += $(TOP)/system/sp7021
 ARDUNIO_HEADER += $(TOP)/cores/arduino
 #ARDUNIO_HEADER += $(TOP)/variants/sp7021_evb
 CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
 WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
+SPI_SRC = $(TOP)/libraries/SPI/src
 TEST_SRC = $(TOP)/libraries/test
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(TEST_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(TEST_SRC)
 
 
 CFLAGS += -MMD -O1
@@ -56,6 +57,7 @@ CFLAGS += -static
 CFLAGS += -nodefaultlibs
 CFLAGS += -ffunction-sections -fdata-sections 
 CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
+CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu11
 CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
 CFLAGS += -I$(CMSIS_HEADER)
 CFLAGS += -I$(CMSIS_DEVICE_HEADER)
@@ -63,7 +65,7 @@ CFLAGS += -I$(HAL_DRIVER_HEADER)
 CFLAGS += -I$(ARDUNIO_HEADER)/sunplus
 CFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CFLAGS += -I$(ARDUNIO_HEADER)
-CFLAGS += -I$(TOP)/system/sp7021
+CFLAGS += -I$(SYSTEM_SP7021_SRC)
 CFLAGS += -I$(TOP)/variants/sp7021_evb
 CFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
 
@@ -82,7 +84,7 @@ CXXFLAGS += -I$(HAL_DRIVER_HEADER)
 CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus
 CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
 CXXFLAGS += -I$(ARDUNIO_HEADER)
-CXXFLAGS += -I$(TOP)/system/sp7021
+CXXFLAGS += -I$(SYSTEM_SP7021_SRC)
 CXXFLAGS += -I$(TOP)/variants/sp7021_evb
 CFLAGS += -I$(ARDUINO_HEADER)
 CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
@@ -98,24 +100,67 @@ CSOURCES += i2c_mas.c
 
 
 # common
-CSOURCES += $(COMMON_DIR)/common.c
+CSOURCES += $(COMMON_DIR)/common.c $(COMMON_DIR)/cpu_util.c
 
 # mon
 #CSOURCES += mon/monitor.c
 
 # interrupt
-CSOURCES += $(COMMON_DIR)/sp_interrupt.c
+#CSOURCES += $(COMMON_DIR)/sp_interrupt.c 
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
-CSOURCES += sunplus_def.c
+CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c wiring_digital.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
-CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp
+CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp spi_test.cpp
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp
 
 
 # HAL
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC)))
-#CSOURCES += $(ARDUINO_SRC)/WInterrupts.c
+
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility $(SYSTEM_SP7021_SRC)))
+
+# OpenAMP
+MW_DIR = $(TOP)/system/Middlewares
+OPENAMP_SRC = $(MW_DIR)/OpenAMP/open-amp
+LIBMETAL_SRC = $(MW_DIR)/OpenAMP/libmetal/lib
+CFLAGS += -I$(LIBMETAL_SRC)/include -I$(OPENAMP_SRC)/lib/include -I$(OPENAMP_SRC)/apps/machine/a926
+
+# open-amp
+CSOURCES += $(OPENAMP_SRC)/lib/virtio/virtio.c \
+            $(OPENAMP_SRC)/lib/virtio/virtqueue.c \
+            $(OPENAMP_SRC)/lib/rpmsg/rpmsg.c \
+            $(OPENAMP_SRC)/lib/rpmsg/rpmsg_virtio.c \
+            $(OPENAMP_SRC)/lib/remoteproc/elf_loader.c \
+            $(OPENAMP_SRC)/lib/remoteproc/remoteproc.c \
+            $(OPENAMP_SRC)/lib/remoteproc/remoteproc_virtio.c \
+            $(OPENAMP_SRC)/lib/remoteproc/rsc_table_parser.c \
+            $(OPENAMP_SRC)/lib/proxy/rpmsg_retarget.c \
+            $(OPENAMP_SRC)/apps/machine/a926/a926_rproc.c \
+            $(OPENAMP_SRC)/apps/machine/a926/platform_info.c \
+            $(OPENAMP_SRC)/apps/machine/a926/rsc_table.c \
+            $(OPENAMP_SRC)/apps/examples/echo/rpmsg-echo.c \
+
+# libmetal
+CFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
+CSOURCES += $(LIBMETAL_SRC)/dma.c \
+            $(LIBMETAL_SRC)/device.c \
+            $(LIBMETAL_SRC)/init.c \
+            $(LIBMETAL_SRC)/io.c \
+            $(LIBMETAL_SRC)/irq.c \
+            $(LIBMETAL_SRC)/log.c \
+            $(LIBMETAL_SRC)/shmem.c \
+            $(LIBMETAL_SRC)/shmem-provider.c \
+            $(LIBMETAL_SRC)/softirq.c \
+            $(LIBMETAL_SRC)/version.c \
+            $(LIBMETAL_SRC)/system/generic/condition.c \
+            $(LIBMETAL_SRC)/system/generic/device.c \
+            $(LIBMETAL_SRC)/system/generic/init.c \
+            $(LIBMETAL_SRC)/system/generic/io.c \
+            $(LIBMETAL_SRC)/system/generic/irq.c \
+            $(LIBMETAL_SRC)/system/generic/time.c \
+            $(LIBMETAL_SRC)/system/generic/a926/sys.c \
+
 
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
@@ -166,9 +211,13 @@ $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 	$P $(CC) $(CFLAGS) -c -o $@ $<
 
 
-%.o: %.c*
+%.o: %.c
 	$(Pecho) "  CC   $<"
 	$P $(CC) $(CFLAGS) -c -o $@ $<
+
+%.o: %.cpp
+	$(Pecho) "  CXX  $<"
+	$P $(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	$P -rm -f $(OBJS) $(DEPS) rom.d >/dev/null
