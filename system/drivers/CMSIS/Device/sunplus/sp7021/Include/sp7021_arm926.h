@@ -620,15 +620,8 @@ typedef struct{
 }GROUP2_Type;
 
 typedef struct{
-   __IOM uint32_t pinmux_spis[10];             /*!< \brief spi salver pinmux config */
-   __IOM uint32_t pinmux_i2cm[4];              /*!< \brief i2cm pinmux config */
-   __IOM uint32_t pinmux_ua1[2];               /*!< \brief uart1 pinmux config */
-   __IOM uint32_t pinmux_ua2[2];               /*!< \brief uart2 pinmux config */
-   __IOM uint32_t pinmux_ua3[2];               /*!< \brief uart3 pinmux config */
-   __IOM uint32_t pinmux_ua4[2];               /*!< \brief uart4 pinmux config */
-   __IOM uint32_t pinmux_timer_int[2];         /*!< \brief timer interrupt master pinmux config */
-   __IOM uint32_t pinmux_gpio_int[4];          /*!< \brief gpio interrupt pinmux config */
-   RESERVED(0[14], uint32_t)                    /*!< reserved */
+   __IOM uint32_t pinmux_cfg[28];             /*!< \brief  pinmux config */
+   RESERVED(0[4], uint32_t)                    /*!< reserved */
 }GROUP3_Type;
 
 typedef struct

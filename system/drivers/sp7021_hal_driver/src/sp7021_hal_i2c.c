@@ -44,7 +44,9 @@ void HAL_I2C_TEST()
 	i2c_test.Init.freq = 100;
 
 	HAL_I2C_Init(&i2c_test);
-	HAL_I2C_PinMux(&i2c_test, PINMUX_PIN3_05, PINMUX_PIN3_03);//	29,27
+	//HAL_I2C_PinMux(&i2c_test, PINMUX_PIN3_05, PINMUX_PIN3_03);//	29,27
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_CK, PINMUX_PIN3_03);//27
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_DAT, PINMUX_PIN3_05);//29
 
 	*tx_buffer[i2c_test.Index] = 0x2400;
 
@@ -63,7 +65,7 @@ void HAL_I2C_TEST()
 	int RH_H = RH / 100;
 	printf("temperature:%d, humidity:%d\n ", (temp_H<<8)|temp_L, (RH_H<<8)|RH_L);
 }
-
+#if 0 
 /* 
   SP7021 have the function of Pin Multiplex. Here set pin for an external interrupt to use
   by configuring the Pinmux control register.
@@ -73,7 +75,7 @@ void HAL_I2C_PinMux(I2C_HandleTypeDef *hi2c, int sda_pinmux, int scl_pinmux)
 	SP_PIN_MUX_CTRL3->pinmux_i2cm[hi2c->Index] = RF_MASK_V(0x7f, scl_pinmux);
 	SP_PIN_MUX_CTRL3->pinmux_i2cm[hi2c->Index] = RF_MASK_V(0x7f << 8, sda_pinmux << 8);
 }
-
+#endif
 void HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
 {
 	if (hi2c == NULL)

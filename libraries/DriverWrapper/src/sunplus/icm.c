@@ -70,7 +70,7 @@ void ICM_Initialization()
 #ifdef TEST_PWM
 	/* config pwm */
 	PWM_InitTypeDef PWM_Init={0};
-	PWM_Init.Pin = PINMUX_PIN4_06;
+	PWM_Init.Pin = PINMUX_PIN2_01;
 	PWM_Init.pwm_num = PWM0;
 	PWM_Init.pwm_freq = 8000;
 	PWM_Init.duty_cycle = 50;
