@@ -432,7 +432,7 @@ typedef struct{
 typedef struct{
 	__IM uint32_t test_mode_config; 				  /*!< \brief chip test mode config*/
 	__IOM uint32_t pinmux_cfg[4]; 				  /*!< \brief pinmux config */
-	__IOM uint32_t reserved[17];			        /*!< reserved */
+	RESERVED(0[17], uint32_t)                    /*!< reserved */
 }GROUP1_Type;
 
 typedef struct{
@@ -453,7 +453,7 @@ typedef struct{
    __IOM uint32_t pinmux_ua4[2];               /*!< \brief uart4 pinmux config */
    __IOM uint32_t pinmux_timer_int[2];         /*!< \brief timer interrupt master pinmux config */
    __IOM uint32_t pinmux_gpio_int[4];          /*!< \brief gpio interrupt pinmux config */
-   __IOM uint32_t reserved[14];                /*!< reserved */
+   RESERVED(0[14], uint32_t)                    /*!< reserved */
 }GROUP3_Type;
 
 typedef struct
@@ -462,12 +462,12 @@ typedef struct
   __IOM uint32_t polarity[7];          /*!< \brief  interrupt polarity 0:high-active(default) 1:low-active*/
   __IOM uint32_t priority[7];          /*!< \brief  interrupt piority 0:fiq(default), 1:irq */
   __IOM  uint32_t mask[7];              /*!< \brief  mask interrupt bit 0:masked(default) 1:pass */
-  RESERVED(1[4], uint32_t)
+  RESERVED(0[4], uint32_t)
   	__OM uint32_t clear[7]; 		   /*!< \brief  clear interrupt bit */
   __IM uint32_t masked_fiq[7];		   /*!< \brief  read masked fiq bit */
   __IM uint32_t masked_irq[7];		   /*!< \brief  read masked irq bit */
   __IOM uint32_t dsp_mask[7];		   /*!< \brief  mask dsp interrupt bit 0:masked(default) 1:pass */
-  RESERVED(2[3], uint32_t)
+  RESERVED(1[3], uint32_t)
   __IM uint32_t group; 
 }IRQ_Ctrl_Type;
 

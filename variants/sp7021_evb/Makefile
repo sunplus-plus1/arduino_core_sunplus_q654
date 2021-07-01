@@ -94,6 +94,8 @@ SPI_HEX := spi_all.hex
 # Boot up
 ASOURCES = start.S
 CSOURCES = main.c
+CSOURCES += i2c_mas.c
+
 
 # common
 CSOURCES += $(COMMON_DIR)/common.c

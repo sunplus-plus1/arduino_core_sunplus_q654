@@ -8,9 +8,16 @@
 #include "stc.h"
 #include "gpio_drv.h"
 
+#ifdef ICM_TEST
 #include "icm.h"
+#endif
 
 #include "HardwareTimer.h"
+
+#define I2C_TEST
+#ifdef I2C_TEST
+#include "sp7021_hal_i2c.h"
+#endif
 
 #define A_and_B_chip   //A and B chip running simultaneously
 //#define A_chip_only       //A chip only
@@ -31,10 +38,10 @@ extern char __vectors_start[];
 extern char __vectors_end[];
 
 
-#ifdef I2C_TEST
-u8	data_buf[255];
-u8	tx_buf[255];
-#endif
+//#ifdef I2C_TEST
+//u8	data_buf[255];
+//u8	tx_buf[255];
+//#endif
 
 //#define ARDUINO_INTR_SAMPLE
 #ifdef ARDUINO_INTR_SAMPLE
@@ -137,9 +144,9 @@ void hw_init()
 int main(void)
 {
 
-#ifdef I2C_TEST
-    unsigned int test;
-#endif
+//#ifdef I2C_TEST
+//   unsigned int test;
+//#endif
 
 
 
@@ -182,10 +189,10 @@ int main(void)
 	sp_interrupt_setup();
 	ipc_start();
 
-#ifdef I2C_TEST
-	sp_i2c_master_init();
-	sp_i2c_master_set_freq_khz(0, 100);
-#endif
+//#ifdef I2C_TEST
+//	sp_i2c_master_init();
+//	sp_i2c_master_set_freq_khz(0, 100);
+//#endif
 
 	printf("NonOS boot OK!!!\n");
 	task_dbg();
@@ -304,6 +311,62 @@ void icm_test()
 }
 #endif
 
+#ifdef I2C_TEST
+extern void sp_i2c_read(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
+extern void sp_i2c_write(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
+extern void sp_i2c_dma_read(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
+extern void sp_i2c_dma_write(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
+extern void sp_i2c_master_set_freq_khz(unsigned int i2c_no, unsigned int freq);
+extern void sp_i2c_master_init(void);
+extern int i2c_check(unsigned int i2c_no);
+void i2c_test()
+{	
+	printf("I2C_TEST!!!!!!!!!\n");
+	uint8_t tx_buff[20];
+	uint8_t rx_buff[20];
+	tx_buff[0] = 0x24;
+	tx_buff[1] = 0x00;
+
+	sp_i2c_master_init();
+	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f, 14);//scl
+	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f << 8, 16 << 8);//sda
+	sp_i2c_master_set_freq_khz(0, 100);
+	sp_i2c_write(0, 0x44, tx_buff, 2);
+	while(i2c_check01(0));
+	sp_i2c_read(0, 0x44, rx_buff, 6);
+
+	//sp_i2c_dma_write(0, 0x44, tx_buff, 2);
+	//sp_i2c_dma_read(0, 0x44, rx_buff, 6);
+
+	int temp = (rx_buff[0] << 8) | rx_buff[1];
+	temp = temp * 17500/65536;
+	int temp_L = temp % 100;
+	int temp_H = temp/100 - 45;
+
+	int RH = (rx_buff[3] << 8) | rx_buff[4];
+	RH = RH * 10000/65536;
+	int RH_L = RH % 100;
+	int RH_H = RH / 100;
+	printf("temperature:%d, humidity:%d\n ", (temp_H<<8)|temp_L, (RH_H<<8)|RH_L);
+}
+#endif
+
+//#define TEMPWAVE
+#ifdef TEMPWAVE
+void temp_output_waveform(void)
+{
+	gpio_first_val_set(32, 1);
+	gpio_master_val_set(32, 1);
+	gpio_oe_val_set(32, 1);
+	while(1)
+	{
+		gpio_out_val_set(32, 1);
+		while(27000);
+		gpio_out_val_set(32, 0);
+		while(27000);
+	}
+}
+#endif
 int main(void)
 {
 #if 0 // MALLOC_TEST
@@ -314,27 +377,39 @@ int main(void)
 	free(p2);
 #endif
 
-#ifdef I2C_TEST
-    unsigned int test;
-#endif
+//#ifdef I2C_TEST
+//    unsigned int test;
+//#endif
 	printf("Build @%s, %s\n", __DATE__, __TIME__);
 	hw_init();
 	//AV1_STC_init();
 	/*initial interrupt vector table*/
 	int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
 
-
 	IRQ_Initialize();
 
 #ifdef TIMER_TEST
-	timer_test_init();
-	timer_test();
+	//timer_test_init();
+	//timer_test();
 #endif
-	//icm_test();
 
+#ifdef I2C_TEST
+	//HAL_I2C_TEST();
+	i2c_test();
+	//while(1)
+	//{
+	//	i2c_test();
+	//}
+#endif
 
-	//ICM_Initialization();
+#ifdef TEMPWAVE
+	temp_output_waveform();
+#endif
 
+//#define ICM_TEST
+#ifdef ICM_TEST
+	ICM_Initialization();
+#endif
 	//cbdma_test_init();
 	uart_isr_init();
 #ifdef INTR_SAMPLE
@@ -350,7 +425,7 @@ int main(void)
 	printf("NonOS boot OK!!!\n");
 	
 	extern void loop(void);
-	loop();
+	//loop();
 	//task_dbg();
 #if 0
     GPIO_F_SET(21,1);

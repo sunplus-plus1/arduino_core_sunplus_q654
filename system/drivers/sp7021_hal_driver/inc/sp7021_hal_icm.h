@@ -71,6 +71,11 @@ typedef struct
 	int fstate;
 }ICM_InitTypeDef;
 
+/* pinmux */
+#define	PINMUX_PIN2_01		10
+#define PINMUX_ICM_DATA		PINMUX_PIN2_01
+#define PINMUX_ICM_CLK		-1
+
 #define CONVERT(X) (*(volatile unsigned long *)(&(X)))
 
 #define MOON2_PIN_MUX_BASE RF_GRP(2, 0)
@@ -133,79 +138,13 @@ typedef struct
 
 #define ICM_MSK(field)  (((1 << field##_BITS) - 1) << field##_OFS)
 
-/* pin mux */
-#define	PINMUX_PIN1_00		1
-#define	PINMUX_PIN1_01		2
-#define	PINMUX_PIN1_02		3
-#define	PINMUX_PIN1_03		4
-#define	PINMUX_PIN1_04		5
-#define	PINMUX_PIN1_05		6
-#define	PINMUX_PIN1_06		7
-#define	PINMUX_PIN1_07		8
-#define	PINMUX_PIN2_00		9
-#define	PINMUX_PIN2_01		10
-#define	PINMUX_PIN2_02		11
-#define	PINMUX_PIN2_03		12
-#define	PINMUX_PIN2_04		13
-#define	PINMUX_PIN2_05		14
-#define	PINMUX_PIN2_06		15
-#define	PINMUX_PIN2_07		16
-#define	PINMUX_PIN3_00		17
-#define	PINMUX_PIN3_01		18
-#define	PINMUX_PIN3_02		19
-#define	PINMUX_PIN3_03		20
-#define	PINMUX_PIN3_04		21
-#define	PINMUX_PIN3_05		22
-#define	PINMUX_PIN3_06		23
-#define	PINMUX_PIN3_07		24
-#define	PINMUX_PIN4_00		25
-#define	PINMUX_PIN4_01		26
-#define	PINMUX_PIN4_02		27
-#define	PINMUX_PIN4_03		28
-#define	PINMUX_PIN4_04		29
-#define	PINMUX_PIN4_05		30
-#define	PINMUX_PIN4_06		31
-#define	PINMUX_PIN4_07		32
-#define	PINMUX_PIN5_00		33
-#define	PINMUX_PIN5_01		34
-#define	PINMUX_PIN5_02		35
-#define	PINMUX_PIN5_03		36
-#define	PINMUX_PIN5_04		37
-#define	PINMUX_PIN5_05		38
-#define	PINMUX_PIN5_06		39
-#define	PINMUX_PIN5_07		40
-#define	PINMUX_PIN6_00		41
-#define	PINMUX_PIN6_01		42
-#define	PINMUX_PIN6_02		43
-#define	PINMUX_PIN6_03		44
-#define	PINMUX_PIN6_04		45
-#define	PINMUX_PIN6_05		46
-#define	PINMUX_PIN6_06		47
-#define	PINMUX_PIN6_07		48
-#define	PINMUX_PIN7_00		49
-#define	PINMUX_PIN7_01		50
-#define	PINMUX_PIN7_02		51
-#define	PINMUX_PIN7_03		52
-#define	PINMUX_PIN7_04		53
-#define	PINMUX_PIN7_05		54
-#define	PINMUX_PIN7_06		55
-#define	PINMUX_PIN7_07		56
-#define	PINMUX_PIN8_00		57
-#define	PINMUX_PIN8_01		58
-#define	PINMUX_PIN8_02		59
-#define	PINMUX_PIN8_03		60
-#define	PINMUX_PIN8_04		61
-#define	PINMUX_PIN8_05		62
-#define	PINMUX_PIN8_06		63
-#define	PINMUX_PIN8_07		64
-
 /* function delaration */
 void HAL_ICM_Init(ICM_InitTypeDef *pICM_Init);
 void HAL_ICM_IRQHandler(ICM_InitTypeDef *pICM_Init);
-void HAL_ICM_PINMUX(ICM_InitTypeDef *pICM_Init);
+void HAL_ICM_PINMUX(ICM_InitTypeDef *pICM_Init, int data_pinmux, int clk_pinmux);
 
-void ICM_DATA_SetPinMux(ICM_InitTypeDef *pICM_Init);
-void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM_Init);
+void ICM_DATA_SetPinMux(ICM_InitTypeDef *pICM_Init, int data_pinmux);
+void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM_Init, int clk_pinmux);
 
 __STATIC_INLINE void ICM_Enable(ICM_InitTypeDef *pICM_Init)
 {

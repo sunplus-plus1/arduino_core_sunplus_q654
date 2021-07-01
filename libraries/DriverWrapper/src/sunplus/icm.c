@@ -27,11 +27,10 @@ void ICM_Initialization()
 	
 	//get_para_val();
 	muxsel = ICM_MUXSEL_INPUT0;
-	clksel = ICM_CLKSEL_32K;
+	clksel = ICM_CLKSEL_27M;
 	eemode = ICM_EEMODE_BOTH;
 	etimes = 4;
-	dtimes = 5;
-	Pin_data = PINMUX_PIN2_01;
+	dtimes = 3;
 
 	instance = SP_ICM0_REG;
 	index = get_instance_index((uint32_t)instance);
@@ -51,9 +50,11 @@ void ICM_Initialization()
 	HAL_ICM_Init(&ICM_Init[index]);
 
 	/* select pinmux :HAL_ICM_PINMUX must be called after setting clksel*/
-	if (Pin_data != -1) ICM_Init[index].Pin_data = Pin_data;
-	if (Pin_clk != -1) ICM_Init[index].Pin_clk = Pin_clk;
-	HAL_ICM_PINMUX(&ICM_Init[index]);
+	if (Pin_data != -1)
+		ICM_Init[index].Pin_data = Pin_data;
+	if (Pin_clk != -1)
+		ICM_Init[index].Pin_clk = Pin_clk;
+	HAL_ICM_PINMUX(&ICM_Init[index], PINMUX_ICM_DATA, PINMUX_ICM_CLK);
 
 	/* config interrupt*/
 	IRQn_Type irqn = ICM_Init[index].index + 92;
@@ -71,7 +72,7 @@ void ICM_Initialization()
 	PWM_InitTypeDef PWM_Init={0};
 	PWM_Init.Pin = PINMUX_PIN4_06;
 	PWM_Init.pwm_num = PWM0;
-	PWM_Init.pwm_freq = 20;
+	PWM_Init.pwm_freq = 8000;
 	PWM_Init.duty_cycle = 50;
 	HAL_PWM_INIT(&PWM_Init);
 	HAL_PWM_ENABLE(PWM0);
