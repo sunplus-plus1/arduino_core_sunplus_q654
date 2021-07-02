@@ -83,7 +83,7 @@ class SPISettings {
     {
       pinCS = -1;
       clk = SPI_SPEED_CLOCK_DEFAULT;
-      bOrder = LSBFIRST;
+      bOrder = MSBFIRST;
       dMode = SPI_MODE_0;
     }
   private:
@@ -251,7 +251,7 @@ class SPIClass {
         if (spiSettings[i].pinCS == _pin) {
           spiSettings[i].pinCS = -1;
           spiSettings[i].clk = SPI_SPEED_CLOCK_DEFAULT;
-          spiSettings[i].bOrder = LSBFIRST;
+          spiSettings[i].bOrder = MSBFIRST;
           spiSettings[i].dMode = SPI_MODE_0;
         }
       }
@@ -262,7 +262,7 @@ class SPIClass {
       for (uint8_t i = 0; i < NB_SPI_SETTINGS; i++) {
         spiSettings[i].pinCS = -1;
         spiSettings[i].clk = SPI_SPEED_CLOCK_DEFAULT;
-        spiSettings[i].bOrder = LSBFIRST;
+        spiSettings[i].bOrder = MSBFIRST;
         spiSettings[i].dMode = SPI_MODE_0;
       }
     }

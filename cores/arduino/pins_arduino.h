@@ -8,6 +8,7 @@
 static const uint8_t MOSI = PIN_SPI_MOSI;
 static const uint8_t MISO = PIN_SPI_MISO;
 static const uint8_t SCK  = PIN_SPI_SCK;
+static const uint8_t SSEL  = PIN_SPI_CS;
 
 #define NC    -1
 

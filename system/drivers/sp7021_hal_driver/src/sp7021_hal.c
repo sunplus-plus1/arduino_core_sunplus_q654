@@ -6,6 +6,9 @@
 #include "cmsis_compiler.h"
 #include "sp7021_hal_stc.h";
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define DEFAULT_SYS_STC_CLK	1000000			//1MHz
@@ -62,7 +65,9 @@ __weak void HAL_Delay(uint32_t Delay)
 
 uint32_t HAL_GetTick(void)
 {
-	return HAL_STC_GetCounter(&SysStandardTimeClk);
+	uint32_t ticks = 0;
+	ticks = (uint32_t)HAL_STC_GetCounter(&SysStandardTimeClk);
+	return ticks;
 }
 
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq)
@@ -172,4 +177,8 @@ void HAL_lreg(int group)
 	}
 }
 
+
+#ifdef __cplusplus
+}
+#endif
 

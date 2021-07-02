@@ -75,7 +75,7 @@ _start:
 	/*
 	 * Zero BSS
 	 */
-    ldr r0, =__bss_start
+    ldr r0, =__bss_start__
     ldr r1, =__bss_end__
     mov r2, #0x00000000
 clbss_l:

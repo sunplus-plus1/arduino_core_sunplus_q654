@@ -1,12 +1,10 @@
 .global _SP__vectors
 _SP__vectors:
-        LDR PC, =_RESET_handler
-        LDR PC, =_UNDEF_INS_handler
-        LDR PC, =_SWI_handler
-        LDR PC, =_PREFE_ABORT_handler
-        LDR PC, =_DATA_ABORT_handler
-        LDR PC, =_NO_USED_handler
-        //LDR PC, =_IRQ_handler
-        //LDR PC, =_FIRQ_handler
-        LDR PC, =IRQ_HANDLE
-        LDR PC, =FIQ_HANDLE
+        LDR PC, = RESET_HANDLE
+        LDR PC, = UNDEF_INS_HANDLE
+        LDR PC, = SWI_HANDLE
+        LDR PC, = PREFE_ABORT_HANDLE 
+        LDR PC, = DATA_ABORT_HANDLE
+        LDR PC, = NO_USED_HANDLE
+        LDR PC, = IRQ_HANDLE
+        LDR PC, = FIQ_HANDLE

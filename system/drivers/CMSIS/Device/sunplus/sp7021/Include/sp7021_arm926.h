@@ -612,7 +612,7 @@ typedef struct{
 typedef struct{
 	__IM uint32_t test_mode_config; 				  /*!< \brief chip test mode config*/
 	__IOM uint32_t pinmux_cfg[4]; 				  /*!< \brief pinmux config */
-	__IOM uint32_t reserved[17];			        /*!< reserved */
+	RESERVED(0[17], uint32_t)                    /*!< reserved */
 }GROUP1_Type;
 
 typedef struct{
@@ -621,7 +621,7 @@ typedef struct{
 
 typedef struct{
    __IOM uint32_t pinmux_cfg[28];             /*!< \brief  pinmux config */
-   __IOM uint32_t reserved[14];                /*!< reserved */
+   RESERVED(0[4], uint32_t)                    /*!< reserved */
 }GROUP3_Type;
 
 typedef struct
@@ -630,12 +630,12 @@ typedef struct
   __IOM uint32_t polarity[7];          /*!< \brief  interrupt polarity 0:high-active(default) 1:low-active*/
   __IOM uint32_t priority[7];          /*!< \brief  interrupt piority 0:fiq(default), 1:irq */
   __IOM  uint32_t mask[7];              /*!< \brief  mask interrupt bit 0:masked(default) 1:pass */
-  RESERVED(1[4], uint32_t)
+  RESERVED(0[4], uint32_t)
   	__OM uint32_t clear[7]; 		   /*!< \brief  clear interrupt bit */
   __IM uint32_t masked_fiq[7];		   /*!< \brief  read masked fiq bit */
   __IM uint32_t masked_irq[7];		   /*!< \brief  read masked irq bit */
   __IOM uint32_t dsp_mask[7];		   /*!< \brief  mask dsp interrupt bit 0:masked(default) 1:pass */
-  RESERVED(2[3], uint32_t)
+  RESERVED(1[3], uint32_t)
   __IM uint32_t group; 
 }IRQ_Ctrl_Type;
 
@@ -756,6 +756,13 @@ typedef struct{
    __IOM uint32_t spi_extra_cycle;
    __IOM uint32_t spi_dma_data_rdy;
 }SPI_TypeDef;
+
+typedef struct
+{
+	__IOM uint32_t pll_ctrl;			/*!< \brief sp7021 q628 system PLL set >*/
+	__IOM uint32_t clk_setting;			/*!< \brief sp7021 q628 system clock set and selection >*/
+
+}SYS_CLKDef;
 
 
 #define STATIC_ASSERT(b) extern int _static_assert[b ? 1 : -1]
@@ -901,6 +908,12 @@ typedef struct {
 #define STC2_BASE  RF_GRP(97, 0)
 #define STC3_BASE  RF_GRP(99, 0)
 
+#define SYSCLK_BASE RF_GRP(4, 26)
+#define SYS_CLK			((SYS_CLKDef*)SYSCLK_BASE)
+#define CLK_EN			((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
+#define CLK_GATE		((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
+#define MODULE_REST		((Module_Reset_Type*) MODULE_RESET_BASE)
+
 #define TIM0			((TIM_TypeDef *) TIM0_BASE)
 #define TIM1			((TIM_TypeDef *) TIM1_BASE)
 #define TIM2			((TIM_TypeDef *) TIM2_BASE)
@@ -970,10 +983,10 @@ typedef struct {
 #define SPI3_BASE      RF_GRP(495, 0)
 
 
-#define SPI0        ((SPI_TypeDef *)SPI0_BASE)
-#define SPI1        ((SPI_TypeDef *)SPI1_BASE)
-#define SPI2        ((SPI_TypeDef *)SPI2_BASE)
-#define SPI3        ((SPI_TypeDef *)SPI3_BASE)
+#define SPI0        ((volatile SPI_TypeDef *)SPI0_BASE)
+#define SPI1        ((volatile SPI_TypeDef *)SPI1_BASE)
+#define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
+#define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
 
 
 /*
@@ -1141,7 +1154,52 @@ UART LCR register BIT
                                          ((INSTANCE) == TIM7))
 
 
+/******************************************************************************/
+/*                                                                            */
+/*                       System clock 		                                  */
+/*                                                                            */
+/******************************************************************************/
+/********************  Bit definition for system clock register ***************/
+#define PLLSYS_NS_Pos				(0)
+#define PLLSYS_NS_Msk				(0xF << PLLSYS_NS_Pos)				/*0x0000000F*/
+#define PLLSYS_NS					PLLSYS_NS_Msk						/*PLL Feedback Divder control*/
+#define PLLSYS_ICP_Pos				(4)
+#define PLLSYS_ICP_Msk				(7U << PLLSYS_ICP_Pos)				/*0x00000070*/
+#define PLLSYS_ICP					PLLSYS_ICP_Msk						/*PLL charge pump current adjust*/
+#define PLLSYS_GAIN_Pos				(7)
+#define PLLSYS_GAIN_Msk				(3U << PLLSYS_GAIN_Pos)				/*0x00000180*/
+#define PLLSYS_BYPASS_Pos			(9)
+#define PLLSYS_BYPASS_Msk			(1 << PLLSYS_BYPASS_Pos)			/*PLL Bypass 0:normal mode; 1:output 27MHz*/
+#define PLLSYS_BYPASS				(PLLSYS_BYPASS_Msk)	
+#define PLLSYS_POWER_EN_Pos			(10)
+#define PLLSYS_POWER_EN_Msk			(1 << PLLSYS_POWER_EN_Pos)			/*0x00000400*/
+#define PLLSYS_OUTCLK_DIV_Pos		(11)
+#define PLLSYS_OUTCLK_DIV_Msk		(3U << PLLSYS_OUTCLK_DIV_Pos)		/*it only for pinmux or for pll system test mode*/
+#define PLLSYS_OUTCLK_DIV			(PLLSYS_OUTCLK_DIV_Msk)
+#define PLLSYS_CLK_BYPASS_Pos		(13)
+#define PLLSYS_CLK_BYPASS_Msk		(1U << PLLSYS_CLK_BYPASS_Pos)
+#define PLLSYS_CLK_BYPASS			(PLLSYS_CLK_BYPASS_Msk)
 
+#define CLK_27M_POLARITY_Pos			(0)
+#define CLK_27M_POLARITY_Msk			(1U << CLK_27M_POLARITY_Pos)			/*0x00000001*/
+#define CLK_27M_POLARITY				(CLK_27M_POLARITY_Msk)				/*27MHz clock polarity adjut 0: phase same as crystal, 1:phase is inversed with crystal*/
+#define CPIOCLK_POLARITY_Pos		(1)
+#define CPIOCLK_POLARITY_Msk		(1U << CPIOCLK_POLARITY_Pos)
+#define CPIOCLK_POLARITY			(CPIOCLK_POLARITY_Msk)
+#define SPINAND_CLK_SRC_Pos			(2)
+#define SPINAND_CLK_SRC_Msk			(3U << SPINAND_CLK_SRC_Pos)
+#define SPINAND_CLK_SRC				(SPINAND_CLK_SRC_Msk)
+#define SYSCLK_DIV_Pos				(4)
+#define SYSCLK_DIV_Msk				(0xF << SYSCLK_DIV_Pos)
+#define SYSCLK_DIV					(SYSCLK_DIV_Msk)
+#define	SPICLK_SRC_Pos				(8)
+#define SPICLK_SRC_Msk				(3U << SPICLK_SRC_Pos)
+#define SPICLK_SRC					(SPICLK_SRC_Msk)
+#define EXT27MCLK_EN_Pos			(10)
+#define EXT27MCLK_EN_Msk			(1U << EXT27MCLK_EN_Pos)
+#define EXT27MCLK_EN				(EXT27MCLK_EN_Msk)
+#define ARM926CLK_DIV_Pos			(11)
+#define	ARM926CLK_DIV_Msk			(0xFF << ARM926CLK_DIV_Pos)
 /******************************************************************************/
 /*                                                                            */
 /*                        gpio/pinmux define                                  */

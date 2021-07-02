@@ -1,12 +1,14 @@
 #include "HardwareTimer.h"
+#include <string.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-volatile  uint64_t start = 0;
-
-
+uint32_t start = 0;
+uint8_t DataA[16] = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,0x55, 
+					 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,0x55};
+uint8_t DataB[16] = {0};
 void tim0_callback(void)
 {
 	
@@ -25,7 +27,7 @@ void tim1_callback(void)
 
 }
 
-
+#define count 1000*10
 void loop(void)
 {
 	uint32_t u32Prescal = 0xFFFF;
@@ -45,6 +47,20 @@ void loop(void)
 	start = (uint32_t)HAL_GetTick();
 	timer0->resume();
  	//HAL_lreg(12);
+#if 0
+	HAL_Init();
+
+	start = HAL_GetTick();
+
+	for (int i=0; i<count;i++)
+	{
+		memcpy(DataB, DataA, 16);
+	}
+
+	printf("@@@@@@@ time =%d @@@@@@@\n",HAL_GetTick()-start);
+
+#endif	
+
 #else // openamp echo test
 	extern int rpmsg_echo_main(int argc, char *argv[]);
 	rpmsg_echo_main(0, NULL);

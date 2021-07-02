@@ -25,21 +25,29 @@ typedef enum
   HAL_SPI_STATE_ABORT      = 0x07U
 } HAL_SPI_StateTypeDef;
 
+typedef enum {
+  SPI_MODE0 = 0x00,
+  SPI_MODE1 = 0x01,
+  SPI_MODE2 = 0x02,
+  SPI_MODE3 = 0x03
+} spi_mode;
 
 typedef struct
 {
   uint32_t spiclk;
-  uint32_t CLKPolarity;
-  uint32_t CLKPhase;
+  spi_mode spi_mode;
   uint32_t FirstBit;
 } SPI_InitTypeDef;
 
 typedef struct __SPI_HandleTypeDef
 {
+  /* user set */
   SPI_TypeDef                *Instance;      /*!< SPI registers base address               */
 
   SPI_InitTypeDef            Init;           /*!< SPI communication parameters             */
 
+
+  /* driver used */
   uint8_t                    *pTxBuffPtr;    /*!< Pointer to SPI Tx transfer Buffer        */
 
   uint16_t                   TxXferSize;     /*!< SPI Tx Transfer size                     */
@@ -78,13 +86,6 @@ typedef struct __SPI_HandleTypeDef
 #define HAL_SPI_ERROR_INVALID_CALLBACK  (0x00000080U)
 #endif
 
-
-#define SPI_POLARITY_LOW                (0x00000000U)
-#define SPI_POLARITY_HIGH               (0x00000001U)
-
-#define SPI_PHASE_1EDGE                 (0x00000000U)
-#define SPI_PHASE_2EDGE                 (0x00000001U)
-
 #define SPI_FIRSTBIT_MSB                (0x00000000U)
 #define SPI_FIRSTBIT_LSB                (0x00000001U)
 
@@ -113,11 +114,8 @@ typedef struct __SPI_HandleTypeDef
 #define SPI_CLK_RATE           202500000
 
 
-#define IS_SPI_CPOL(__CPOL__)      (((__CPOL__) == SPI_POLARITY_LOW) || \
-                                    ((__CPOL__) == SPI_POLARITY_HIGH))
-
-#define IS_SPI_CPHA(__CPHA__)      (((__CPHA__) == SPI_PHASE_1EDGE) || \
-                                    ((__CPHA__) == SPI_PHASE_2EDGE))
+#define IS_SPI_MODE(__MODE__)      (((__MODE__) >= SPI_MODE0) &&\
+                                    ((__MODE__) <= SPI_MODE3))
 
 #define IS_SPI_FIRST_BIT(__BIT__)  (((__BIT__) == SPI_FIRSTBIT_MSB) || \
                                     ((__BIT__) == SPI_FIRSTBIT_LSB))
@@ -130,14 +128,16 @@ HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi);
 
 HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
-HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData, uint16_t RxSize,
-                                           uint16_t TxSize,uint32_t Timeout);
+HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData, uint16_t TxSize,
+                                           uint16_t RxSize,uint32_t Timeout);
 HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_SPI_Receive_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
-HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData,  uint16_t RxSize,uint16_t TxSize);
+HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData,  uint16_t TxSize,uint16_t RxSize);
 
 HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef *hspi);
 HAL_SPI_StateTypeDef HAL_SPI_GetState(SPI_HandleTypeDef *hs);
+
+void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg);
 
 #ifdef __cplusplus
 }

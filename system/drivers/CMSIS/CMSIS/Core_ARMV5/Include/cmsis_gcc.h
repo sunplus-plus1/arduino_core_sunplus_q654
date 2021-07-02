@@ -348,17 +348,17 @@ __STATIC_FORCEINLINE uint32_t __SMLSDX (uint32_t op1, uint32_t op2, uint32_t op3
 /**
   \brief   Wait For Interrupt
  */
-#define __WFI()                             __ASM volatile ("wfi":::"memory")
+#define __WFI()
 
 /**
   \brief   Wait For Event
  */
-#define __WFE()                             __ASM volatile ("wfe":::"memory")
+#define __WFE()
 
 /**
   \brief   Send Event
  */
-#define __SEV()                             __ASM volatile ("sev")
+#define __SEV()
 
 
 /*This ARM and 32-bit Thumb instruction is available in ARMv7*/
@@ -370,9 +370,7 @@ __STATIC_FORCEINLINE uint32_t __SMLSDX (uint32_t op1, uint32_t op2, uint32_t op3
  */
 __STATIC_FORCEINLINE  void __ISB(void)
 {
-#if !defined(__ARM_ARCH_5E__) && !!defined(__ARM_ARCH_5TE__)
-  __ASM volatile ("isb 0xF":::"memory");
-#endif
+
 }
 
 /*This ARM and 32-bit Thumb instruction is available in ARMv7*/
@@ -384,9 +382,7 @@ __STATIC_FORCEINLINE  void __ISB(void)
  */
 __STATIC_FORCEINLINE  void __DSB(void)
 {
-#if !defined(__ARM_ARCH_5E__) && !!defined(__ARM_ARCH_5TE__)	
-  __ASM volatile ("dsb 0xF":::"memory");
-#endif
+
 }
 
 /**
@@ -396,9 +392,6 @@ __STATIC_FORCEINLINE  void __DSB(void)
  */
 __STATIC_FORCEINLINE  void __DMB(void)
 {
-	#if !defined(__ARM_ARCH_5E__) && !!defined(__ARM_ARCH_5TE__)
-  __ASM volatile ("dmb 0xF":::"memory");
-	#endif
 }
 
 /**

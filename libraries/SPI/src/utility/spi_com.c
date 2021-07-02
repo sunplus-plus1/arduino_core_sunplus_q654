@@ -53,17 +53,7 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
 
   handle->Init.spiclk              = speed;
 
-  if ((mode == SPI_MODE_0) || (mode == SPI_MODE_2)) {
-    handle->Init.CLKPhase          = SPI_PHASE_1EDGE;
-  } else {
-    handle->Init.CLKPhase          = SPI_PHASE_2EDGE;
-  }
-
-  if ((mode == SPI_MODE_0) || (mode == SPI_MODE_1)) {
-    handle->Init.CLKPolarity       = SPI_POLARITY_LOW;
-  } else {
-    handle->Init.CLKPolarity       = SPI_POLARITY_HIGH;
-  }
+  handle->Init.spi_mode           = mode;
 
   if (msb == 0) {
     handle->Init.FirstBit          = SPI_FIRSTBIT_LSB;
@@ -224,7 +214,14 @@ spi_status_e spi_transfer(spi_t *obj, uint8_t *tx_buffer, uint8_t *rx_buffer,
   if ((obj == NULL) || (len == 0) || (Timeout == 0U)) {
     return Timeout > 0U ? SPI_ERROR : SPI_TIMEOUT;
   }
+
+  return HAL_SPI_TransmitReceive(&obj->handle,tx_buffer,rx_buffer,len,1,Timeout);
+
+#if 0
   tickstart = HAL_GetTick();
+
+  /* spi config set */
+  LL_SPI_Config_Set(_SPI,obj->handle.Init.spiclk,obj->handle.Init.spi_mode,obj->handle.Init.FirstBit);
 
   /* Start transfer */
   LL_SPI_SetTransferSize(_SPI, size);
@@ -243,11 +240,8 @@ spi_status_e spi_transfer(spi_t *obj, uint8_t *tx_buffer, uint8_t *rx_buffer,
       break;
     }
   }
-
-  //LL_SPI_ClearFlag_EOT(_SPI);
-  // LL_SPI_ClearFlag_TXTF(_SPI);
-
   return ret;
+ #endif 
 }
 
 #ifdef __cplusplus
