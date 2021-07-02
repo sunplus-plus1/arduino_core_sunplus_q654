@@ -23,7 +23,7 @@ extern "C" {
 #define RESERVED 0x0		/* reserved memory */
 
 /* Shared memory */
-#define SHARED_MEM_PA  0x3e800000UL
+#define SHARED_MEM_PA  0x1e800000UL
 #define SHARED_MEM_SIZE 0x80000UL
 #define SHARED_BUF_OFFSET 0x80000UL
 

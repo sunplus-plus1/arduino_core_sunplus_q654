@@ -3,11 +3,23 @@
 void __sync_synchronize(void)
 {
 }
-void __atomic_compare_exchange_1(void)
+int __atomic_compare_exchange_1(char *obj, char *expected, char desired)
 {
+	int ret = (*obj == *expected);
+	if (ret)
+		*obj = desired;
+	else
+		*expected = *obj;
+	return ret;
 }
-void __atomic_compare_exchange_4(void)
+int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
 {
+	int ret = (*obj == *expected);
+	if (ret)
+		*obj = desired;
+	else
+		*expected = *obj;
+	return ret;
 }
 #endif
 #if 0

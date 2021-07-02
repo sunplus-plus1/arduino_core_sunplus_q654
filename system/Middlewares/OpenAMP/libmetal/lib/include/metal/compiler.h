@@ -20,4 +20,7 @@
 # error "Missing compiler support"
 #endif
 
+#define TRACE
+//#define TRACE printf(">>>>>> %s:%d\n", __FUNCTION__, __LINE__)
+
 #endif /* __METAL_COMPILER__H__ */

@@ -41,8 +41,16 @@ static struct remoteproc_priv rproc_priv;
 static struct remoteproc rproc_inst;
 
 /* External functions */
-int init_system(void) { return 0; };
-void cleanup_system(void) { while (1); };
+int init_system(void)
+{
+	extern int metal_a926_irq_init(void);
+	metal_a926_irq_init();
+	return 0;
+};
+void cleanup_system(void)
+{
+	while (1);
+};
 
 static struct remoteproc *
 platform_create_proc(int proc_index, int rsc_index)

@@ -107,7 +107,8 @@ static int a926_proc_notify(struct remoteproc *rproc, uint32_t id)
 	prproc = rproc->priv;
 
 	/* Trigger MBOX */
-	metal_io_write32(MBOX_TO_NOTIFY, 0, id);
+	MBOX_TO_NOTIFY = id;
+
 	return 0;
 }
 
