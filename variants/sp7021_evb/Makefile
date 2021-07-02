@@ -96,7 +96,7 @@ SPI_HEX := spi_all.hex
 # Boot up
 ASOURCES = start.S
 CSOURCES = main.c
-CSOURCES += i2c_mas.c
+#CSOURCES += i2c_mas.c
 
 
 # common
@@ -106,7 +106,7 @@ CSOURCES += $(COMMON_DIR)/common.c $(COMMON_DIR)/cpu_util.c
 #CSOURCES += mon/monitor.c
 
 # interrupt
-CSOURCES += $(COMMON_DIR)/sp_interrupt.c 
+#CSOURCES += $(COMMON_DIR)/sp_interrupt.c 
 ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_irq_ctrl.c 
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c

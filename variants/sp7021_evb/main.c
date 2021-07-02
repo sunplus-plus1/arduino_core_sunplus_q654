@@ -14,7 +14,7 @@
 
 #include "HardwareTimer.h"
 
-#define I2C_TEST
+//#define I2C_TEST
 #ifdef I2C_TEST
 #include "sp7021_hal_i2c.h"
 #endif
@@ -319,6 +319,11 @@ extern void sp_i2c_dma_write(unsigned int i2c_no, u8  slave_addr , u8  *data_buf
 extern void sp_i2c_master_set_freq_khz(unsigned int i2c_no, unsigned int freq);
 extern void sp_i2c_master_init(void);
 extern int i2c_check(unsigned int i2c_no);
+
+
+
+
+
 void i2c_test()
 {	
 	printf("I2C_TEST!!!!!!!!!\n");
@@ -326,14 +331,15 @@ void i2c_test()
 	uint8_t rx_buff[20];
 	tx_buff[0] = 0x24;
 	tx_buff[1] = 0x00;
-
+int a = 100000000;
+	while(a--);
 	sp_i2c_master_init();
 	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f, 14);//scl
 	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f << 8, 16 << 8);//sda
 	sp_i2c_master_set_freq_khz(0, 100);
-	sp_i2c_write(0, 0x44, tx_buff, 2);
-	while(i2c_check01(0));
-	sp_i2c_read(0, 0x44, rx_buff, 6);
+	sp_i2c_dma_write(0, 0x44, tx_buff, 2);
+	while(i2c_check(0));
+	sp_i2c_dma_read(0, 0x44, rx_buff, 6);
 
 	//sp_i2c_dma_write(0, 0x44, tx_buff, 2);
 	//sp_i2c_dma_read(0, 0x44, rx_buff, 6);
@@ -347,7 +353,7 @@ void i2c_test()
 	RH = RH * 10000/65536;
 	int RH_L = RH % 100;
 	int RH_H = RH / 100;
-	printf("temperature:%d, humidity:%d\n ", (temp_H<<8)|temp_L, (RH_H<<8)|RH_L);
+	printf("temperature%d:%d, humidity%d:%d\n ", temp_H,temp_L, RH_H,RH_L);
 }
 #endif
 
@@ -400,11 +406,11 @@ int main(void)
 
 #ifdef I2C_TEST
 	//HAL_I2C_TEST();
-	i2c_test();
-	//while(1)
-	//{
-	//	i2c_test();
-	//}
+	//i2c_test();
+	while(1)
+	{
+		i2c_test();
+	}
 #endif
 
 #ifdef TEMPWAVE
