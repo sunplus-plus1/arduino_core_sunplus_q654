@@ -7,6 +7,7 @@
 #include "cache.h"
 #include "stc.h"
 #include "gpio_drv.h"
+#include "metal/irq.h"
 
 #ifdef ICM_TEST
 #include "icm.h"
@@ -210,7 +211,7 @@ void uart_isr_init(void)
 	//interrupt_register(53, "UART0", uart_isr, 1);
 }
 
-//#define TIMER_TEST
+#define TIMER_TEST
 #ifdef TIMER_TEST
 #include "sp7021_hal_irq_ctrl.h"
 
@@ -231,7 +232,7 @@ void uart_isr_init(void)
 
 static volatile unsigned int g_repeat_cnt = 0;
 
-void timer3_callback(int vector)
+int timer3_callback(int vector, void *arg)
 {
     printf("@Hello[%d]\n", ++g_repeat_cnt);
 }
@@ -247,9 +248,18 @@ void timer_test_init()
     STC_REG->timer3_pres_val = 999;
     STC_REG->timer3_reload = TIMER3_TICKS;
     STC_REG->timer3_cnt = TIMER3_TICKS;
+#if 0
     IRQ_SetHandler(TIMER3_INT, timer3_callback);
     IRQ_SetMode(TIMER3_INT, IRQ_MODE_TRIG_EDGE_RISING);
     IRQ_Enable(TIMER3_INT);
+#else
+	extern int metal_a926_irq_init(void);
+	metal_a926_irq_init();
+	int a = TIMER3_INT;
+	printf(">>>>>>>%d\n", a);
+	metal_irq_register(TIMER3_INT, timer3_callback, NULL);
+    IRQ_Enable(TIMER3_INT);
+#endif
 }
 
 void timer_test()
@@ -296,7 +306,6 @@ HAL_TEST(ICM_InitTypeDef *test)
 
 void icm_test()
 {
-	printf("icm Build @%s, %s\n", __DATE__, __TIME__);
 	ICM_InitTypeDef test;
 	test.instance = SP_ICM0_REG;
 	printf(">>>test.instance\n");
@@ -400,8 +409,8 @@ int main(void)
 	//IRQ_Initialize();
 
 #ifdef TIMER_TEST
-	//timer_test_init();
-	//timer_test();
+	timer_test_init();
+	timer_test();
 #endif
 
 #ifdef I2C_TEST
@@ -437,7 +446,7 @@ int main(void)
 	
 	extern void loop(void);
 	
-	loop();
+	//loop();
 	void uart_test(void);
 	uart_test();
 	//task_dbg();

@@ -263,6 +263,7 @@ static int metal_a926_irq_register(struct metal_irq_controller *irq_cntr,
 	
 	IRQ_SetHandler(irq, METAL_IRQHandler);
 	IRQ_SetMode(irq, IRQTypeTable[irq]);
+	return 0;
 }
 
 static METAL_IRQ_CONTROLLER_DECLARE(a926_irq_cntr,

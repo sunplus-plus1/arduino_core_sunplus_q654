@@ -305,9 +305,9 @@ void IRQ_HANDLE(void)
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveIRQ();
 	h = IRQ_GetHandler(irqn);
-	IRQ_Clear(irqn);
 	if (h != NULL)
 		h();
+	IRQ_Clear(irqn);
 	ISR_RESTORE_CONTEXT();
 }
 
