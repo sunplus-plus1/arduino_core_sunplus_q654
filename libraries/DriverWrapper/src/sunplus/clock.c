@@ -16,7 +16,7 @@ extern "C" {
   */
 uint32_t getCurrentMicros(void)
 {
-	return HAL_GetTick()/1000;
+	return HAL_GetTick();
 }
 
 /**
@@ -26,7 +26,7 @@ uint32_t getCurrentMicros(void)
   */
 uint32_t getCurrentMillis(void)
 {
-	return HAL_GetTick();
+	return HAL_GetTick()/1000;
 }
 
 
