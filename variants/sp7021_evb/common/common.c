@@ -134,5 +134,9 @@ int _fstat(int fd, struct stat *buf)
 {
 	return 0;
 }
+
+void _init(void)
+{
+}
 #endif
 #endif

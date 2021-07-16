@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "common.h"
 
 #ifdef __cplusplus
 #define EXTERN extern "C"

@@ -443,7 +443,10 @@ int main(void)
 	
 
 	printf("NonOS boot OK!!!\n");
-	
+#if 0
+	extern openamp_test_main(void);
+	openamp_test_main();
+#endif
 	extern void loop(void);
 	
 	//loop();

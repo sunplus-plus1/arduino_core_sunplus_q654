@@ -21,11 +21,24 @@
 #include <metal/device.h>
 #include <metal/irq.h>
 #include "platform_info.h"
+#include "core_armv5.h"
 
 static int a926_proc_irq_handler(int vect_id, void *data)
 {
 	struct remoteproc *rproc = data;
 	struct remoteproc_priv *prproc;
+
+	if (MBOX_NOTIFICATION == 0xDEADC0DE) {
+		MBOX_NOTIFICATION = 0;
+		printf("!!!!!! a926 reset !!!!!!\n");
+		MMU_Disable();
+		IRQ_Clear(vect_id);
+		__asm volatile (
+			"LDR	R0, =0xffff00c0	\n\t"
+			"STMFD	SP!, {R0}		\n\t"	/* Push R0. */
+			"LDMFD	SP!, {PC}^		"		/* Pop PC.  */
+		);
+	}
 
 	(void)vect_id;
 	if (!rproc)
