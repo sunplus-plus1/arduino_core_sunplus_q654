@@ -178,6 +178,18 @@
 #define     __IOM    volatile            /*!< \brief Defines 'read / write' structure member permissions */
 #define RESERVED(N, T) T RESERVED##N;    // placeholder struct members used for "reserved" areas
 
+
+#define HAL_DCACHE_LINE_SIZE            32
+#define HAL_DCACHE_SIZE					(16*1024)
+#define HAL_DCACHE_WAYS					4
+#define HAL_DCACHE_SETS 				(HAL_DCACHE_SIZE/(HAL_DCACHE_LINE_SIZE*HAL_DCACHE_WAYS))
+
+
+#define HAL_ICACHE_LINE_SIZE            32
+#define HAL_ICACHE_SIZE					(16*1024)
+#define HAL_ICACHE_WAYS					4
+
+
  /*******************************************************************************
   *                 Register Abstraction
    Core Register contain:
@@ -508,8 +520,9 @@ __STATIC_FORCEINLINE uint8_t __log2_up(uint32_t n)
   return log;
 }
 
+
+#if 0
 /** \brief  Apply cache maintenance to given cache level.
-* \param [in] level cache level to be maintained
 * \param [in] maint 0 - invalidate, 1 - clean, otherwise - invalidate and clean
 */
 __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t maint)
@@ -553,7 +566,9 @@ __STATIC_FORCEINLINE void __L1C_MaintainDCacheSetWay(uint32_t level, uint32_t ma
   __DMB();
 #endif  
 }
+#endif
 
+#if 0
 /** \brief  Clean and Invalidate the entire data or unified cache
 * Generic mechanism for cleaning/invalidating the entire data or unified cache to the point of coherency
 * \param [in] op 0 - invalidate, 1 - clean, otherwise - invalidate and clean
@@ -572,8 +587,11 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateCache(uint32_t op) {
       __L1C_MaintainDCacheSetWay(i, op);
     }
   }
-#endif 
+#endif
 }
+#endif
+
+#if 0
 
 /** \brief  Clean and Invalidate the entire data or unified cache
 * Generic mechanism for cleaning/invalidating the entire data or unified cache to the point of coherency
@@ -584,23 +602,75 @@ CMSIS_DEPRECATED
 __STATIC_FORCEINLINE void __L1C_CleanInvalidateCache(uint32_t op) {
   L1C_CleanInvalidateCache(op);
 }
-
+#endif
 /** \brief  Invalidate the whole data cache.
 */
 __STATIC_FORCEINLINE void L1C_InvalidateDCacheAll(void) {
-  L1C_CleanInvalidateCache(0);
+
+	uint32_t value;
+	__set_CP(15, 0, value, 7, 6, 0);
+	__set_CP(15, 0, value, 8, 7, 0);
+  
 }
+
+#if 0
 
 /** \brief  Clean the whole data cache.
  */
 __STATIC_FORCEINLINE void L1C_CleanDCacheAll(void) {
   L1C_CleanInvalidateCache(1);
 }
+#endif
 
+
+#if 0
 /** \brief  Clean and invalidate the whole data cache.
  */
 __STATIC_FORCEINLINE void L1C_CleanInvalidateDCacheAll(void) {
   L1C_CleanInvalidateCache(2);
+}
+#endif
+
+__STATIC_FORCEINLINE void L1C_DCacheFlush(uint32_t addr, uint32_t size)
+{
+	uint32_t enda = 0;
+	uint32_t saddr = 0;
+	enda = addr+size;
+	uint32_t value = 0;
+	
+	for (saddr &= (~(HAL_DCACHE_LINE_SIZE-1));
+		saddr < enda;
+		saddr += HAL_DCACHE_LINE_SIZE)
+	
+	{
+		__set_DCCMVAC(addr);
+	}
+
+	
+	__set_CP(15, 0, value, 7, 10, 4);
+
+	for (saddr &=( ~(HAL_DCACHE_LINE_SIZE - 1));
+		saddr < enda;
+		saddr += HAL_DCACHE_LINE_SIZE)
+	
+	{
+		__set_DCIMVAC(addr);
+	}
+
+}
+
+__STATIC_FORCEINLINE void L1C_DCacheSync(void)
+{
+	 __ASM volatile (                                                      \
+        "1: "                   /* clean & invalidate D index */ \
+        "mrc    p15, 0, r15, c7, c14, 3;" \
+        "bne    1b;" \
+        "mcr    p15,0,r0,c7,c10,4;" /* drain the write buffer */        \
+        : \
+        : \
+        : "r0" /* Clobber list */                                       \
+        );           
+
 }
 
 

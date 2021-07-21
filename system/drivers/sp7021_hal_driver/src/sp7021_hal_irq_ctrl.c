@@ -121,6 +121,14 @@ int32_t IRQ_Initialize (void)
 	return 0;
 }
 
+int32_t IRQ_Unitialize(void)
+{
+	__disable_irq();
+	__reset_irq();
+
+}
+
+
 int32_t IRQ_SetHandler (IRQn_ID_t irqn, IRQHandler_t handler)
 {
 	int32_t status = 0;
@@ -326,30 +334,36 @@ void FIQ_HANDLE(void)
 
 void RESET_HANDLE(void)
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
 	return;
 }
 
 void UNDEF_INS_HANDLE( void )
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
 	return;
 }
 
 void SWI_HANDLE( void )
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
     return;
 }
 
 void PREFE_ABORT_HANDLE( void )
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
 	return;
 }
 
 void DATA_ABORT_HANDLE( void )
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
     return;
 }
 
 void NO_USED_HANDLE( void )
 {
+	printf("%s, %d\n", __FUNCTION__, __LINE__);
     return;
 }
