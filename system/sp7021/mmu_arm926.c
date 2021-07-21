@@ -84,8 +84,12 @@ void MMU_CreateTranslationTable(void)
 	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, 0, 4096, DESCRIPTOR_FAULT);
 	section_normal(Sect_Normal, region);
 	section_device_rw(Sect_Device_RW, region);
-	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __ROM_BASE, __ROM_SIZE/0x100000, Sect_Normal); // multiple of 1MB sections
-	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __DEVICE_BASE, __DEVICE_SIZE/0x100000, Sect_Device_RW);
+
+	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __RAM_BASE, __RAM_SIZE/0x100000, Sect_Normal); // RAM
+	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __SHMEM_BASE, __SHMEM_SIZE/0x100000, Sect_Device_RW); // openamp sharemem, NC
+	//MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __SPI_NOR_BASE, __SPI_NOR_SIZE/0x100000, Sect_Normal); // SPI_NOR
+	MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __DEVICE_BASE, __DEVICE_SIZE/0x100000, Sect_Device_RW); // DEVICE, NC
+	//MMU_TTSection ((uint32_t*)&Image$$TTB$$ZI$$Base, __ROM_BASE, __ROM_SIZE/0x100000, Sect_Normal); // ROM
 
 #if 0
 	pdata =(uint32_t*)&Image$$TTB$$ZI$$Base;
