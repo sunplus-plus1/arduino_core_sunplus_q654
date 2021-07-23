@@ -42,11 +42,12 @@ HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
 WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
 SPI_SRC = $(TOP)/libraries/SPI/src
+I2C_SRC = $(TOP)/libraries/Wire/src
 TEST_SRC = $(TOP)/libraries/test
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
-vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(TEST_SRC)
+vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC)
 
 
 CFLAGS += -MMD -O1
@@ -57,7 +58,7 @@ CFLAGS += -static
 CFLAGS += -nodefaultlibs
 CFLAGS += -ffunction-sections -fdata-sections 
 CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu11
+CFLAGS += -funsigned-char -funsigned-bitfields -w -std=gnu11
 CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
 CFLAGS += -I$(CMSIS_HEADER)
 CFLAGS += -I$(CMSIS_DEVICE_HEADER)
@@ -88,6 +89,12 @@ CXXFLAGS += -I$(SYSTEM_SP7021_SRC)
 CXXFLAGS += -I$(TOP)/variants/sp7021_evb
 CFLAGS += -I$(ARDUINO_HEADER)
 CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>temporary add i2c
+CFLAGS += -I$(I2C_SRC)
+CXXFLAGS += -I$(I2C_SRC)
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 #-mthumb -mthumb-interwork
 
 SPI_ALL := spi_all.bin
@@ -96,7 +103,7 @@ SPI_HEX := spi_all.hex
 # Boot up
 ASOURCES = start.S
 CSOURCES = main.c
-#CSOURCES += i2c_mas.c
+CSOURCES += i2c_mas.c
 
 
 # common
@@ -112,13 +119,12 @@ ASOURCES += $(COMMON_DIR)/vectors.S
 #CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
 CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c wiring_digital.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
-CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp spi_test.cpp
-CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp
+CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp spi_test.cpp i2c_test.cpp
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp Wire.cpp
 
 
 # HAL
-
-CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility $(SYSTEM_SP7021_SRC)))
+CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI_SRC)/utility $(I2C_SRC)/utility $(SYSTEM_SP7021_SRC)))
 
 # OpenAMP
 MW_DIR = $(TOP)/system/Middlewares
@@ -168,7 +174,7 @@ CSOURCES += $(LIBMETAL_SRC)/dma.c \
 #CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
 
 # Marlin
-CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
+CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -w -std=gnu++14
 #CFLAGS += -IMarlin/include -IMarlin/arduino
 #CFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
 #CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 
@@ -194,6 +200,7 @@ $(BIN)/$(TARGET): $(OBJS) $(LD_FILE)
 	$(Pecho) "  LD   $@"
 	$P mkdir -p $(BIN)
 	$P $(LD) $(OBJS) -o $(BIN)/$(TARGET) -Map $(BIN)/$(TARGET).map $(LDFLAGS) $(LDFLAGS_COM)
+#	$P $(LD) $(OBJS) i2c_mas.o -o $(BIN)/$(TARGET) -Map $(BIN)/$(TARGET).map $(LDFLAGS) $(LDFLAGS_COM)
 
 #$(LD_FILE): $(LD_SRC)
 #	$P $(CPP) -P $(CFLAGS) -x c $< -o $@

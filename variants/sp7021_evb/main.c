@@ -15,9 +15,10 @@
 
 #include "HardwareTimer.h"
 
-//#define I2C_TEST
+#define I2C_TEST
 #ifdef I2C_TEST
 #include "sp7021_hal_i2c.h"
+#include "utility/twi.h"
 #endif
 
 #define A_and_B_chip   //A and B chip running simultaneously
@@ -38,11 +39,6 @@ extern void mmu_init();
 extern char __vectors_start[];
 extern char __vectors_end[];
 
-
-//#ifdef I2C_TEST
-//u8	data_buf[255];
-//u8	tx_buf[255];
-//#endif
 
 //#define ARDUINO_INTR_SAMPLE
 #ifdef ARDUINO_INTR_SAMPLE
@@ -145,12 +141,6 @@ void hw_init()
 int main(void)
 {
 
-//#ifdef I2C_TEST
-//   unsigned int test;
-//#endif
-
-
-
 	printf("Build @%s, %s\n", __DATE__, __TIME__);
 
 	hw_init();
@@ -190,11 +180,6 @@ int main(void)
 	sp_interrupt_setup();
 	ipc_start();
 
-//#ifdef I2C_TEST
-//	sp_i2c_master_init();
-//	sp_i2c_master_set_freq_khz(0, 100);
-//#endif
-
 	printf("NonOS boot OK!!!\n");
 	task_dbg();
 	while(1);
@@ -211,7 +196,7 @@ void uart_isr_init(void)
 	//interrupt_register(53, "UART0", uart_isr, 1);
 }
 
-#define TIMER_TEST
+//#define TIMER_TEST
 #ifdef TIMER_TEST
 #include "sp7021_hal_irq_ctrl.h"
 
@@ -320,52 +305,6 @@ void icm_test()
 }
 #endif
 
-#ifdef I2C_TEST
-extern void sp_i2c_read(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
-extern void sp_i2c_write(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
-extern void sp_i2c_dma_read(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
-extern void sp_i2c_dma_write(unsigned int i2c_no, u8  slave_addr , u8  *data_buf , unsigned int len);
-extern void sp_i2c_master_set_freq_khz(unsigned int i2c_no, unsigned int freq);
-extern void sp_i2c_master_init(void);
-extern int i2c_check(unsigned int i2c_no);
-
-
-
-
-
-void i2c_test()
-{	
-	printf("I2C_TEST!!!!!!!!!\n");
-	uint8_t tx_buff[20];
-	uint8_t rx_buff[20];
-	tx_buff[0] = 0x24;
-	tx_buff[1] = 0x00;
-int a = 100000000;
-	while(a--);
-	sp_i2c_master_init();
-	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f, 14);//scl
-	//MOON3_REG->sft_cfg[10] = RF_MASK_V(0x7f << 8, 16 << 8);//sda
-	sp_i2c_master_set_freq_khz(0, 100);
-	sp_i2c_dma_write(0, 0x44, tx_buff, 2);
-	while(i2c_check(0));
-	sp_i2c_dma_read(0, 0x44, rx_buff, 6);
-
-	//sp_i2c_dma_write(0, 0x44, tx_buff, 2);
-	//sp_i2c_dma_read(0, 0x44, rx_buff, 6);
-
-	int temp = (rx_buff[0] << 8) | rx_buff[1];
-	temp = temp * 17500/65536;
-	int temp_L = temp % 100;
-	int temp_H = temp/100 - 45;
-
-	int RH = (rx_buff[3] << 8) | rx_buff[4];
-	RH = RH * 10000/65536;
-	int RH_L = RH % 100;
-	int RH_H = RH / 100;
-	printf("temperature%d:%d, humidity%d:%d\n ", temp_H,temp_L, RH_H,RH_L);
-}
-#endif
-
 //#define TEMPWAVE
 #ifdef TEMPWAVE
 void temp_output_waveform(void)
@@ -382,6 +321,190 @@ void temp_output_waveform(void)
 	}
 }
 #endif
+
+#ifdef I2C_TEST
+
+#if 0
+#define I2C_NUM             0  /* contain 4 I2C,from 0--3 */
+/**************************** sth32 for i2c test ***********************************/
+void sth31_test()
+{
+         u8     rx_buf[20];
+         u8     tx_buf[20];
+         int a = 10000000;
+         while(a--);
+
+         tx_buf[0] = 0x24;
+         tx_buf[1] = 0x00;
+         sp_i2c_write(I2C_NUM, 0x44 , &tx_buf[0] ,2); // write 2 bytes command
+
+         while(i2c_check_mas(I2C_NUM));   // wait I2C bus idle
+         sp_i2c_read(I2C_NUM, 0x44 , &rx_buf[0] , 6); // read 6 bytes data
+         printf("\n %x \n",rx_buf[0]);
+         #if 1
+         printf("\n %x \n",rx_buf[0]);
+         //get temp and rth data.
+         int temp = (rx_buf[0]<<8|rx_buf[1]);
+         temp = temp * 17500/65536;
+         int temp_L = temp%100;
+         int temp_H = temp/100-45;
+         
+         int RTH = (rx_buf[3]<<8|rx_buf[4]);
+         RTH = RTH*10000/65536;
+         int RTH_L = RTH%100;
+         int RTH_H = RTH/100; 
+         printf("\n temp=%d.%d   %d.%d    \n",temp_H,temp_L,RTH_H,RTH_L);
+         //set_sth31_temp(temp_H<<8|temp_L,RTH_H<<8|RTH_L);
+         #endif
+}
+void i2c_test_pinmux_set()
+{
+         MOON3_REG->sft_cfg[10+I2C_NUM] = RF_MASK_V((0x7f << 0), (7 << 0)); // I2C_CLK out from GPIO_P1_06
+         MOON3_REG->sft_cfg[10+I2C_NUM] = RF_MASK_V((0x7f << 8), (8 << 8)); // I2C_DATA out from GPIO_P1_07
+}
+void i2c_test1()
+{
+         /***** i2c init set*****/
+		 i2c_test_pinmux_set(); //pinmux set
+         sp_i2c_master_init(); //register set
+         sp_i2c_master_set_freq_khz(I2C_NUM, 100);      // set clk to 100kHz
+
+         /***** device sth31 test*****/
+         sth31_test();
+}
+#endif
+
+static uint8_t rx_buff1[32];
+static uint8_t tx_buff1[32];
+
+static i2c_t test;
+static I2C_HandleTypeDef handletest;
+
+void i2c_twi_test(void)
+{
+	test.handle = handletest;
+	test.pin_sda = 15;
+	test.pin_scl = 14;
+	test.i2c = SP_I2CM0;
+	
+	tx_buff1[0] = 0x24;
+	tx_buff1[1] = 0x00;
+	i2c_init(&test);
+	i2c_master_write(&test, 0x44, tx_buff1, 2);
+	//delay(200);
+	//while(i2c_check(&test.handle));
+	i2c_master_read(&test, 0x44, rx_buff1, 6);
+	
+	int temp = (rx_buff1[0]<<8) | rx_buff1[1];
+	temp = temp * 17500/65536;
+	int temp_L = temp%100;
+	int temp_H = temp/100 -45;
+	
+	int RH = (rx_buff1[3] << 8) | rx_buff1[4];
+	RH = RH * 10000/65536;
+	int RH_L = RH % 100;
+	int RH_H = RH / 100;
+	printf("\n temp=%d.%d   %d.%d    \n",temp_H,temp_L,RH_H,RH_L);
+}
+
+static uint8_t rx_buff[32];
+static uint8_t tx_buff[32];
+static I2C_HandleTypeDef testi2c;
+
+void i2c_xt_test(void)
+{
+	testi2c.Init.Timing = 100;
+	testi2c.Instance = SP_I2CM0;
+	testi2c.Index = 0;
+	testi2c.gdma = SP_GDMA0;
+	//printf(">>>%20s\t(%5d):index=%d!\n", __FUNCTION__, __LINE__, testi2c.Index);
+	tx_buff[0] = 0x24;
+	tx_buff[1] = 0x00;
+	
+	//printf(">>>%20s\t(%5d):ok!\n", __FUNCTION__, __LINE__);
+	
+	HAL_Module_Clock_enable(I2CM0, 1);
+	HAL_Module_Clock_gate(I2CM0, 1);
+	HAL_Module_Reset(I2CM0, 0);
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA, GPIO_TO_PINMUX(15));
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL, GPIO_TO_PINMUX(14));
+	
+	
+	//printf(">>>%20s\t(%5d):ok!\n", __FUNCTION__, __LINE__);
+
+#if 0
+/* burst */
+	HAL_I2C_Init(&testi2c);
+	HAL_I2C_Master_Transmit(&testi2c, 0x44, tx_buff, 2, 0);
+	while(i2c_check(&testi2c));	
+	HAL_I2C_Master_Receive(&testi2c, 0x44, rx_buff, 6, 0);
+#endif
+
+#if 0
+/* DMA */
+	HAL_I2C_Init(&testi2c);
+	HAL_I2C_Master_Transmit_DMA(&testi2c, 0x44, tx_buff, 2);
+	//printf(">>>DMA:State:0x%x\n", testi2c.State);
+	while(i2c_check01(&testi2c));
+	HAL_I2C_Master_Receive_DMA(&testi2c, 0x44, rx_buff, 6);
+#endif
+
+#if 1
+/* brustIT */
+	HAL_I2C_Init(&testi2c);
+	IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
+	IRQ_SetHandler(I2C_MASTER0_IRQ, I2C_HAL_TEST_IRQHandler);
+	
+	HAL_I2C_Master_Transmit_IT(&testi2c, 0x44, tx_buff, 2);
+	while(i2c_check(&testi2c));
+	HAL_I2C_Master_Receive_IT(&testi2c, 0x44, rx_buff, 6);
+#endif
+
+#if 0
+/* DMAIT */
+	HAL_I2C_Init(&testi2c);
+	IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
+	IRQ_SetHandler(I2C_MASTER0_IRQ, I2C_HAL_TEST_IRQHandler);
+	
+	HAL_I2C_Master_Transmit_DMA_IT(&testi2c, 0x44, tx_buff, 2);
+	//printf(">>>DMAIT1:State:0x%x\n", testi2c.State);
+	//printf(">>>after Transmit DMA FUNC\n");
+	while(i2c_check(&testi2c));
+	//printf(">>>after i2c_check\n");
+	HAL_I2C_Master_Receive_DMA_IT(&testi2c, 0x44, rx_buff, 6);
+#endif
+
+#if 0
+	IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
+	extern void i2c0_callback(void);
+	IRQ_SetHandler(I2C_MASTER0_IRQ, i2c0_callback);
+	sp_i2c_master_init();
+	sp_i2c_master_set_freq_khz(0, 100);
+	
+	sp_i2c_dma_irq_write(0, 0x44, &tx_buff, 2);
+	//delay(100000);
+	//while(i2c_check_mas(0));
+	//sp_i2c_dma_irq_read(0, 0x44, &rx_buff, 6);
+#endif
+
+	int temp = (rx_buff[0]<<8) | rx_buff[1];
+	temp = temp * 17500/65536;
+	int temp_L = temp%100;
+	int temp_H = temp/100 -45;
+	int RH = (rx_buff[3] << 8) | rx_buff[4];
+	RH = RH * 10000/65536;
+	int RH_L = RH % 100;
+	int RH_H = RH / 100;
+	
+	//for(int i = 0; i<6; i++)
+		//printf(">>>0x%x\n", rx_buff[i]);
+	
+	printf("!!!!!!temp = %02d.%02d, humidity = %02d.%02d\n", temp_H, temp_L, RH_H, RH_L);
+}
+
+
+#endif
+
 int main(void)
 {
 #if 0 // MALLOC_TEST
@@ -392,21 +515,18 @@ int main(void)
 	free(p2);
 #endif
 
-//#ifdef I2C_TEST
-//    unsigned int test;
-//#endif
 	printf("Build @%s, %s\n", __DATE__, __TIME__);
 	hw_init();
 	//mmu_init();
 	//HAL_DCACHE_ENABLE();
 	SystemInit();
-
+	HAL_Init();
 
 	//AV1_STC_init();
 	/*initial interrupt vector table*/
 	//int_memcpy(0x00000000, __vectors_start, (unsigned)__vectors_end - (unsigned)__vectors_start);
 
-	//IRQ_Initialize();
+	IRQ_Initialize();
 
 #ifdef TIMER_TEST
 	timer_test_init();
@@ -414,12 +534,17 @@ int main(void)
 #endif
 
 #ifdef I2C_TEST
-	//HAL_I2C_TEST();
-	//i2c_test();
-	while(1)
-	{
-		i2c_test();
-	}
+#if 0
+	extern void i2c_test();
+	i2c_test();
+#else
+	do {
+		delay(3000000);
+		//i2c_twi_test();
+		i2c_xt_test();
+		//i2c_test1();
+	} while(1);
+#endif
 #endif
 
 #ifdef TEMPWAVE

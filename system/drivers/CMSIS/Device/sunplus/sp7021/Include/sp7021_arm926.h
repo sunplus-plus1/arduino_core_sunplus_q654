@@ -532,14 +532,14 @@ PINMUX_SPI3S_CLK,
 PINMUX_SPI3S_EN,
 PINMUX_SPI3S_DO,
 PINMUX_SPI3S_DI,
-PINMUX_I2CM0_CK,
-PINMUX_I2CM0_DAT,
-PINMUX_I2CM1_CK,
-PINMUX_I2CM1_DAT,
-PINMUX_I2CM2_CK,
-PINMUX_I2CM2_D,
-PINMUX_I2CM3_CK,
-PINMUX_I2CM3_D,
+PINMUX_I2CM0_SCL,
+PINMUX_I2CM0_SDA,
+PINMUX_I2CM1_SCL,
+PINMUX_I2CM1_SDA,
+PINMUX_I2CM2_SCL,
+PINMUX_I2CM2_SDA,
+PINMUX_I2CM3_SCL,
+PINMUX_I2CM3_SDA,
 PINMUX_UA1_TX,
 PINMUX_UA1_RX,
 PINMUX_UA1_CTS,
@@ -759,6 +759,70 @@ typedef struct{
 
 typedef struct
 {
+	__IOM uint32_t control0;      /* 00 */
+	__IOM uint32_t control1;      /* 01 */
+	__IOM uint32_t control2;      /* 02 */
+	__IOM uint32_t control3;      /* 03 */
+	__IOM uint32_t control4;      /* 04 */
+	__IOM uint32_t control5;      /* 05 */
+	__IOM uint32_t i2cm_status0;  /* 06 */
+	__IOM uint32_t interrupt;     /* 07 */
+	__IOM uint32_t int_en0;       /* 08 */
+	__IOM uint32_t i2cm_mode;     /* 09 */
+	__IOM uint32_t i2cm_status1;  /* 10 */
+	__IOM uint32_t i2cm_status2;  /* 11 */
+	__IOM uint32_t control6;      /* 12 */
+	__IOM uint32_t int_en1;       /* 13 */
+	__IOM uint32_t i2cm_status3;  /* 14 */
+	__IOM uint32_t i2cm_status4;  /* 15 */
+	__IOM uint32_t int_en2;       /* 16 */
+	__IOM uint32_t control7;      /* 17 */
+	__IOM uint32_t control8;      /* 18 */
+	__IOM uint32_t control9;      /* 19 */
+	RESERVED(0[3], uint32_t)      /* 20~22 */
+	__IOM uint32_t version;       /* 23 */
+	__IOM uint32_t data00_03;     /* 24 */
+	__IOM uint32_t data04_07;     /* 25 */
+	__IOM uint32_t data08_11;     /* 26 */
+	__IOM uint32_t data12_15;     /* 27 */
+	__IOM uint32_t data16_19;     /* 28 */
+	__IOM uint32_t data20_23;     /* 29 */
+	__IOM uint32_t data24_27;     /* 30 */
+	__IOM uint32_t data28_31;     /* 31 */
+} I2C_TypeDef;
+
+typedef struct
+{
+	__IOM uint32_t hw_version;                /* 00 */
+	__IOM uint32_t dma_config;                /* 01 */
+	__IOM uint32_t dma_length;                /* 02 */
+	__IOM uint32_t dma_addr;                  /* 03 */
+	__IOM uint32_t port_mux;                  /* 04 */
+	__IOM uint32_t int_flag;                  /* 05 */
+	__IOM uint32_t int_en;                    /* 06 */
+	__IOM uint32_t sw_reset_state;            /* 07 */
+	RESERVED(0[2], uint32_t)                  /* 08~09 */
+	__IOM uint32_t sg_dma_index;              /* 10 */
+	__IOM uint32_t sg_dma_config;             /* 11 */
+	__IOM uint32_t sg_dma_length;             /* 12 */
+	__IOM uint32_t sg_dma_addr;               /* 13 */
+	RESERVED(1, uint32_t)                     /* 14 */
+	__IOM uint32_t sg_setting;                /* 15 */
+	__IOM uint32_t threshold;                 /* 16 */
+	RESERVED(2, uint32_t)                     /* 17 */
+	__IOM uint32_t gdma_read_timeout;         /* 18 */
+	__IOM uint32_t gdma_write_timeout;        /* 19 */
+	__IOM uint32_t ip_read_timeout;           /* 20 */
+	__IOM uint32_t ip_write_timeout;          /* 21 */
+	__IOM uint32_t write_cnt_debug;           /* 22 */
+	__IOM uint32_t w_byte_en_debug;           /* 23 */
+	__IOM uint32_t sw_reset_write_cnt_debug;  /* 24 */
+	__IOM uint32_t sw_reset_read_cnt_debug;   /* 25 */
+	RESERVED(3[6], uint32_t)                  /* 26~31 */
+} GDMA_TypeDef;
+
+typedef struct
+{
 	__IOM uint32_t pll_ctrl;			/*!< \brief sp7021 q628 system PLL set >*/
 	__IOM uint32_t clk_setting;			/*!< \brief sp7021 q628 system clock set and selection >*/
 
@@ -910,9 +974,6 @@ typedef struct {
 
 #define SYSCLK_BASE RF_GRP(4, 26)
 #define SYS_CLK			((SYS_CLKDef*)SYSCLK_BASE)
-#define CLK_EN			((Module_Clock_En_type*) MODULE_CLK_EN_BASE)
-#define CLK_GATE		((Module_Clock_Gate_Type*) MODULE_CLK_GATE_BASE)
-#define MODULE_REST		((Module_Reset_Type*) MODULE_RESET_BASE)
 
 #define TIM0			((TIM_TypeDef *) TIM0_BASE)
 #define TIM1			((TIM_TypeDef *) TIM1_BASE)
@@ -976,6 +1037,7 @@ typedef struct {
 #define SP_UART_TXGDMA0_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA0_BASE)
 #define SP_UART_TXGDMA1_CTRL     ((volatile UART_TxGdma*) UART_TXGDMA1_BASE)
 
+/* spi register */
 
 #define SPI0_BASE      RF_GRP(91, 0)
 #define SPI1_BASE      RF_GRP(489, 0)
@@ -988,7 +1050,27 @@ typedef struct {
 #define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
 #define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
 
+/* i2c register */
+#define I2CM0_BASE      RF_GRP(140, 0)
+#define I2CM1_BASE      RF_GRP(142, 0)
+#define I2CM2_BASE      RF_GRP(144, 0)
+#define I2CM3_BASE      RF_GRP(146, 0)
 
+#define GDMA0_BASE     RF_GRP(141, 0)
+#define GDMA1_BASE     RF_GRP(143, 0)
+#define GDMA2_BASE     RF_GRP(145, 0)
+#define GDMA3_BASE     RF_GRP(147, 0)
+
+
+#define SP_I2CM0 	((volatile I2C_TypeDef *)I2CM0_BASE)
+#define SP_I2CM1 	((volatile I2C_TypeDef *)I2CM1_BASE)
+#define SP_I2CM2 	((volatile I2C_TypeDef *)I2CM2_BASE)
+#define SP_I2CM3 	((volatile I2C_TypeDef *)I2CM3_BASE)
+
+#define SP_GDMA0 	((volatile GDMA_TypeDef *)GDMA0_BASE)
+#define SP_GDMA1 	((volatile GDMA_TypeDef *)GDMA1_BASE)
+#define SP_GDMA2 	((volatile GDMA_TypeDef *)GDMA2_BASE)
+#define SP_GDMA3 	((volatile GDMA_TypeDef *)GDMA3_BASE)
 /*
 UART LCR register BIT
 */

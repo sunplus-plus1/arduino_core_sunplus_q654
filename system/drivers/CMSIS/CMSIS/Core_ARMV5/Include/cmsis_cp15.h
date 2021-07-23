@@ -186,7 +186,6 @@ __STATIC_FORCEINLINE void __set_DCCIMVAC(uint32_t value)
 }
 
 
-
 /** \brief  Set DCISW
  */
 __STATIC_FORCEINLINE void __set_DCISW(uint32_t value)

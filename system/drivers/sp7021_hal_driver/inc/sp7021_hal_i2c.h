@@ -4,7 +4,8 @@
 #include "core_armv5.h"
 #include "sp7021_arm926.h"
 #include "sp7021_hal_def.h"
-#include "cache.h"
+#include "irq_ctrl.h"
+#include "sp70xx.h"
 
 /* pinmux */
 #define	PINMUX_PIN3_03		20
@@ -152,74 +153,60 @@
 
 #define I2C_CLK_SOURCE_FREQ		27000  // KHz(27MHz)
 
-#define SET 	1
-#define RESET 	0
+//#define SET 	1
+//#define RESET 	0
 #define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->Instance->interrupt) & \
                                                     (__FLAG__)) == (__FLAG__)) ? SET : RESET)
+#define __HAL_DMA_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->gdma->int_flag) & \
+                                                    (__FLAG__)) == (__FLAG__)) ? SET : RESET)
 
-typedef struct
-{
-	__IOM uint32_t control0;      /* 00 */
-	__IOM uint32_t control1;      /* 01 */
-	__IOM uint32_t control2;      /* 02 */
-	__IOM uint32_t control3;      /* 03 */
-	__IOM uint32_t control4;      /* 04 */
-	__IOM uint32_t control5;      /* 05 */
-	__IOM uint32_t i2cm_status0;  /* 06 */
-	__IOM uint32_t interrupt;     /* 07 */
-	__IOM uint32_t int_en0;       /* 08 */
-	__IOM uint32_t i2cm_mode;     /* 09 */
-	__IOM uint32_t i2cm_status1;  /* 10 */
-	__IOM uint32_t i2cm_status2;  /* 11 */
-	__IOM uint32_t control6;      /* 12 */
-	__IOM uint32_t int_en1;       /* 13 */
-	__IOM uint32_t i2cm_status3;  /* 14 */
-	__IOM uint32_t i2cm_status4;  /* 15 */
-	__IOM uint32_t int_en2;       /* 16 */
-	__IOM uint32_t control7;      /* 17 */
-	__IOM uint32_t control8;      /* 18 */
-	__IOM uint32_t control9;      /* 19 */
-	RESERVED(0[3], uint32_t)      /* 20~22 */
-	__IOM uint32_t version;       /* 23 */
-	__IOM uint32_t data00_03;     /* 24 */
-	__IOM uint32_t data04_07;     /* 25 */
-	__IOM uint32_t data08_11;     /* 26 */
-	__IOM uint32_t data12_15;     /* 27 */
-	__IOM uint32_t data16_19;     /* 28 */
-	__IOM uint32_t data20_23;     /* 29 */
-	__IOM uint32_t data24_27;     /* 30 */
-	__IOM uint32_t data28_31;     /* 31 */
-} I2C_TypeDef;
+#define HAL_DCACHE_LINE_SIZE            32
+#define CYG_MACRO_START					do{
+#define CYG_MACRO_END					}while(0)
 
-typedef struct
-{
-	__IOM uint32_t hw_version;                /* 00 */
-	__IOM uint32_t dma_config;                /* 01 */
-	__IOM uint32_t dma_length;                /* 02 */
-	__IOM uint32_t dma_addr;                  /* 03 */
-	__IOM uint32_t port_mux;                  /* 04 */
-	__IOM uint32_t int_flag;                  /* 05 */
-	__IOM uint32_t int_en;                    /* 06 */
-	__IOM uint32_t sw_reset_state;            /* 07 */
-	RESERVED(0[2], uint32_t)                  /* 08~09 */
-	__IOM uint32_t sg_dma_index;              /* 10 */
-	__IOM uint32_t sg_dma_config;             /* 11 */
-	__IOM uint32_t sg_dma_length;             /* 12 */
-	__IOM uint32_t sg_dma_addr;               /* 13 */
-	RESERVED(1, uint32_t)                     /* 14 */
-	__IOM uint32_t sg_setting;                /* 15 */
-	__IOM uint32_t threshold;                 /* 16 */
-	RESERVED(2, uint32_t)                     /* 17 */
-	__IOM uint32_t gdma_read_timeout;         /* 18 */
-	__IOM uint32_t gdma_write_timeout;        /* 19 */
-	__IOM uint32_t ip_read_timeout;           /* 20 */
-	__IOM uint32_t ip_write_timeout;          /* 21 */
-	__IOM uint32_t write_cnt_debug;           /* 22 */
-	__IOM uint32_t w_byte_en_debug;           /* 23 */
-	__IOM uint32_t sw_reset_write_cnt_debug;  /* 24 */
-	__IOM uint32_t sw_reset_read_cnt_debug;   /* 25 */
-	RESERVED(3[6], uint32_t)                  /* 26~31 */
-} I2C_GDMA_TypeDef;
+#define HAL_DCACHE_FLUSH( _base_ , _size_ )     \
+CYG_MACRO_START                                 \
+    HAL_DCACHE_STORE( _base_ , _size_ );        \
+    HAL_DCACHE_INVALIDATE( _base_ , _size_ );   \
+CYG_MACRO_END
+
+// Invalidate cache lines in the given range without writing to memory.
+#define HAL_DCACHE_INVALIDATE( _base_ , _size_ )                        \
+CYG_MACRO_START                                                         \
+    register int addr, enda;                                            \
+    for ( addr = (~(HAL_DCACHE_LINE_SIZE - 1)) & (int)(_base_),         \
+              enda = (int)(_base_) + (_size_);                          \
+          addr < enda ;                                                 \
+          addr += HAL_DCACHE_LINE_SIZE )                                \
+    {                                                                   \
+		L1C_InvalidateDCacheMVA(addr);                                  \
+    }                                                                   \
+CYG_MACRO_END
+
+// Write dirty cache lines to memory for the given address range.
+#define HAL_DCACHE_STORE( _base_ , _size_ )                             \
+CYG_MACRO_START                                                         \
+    register int addr, enda;                                            \
+    for ( addr = (~(HAL_DCACHE_LINE_SIZE - 1)) & (int)(_base_),         \
+              enda = (int)(_base_) + (_size_);                          \
+          addr < enda ;                                                 \
+          addr += HAL_DCACHE_LINE_SIZE )                                \
+    {                                                                   \
+		L1C_CleanDCacheMVA(addr);                                       \
+    }                                                                   \
+    /* and also drain the write buffer */                               \
+    asm volatile (                                                      \
+        "mov    r1,#0;"                                                 \
+        "mcr    p15,0,r1,c7,c10,4;"                                     \
+        :                                                               \
+        :                                                               \
+        : "r1", "memory" /* Clobber list */                             \
+    );                                                                  \
+CYG_MACRO_END
+											
+#define i2c_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR]: file %s on line %d\r\n",__FUNCTION__, __LINE__)))
+
+
 
 /**
   * @}
@@ -256,73 +243,36 @@ typedef enum
 {
 	HAL_I2C_STATE_RESET             = 0x00U,   /*!< Peripheral is not yet Initialized         */
 	HAL_I2C_STATE_READY             = 0x20U,   /*!< Peripheral Initialized and ready for use  */
-	HAL_I2C_STATE_BUSY              = 0x24U,   /*!< An internal process is ongoing            */
+	HAL_I2C_STATE_BUSY              = 0x25U,   /*!< An internal process is ongoing            */
 	HAL_I2C_STATE_BUSY_TX           = 0x21U,   /*!< Data Transmission process is ongoing      */
 	HAL_I2C_STATE_BUSY_RX           = 0x22U,   /*!< Data Reception process is ongoing         */
-	HAL_I2C_STATE_LISTEN            = 0x28U,   /*!< Address Listen Mode is ongoing            */
-	HAL_I2C_STATE_BUSY_TX_LISTEN    = 0x29U,   /*!< Address Listen Mode and Data Transmission
-                                               	   process is ongoing                         */
-	HAL_I2C_STATE_BUSY_RX_LISTEN    = 0x2AU,   /*!< Address Listen Mode and Data Reception
-                                                   process is ongoing                         */
+	HAL_I2C_STATE_BUSY_DMA_TX		= 0x23U,   /*!< Data DMA Transmission process is ongoing      */
+	HAL_I2C_STATE_BUSY_DMA_RX       = 0x24U,   /*!< Data DMA Reception process is ongoing         */
 	HAL_I2C_STATE_ABORT             = 0x60U,   /*!< Abort user request ongoing                */
 	HAL_I2C_STATE_TIMEOUT           = 0xA0U,   /*!< Timeout state                             */
 	HAL_I2C_STATE_ERROR             = 0xE0U    /*!< Error                                     */
 
 } HAL_I2C_StateTypeDef;
 
-/** @defgroup HAL_mode_structure_definition HAL mode structure definition
-  * @brief  HAL Mode structure definition
-  * @note  HAL I2C Mode value coding follow below described bitmap :\n
-  *          b7     (not used)\n
-  *             x  : Should be set to 0\n
-  *          b6\n
-  *             0  : None\n
-  *             1  : Memory (HAL I2C communication is in Memory Mode)\n
-  *          b5\n
-  *             0  : None\n
-  *             1  : Slave (HAL I2C communication is in Slave Mode)\n
-  *          b4\n
-  *             0  : None\n
-  *             1  : Master (HAL I2C communication is in Master Mode)\n
-  *          b3-b2-b1-b0  (not used)\n
-  *             xxxx : Should be set to 0000
-  * @{
-  */
-typedef enum
-{
-  HAL_I2C_MODE_NONE               = 0x00U,   /*!< No I2C communication on going             */
-  HAL_I2C_MODE_MASTER             = 0x10U,   /*!< I2C communication is in Master Mode       */
-  HAL_I2C_MODE_SLAVE              = 0x20U,   /*!< I2C communication is in Slave Mode        */
-  HAL_I2C_MODE_MEM                = 0x40U    /*!< I2C communication is in Memory Mode       */
-
-} HAL_I2C_ModeTypeDef;
 /**
   * @}
   */
 
 typedef enum
 {
-	HAL_I2C_ERR_NONE,               /* successful */
-	HAL_I2C_ERR_I2C_BUSY,           /* I2C is busy */
-	HAL_I2C_ERR_INVALID_DEVID,      /* device id is invalid */
-	HAL_I2C_ERR_INVALID_CNT,        /* read or write count is invalid */
-	HAL_I2C_ERR_TIMEOUT_OUT,        /* wait timeout */
-	HAL_I2C_ERR_RECEIVE_NACK,       /* receive NACK */
-	HAL_I2C_ERR_FIFO_EMPTY,         /* FIFO empty */
-	HAL_I2C_ERR_SCL_HOLD_TOO_LONG,  /* SCL hlod too long */
-	HAL_I2C_ERR_RDATA_OVERFLOW,     /* rdata overflow */
-	HAL_I2C_ERR_INVALID_STATE,      /* read write state is invalid */
-	HAL_I2C_ERR_REQUESET_IRQ        /* request irq failed */
+	HAL_I2C_ERR_NONE				= 0x000U,	/* successful */
+	HAL_I2C_ERR_I2C_BUSY			= 0x001U,	/* I2C is busy */
+	HAL_I2C_ERR_INVALID_DEVID		= 0x002U,	/* device id is invalid */
+	HAL_I2C_ERR_INVALID_CNT			= 0x004U,	/* read or write count is invalid */
+	HAL_I2C_ERR_TIMEOUT				= 0x008U,	/* wait timeout */
+	HAL_I2C_ERR_RECEIVE_NACK		= 0x010U,	/* receive NACK */
+	HAL_I2C_ERR_FIFO_EMPTY			= 0x020U,	/* FIFO empty */
+	HAL_I2C_ERR_SCL_HOLD_TOO_LONG	= 0x040U,	/* SCL hlod too long */
+	HAL_I2C_ERR_RDATA_OVERFLOW		= 0x080U,	/* rdata overflow */
+	HAL_I2C_ERR_INVALID_STATE		= 0x100U,	/* read write state is invalid */
+	HAL_I2C_ERR_REQUESET_IRQ		= 0x200U,	/* request irq failed */
+	HAL_I2C_ERR_ADDRESS_NACK		= 0x400U	/* slave address NACK */
 } I2C_Status_e;
-
-typedef enum
-{
-	I2C_WRITE_STATE,  /* i2c is write */
-	I2C_READ_STATE,   /* i2c is read */
-	I2C_IDLE_STATE,   /* i2c is idle */
-	I2C_DMA_WRITE_STATE,/* i2c is dma write */
-	I2C_DMA_READ_STATE /* i2c is dma read */
-} I2C_State_e;
 
 typedef enum
 {	
@@ -343,32 +293,12 @@ typedef enum
 	I2C_AUTO
 } I2C_Active_Mode_e;
 
-
 typedef struct
 { 
-	uint32_t freq;
-	//uint16_t slave_addr;
+	uint32_t Timing;              /*!< Specifies the I2C_TIMINGR_register value.
+                                  This parameter calculated by referring to I2C initialization
+                                         section in Reference manual */
 
-	uint32_t *rdata_flag;
-
-	uint32_t flag;
-	uint32_t delay;
-	/* decide how many byte to write/read */
-
-	I2C_Active_Mode_e mode;
-	uint32_t *rdata;
-	uint32_t *wdata;
-	I2C_RW_Mode_e rw_mode;
-	/* interrupt enable */
-	uint32_t int0;
-	uint32_t rdata_en;
-	uint32_t overflow_en;
-	unsigned char threshold;
-
-	uint32_t gdma_addr;
-	uint32_t gdma_length;
-	I2C_DMA_RW_Mode_e gdma_rw_mode;
-	uint32_t gdma_int;
 } I2C_InitTypeDef;
 
 /** @defgroup I2C_handle_Structure_definition I2C handle Structure definition
@@ -378,24 +308,23 @@ typedef struct
 typedef struct __I2C_HandleTypeDef
 {
 	I2C_TypeDef                *Instance;      /*!< I2C registers base address                */
-	I2C_GDMA_TypeDef		   *gdma;
 	I2C_InitTypeDef            Init;           /*!< I2C communication parameters              */
-	uint8_t 				   Index;
-	uint16_t 				   RegDataIndex;
 	uint8_t                    *pBuffPtr;      /*!< Pointer to I2C transfer buffer            */
-	uint16_t                   XferSize;       /*!< I2C transfer size                         */
-	__IO uint16_t              XferCount;      /*!< I2C transfer counter                      */
+	uint32_t                   XferSize;       /*!< I2C transfer size                         */
+	__IO uint32_t              XferCount;      /*!< I2C transfer counter                      */
 	__IO uint32_t              XferOptions;    /*!< I2C sequantial transfer options, this parameter can
                                                   be a value of @ref I2C_XFEROPTIONS */
-	//__IO uint32_t              PreviousState;  /*!< I2C communication Previous state          */
-	HAL_StatusTypeDef(*XferISR)(struct __I2C_HandleTypeDef *hi2c, uint32_t ITFlags, uint32_t ITSources);  /*!< I2C transfer IRQ handler function pointer */
-	//DMA_HandleTypeDef          *hdmatx;        /*!< I2C Tx DMA handle parameters              */
-	//DMA_HandleTypeDef          *hdmarx;        /*!< I2C Rx DMA handle parameters              */
 	HAL_LockTypeDef            Lock;           /*!< I2C locking object                        */
 	__IO HAL_I2C_StateTypeDef  State;          /*!< I2C communication state                   */
-	__IO HAL_I2C_ModeTypeDef   Mode;           /*!< I2C communication mode                    */
 	__IO uint32_t              ErrorCode;      /*!< I2C Error code                            */
-	__IO uint32_t              AddrEventCount; /*!< I2C Address Event counter                 */
+	__IO uint32_t              AddrEventCount; /*!< I2C Address Event counter     	*/
+	
+	GDMA_TypeDef		   	   *gdma;
+	uint8_t 				   Index;
+	__IO uint16_t 			   RegDataIndex;
+	uint32_t				   BurstCount;
+	uint32_t				   BurstRemainder;
+	
 } I2C_HandleTypeDef;
 
 /* pin mux */
@@ -404,23 +333,29 @@ typedef struct __I2C_HandleTypeDef
 #define PINMUX_I2C_SDA		PINMUX_PIN2_02
 #define PINMUX_I2C_SCL		PINMUX_PIN2_03
 
-#define MOON3_PIN_MUX_BASE RF_GRP(3, 0)
-#define SP_PIN_MUX_CTRL3  ((GROUP3_Type*) MOON3_PIN_MUX_BASE)
 
-#define SP_I2C0_REG 	((I2C_TypeDef *)RF_GRP(140, 0))
-#define SP_GDMA0_REG 	((I2C_GDMA_TypeDef *)RF_GRP(141, 0))
-#define SP_I2C1_REG 	((I2C_TypeDef *)RF_GRP(142, 0))
-#define SP_GDMA1_REG 	((I2C_GDMA_TypeDef *)RF_GRP(143, 0))
-#define SP_I2C2_REG 	((I2C_TypeDef *)RF_GRP(144, 0))
-#define SP_GDMA2_REG 	((I2C_GDMA_TypeDef *)RF_GRP(145, 0))
-#define SP_I2C3_REG 	((I2C_TypeDef *)RF_GRP(146, 0))
-#define SP_GDMA3_REG 	((I2C_GDMA_TypeDef *)RF_GRP(147, 0))
+void I2C_HAL_TEST_IRQHandler(void);
 
-void HAL_I2C_TEST(void);
 void HAL_I2C_PinMux(I2C_HandleTypeDef *hi2c, int sda_pinmux, int scl_pinmux);
-void HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size,
+
+HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
+
+HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
                                           uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size,
+HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
                                          uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+												   uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+												  uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+												 uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, 
+												uint32_t Size);											 
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+                                              uint16_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+                                             uint16_t Size);
+											 
+void HAL_I2C_IRQHandler(I2C_HandleTypeDef *hi2c);
 #endif

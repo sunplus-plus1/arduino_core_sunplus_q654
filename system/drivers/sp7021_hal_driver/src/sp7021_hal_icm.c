@@ -88,7 +88,7 @@ void ICM_DATA_SetPinMux(ICM_InitTypeDef *pICM, int data_pinmux)
         SP_PIN_MUX_CTRL2->pinmux_icm_data[pICM->index/2] = RF_MASK_V((0x7f << 8), (data_pinmux << 8));
     }
     #endif
-    HAL_PINMUX_Cfg((pICM->index*2) + PINMUX_I2CM0_DAT, pICM->Pin_data);
+    HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_D, pICM->Pin_data);
 }
 
 void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM, int clk_pinmux)
@@ -103,5 +103,5 @@ void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM, int clk_pinmux)
         SP_PIN_MUX_CTRL2->pinmux_icm_clk[pICM->index/2] = RF_MASK_V((0x7f << 8), (clk_pinmux << 8));
     }
     #endif
-    HAL_PINMUX_Cfg((pICM->index*2) + PINMUX_I2CM0_CK, pICM->Pin_clk);
+    HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_CLK, pICM->Pin_clk);
 }

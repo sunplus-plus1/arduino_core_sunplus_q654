@@ -9,6 +9,7 @@
 #include "sp7021_hal_gpio.h"
 #include "sp7021_hal_uart.h"
 #include "sp7021_hal_spi.h"
+#include "sp7021_hal_i2c.h"
 #endif
 
 
