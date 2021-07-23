@@ -80,7 +80,7 @@ __STATIC_INLINE void GIC_ClearIRQ(IRQn_Type IRQn)
 	SP_IRQ_CTRL->clear[IRQn/32U] = (1 << (IRQn%32U));
 }
 
-__STATIC_INLINE uint32_t GIC_GetActiveIRQ(void)
+__STATIC_INLINE uint32_t GIC_GetActiveIRQ(void)//TODO
 {
 	uint32_t i = 0;
 	for (i=0;i < IRQ_GIC_LINE_COUNT; i++)
@@ -301,12 +301,12 @@ IRQn_ID_t IRQ_GetActiveFIQ (void)
 void IRQ_HANDLE(void)
 {
 	ISR_SAVE_CONTEXT();
-	IRQHandler_t h = NULL;
+	IRQHandler_t handler = NULL;
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveIRQ();
-	h = IRQ_GetHandler(irqn);
-	if (h != NULL)
-		h();
+	handler = IRQ_GetHandler(irqn);
+	if (handler != NULL)
+		handler();
 	IRQ_Clear(irqn);
 	ISR_RESTORE_CONTEXT();
 }
@@ -314,13 +314,13 @@ void IRQ_HANDLE(void)
 void FIQ_HANDLE(void)
 {
 	ISR_SAVE_CONTEXT();
-	IRQHandler_t h = 0;
+	IRQHandler_t handler = NULL;
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveFIQ();
-	h = IRQ_GetHandler(irqn);
+	handler = IRQ_GetHandler(irqn);
 	IRQ_Clear(irqn);
-	if (h != NULL)
-		h();
+	if (handler != NULL)
+		handler();
 	ISR_RESTORE_CONTEXT();
 }
 
