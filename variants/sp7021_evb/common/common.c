@@ -134,5 +134,6 @@ int _fstat(int fd, struct stat *buf)
 {
 	return 0;
 }
+
 #endif
 #endif

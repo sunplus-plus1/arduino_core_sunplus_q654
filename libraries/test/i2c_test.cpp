@@ -83,7 +83,7 @@ extern void i2c_twi_test(void);
 void i2c_test()
 {
 	do {
-		delay(3000000);
+		delay(3000);
 
 		tx_buff[0] = 0x24;
 		tx_buff[1] = 0x00;

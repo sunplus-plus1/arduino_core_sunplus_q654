@@ -86,5 +86,9 @@ clbss_l:
     b   clbss_l
 clbss_e:
 
+    bl __libc_init_array
 	bl main
 
+.global _init
+_init:
+	bx lr

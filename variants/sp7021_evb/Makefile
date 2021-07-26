@@ -49,54 +49,35 @@ TEST_SRC = $(TOP)/libraries/test
 vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
 vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC)
 
+# flags for c only
+CFLAGS += -std=gnu11
 
-CFLAGS += -MMD -O1
-CFLAGS += -nostdlib -fno-builtin
-CFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
-CFLAGS += -fno-partial-inlining -fno-jump-tables
-CFLAGS += -static
-CFLAGS += -nodefaultlibs
-CFLAGS += -ffunction-sections -fdata-sections 
-CFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-CFLAGS += -funsigned-char -funsigned-bitfields -w -std=gnu11
-CFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g 
-CFLAGS += -I$(CMSIS_HEADER)
-CFLAGS += -I$(CMSIS_DEVICE_HEADER)
-CFLAGS += -I$(HAL_DRIVER_HEADER)
-CFLAGS += -I$(ARDUNIO_HEADER)/sunplus
-CFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
-CFLAGS += -I$(ARDUNIO_HEADER)
-CFLAGS += -I$(SYSTEM_SP7021_SRC)
-CFLAGS += -I$(TOP)/variants/sp7021_evb
-CFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
+# flags for c++ only
+CXXFLAGS += -std=gnu++14 -fno-use-cxa-atexit
 
-CXXFLAGS += -MMD -O1
-CXXFLAGS += -nostdlib -fno-builtin
-CXXFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
-CXXFLAGS += -fno-partial-inlining -fno-jump-tables
-CXXFLAGS += -static
-CXXFLAGS += -nodefaultlibs
-CXXFLAGS += -ffunction-sections -fdata-sections
-CXXFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-#CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
-CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -w -std=gnu++14
-CXXFLAGS += -I$(CMSIS_HEADER)
-CXXFLAGS += -I$(CMSIS_DEVICE_HEADER)
-CXXFLAGS += -I$(HAL_DRIVER_HEADER)
-CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus
-CXXFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
-CXXFLAGS += -I$(ARDUNIO_HEADER)
-CXXFLAGS += -I$(SYSTEM_SP7021_SRC)
-CXXFLAGS += -I$(TOP)/variants/sp7021_evb
-CFLAGS += -I$(ARDUINO_HEADER)
-CFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
-
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>temporary add i2c
-CFLAGS += -I$(I2C_SRC)
-CXXFLAGS += -I$(I2C_SRC)
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-#-mthumb -mthumb-interwork
+# common flags for c & c++
+CCFLAGS += -MMD -O1
+#CCFLAGS += -nostdlib -fno-builtin
+CCFLAGS += -fno-pie -fno-PIE -fno-pic -fno-PIC
+CCFLAGS += -fno-partial-inlining -fno-jump-tables
+#CCFLAGS += -static
+#CCFLAGS += -nodefaultlibs
+CCFLAGS += -ffunction-sections -fdata-sections
+CCFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
+CCFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w
+CCFLAGS += -I$(CMSIS_HEADER)
+CCFLAGS += -I$(CMSIS_DEVICE_HEADER)
+CCFLAGS += -I$(HAL_DRIVER_HEADER)
+CCFLAGS += -I$(ARDUNIO_HEADER)/sunplus
+CCFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
+CCFLAGS += -I$(ARDUNIO_HEADER)
+CCFLAGS += -I$(SYSTEM_SP7021_SRC)
+CCFLAGS += -I$(TOP)/variants/sp7021_evb -I$(TOP)/variants/sp7021_evb/include
+CCFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g
+CCFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
+CCFLAGS += -I$(ARDUINO_HEADER)
+CCFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
+CCFLAGS += -I$(I2C_SRC)
 
 SPI_ALL := spi_all.bin
 SPI_HEX := spi_all.hex
@@ -131,25 +112,27 @@ CSOURCES += $(wildcard $(patsubst %,%/*.c,$(HAL_DRIVER_SRC) $(WRAPPER_SRC) $(SPI
 MW_DIR = $(TOP)/system/Middlewares
 OPENAMP_SRC = $(MW_DIR)/OpenAMP/open-amp
 LIBMETAL_SRC = $(MW_DIR)/OpenAMP/libmetal/lib
-CFLAGS += -I$(LIBMETAL_SRC)/include -I$(OPENAMP_SRC)/lib/include -I$(OPENAMP_SRC)/apps/machine/a926
+CCFLAGS += -I$(LIBMETAL_SRC)/include \
+           -I$(OPENAMP_SRC)/lib/include \
+           -I$(OPENAMP_SRC)/apps/machine/a926 \
+           -I$(ARDUNIO_HEADER)/sunplus/OpenAMP
 
 # open-amp
 CSOURCES += $(OPENAMP_SRC)/lib/virtio/virtio.c \
             $(OPENAMP_SRC)/lib/virtio/virtqueue.c \
             $(OPENAMP_SRC)/lib/rpmsg/rpmsg.c \
             $(OPENAMP_SRC)/lib/rpmsg/rpmsg_virtio.c \
-            $(OPENAMP_SRC)/lib/remoteproc/elf_loader.c \
             $(OPENAMP_SRC)/lib/remoteproc/remoteproc.c \
             $(OPENAMP_SRC)/lib/remoteproc/remoteproc_virtio.c \
             $(OPENAMP_SRC)/lib/remoteproc/rsc_table_parser.c \
+            $(OPENAMP_SRC)/lib/remoteproc/elf_loader.c \
             $(OPENAMP_SRC)/lib/proxy/rpmsg_retarget.c \
             $(OPENAMP_SRC)/apps/machine/a926/a926_rproc.c \
             $(OPENAMP_SRC)/apps/machine/a926/platform_info.c \
             $(OPENAMP_SRC)/apps/machine/a926/rsc_table.c \
-            $(OPENAMP_SRC)/apps/examples/echo/rpmsg-echo.c \
 
 # libmetal
-CFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
+CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
 CSOURCES += $(LIBMETAL_SRC)/dma.c \
             $(LIBMETAL_SRC)/device.c \
             $(LIBMETAL_SRC)/init.c \
@@ -168,6 +151,16 @@ CSOURCES += $(LIBMETAL_SRC)/dma.c \
             $(LIBMETAL_SRC)/system/generic/time.c \
             $(LIBMETAL_SRC)/system/generic/a926/sys.c \
 
+# virt_uart
+CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO -I$(MW_DIR)/OpenAMP/virt_uart
+CSOURCES += $(MW_DIR)/OpenAMP/virt_uart/virtio_buffer.c \
+            $(MW_DIR)/OpenAMP/virt_uart/virt_uart.c \
+#            $(MW_DIR)/OpenAMP/virt_uart/virt_uart_demo.c
+
+# VirtIOSerial
+CXXSOURCES += $(MW_DIR)/OpenAMP/virt_uart/VirtIOSerial.cpp \
+              $(MW_DIR)/OpenAMP/virt_uart/virt_uart_demo2.cpp
+
 
 # ardunio C source
 #CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
@@ -176,12 +169,12 @@ CSOURCES += $(LIBMETAL_SRC)/dma.c \
 
 # Marlin
 CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -w -std=gnu++14
-#CFLAGS += -IMarlin/include -IMarlin/arduino
-#CFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
+#CCFLAGS += -IMarlin/include -IMarlin/arduino
+#CCFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
 #CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 
 #CXXSOURCES += Marlin/temperature_ads1015.cpp Marlin/temperature.cpp
 #CXXSOURCES += Marlin/ConfigurationStore.cpp Marlin/Marlin_main.cpp Marlin/arduino/main.cpp
-#CFLAGS += -D__GNUC__
+#CCFLAGS += -D__GNUC__
 
 OBJS = $(ASOURCES:.S=.o) $(CSOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 DEPS = $(OBJS:.o=.d)
@@ -216,16 +209,16 @@ $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 #testapi/qch/iop.o: testapi/qch/DQ8051.bin
 %.o: %.S
 	$(Pecho) "  CC   $<"
-	$P $(CC) $(CFLAGS) -c -o $@ $<
+	$P $(CC) $(CFLAGS) $(CCFLAGS) -c -o $@ $<
 
 
 %.o: %.c
 	$(Pecho) "  CC   $<"
-	$P $(CC) $(CFLAGS) -c -o $@ $<
+	$P $(CC) $(CFLAGS) $(CCFLAGS) -c -o $@ $<
 
 %.o: %.cpp
 	$(Pecho) "  CXX  $<"
-	$P $(CXX) $(CXXFLAGS) -c -o $@ $<
+	$P $(CXX) $(CXXFLAGS) $(CCFLAGS) -c -o $@ $<
 
 clean:
 	$P -rm -f $(OBJS) $(DEPS) rom.d >/dev/null

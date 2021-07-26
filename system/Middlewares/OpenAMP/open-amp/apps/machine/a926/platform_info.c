@@ -199,7 +199,7 @@ int platform_poll(void *priv)
 	unsigned int flags;
 
 	prproc = rproc->priv;
-	while(1) {
+	do {
 		flags = metal_irq_save_disable();
 		if (!(atomic_flag_test_and_set(&prproc->nokick))) {
 			metal_irq_restore_enable(flags);
@@ -208,7 +208,7 @@ int platform_poll(void *priv)
 		}
 		_rproc_wait();
 		metal_irq_restore_enable(flags);
-	}
+	} while (0);
 	return 0;
 }
 

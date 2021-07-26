@@ -67,6 +67,17 @@ __STATIC_FORCEINLINE void __set_IFSR(uint32_t ifsr)
   __set_CP(15, 0, ifsr, 5, 0, 1);
 }
 
+/** \brief  Get Cache
+    \return Cache Register value
+ */
+__STATIC_FORCEINLINE uint32_t __get_CACHE(void)
+{
+  uint32_t result;
+  __get_CP(15, 0, result, 0, 0, 1);
+  return result;
+}
+
+
 
 /** \brief  Get TTBR0
 
@@ -156,6 +167,12 @@ __STATIC_FORCEINLINE void __set_TLBIALL(uint32_t value)
 __STATIC_FORCEINLINE void __set_ICIALLU(uint32_t value)
 {
   __set_CP(15, 0, value, 7, 5, 0);
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
 }
 
 /** \brief  Set DCCMVAC

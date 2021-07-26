@@ -487,7 +487,7 @@ int main(void)
 #else
 	extern void i2c_twi_test1(void);
 	do {
-		delay(3000000);
+		delay(3000);
 		//i2c_twi_test1();
 		i2c_twi_test();
 		//i2c_xt_test();
