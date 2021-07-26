@@ -78,7 +78,8 @@ CXXFLAGS += -static
 CXXFLAGS += -nodefaultlibs
 CXXFLAGS += -ffunction-sections -fdata-sections
 CXXFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
+#CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w -std=gnu++14
+CXXFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -w -std=gnu++14
 CXXFLAGS += -I$(CMSIS_HEADER)
 CXXFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CXXFLAGS += -I$(HAL_DRIVER_HEADER)
@@ -103,7 +104,7 @@ SPI_HEX := spi_all.hex
 # Boot up
 ASOURCES = start.S
 CSOURCES = main.c
-CSOURCES += i2c_mas.c
+#CSOURCES += i2c_mas.c
 
 
 # common

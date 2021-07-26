@@ -324,69 +324,16 @@ void temp_output_waveform(void)
 
 #ifdef I2C_TEST
 
-#if 0
-#define I2C_NUM             0  /* contain 4 I2C,from 0--3 */
-/**************************** sth32 for i2c test ***********************************/
-void sth31_test()
-{
-         u8     rx_buf[20];
-         u8     tx_buf[20];
-         int a = 10000000;
-         while(a--);
-
-         tx_buf[0] = 0x24;
-         tx_buf[1] = 0x00;
-         sp_i2c_write(I2C_NUM, 0x44 , &tx_buf[0] ,2); // write 2 bytes command
-
-         while(i2c_check_mas(I2C_NUM));   // wait I2C bus idle
-         sp_i2c_read(I2C_NUM, 0x44 , &rx_buf[0] , 6); // read 6 bytes data
-         printf("\n %x \n",rx_buf[0]);
-         #if 1
-         printf("\n %x \n",rx_buf[0]);
-         //get temp and rth data.
-         int temp = (rx_buf[0]<<8|rx_buf[1]);
-         temp = temp * 17500/65536;
-         int temp_L = temp%100;
-         int temp_H = temp/100-45;
-         
-         int RTH = (rx_buf[3]<<8|rx_buf[4]);
-         RTH = RTH*10000/65536;
-         int RTH_L = RTH%100;
-         int RTH_H = RTH/100; 
-         printf("\n temp=%d.%d   %d.%d    \n",temp_H,temp_L,RTH_H,RTH_L);
-         //set_sth31_temp(temp_H<<8|temp_L,RTH_H<<8|RTH_L);
-         #endif
-}
-void i2c_test_pinmux_set()
-{
-         MOON3_REG->sft_cfg[10+I2C_NUM] = RF_MASK_V((0x7f << 0), (7 << 0)); // I2C_CLK out from GPIO_P1_06
-         MOON3_REG->sft_cfg[10+I2C_NUM] = RF_MASK_V((0x7f << 8), (8 << 8)); // I2C_DATA out from GPIO_P1_07
-}
-void i2c_test1()
-{
-         /***** i2c init set*****/
-		 i2c_test_pinmux_set(); //pinmux set
-         sp_i2c_master_init(); //register set
-         sp_i2c_master_set_freq_khz(I2C_NUM, 100);      // set clk to 100kHz
-
-         /***** device sth31 test*****/
-         sth31_test();
-}
-#endif
-
 static uint8_t rx_buff1[32];
 static uint8_t tx_buff1[32];
 
 static i2c_t test;
-static I2C_HandleTypeDef handletest;
 
 void i2c_twi_test(void)
 {
-	test.handle = handletest;
 	test.pin_sda = 15;
 	test.pin_scl = 14;
-	test.i2c = SP_I2CM0;
-	
+
 	tx_buff1[0] = 0x24;
 	tx_buff1[1] = 0x00;
 	i2c_init(&test);
@@ -534,14 +481,16 @@ int main(void)
 #endif
 
 #ifdef I2C_TEST
-#if 0
-	extern void i2c_test();
+#if 1
+	extern void i2c_test(void);
 	i2c_test();
 #else
+	extern void i2c_twi_test1(void);
 	do {
 		delay(3000000);
-		//i2c_twi_test();
-		i2c_xt_test();
+		//i2c_twi_test1();
+		i2c_twi_test();
+		//i2c_xt_test();
 		//i2c_test1();
 	} while(1);
 #endif
@@ -568,7 +517,10 @@ int main(void)
 	
 
 	printf("NonOS boot OK!!!\n");
-	
+#if 0
+	extern openamp_test_main(void);
+	openamp_test_main();
+#endif
 	extern void loop(void);
 	
 	//loop();
