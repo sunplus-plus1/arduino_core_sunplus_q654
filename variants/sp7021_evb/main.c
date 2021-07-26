@@ -15,7 +15,7 @@
 
 #include "HardwareTimer.h"
 
-#define I2C_TEST
+//#define I2C_TEST
 #ifdef I2C_TEST
 #include "sp7021_hal_i2c.h"
 #include "utility/twi.h"
