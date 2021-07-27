@@ -64,7 +64,7 @@ CCFLAGS += -fno-partial-inlining -fno-jump-tables
 #CCFLAGS += -nodefaultlibs
 CCFLAGS += -ffunction-sections -fdata-sections
 CCFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-CCFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -w
+CCFLAGS += -funsigned-char -funsigned-bitfields -w
 CCFLAGS += -I$(CMSIS_HEADER)
 CCFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CCFLAGS += -I$(HAL_DRIVER_HEADER)
@@ -75,8 +75,6 @@ CCFLAGS += -I$(SYSTEM_SP7021_SRC)
 CCFLAGS += -I$(TOP)/variants/sp7021_evb -I$(TOP)/variants/sp7021_evb/include
 CCFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g
 CCFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
-CCFLAGS += -I$(ARDUINO_HEADER)
-CCFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
 CCFLAGS += -I$(I2C_SRC)
 
 SPI_ALL := spi_all.bin
