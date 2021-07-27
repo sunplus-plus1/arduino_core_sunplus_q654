@@ -64,7 +64,7 @@ CCFLAGS += -fno-partial-inlining -fno-jump-tables
 #CCFLAGS += -nodefaultlibs
 CCFLAGS += -ffunction-sections -fdata-sections
 CCFLAGS += -Wall -march=armv5te -Wno-unused-function -Wno-unused-variable
-CCFLAGS += -funsigned-char -funsigned-bitfields -w
+CCFLAGS += -funsigned-char -funsigned-bitfields -fshort-enums -w
 CCFLAGS += -I$(CMSIS_HEADER)
 CCFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CCFLAGS += -I$(HAL_DRIVER_HEADER)
