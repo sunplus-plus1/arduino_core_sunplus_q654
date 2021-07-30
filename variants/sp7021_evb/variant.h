@@ -14,6 +14,11 @@
 #define PIN_I2C_SDA		GPIO_P1_07
 #define PIN_I2C_SCL		GPIO_P1_06
 
+#define PIN_ICM_DATA
+#define PIN_ICM_CLK
+
+#define PIN_EXT_INT0	GPIO_P4_07
+
 #define NUM_DIGITAL_PINS	(GPIO_P8_07+1)
 
 

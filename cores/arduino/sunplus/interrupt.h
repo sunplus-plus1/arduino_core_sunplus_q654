@@ -1,14 +1,8 @@
 #ifndef __INTERRUPT_H
 #define __INTERRUPT_H
 
-
 #include "sp7021_hal_exti.h"
-
-#define LOW     0x0
-#define HIGH    0x1
-#define CHANGE  0x2
-#define FALLING 0x3
-#define RISING  0x4
+#include "sp7021_hal.h"
 
 #define GPIO_EXTI(x) GPIO_EXTI##x
 
@@ -21,10 +15,21 @@
 #define GPIO_EXTI6 33
 #define GPIO_EXTI7 32
 
-#define EXTI_IRQ IRQ_TYPE_IRQ
+typedef struct
+{;}
+GPIO_TypeDef;
 
-void sunplus_interrupt_enable(uint32_t id, void (*callback)(void), uint32_t mode);
-void sunplus_interrupt_disable(uint32_t id);
+void sunplus_interrupt_enable(GPIO_TypeDef *port, uint16_t pin, void (*callback)(void), uint32_t mode);
+void sunplus_interrupt_disable(GPIO_TypeDef *port, uint16_t pin);
+
+void EXTI0_IRQHandler(void);
+void EXTI1_IRQHandler(void);
+void EXTI2_IRQHandler(void);
+void EXTI3_IRQHandler(void);
+void EXTI4_IRQHandler(void);
+void EXTI5_IRQHandler(void);
+void EXTI6_IRQHandler(void);
+void EXTI7_IRQHandler(void);
 
 #endif
 

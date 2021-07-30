@@ -17,28 +17,23 @@
 */
 
 #include "WInterrupts.h"
-
-/*
-  parameter id is 0~7 correspond exti0~exti7. The pin and 
-  extern intr correspondence can be modified in interrupt.h. 
-*/
+#include "interrupt.h"
 
 void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
-	uint32_t id = pin;
-	uint32_t it_mode = mode;
-	if((id < 0) || (id > 7))
-	{
-		return;
-	}
+	uint32_t it_mode = 0;
 	
 	switch (mode)
 	{
 	case FALLING :
+		it_mode = IRQ_MODE_TRIG_EDGE_FALLING;
+		break;
 	case LOW :
 		it_mode = IRQ_MODE_TRIG_LEVEL_LOW;
 		break;
 	case RISING :
+		it_mode = IRQ_MODE_TRIG_EDGE_RISING;
+		break;
 	case HIGH :
 		it_mode = IRQ_MODE_TRIG_LEVEL_HIGH;
 		break;
@@ -46,12 +41,11 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 		it_mode = IRQ_MODE_TRIG_LEVEL_HIGH;
 		break;
 	}
-
-	sunplus_interrupt_enable(id, callback, it_mode);
+	
+	sunplus_interrupt_enable((GPIO_TypeDef *)0, pin, callback, it_mode);
 }
 
 void detachInterrupt(uint32_t pin)
 {
-	uint32_t id = pin;
-	sunplus_interrupt_disable(id);
+	sunplus_interrupt_disable((GPIO_TypeDef *)0, pin);
 }

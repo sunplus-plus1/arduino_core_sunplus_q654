@@ -6,27 +6,22 @@
 #endif
 
 /* Include ------------------------------------------------------------------*/
-#include "sp7021_hal_gpio.h"
 #include "sp7021_hal_irq_ctrl.h"
 
-#define REG_EXTI(X) (RF_GRP(3, (24+(X/2))))
-#define REG_VAL_EXTI(X) (*((volatile unsigned int *)REG_EXTI(X)))
-
-#define RF_MASK_V(_mask, _val)          (((_mask) << 16) | (_val))
+#define IRQ_MODE_TRIG_EDGE_NONE  	0x00
+#define IRQ_MODE_TRIG_EDGE_ACTIVE  	0x10
 
 typedef struct
 {
 	IRQn_Type irqn;				//intr num: EXTI0_IRQn~EXTI7_IRQn
-	uint32_t id;				//exti index: 0~7
-	uint32_t trig;				//triggle type (default high-level)
+	uint32_t index;				//exti index: 0~7
+	uint32_t trigger;			//triggle type (default high-level)
 	uint32_t priority;			//IRQ/FIQ (default IRQ)
-	IRQHandler_t handler;		//intr handle fuction
-	uint32_t pin;   			//GPIO selection(pin_mux)
-} EXTI_InitTypeDef;
+	void (*callback)(void);	//intr handle fuction
+} EXTI_HandleTypeDef;
 
-void EXTI_SetPinMux(uint32_t pin, uint32_t id);
-void HAL_EXTI_Init(EXTI_InitTypeDef *pEXTI_Init, IRQHandler_t pEXTI_callback);
-void HAL_EXTI_Data(EXTI_InitTypeDef *pEXTI_Init);
+HAL_StatusTypeDef HAL_EXTI_SetMode(EXTI_HandleTypeDef *hexti);
+int HAL_EXTI_EdgePatch(EXTI_HandleTypeDef *hexti);
 #ifdef __cplusplus
 }
 #endif

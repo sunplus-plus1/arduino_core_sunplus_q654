@@ -20,19 +20,17 @@
 #define _WIRING_INTERRUPTS_
 
 #include <stdint.h>
-#include <interrupt.h>
 #include <wiring_constants.h>
 
-#ifdef __cplusplus
-extern "C"{
-#endif
+#define LOW     0x0
+#define HIGH    0x1
+#define CHANGE  0x2
+#define FALLING 0x3
+#define RISING  0x4
 
 void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
 
 void detachInterrupt(uint32_t pin);
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* _WIRING_INTERRUPTS_ */
 

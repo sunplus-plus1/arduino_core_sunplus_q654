@@ -24,7 +24,7 @@ typedef enum {
   I2C2_INDEX,
   I2C3_INDEX,
   I2C_NUM
-} i2c_index_t;
+} i2c_index_e;
 
 /* Private Variables */
 static I2C_HandleTypeDef *i2c_handles[I2C_NUM];
@@ -120,11 +120,10 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		HAL_Module_Reset(I2CM0, 0);
 		HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA, i2c_sda);
 		HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL, i2c_scl);
-		
+	
 		IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER0_IRQ, I2C0_IRQHandler);
-		IRQ_Enable(I2C_MASTER0_IRQ);
-		
+
 		obj->irq = I2C_MASTER0_IRQ;
 		i2c_handles[I2C0_INDEX] = handle;
 		i2c_handles[I2C0_INDEX]->Index = I2C0_INDEX;
@@ -140,7 +139,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 
 		IRQ_SetMode(I2C_MASTER1_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER1_IRQ, I2C1_IRQHandler);
-		IRQ_Enable(I2C_MASTER1_IRQ);
 		
 		obj->irq = I2C_MASTER1_IRQ;
 		i2c_handles[I2C1_INDEX] = handle;
@@ -157,7 +155,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 
 		IRQ_SetMode(I2C_MASTER2_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER2_IRQ, I2C2_IRQHandler);
-		IRQ_Enable(I2C_MASTER2_IRQ);
 
 		obj->irq = I2C_MASTER2_IRQ;
 		i2c_handles[I2C2_INDEX] = handle;
@@ -174,7 +171,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		
 		IRQ_SetMode(I2C_MASTER3_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C3_IRQHandler);
-		IRQ_Enable(I2C_MASTER3_IRQ);
 		
 		obj->irq = I2C_MASTER3_IRQ;
 		i2c_handles[I2C3_INDEX] = handle;
@@ -232,6 +228,7 @@ i2c_status_e i2c_master_write(i2c_t *obj, uint8_t dev_address,
 	uint32_t tickstart = HAL_GetTick();
 	uint32_t delta = 0;
 	uint32_t err = 0;
+	
 	if (HAL_I2C_Master_Transmit_IT(&(obj->handle), dev_address, data, size) == HAL_OK)
 	{
 	// wait for transfer completion
@@ -284,7 +281,6 @@ i2c_status_e i2c_master_read(i2c_t *obj, uint8_t dev_address, uint8_t *data, uin
 	uint32_t tickstart = HAL_GetTick();
 	uint32_t delta = 0;
 	uint32_t err = 0;
-
 
 	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK)
 	{

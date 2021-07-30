@@ -208,14 +208,16 @@ int32_t IRQ_SetMode (IRQn_ID_t irqn, uint32_t mode)
 {
 	int32_t status = 0;
 	int32_t type, polarity;
+
+	mode = mode & 0xF;	//bits[0:3] is really vaild, bits[4:7] used for fix exti bug 
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
 		switch (mode)
 		{
-			case 0:type = 0; polarity = 0; break;
-			case 1:type = 0; polarity = 1; break;
-			case 2:type = 1; polarity = 0; break;
-			case 3:type = 1; polarity = 1; break;
+			case IRQ_MODE_TRIG_LEVEL_HIGH:type = 0; polarity = 0; break;
+			case IRQ_MODE_TRIG_LEVEL_LOW:type = 0; polarity = 1; break;
+			case IRQ_MODE_TRIG_EDGE_RISING:type = 1; polarity = 0; break;
+			case IRQ_MODE_TRIG_EDGE_FALLING:type = 1; polarity = 1; break;
 			default:status = -1;break;
 		}
 		GIC_SetIRQType(irqn, type, polarity);
@@ -326,9 +328,9 @@ void FIQ_HANDLE(void)
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveFIQ();
 	handler = IRQ_GetHandler(irqn);
-	IRQ_Clear(irqn);
 	if (handler != NULL)
 		handler();
+	IRQ_Clear(irqn);
 	ISR_RESTORE_CONTEXT();
 }
 

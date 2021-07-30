@@ -1,45 +1,67 @@
 #include "sp7021_hal_exti.h"
-
-/* HAL layer port for external interrupts, you can call  this function to 
-   implement the use of EXTI. e.g in main.c  */
-void HAL_EXTI_Init(EXTI_InitTypeDef *pEXTI_Init, IRQHandler_t pEXTI_callback)
+#include "sp7021_hal_conf.h"
+/* There is BUG in EXIT edge triggerger, workaround for the trouble */
+HAL_StatusTypeDef HAL_EXTI_SetMode(EXTI_HandleTypeDef *hexti)
 {
-  pEXTI_Init->irqn = pEXTI_Init->id + 120;
-
-  EXTI_SetPinMux(pEXTI_Init->pin, pEXTI_Init->id);
-	IRQ_SetHandler(pEXTI_Init->irqn, pEXTI_callback);
-
-  if ( !(pEXTI_Init->priority == -1) )
-  {
-    IRQ_SetPriority(pEXTI_Init->irqn, pEXTI_Init->priority);
-  }
-  if ( !(pEXTI_Init->trig == -1) )
-  {
-    IRQ_SetMode(pEXTI_Init->irqn, pEXTI_Init->trig);
-  }
-
-  IRQ_Enable(pEXTI_Init->irqn);
+	int idx = 0;
+	int mask = 0;
+	
+	if ((hexti->irqn < 120) || (hexti->irqn > 127))
+	{
+		return HAL_ERROR;
+	}
+	
+	idx = hexti->irqn / 32;
+	mask = (1 << (hexti->irqn % 32));
+	
+	if(hexti->trigger & IRQ_MODE_TRIG_EDGE_RISING)
+	{
+		SP_IRQ_CTRL->type[idx] &= ~mask;//edge->level
+		SP_IRQ_CTRL->polarity[idx] &= ~mask;//high
+	}
+	else if(hexti->trigger & IRQ_MODE_TRIG_EDGE_FALLING)
+	{
+		SP_IRQ_CTRL->type[idx] &= ~mask;
+		SP_IRQ_CTRL->polarity[idx] |= mask;
+	}
+	else
+	{
+		IRQ_SetMode(hexti->irqn ,hexti->trigger);
+	}
+	return HAL_OK;
 }
 
-void HAL_EXTI_Data(EXTI_InitTypeDef *pEXTI_Init)
+int HAL_EXTI_EdgePatch(EXTI_HandleTypeDef *hexti)
 {
-	pEXTI_Init->trig = -1;
-	pEXTI_Init->priority = -1;
-}
-
-/* 
-  SP7021 have the function of Pin Multiplex. Here set pin for an external interrupt to use
-  by configuring the Pinmux control register.
-*/
-void EXTI_SetPinMux(uint32_t pin, uint32_t id)
-{   
-    uint32_t reg_val = pin - 7;         //G_MX = reg_val(x) + 7
-	if((id + 1) % 2)
-    {   
-        REG_VAL_EXTI(id) = RF_MASK_V(0x7f, reg_val);
-    }
-    else
-    {   
-        REG_VAL_EXTI(id) = RF_MASK_V((0x7f << 8), (reg_val << 8));
-    }
+	int idx = 0;
+	int mask = 0;
+	
+	idx = hexti->irqn / 32;
+	mask = (1 << (hexti->irqn % 32));
+	
+	if(hexti->trigger & IRQ_MODE_TRIG_EDGE_ACTIVE)//second times entry irq
+	{
+		if(hexti->trigger & IRQ_MODE_TRIG_EDGE_RISING)
+		{
+			SP_IRQ_CTRL->polarity[idx] &= ~mask;//low->high
+		}
+		else
+		{
+			SP_IRQ_CTRL->polarity[idx] |= mask;//high->low
+		}
+		hexti->trigger &= ~IRQ_MODE_TRIG_EDGE_ACTIVE;
+		return 0;
+	}
+	/* first time entry irq */
+	else if(hexti->trigger == IRQ_MODE_TRIG_EDGE_RISING)
+	{
+		SP_IRQ_CTRL->polarity[idx] |= mask;//high->low
+		hexti->trigger |= IRQ_MODE_TRIG_EDGE_ACTIVE;
+	}
+	else if(hexti->trigger == IRQ_MODE_TRIG_EDGE_FALLING)
+	{
+		SP_IRQ_CTRL->polarity[idx] &= ~mask;//low->high
+		hexti->trigger |= IRQ_MODE_TRIG_EDGE_ACTIVE;	
+	}
+	return 1;
 }

@@ -77,31 +77,10 @@ void HAL_ICM_PINMUX(ICM_InitTypeDef *pICM, int data_pinmux, int clk_pinmux)
 */
 void ICM_DATA_SetPinMux(ICM_InitTypeDef *pICM, int data_pinmux)
 {   
-	#if 0
-	if((pICM->index + 1) % 2)
-    {
-        /* A valid write to the register, the corresponding mask bits must set 1 at the same time*/
-        SP_PIN_MUX_CTRL2->pinmux_icm_data[pICM->index/2] = RF_MASK_V(0x7f, data_pinmux);
-    }
-    else
-    {   
-        SP_PIN_MUX_CTRL2->pinmux_icm_data[pICM->index/2] = RF_MASK_V((0x7f << 8), (data_pinmux << 8));
-    }
-    #endif
     HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_D, pICM->Pin_data);
 }
 
 void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM, int clk_pinmux)
 {   
-	#if 0
-	if((pICM->index + 1) % 2)
-    {   
-        SP_PIN_MUX_CTRL2->pinmux_icm_clk[pICM->index/2] = RF_MASK_V(0x7f, clk_pinmux);
-    }
-    else
-    {   
-        SP_PIN_MUX_CTRL2->pinmux_icm_clk[pICM->index/2] = RF_MASK_V((0x7f << 8), (clk_pinmux << 8));
-    }
-    #endif
     HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_CLK, pICM->Pin_clk);
 }
