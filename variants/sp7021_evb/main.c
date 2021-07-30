@@ -217,7 +217,7 @@ int main(void)
 	//cbdma_test_init();
 	uart_isr_init();
 
-#define ARDUINO_INTR_SAMPLE
+//#define ARDUINO_INTR_SAMPLE
 #ifdef ARDUINO_INTR_SAMPLE
 	extern void arduino_intr_test(void);
 	arduino_intr_test();

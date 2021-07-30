@@ -38,11 +38,11 @@ void sunplus_interrupt_enable(GPIO_TypeDef *port, uint16_t pin, void (*callback)
 {
 	uint8_t index = 0;
 	uint16_t exti_pin = 0;
-	
+
 	UNUSED(port);
-	
+
 	index = get_pin_index(pin);
-	
+
 	exti_handles[index].index = index;//0
 	exti_handles[index].trigger = mode;//4
 	exti_handles[index].priority = IRQ_TYPE_IRQ;//0
@@ -127,7 +127,6 @@ void sunplus_interrupt_enable(GPIO_TypeDef *port, uint16_t pin, void (*callback)
 		IRQ_SetPriority(EXTI7_IRQn, IRQ_TYPE_IRQ);
 		IRQ_Enable(EXTI7_IRQn);
 	}
-
 }
 
 void sunplus_interrupt_disable(GPIO_TypeDef *port, uint16_t pin)
@@ -135,7 +134,7 @@ void sunplus_interrupt_disable(GPIO_TypeDef *port, uint16_t pin)
 	UNUSED(port);
 	uint8_t index = get_pin_index(pin);
 	exti_handles[index].callback = NULL;
-	
+
 	for(int i = 0; i < EXTI_NUM; i++)
 	{
 		if (exti_handles[index].irqn == exti_handles[i].irqn
@@ -152,7 +151,7 @@ void EXTI0_IRQHandler(void)
 	uint8_t index = EXTI0_INDEX;
 	uint32_t irqn = EXTI0_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -167,7 +166,7 @@ void EXTI1_IRQHandler(void)
 	uint8_t index = EXTI1_INDEX;
 	uint32_t irqn = EXTI1_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -182,7 +181,7 @@ void EXTI2_IRQHandler(void)
 	uint8_t index = EXTI2_INDEX;
 	uint32_t irqn = EXTI2_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -197,7 +196,7 @@ void EXTI3_IRQHandler(void)
 	uint8_t index = EXTI3_INDEX;
 	uint32_t irqn = EXTI3_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -212,7 +211,7 @@ void EXTI4_IRQHandler(void)
 	uint8_t index = EXTI4_INDEX;
 	uint32_t irqn = EXTI4_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -227,7 +226,7 @@ void EXTI5_IRQHandler(void)
 	uint8_t index = EXTI5_INDEX;
 	uint32_t irqn = EXTI5_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -242,7 +241,7 @@ void EXTI6_IRQHandler(void)
 	uint8_t index = EXTI6_INDEX;
 	uint32_t irqn = EXTI6_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)
@@ -257,7 +256,7 @@ void EXTI7_IRQHandler(void)
 	uint8_t index = EXTI7_INDEX;
 	uint32_t irqn = EXTI7_IRQn;
 	uint32_t it_mode = exti_handles[index].trigger;
-	
+
 	if(HAL_EXTI_EdgePatch(&exti_handles[index]))
 	{
 		if (exti_handles[index].callback != NULL)

@@ -22,7 +22,7 @@
 void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
 	uint32_t it_mode = 0;
-	
+
 	switch (mode)
 	{
 	case FALLING :
@@ -41,7 +41,7 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 		it_mode = IRQ_MODE_TRIG_LEVEL_HIGH;
 		break;
 	}
-	
+
 	sunplus_interrupt_enable((GPIO_TypeDef *)0, pin, callback, it_mode);
 }
 
