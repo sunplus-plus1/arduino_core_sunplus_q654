@@ -275,14 +275,14 @@ int Print::printf(const char *format, ...)
 {
   va_list ap;
   va_start(ap, format);
-  return vdprintf((int)this, format, ap);
+  return vdprintf(1, format, ap); // 1: STDOUT
 }
 
 int Print::printf(const __FlashStringHelper *format, ...)
 {
   va_list ap;
   va_start(ap, format);
-  return vdprintf((int)this, (const char *)format, ap);
+  return vdprintf(1, (const char *)format, ap); // 1: STDOUT
 }
 
 // Private Methods /////////////////////////////////////////////////////////////
