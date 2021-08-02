@@ -34,7 +34,6 @@
 size_t Print::write(const uint8_t *buffer, size_t size)
 {
   size_t n = 0;
-  #if 1
   while (size--) {
     if (write(*buffer++)) {
       n++;
@@ -42,17 +41,6 @@ size_t Print::write(const uint8_t *buffer, size_t size)
       break;
     }
   }
-  #else
-  const uint8_t *data = buffer;
-  while (size--) {
-    if (*data++) {
-      n++;
-    } else {
-      break;
-    }
-  }
-  writeByteS(buffer,n);
-  #endif
   return n;
 }
 

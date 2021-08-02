@@ -17,7 +17,7 @@ int openamp_test_main(void)
 		static char s[256];
 		ret = uart.readBytes(s, sizeof(s));
 		if (ret > 0) {
-			uart.writeByteS((const uint8_t *)s, ret); // write back
+			uart.write((const uint8_t *)s, ret); // write back
 		}
 #else // method 2
 		if (uart.available()) {

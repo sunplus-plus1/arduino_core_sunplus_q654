@@ -58,10 +58,10 @@ String VirtIOSerial::readString()
 
 size_t VirtIOSerial::write(uint8_t ch)
 {
-  return writeByteS(&ch, 1);
+  return write(&ch, 1);
 }
 
-size_t VirtIOSerial::writeByteS(const uint8_t *buffer, size_t length)
+size_t VirtIOSerial::write(const uint8_t *buffer, size_t length)
 {
   return virt_uart_write((void *)buffer, length);
 }
