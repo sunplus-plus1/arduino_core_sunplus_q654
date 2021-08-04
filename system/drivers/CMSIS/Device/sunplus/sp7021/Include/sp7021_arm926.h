@@ -894,12 +894,12 @@ typedef struct {
 #define DRAM_BASE 			0x00000000
 #define EXTERNAL_ROM_BASE 	0x98000000
 #define PERIPH_BASE 		0x9C000000
-#define RUBS_BASE			(PERIPH_BASE+0)
+#define RBUS_BASE			(PERIPH_BASE+0)
 #define AXI_BUS_BASE		(PERIPH_BASE+0x101000)
 #define INTERNEL_ROM_BASE 	0x9E000000
 #define SRAM_BASE 			0x9E800000
 
-#define RF_GRP(_grp, _reg) ((((_grp) * 32 + (_reg)) * 4) + RUBS_BASE)
+#define RF_GRP(_grp, _reg) ((((_grp) * 32 + (_reg)) * 4) + RBUS_BASE)
 #define RF_AXI_GRP(_grp, _reg) ((((_grp) * 4096 + (_reg)) * 4) + AXI_BUS_BASE)
 
 #define RF_MASK_V(_mask, _val)       (((_mask) << 16) | (_val))
