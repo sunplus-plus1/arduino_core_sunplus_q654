@@ -128,6 +128,8 @@ CSOURCES += $(OPENAMP_SRC)/lib/virtio/virtio.c \
             $(OPENAMP_SRC)/apps/machine/a926/a926_rproc.c \
             $(OPENAMP_SRC)/apps/machine/a926/platform_info.c \
             $(OPENAMP_SRC)/apps/machine/a926/rsc_table.c \
+#			$(OPENAMP_SRC)/apps/examples/echo/rpmsg-echo.c \
+#			$(OPENAMP_SRC)/apps/examples/rpc_demo/rpc_demo.c \
 
 # libmetal
 CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL

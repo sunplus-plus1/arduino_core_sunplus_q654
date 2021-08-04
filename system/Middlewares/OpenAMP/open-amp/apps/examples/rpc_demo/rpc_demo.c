@@ -135,7 +135,7 @@ int app(struct rpmsg_device *rdev, void *priv)
 /*-----------------------------------------------------------------------------*
  *  Application entry point
  *-----------------------------------------------------------------------------*/
-int main(int argc, char *argv[])
+int openamp_test_main(int argc, char *argv[])
 {
 	void *platform;
 	struct rpmsg_device *rpdev;

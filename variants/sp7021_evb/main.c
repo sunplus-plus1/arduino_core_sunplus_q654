@@ -225,8 +225,8 @@ int main(void)
 	
 	printf("NonOS boot OK!!!\n");
 #if 0
-	extern openamp_test_main(void);
-	openamp_test_main();
+	extern openamp_test_main(int argc, char *argv[]);
+	openamp_test_main(0, NULL);
 #endif
 	extern void loop(void);
 	

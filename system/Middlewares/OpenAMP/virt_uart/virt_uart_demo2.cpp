@@ -7,7 +7,7 @@ This application echoes back data that was sent to it by the master core. */
 extern "C" {
 #endif
 
-int openamp_test_main(void)
+int openamp_test_main(int argc, char *argv[])
 {
 	int ret;
 	VirtIOSerial uart;
