@@ -14,9 +14,8 @@
 #include "metal/sys.h"
 #include <metal/irq_controller.h>
 #include <metal/log.h>
-#include <cache.h>
 #include <irq_ctrl.h>
-#include <cmsis_gcc.h>
+#include "sp7021_arm926.h"
 
 #define IRQ_GIC_LINE_COUNT 200
 
@@ -300,12 +299,14 @@ unsigned int sys_irq_save_disable(void)
 
 void metal_machine_cache_flush(void *addr, unsigned int len)
 {
-	HAL_DCACHE_FLUSH(addr, len);
+	//HAL_DCACHE_FLUSH(addr, len);
+	L1C_DCacheFlush(addr, len);
 }
 
 void metal_machine_cache_invalidate(void *addr, unsigned int len)
 {
-	HAL_DCACHE_INVALIDATE(addr, len);
+	//HAL_DCACHE_INVALIDATE(addr, len);
+	L1C_InvlidateDCache(addr, len);
 }
 
 /**

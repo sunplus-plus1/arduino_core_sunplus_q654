@@ -37,18 +37,19 @@ HAL_DRIVER_HEADER += $(TOP)/system/drivers/sp7021_hal_driver/inc
 SYSTEM_SP7021_SRC += $(TOP)/system/sp7021
 ARDUNIO_HEADER += $(TOP)/cores/arduino
 #ARDUNIO_HEADER += $(TOP)/variants/sp7021_evb
-CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source
+CMSIS_SRC = $(TOP)/system/drivers/CMSIS/Device/sunplus/sp7021/Source/gcc
 HAL_DRIVER_SRC = $(TOP)/system/drivers/sp7021_hal_driver/src
 ARDUNIO_SRC = $(TOP)/cores/arduino
 WRAPPER_SRC = $(TOP)/libraries/DriverWrapper/src/sunplus
 SPI_SRC = $(TOP)/libraries/SPI/src
 I2C_SRC = $(TOP)/libraries/Wire/src
 TEST_SRC = $(TOP)/libraries/test
+EXAMPLE_TIMER_SRC = $(TOP)/libraries/examples/timer
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
 vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC)
-
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC):$(EXAMPLE_TIMER_SRC)
+vpath %.S $(CMSIS_SRC)
 # flags for c only
 CFLAGS += -std=gnu11
 
@@ -70,37 +71,28 @@ CCFLAGS += -I$(CMSIS_DEVICE_HEADER)
 CCFLAGS += -I$(HAL_DRIVER_HEADER)
 CCFLAGS += -I$(ARDUNIO_HEADER)/sunplus
 CCFLAGS += -I$(ARDUNIO_HEADER)/sunplus/LL
+CCFLAGS += -I$(ARDUNIO_HEADER)/sunplus/OpenAMP
 CCFLAGS += -I$(ARDUNIO_HEADER)
 CCFLAGS += -I$(SYSTEM_SP7021_SRC)
 CCFLAGS += -I$(TOP)/variants/sp7021_evb -I$(TOP)/variants/sp7021_evb/include
-CCFLAGS += -Iinclude -Iinclude/util -I$(TESTAPI)/qch -g
 CCFLAGS += -I$(TOP)/libraries/DriverWrapper/src/sunplus
 CCFLAGS += -I$(I2C_SRC)
+CCFLAGS += -I$(ARDUINO_HEADER)
+CCFLAGS += -I$(ARDUINO_SUNPLUS_HEADER)
 
 SPI_ALL := spi_all.bin
 SPI_HEX := spi_all.hex
 
+
+LDFLAGS_COM += -L $(SYSTEM_SP7021_SRC) 
 # Boot up
-ASOURCES = start.S
-CSOURCES = main.c
-#CSOURCES += i2c_mas.c
-
-
-# common
-CSOURCES += $(COMMON_DIR)/common.c $(COMMON_DIR)/cpu_util.c
-
-# mon
-#CSOURCES += mon/monitor.c
-
-# interrupt
-#CSOURCES += $(COMMON_DIR)/sp_interrupt.c 
-ASOURCES += $(COMMON_DIR)/vectors.S
-#CSOURCES += sp7021_hal_irq_ctrl.c 
-#CSOURCES += sp7021_hal_tim.c sp7021_hal.c sunplus_def.c
+ASOURCES = startup_sp7021_arm926.S
+ASOURCES += vectors.S
 CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/avr/dtostrf.c wiring_digital.c
+CSOURCES += $(TOP)/libraries/DriverWrapper/src/syscall.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
-CXXSOURCES += HardwareTimer.cpp new.cpp timer_test.cpp uart_test.cpp spi_test.cpp i2c_test.cpp exti_test.cpp
-CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp Wire.cpp
+CXXSOURCES += HardwareTimer.cpp new.cpp 
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp variant.cpp main.cpp timer_interrupt.cpp VirtIOSerial.cpp  Wire.cpp
 
 
 # HAL
@@ -113,8 +105,10 @@ LIBMETAL_SRC = $(MW_DIR)/OpenAMP/libmetal/lib
 CCFLAGS += -I$(LIBMETAL_SRC)/include \
            -I$(OPENAMP_SRC)/lib/include \
            -I$(OPENAMP_SRC)/apps/machine/a926 \
-           -I$(ARDUNIO_HEADER)/sunplus/OpenAMP
-
+           -I$(ARDUNIO_HEADER)/sunplus/OpenAMP \
+           -I$(MW_DIR)/OpenAMP \
+           -I$(MW_DIR)/OpenAMP/virt_driver
+			
 # open-amp
 CSOURCES += $(OPENAMP_SRC)/lib/virtio/virtio.c \
             $(OPENAMP_SRC)/lib/virtio/virtqueue.c \
@@ -152,29 +146,15 @@ CSOURCES += $(LIBMETAL_SRC)/dma.c \
             $(LIBMETAL_SRC)/system/generic/a926/sys.c \
 
 # virt_uart
-CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO -I$(MW_DIR)/OpenAMP/virt_uart
-CSOURCES += $(MW_DIR)/OpenAMP/virt_uart/virtio_buffer.c \
-            $(MW_DIR)/OpenAMP/virt_uart/virt_uart.c \
+CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO -I$(MW_DIR)/OpenAMP/virt_driver
+CSOURCES += $(MW_DIR)/OpenAMP/virt_driver/virtio_buffer.c \
+           	$(MW_DIR)/OpenAMP/virt_driver/virt_uart.c \
 #            $(MW_DIR)/OpenAMP/virt_uart/virt_uart_demo.c
 
 # VirtIOSerial
-CXXSOURCES += $(MW_DIR)/OpenAMP/virt_uart/VirtIOSerial.cpp \
-              $(MW_DIR)/OpenAMP/virt_uart/virt_uart_demo2.cpp
+#CXXSOURCES += $(MW_DIR)/OpenAMP/virt_uart/VirtIOSerial.cpp \
+#1              $(MW_DIR)/OpenAMP/virt_uart/virt_uart_demo2.cpp
 
-
-# ardunio C source
-#CSOURCES += Marlin/arduino/wiring_analog.c Marlin/arduino/wiring_digital.c Marlin/arduino/wiring.c
-#CXXSOURCES += $(ARDUINO_SRC)/WInterrupts.cpp $(WRAPPER_SRC)/interrupt.cpp
-#CXXSOURCES += $(WRAPPER_SRC)/interrupt.cpp
-
-# Marlin
-CFLAGS += -fno-use-cxa-atexit -funsigned-char -funsigned-bitfields -w -std=gnu++14
-#CCFLAGS += -IMarlin/include -IMarlin/arduino
-#CCFLAGS += -DF_CPU=16000000 -DARDUINO=105 -DMOTHERBOARD=33 -D__AVR_ATmega2560__ -DCPU_32_BIT
-#CXXSOURCES += Marlin/motion_control.cpp Marlin/MarlinSerial.cpp Marlin/stepper.cpp Marlin/planner.cpp 
-#CXXSOURCES += Marlin/temperature_ads1015.cpp Marlin/temperature.cpp
-#CXXSOURCES += Marlin/ConfigurationStore.cpp Marlin/Marlin_main.cpp Marlin/arduino/main.cpp
-#CCFLAGS += -D__GNUC__
 
 OBJS = $(ASOURCES:.S=.o) $(CSOURCES:.c=.o) $(CXXSOURCES:.cpp=.o)
 DEPS = $(OBJS:.o=.d)

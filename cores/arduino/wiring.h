@@ -44,7 +44,7 @@
   #include "HardwareTimer.h"
   #include "Tone.h"
   #include "WCharacter.h"
-//  #include "WSerial.h"
+  #include "WSerial.h"
   #include "WMath.h"
   #include "WString.h"
 #endif // __cplusplus

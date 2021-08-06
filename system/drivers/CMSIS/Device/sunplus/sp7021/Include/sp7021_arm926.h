@@ -197,24 +197,26 @@ typedef enum IRQn
    RESERVED_179                = 179,    /*!< RESERVED interrupt                                                  */	
    RESERVED_180                = 180,    /*!< RESERVED interrupt                                                  */	
    RESERVED_181                = 181,    /*!< RESERVED interrupt                                                  */	
-   C_CHIP_INT0_IRQn            = 182,    /*!< C Chip Direct  interrupt                                                  */	
-   C_CHIP_INT1_IRQn            = 183,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT2_IRQn            = 184,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT3_IRQn            = 185,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT4_IRQn            = 186,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT5_IRQn            = 187,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT6_IRQn            = 188,    /*!< C Chip Direct interrupt                                                  */	  
-   C_CHIP_INT7_IRQn            = 189,    /*!< C Chip Direct interrupt                                                  */	  
-   p_CHIP_INT0_IRQn            = 190,    /*!< P Chip to C chip interrupt                                                  */	
-   p_CHIP_INT1_IRQn			   = 192,	  /*!< P Chip to C chip interrupt 												 */  
-   P_CHIP_INT2_IRQn			   = 193,	  /*!< P Chip to C chip interrupt													*/	
-   P_CHIP_INT3_IRQn			   = 194,	  /*!< P Chip to C chip interrupt													*/	
-   P_CHIP_INT4_IRQn			   = 195,	  /*!< P Chip to C chip interrupt													*/	
-   P_CHIP_INT5_IRQn			   = 196,	  /*!< P Chip to C chip interrupt													*/	
-   P_CHIP_INT6_IRQn			   = 197,	  /*!< P Chip to C chip interrupt													*/	
-   P_CHIP_INT7_IRQn			   = 198,	  /*!< P Chip to C chip interrupt													*/	
-   C_CHIP_CPU0_IRQn			   = 199,	  /*!< C Chip Direct interrupt													*/		
-   P_CHIP_IRQn			       = 200,	  /*!< C Chip Direct interrupt													*/		
+
+   /* Mailbox interrupt*/
+   IPC_P2C_DIRECT_INT0_IRQn    = 182,    /*!< P Chip send interrupt 0 to C chip (Mailbox direct transport data0)  */	
+   IPC_P2C_DIRECT_INT1_IRQn    = 183,    /*!< P Chip send interrupt 1 to C chip (Mailbox direct transport data1)  */	  
+   IPC_P2C_DIRECT_INT2_IRQn    = 184,    /*!< P Chip send interrupt 2 to C chip (Mailbox direct transport data2)  */	  
+   IPC_P2C_DIRECT_INT3_IRQn    = 185,    /*!< P Chip send interrupt 3 to C chip (Mailbox direct transport data3)  */	  
+   IPC_P2C_DIRECT_INT4_IRQn    = 186,    /*!< P Chip send interrupt 4 to C chip (Mailbox direct transport data4)  */	  
+   IPC_P2C_DIRECT_INT5_IRQn    = 187,    /*!< P Chip send interrupt 5 to C chip (Mailbox direct transport data5)  */	  
+   IPC_P2C_DIRECT_INT6_IRQn    = 188,    /*!< P Chip send interrupt 6 to C chip (Mailbox direct transport data6)  */	  
+   IPC_P2C_DIRECT_INT7_IRQn    = 189,    /*!< P Chip send interrupt 7 to C chip (Mailbox direct transport data7)  */	  
+   IPC_C2P_DIRECT_INT0_IRQn    = 190,    /*!< C Chip send interrupt 0 to P chip (Mailbox direct transport data0)  */	
+   IPC_C2P_DIRECT_INT1_IRQn	   = 191,	 /*!< C Chip send interrupt 1 to P chip (Mailbox direct transport data1)  */  
+   IPC_C2P_DIRECT_INT2_IRQn	   = 192,	 /*!< C Chip send interrupt 2 to P chip (Mailbox direct transport data2)  */	
+   IPC_C2P_DIRECT_INT3_IRQn	   = 193,	 /*!< C Chip send interrupt 3 to P chip (Mailbox direct transport data3)  */	
+   IPC_C2P_DIRECT_INT4_IRQn	   = 194,	 /*!< C Chip send interrupt 4 to P chip (Mailbox direct transport data4)  */	
+   IPC_C2P_DIRECT_INT5_IRQn	   = 195,	 /*!< C Chip send interrupt 5 to P chip (Mailbox direct transport data5)  */	
+   IPC_C2P_DIRECT_INT6_IRQn	   = 196,	 /*!< C Chip send interrupt 6 to P chip (Mailbox direct transport data6)  */	
+   IPC_C2P_DIRECT_INT7_IRQn	   = 197,	 /*!< C Chip send interrupt 7 to P chip (Mailbox direct transport data7)  */	
+   IPC_P2C_NORMAL_IRQn		   = 198,	 /*!< P Chip send interrupt  to C chip (Mailbox normal transport data)    */		
+   IPC_C2P_NORMAL_IRQn	       = 199,	 /*!< C Chip send interrupt  to P chip (Mailbox normal transport data)	  */		
    MAX_IRQ_n
 } IRQn_Type;
 
@@ -888,6 +890,21 @@ typedef struct {
 }PWM_TypeDef;
 
 
+typedef struct {
+	__OM uint32_t C2P_normal_trigger;		//CA7 tiger the INT to ARM926
+	__IOM uint32_t C2P_write_monitor_status;
+	__IOM uint32_t C2P_over_write_monitor_status;
+	RESERVED(0, uint32_t);
+	__IOM uint32_t C2P_normal_data[20];
+	__IOM uint32_t C2P_direct_data[8];	
+	
+	__OM uint32_t P2C_normal_trigger;		//ARM926 tiger the INT to CA7
+	__IOM uint32_t P2C_write_monitor_status;
+	__IOM uint32_t P2C_over_write_monitor_status;
+	RESERVED(1, uint32_t);
+	__IOM uint32_t P2C_normal_data[20];
+	__IOM uint32_t P2C_direct_data[8];	
+}IPCC_Typedef;
 #define SP_IRQ_CTRL  ((IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
 
 
@@ -1071,6 +1088,11 @@ typedef struct {
 #define SP_GDMA1 	((volatile GDMA_TypeDef *)GDMA1_BASE)
 #define SP_GDMA2 	((volatile GDMA_TypeDef *)GDMA2_BASE)
 #define SP_GDMA3 	((volatile GDMA_TypeDef *)GDMA3_BASE)
+
+/* IPCC Mailbox */
+#define IPC_MAILBOX_BASE	RF_GRP(258, 0)
+#define IPC_MAILBOX	((volatile IPCC_Typedef *)IPC_MAILBOX_BASE)
+
 /*
 UART LCR register BIT
 */
@@ -1367,6 +1389,246 @@ UART LCR register BIT
 #define IS_VALID_PINMUX(pin)     (((pin) >= (GPIO_P1_00-7)) && ((pin) <= (GPIO_P8_07-7)))
 
 #define GPIO_TO_PINMUX(x)        IS_PINMUX_PIN(x)?((x)-7):-1
+
+
+
+
+/******************************************************************************/
+/*                                                                            */
+/*                       IPC Mailbox  		                                  */
+/*                                                                            */
+/******************************************************************************/
+/********************  Bit definition for IPC Mailbox register  ***************/
+
+
+#define IS_IPCC_INSTANCE(INSTANCE)       (((INSTANCE) == IPC_MAILBOX))  
+
+
+#define NORMAL_LOCK_DATA0_Pos	(4)
+#define NORMAL_LOCK_DATA0_Msk	(1<< NORMAL_LOCK_DATA0_Pos)
+#define NORMAL_LOCK_DATA0		NORMAL_LOCK_DATA0_Msk
+
+#define NORMAL_LOCK_DATA1_Pos	(5)
+#define NORMAL_LOCK_DATA1_Msk	(1<< NORMAL_LOCK_DATA1_Pos)
+#define NORMAL_LOCK_DATA1		NORMAL_LOCK_DATA1_Msk
+
+#define NORMAL_LOCK_DATA2_Pos	(6)
+#define NORMAL_LOCK_DATA2_Msk	(1<< NORMAL_LOCK_DATA2_Pos)
+#define NORMAL_LOCK_DATA2		NORMAL_LOCK_DATA2_Msk
+
+#define NORMAL_LOCK_DATA3_Pos	(7)
+#define NORMAL_LOCK_DATA3_Msk	(1<< NORMAL_LOCK_DATA3_Pos)
+#define NORMAL_LOCK_DATA3		NORMAL_LOCK_DATA3_Msk
+
+#define NORMAL_LOCK_DATA4_Pos	(8)
+#define NORMAL_LOCK_DATA4_Msk	(1<< NORMAL_LOCK_DATA4_Pos)
+#define NORMAL_LOCK_DATA4		NORMAL_LOCK_DATA4_Msk
+
+#define NORMAL_LOCK_DATA5_Pos	(9)
+#define NORMAL_LOCK_DATA5_Msk	(1<< NORMAL_LOCK_DATA5_Pos)
+#define NORMAL_LOCK_DATA5		NORMAL_LOCK_DATA5_Msk
+
+#define NORMAL_LOCK_DATA6_Pos	(10)
+#define NORMAL_LOCK_DATA6_Msk	(1<< NORMAL_LOCK_DATA6_Pos)
+#define NORMAL_LOCK_DATA6		NORMAL_LOCK_DATA6_Msk
+
+#define NORMAL_LOCK_DATA7_Pos	(11)
+#define NORMAL_LOCK_DATA7_Msk	(1<< NORMAL_LOCK_DATA7_Pos)
+#define NORMAL_LOCK_DATA7		NORMAL_LOCK_DATA7_Msk
+
+#define NORMAL_LOCK_DATA8_Pos	(12)
+#define NORMAL_LOCK_DATA8_Msk	(1<< NORMAL_LOCK_DATA8_Pos)
+#define NORMAL_LOCK_DATA8		NORMAL_LOCK_DATA8_Msk
+
+#define NORMAL_LOCK_DATA9_Pos	(13)
+#define NORMAL_LOCK_DATA9_Msk	(1<< NORMAL_LOCK_DATA9_Pos)
+#define NORMAL_LOCK_DATA9		NORMAL_LOCK_DATA9_Msk
+
+#define NORMAL_LOCK_DATA10_Pos	(14)
+#define NORMAL_LOCK_DATA10_Msk	(1<< NORMAL_LOCK_DATA10_Pos)
+#define NORMAL_LOCK_DATA10		NORMAL_LOCK_DATA10_Msk
+
+#define NORMAL_LOCK_DATA11_Pos	(15)
+#define NORMAL_LOCK_DATA11_Msk	(1<< NORMAL_LOCK_DATA11_Pos)
+#define NORMAL_LOCK_DATA11		NORMAL_LOCK_DATA11_Msk
+
+#define NORMAL_LOCK_DATA12_Pos	(16)
+#define NORMAL_LOCK_DATA12_Msk	(1<< NORMAL_LOCK_DATA12_Pos)
+#define NORMAL_LOCK_DATA12		NORMAL_LOCK_DATA12_Msk
+
+#define NORMAL_LOCK_DATA13_Pos	(17)
+#define NORMAL_LOCK_DATA13_Msk	(1<< NORMAL_LOCK_DATA13_Pos)
+#define NORMAL_LOCK_DATA13		NORMAL_LOCK_DATA13_Msk
+
+#define NORMAL_LOCK_DATA14_Pos	(18)
+#define NORMAL_LOCK_DATA14_Msk	(1<< NORMAL_LOCK_DATA14_Pos)
+#define NORMAL_LOCK_DATA14		NORMAL_LOCK_DATA14_Msk
+
+#define NORMAL_LOCK_DATA15_Pos	(19)
+#define NORMAL_LOCK_DATA15_Msk	(1<< NORMAL_LOCK_DATA15_Pos)
+#define NORMAL_LOCK_DATA15		NORMAL_LOCK_DATA15_Msk
+
+#define NORMAL_LOCK_DATA16_Pos	(20)
+#define NORMAL_LOCK_DATA16_Msk	(1<< NORMAL_LOCK_DATA16_Pos)
+#define NORMAL_LOCK_DATA16		NORMAL_LOCK_DATA16_Msk
+
+#define NORMAL_LOCK_DATA17_Pos	(21)
+#define NORMAL_LOCK_DATA17_Msk	(1<< NORMAL_LOCK_DATA17_Pos)
+#define NORMAL_LOCK_DATA17		NORMAL_LOCK_DATA17_Msk
+
+#define NORMAL_LOCK_DATA18_Pos	(22)
+#define NORMAL_LOCK_DATA18_Msk	(1<< NORMAL_LOCK_DATA18_Pos)
+#define NORMAL_LOCK_DATA18		NORMAL_LOCK_DATA18_Msk
+
+#define NORMAL_LOCK_DATA19_Pos	(23)
+#define NORMAL_LOCK_DATA19_Msk	(1<< NORMAL_LOCK_DATA19_Pos)
+#define NORMAL_LOCK_DATA19		NORMAL_LOCK_DATA19_Msk
+
+
+#define DIRECT_LOCK_DATA0_Pos	(24)
+#define DIRECT_LOCK_DATA0_Msk	(1<< DIRECT_LOCK_DATA0_Pos)
+#define DIRECT_LOCK_DATA0		DIRECT_LOCK_DATA0_Msk
+
+#define DIRECT_LOCK_DATA1_Pos	(25)
+#define DIRECT_LOCK_DATA1_Msk	(1<< DIRECT_LOCK_DATA1_Pos)
+#define DIRECT_LOCK_DATA1		DIRECT_LOCK_DATA1_Msk
+
+#define DIRECT_LOCK_DATA2_Pos	(26)
+#define DIRECT_LOCK_DATA2_Msk	(1<< DIRECT_LOCK_DATA2_Pos)
+#define DIRECT_LOCK_DATA2		DIRECT_LOCK_DATA2_Msk
+
+#define DIRECT_LOCK_DATA3_Pos	(27)
+#define DIRECT_LOCK_DATA3_Msk	(1<< DIRECT_LOCK_DATA3_Pos)
+#define DIRECT_LOCK_DATA3		DIRECT_LOCK_DATA3_Msk
+
+#define DIRECT_LOCK_DATA4_Pos	(28)
+#define DIRECT_LOCK_DATA4_Msk	(1<< DIRECT_LOCK_DATA4_Pos)
+#define DIRECT_LOCK_DATA4		DIRECT_LOCK_DATA4_Msk
+
+#define DIRECT_LOCK_DATA5_Pos	(29)
+#define DIRECT_LOCK_DATA5_Msk	(1<< DIRECT_LOCK_DATA5_Pos)
+#define DIRECT_LOCK_DATA5		DIRECT_LOCK_DATA5_Msk
+
+#define DIRECT_LOCK_DATA6_Pos	(30)
+#define DIRECT_LOCK_DATA6_Msk	(1<< DIRECT_LOCK_DATA6_Pos)
+#define DIRECT_LOCK_DATA6		DIRECT_LOCK_DATA6_Msk
+
+#define DIRECT_LOCK_DATA7_Pos	(31)
+#define DIRECT_LOCK_DATA7_Msk	(1<< DIRECT_LOCK_DATA7_Pos)
+#define DIRECT_LOCK_DATA7		DIRECT_LOCK_DATA7_Msk
+
+#define NORMAL_OVERWRITE_DATA0_Pos	(4)
+#define NORMAL_OVERWRITE_DATA0_Msk	(1<< NORMAL_OVERWRITE_DATA0_Pos)
+#define NORMAL_OVERWRITE_DATA0		NORMAL_LOCK_DATA0_Msk
+
+#define NORMAL_OVERWRITE_DATA1_Pos	(5)
+#define NORMAL_OVERWRITE_DATA1_Msk	(1<< NORMAL_OVERWRITE_DATA1_Pos)
+#define NORMAL_OVERWRITE_DATA1		NORMAL_LOCK_DATA1_Msk
+
+#define NORMAL_OVERWRITE_DATA2_Pos	(6)
+#define NORMAL_OVERWRITE_DATA2_Msk	(1<< NORMAL_OVERWRITE_DATA2_Pos)
+#define NORMAL_OVERWRITE_DATA2		NORMAL_LOCK_DATA2_Msk
+
+#define NORMAL_OVERWRITE_DATA3_Pos	(7)
+#define NORMAL_OVERWRITE_DATA3_Msk	(1<< NORMAL_OVERWRITE_DATA3_Pos)
+#define NORMAL_OVERWRITE_DATA3		NORMAL_LOCK_DATA3_Msk
+
+#define NORMAL_OVERWRITE_DATA4_Pos	(8)
+#define NORMAL_OVERWRITE_DATA4_Msk	(1<< NORMAL_OVERWRITE_DATA4_Pos)
+#define NORMAL_OVERWRITE_DATA4		NORMAL_LOCK_DATA4_Msk
+
+#define NORMAL_OVERWRITE_DATA5_Pos	(9)
+#define NORMAL_OVERWRITE_DATA5_Msk	(1<< NORMAL_OVERWRITE_DATA5_Pos)
+#define NORMAL_OVERWRITE_DATA5		NORMAL_LOCK_DATA5_Msk
+
+#define NORMAL_OVERWRITE_DATA6_Pos	(10)
+#define NORMAL_OVERWRITE_DATA6_Msk	(1<< NORMAL_OVERWRITE_DATA6_Pos)
+#define NORMAL_OVERWRITE_DATA6		NORMAL_LOCK_DATA6_Msk
+
+#define NORMAL_OVERWRITE_DATA7_Pos	(11)
+#define NORMAL_OVERWRITE_DATA7_Msk	(1<< NORMAL_OVERWRITE_DATA7_Pos)
+#define NORMAL_OVERWRITE_DATA7		NORMAL_LOCK_DATA7_Msk
+
+#define NORMAL_OVERWRITE_DATA8_Pos	(12)
+#define NORMAL_OVERWRITE_DATA8_Msk	(1<< NORMAL_OVERWRITE_DATA8_Pos)
+#define NORMAL_OVERWRITE_DATA8		NORMAL_LOCK_DATA8_Msk
+
+#define NORMAL_OVERWRITE_DATA9_Pos	(13)
+#define NORMAL_OVERWRITE_DATA9_Msk	(1<< NORMAL_OVERWRITE_DATA9_Pos)
+#define NORMAL_OVERWRITE_DATA9		NORMAL_LOCK_DATA9_Msk
+
+#define NORMAL_OVERWRITE_DATA10_Pos	(14)
+#define NORMAL_OVERWRITE_DATA10_Msk	(1<< NORMAL_OVERWRITE_DATA10_Pos)
+#define NORMAL_OVERWRITE_DATA10		NORMAL_LOCK_DATA10_Msk
+
+#define NORMAL_OVERWRITE_DATA11_Pos	(15)
+#define NORMAL_OVERWRITE_DATA11_Msk	(1<< NORMAL_OVERWRITE_DATA11_Pos)
+#define NORMAL_OVERWRITE_DATA11		NORMAL_LOCK_DATA11_Msk
+
+#define NORMAL_OVERWRITE_DATA12_Pos	(16)
+#define NORMAL_OVERWRITE_DATA12_Msk	(1<< NORMAL_OVERWRITE_DATA12_Pos)
+#define NORMAL_OVERWRITE_DATA12		NORMAL_LOCK_DATA12_Msk
+
+#define NORMAL_OVERWRITE_DATA13_Pos	(17)
+#define NORMAL_OVERWRITE_DATA13_Msk	(1<< NORMAL_OVERWRITE_DATA13_Pos)
+#define NORMAL_OVERWRITE_DATA13		NORMAL_LOCK_DATA13_Msk
+
+#define NORMAL_OVERWRITE_DATA14_Pos	(18)
+#define NORMAL_OVERWRITE_DATA14_Msk	(1<< NORMAL_OVERWRITE_DATA14_Pos)
+#define NORMAL_OVERWRITE_DATA14		NORMAL_LOCK_DATA14_Msk
+
+#define NORMAL_OVERWRITE_DATA15_Pos	(19)
+#define NORMAL_OVERWRITE_DATA15_Msk	(1<< NORMAL_OVERWRITE_DATA15_Pos)
+#define NORMAL_OVERWRITE_DATA15		NORMAL_LOCK_DATA15_Msk
+
+#define NORMAL_OVERWRITE_DATA16_Pos	(20)
+#define NORMAL_OVERWRITE_DATA16_Msk	(1<< NORMAL_OVERWRITE_DATA16_Pos)
+#define NORMAL_OVERWRITE_DATA16		NORMAL_LOCK_DATA16_Msk
+
+#define NORMAL_OVERWRITE_DATA17_Pos	(21)
+#define NORMAL_OVERWRITE_DATA17_Msk	(1<< NORMAL_OVERWRITE_DATA17_Pos)
+#define NORMAL_OVERWRITE_DATA17		NORMAL_LOCK_DATA17_Msk
+
+#define NORMAL_OVERWRITE_DATA18_Pos	(22)
+#define NORMAL_OVERWRITE_DATA18_Msk	(1<< NORMAL_OVERWRITE_DATA18_Pos)
+#define NORMAL_OVERWRITE_DATA18		NORMAL_LOCK_DATA18_Msk
+
+#define NORMAL_OVERWRITE_DATA19_Pos	(23)
+#define NORMAL_OVERWRITE_DATA19_Msk	(1<< NORMAL_OVERWRITE_DATA19_Pos)
+#define NORMAL_OVERWRITE_DATA19		NORMAL_LOCK_DATA19_Msk
+
+
+#define DIRECT_OVERWITE_DATA0_Pos	(24)
+#define DIRECT_OVERWITE_DATA0_Msk	(1<< DIRECT_OVERWITE_DATA0_Pos)
+#define DIRECT_OVERWITE_DATA0		DIRECT_OVERWITE_DATA0_Msk
+
+#define DIRECT_OVERWITE_DATA1_Pos	(25)
+#define DIRECT_OVERWITE_DATA1_Msk	(1<< DIRECT_OVERWITE_DATA1_Pos)
+#define DIRECT_OVERWITE_DATA1		DIRECT_OVERWITE_DATA1_Msk
+
+#define DIRECT_OVERWITE_DATA2_Pos	(26)
+#define DIRECT_OVERWITE_DATA2_Msk	(1<< DIRECT_OVERWITE_DATA2_Pos)
+#define DIRECT_OVERWITE_DATA2		DIRECT_OVERWITE_DATA2_Msk
+
+#define DIRECT_OVERWITE_DATA3_Pos	(27)
+#define DIRECT_OVERWITE_DATA3_Msk	(1<< DIRECT_OVERWITE_DATA3_Pos)
+#define DIRECT_OVERWITE_DATA3		DIRECT_OVERWITE_DATA3_Msk
+
+#define DIRECT_OVERWITE_DATA4_Pos	(28)
+#define DIRECT_OVERWITE_DATA4_Msk	(1<< DIRECT_OVERWITE_DATA4_Pos)
+#define DIRECT_OVERWITE_DATA4		DIRECT_OVERWITE_DATA4_Msk
+
+#define DIRECT_OVERWITE_DATA5_Pos	(29)
+#define DIRECT_OVERWITE_DATA5_Msk	(1<< DIRECT_OVERWITE_DATA5_Pos)
+#define DIRECT_OVERWITE_DATA5		DIRECT_OVERWITE_DATA5_Msk
+
+#define DIRECT_OVERWITE_DATA6_Pos	(30)
+#define DIRECT_OVERWITE_DATA6_Msk	(1<< DIRECT_OVERWITE_DATA6_Pos)
+#define DIRECT_OVERWITE_DATA6		DIRECT_OVERWITE_DATA6_Msk
+
+#define DIRECT_OVERWITE_DATA7_Pos	(31)
+#define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
+#define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
 
 #ifdef __cplusplus
 }

@@ -7,15 +7,22 @@ __TTB_SIZE = 0x00004000;
 MEMORY
 {
 	public	(rx) : 	ORIGIN = 0x200040, LENGTH = 30M
-	RAM	(rw) : 	ORIGIN = 0x2000040, LENGTH = 1M	
+	RAM	(rw) : 	ORIGIN = 0x2000040, LENGTH = 1M
+	m_ipc_shm    (RW)  : ORIGIN = 0x1E800000, LENGTH = 0x00080000
 }
+
+ /* Symbols needed for OpenAMP to enable rpmsg */
+__OPENAMP_region_start__  = ORIGIN(m_ipc_shm);
+__OPENAMP_region_end__ = ORIGIN(m_ipc_shm)+LENGTH(m_ipc_shm);
+
+
 EXTERN(__sp_init)
 PROVIDE(__sp_init = ORIGIN(RAM) + LENGTH(RAM));
 SECTIONS
 {
 	.text :
 	{
-		start.o (.text)
+		KEEP(*startup_sp7021_arm926.o (.text*))
 		__vectors_start = .;
 		KEEP(*vectors.o(.text*))
 		KEEP(*vectors.o(.rodata*))
@@ -24,6 +31,8 @@ SECTIONS
 		*(.rodata*)
 		*(.text*)
 		/* .ctors */
+
+		/*
 		*crtbegin.o(.ctors)
 		*crtbegin?.o(.ctors)
 		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
@@ -35,7 +44,8 @@ SECTIONS
 		*crtbegin?.o(.dtors)
 		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
 		*(SORT(.dtors.*))
-		*(.dtors)
+		*(.dtors) 
+		*/
 		Image$$RO_DATA$$Base = .;
 		*(.rodata*)
 		Image$$RO_DATA$$Limit = .;
@@ -136,4 +146,15 @@ SECTIONS
 	  	
 	} > public
 
+  	/* Remove information from the compiler libraries */
+  	/*
+  	/DISCARD/ :
+  	{
+    	libc.a ( * )
+    	libm.a ( * )
+    	libgcc.a ( * )
+  	}
+
+  	.ARM.attributes 0 : { *(.ARM.attributes) }
+  	*/
 }

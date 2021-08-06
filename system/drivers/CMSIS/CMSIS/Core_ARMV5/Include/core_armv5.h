@@ -631,32 +631,49 @@ __STATIC_FORCEINLINE void L1C_CleanInvalidateDCacheAll(void) {
 }
 #endif
 
-__STATIC_FORCEINLINE void L1C_DCacheFlush(uint32_t addr, uint32_t size)
+
+
+__STATIC_FORCEINLINE void L1C_InvlidateDCache(uint32_t base, uint32_t size)
 {
-	uint32_t enda = 0;
-	uint32_t saddr = 0;
-	enda = addr+size;
+	uint32_t end = 0;
+	uint32_t addr = 0;
 	uint32_t value = 0;
-	
-	for (saddr &= (~(HAL_DCACHE_LINE_SIZE-1));
-		saddr < enda;
-		saddr += HAL_DCACHE_LINE_SIZE)
-	
-	{
-		__set_DCCMVAC(addr);
-	}
 
-	
-	__set_CP(15, 0, value, 7, 10, 4);
+	for ( addr = (~(HAL_DCACHE_LINE_SIZE - 1)) & base, end = addr + size;						   
+			 addr < end ;												   
+			 addr += HAL_DCACHE_LINE_SIZE )  
 
-	for (saddr &=( ~(HAL_DCACHE_LINE_SIZE - 1));
-		saddr < enda;
-		saddr += HAL_DCACHE_LINE_SIZE)
 	
 	{
 		__set_DCIMVAC(addr);
 	}
 
+}
+
+// Write dirty cache lines to memory for the given address range.
+__STATIC_FORCEINLINE void L1C_CacheStore(uint32_t base, uint32_t size)
+{
+	
+	uint32_t end = 0;
+	uint32_t addr = 0;
+	uint32_t value = 0;
+
+	for ( addr = (~(HAL_DCACHE_LINE_SIZE - 1)) & base, end = addr + size;						   
+			 addr < end ;												   
+			 addr += HAL_DCACHE_LINE_SIZE )  
+	{
+		__set_DCCMVAC(addr);
+	}
+
+
+	__set_CP(15, 0, value, 7, 10, 4);
+
+}
+
+__STATIC_FORCEINLINE void L1C_DCacheFlush(uint32_t base, uint32_t size)
+{
+	L1C_CacheStore(base, size);
+	L1C_InvlidateDCache(base, size);
 }
 
 __STATIC_FORCEINLINE void L1C_DCacheSync(void)
@@ -672,6 +689,7 @@ __STATIC_FORCEINLINE void L1C_DCacheSync(void)
         );           
 
 }
+
 
 
 // -------------------------------------------------------------------------

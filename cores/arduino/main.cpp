@@ -22,7 +22,7 @@
 
 // Force init to be called *first*, i.e. before static object allocation.
 // Otherwise, statically allocated objects that need HAL may fail.
-__attribute__((constructor(101))) void premain()
+__attribute__((constructor(101))) void premain(void)
 {
 
   // Required by FreeRTOS, see http://www.freertos.org/RTOS-Cortex-M3-M4.html
@@ -56,7 +56,7 @@ int main(void)
     CoreCallback();
 #endif
     loop();
-    if (serialEventRun)serialEventRun();
+    serialEventRun();
   }
 
   return 0;

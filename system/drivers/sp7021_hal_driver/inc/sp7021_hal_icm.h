@@ -10,7 +10,6 @@
 #include "sp7021_hal_def.h"
 #include "sp70xx.h"
 #include "cmsis_compiler.h"
-#include "common_all.h"
 
 /* 
    icm callback function
