@@ -1,40 +1,24 @@
 #include "VirtIOSerial.h"
 #include "virt_uart.h"
 
-
-
 VirtIOSerial SerialVirtIO;
-
-
 
 void VirtIOSerial::begin(void)
 {
-	
-	//UART_puts("VirtIOSerial::VirtIOSerial()\n");
-	virt_uart_open();
-
+  virt_uart_open();
 }
 
 void VirtIOSerial::begin(uint32_t /* baud_count */)
 {
-	begin();
+  begin();
 }
 
 void VirtIOSerial::begin(uint32_t /* baud_count */, uint8_t /* config */)
 {
-	begin();
+  begin();
 }
 
 void VirtIOSerial::end()
-{
-}
-
-
-VirtIOSerial::VirtIOSerial()
-{
-}
-
-VirtIOSerial::~VirtIOSerial()
 {
   virt_uart_close();
 }
@@ -84,10 +68,10 @@ String VirtIOSerial::readString()
 
 size_t VirtIOSerial::write(uint8_t ch)
 {
-  return writeByteS(&ch, 1);
+  return write(&ch, 1);
 }
 
-size_t VirtIOSerial::writeByteS(const uint8_t *buffer, size_t length)
+size_t VirtIOSerial::write(const uint8_t *buffer, size_t length)
 {
   return virt_uart_write((void *)buffer, length);
 }
