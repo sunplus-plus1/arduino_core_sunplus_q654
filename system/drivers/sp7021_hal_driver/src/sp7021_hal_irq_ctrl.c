@@ -80,28 +80,44 @@ __STATIC_INLINE void GIC_ClearIRQ(IRQn_Type IRQn)
 	SP_IRQ_CTRL->clear[IRQn/32U] = (1 << (IRQn%32U));
 }
 
-__STATIC_INLINE uint32_t GIC_GetActiveIRQ(void)//TODO
+__STATIC_INLINE uint32_t GIC_GetActiveIRQ(void)
 {
-	uint32_t i = 0;
-	for (i=0;i < IRQ_GIC_LINE_COUNT; i++)
+	uint32_t i=0, j = 0;
+	uint32_t irqn;
+	for (j = 0; j < 7; j++)
 	{
-		if ((SP_IRQ_CTRL->masked_irq[i / 32U] >> (i % 32U)) & 1UL)
+		if ((SP_IRQ_CTRL->group >> (8 + j)) & 1UL)
 			break;
 	}
 
-	return i;
+	for (i = 0; i < 32; i++)
+	{
+		if ((SP_IRQ_CTRL->masked_irq[j] >> i) & 1UL)
+			break;
+	}
+	irqn = j * 32 + i;
+
+	return irqn;
 }
 
 __STATIC_INLINE uint32_t GIC_GetActiveFIQ(void)
 {
-	uint32_t i = 0;
-	for (i=0;i < IRQ_GIC_LINE_COUNT; i++)
+	uint32_t i=0, j = 0;
+	uint32_t irqn;
+	for (j = 0; j < 7; j++)
 	{
-		if ((SP_IRQ_CTRL->masked_fiq[i / 32U] >> (i % 32U)) & 1UL)
+		if ((SP_IRQ_CTRL->group >> j) & 1UL)
 			break;
 	}
 
-	return i;
+	for (i = 0; i < 32; i++)
+	{
+		if ((SP_IRQ_CTRL->masked_fiq[j] >> i) & 1UL)
+			break;
+	}
+	irqn = j * 32 + i;
+
+	return irqn;
 }
 
 
@@ -118,6 +134,7 @@ int32_t IRQ_Initialize (void)
 	__disable_irq();
 	__reset_irq();
 	__enable_irq();
+
 	return 0;
 }
 
@@ -134,14 +151,15 @@ int32_t IRQ_SetHandler (IRQn_ID_t irqn, IRQHandler_t handler)
 	int32_t status = 0;
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
-    	IRQTable[irqn] = handler;
-    	status =  0;
-  	}
+		IRQTable[irqn] = handler;
+		status =  0;
+	}
 	else
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
 
 IRQHandler_t IRQ_GetHandler (IRQn_ID_t irqn)
@@ -149,14 +167,14 @@ IRQHandler_t IRQ_GetHandler (IRQn_ID_t irqn)
 	IRQHandler_t h;
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
-    	h = IRQTable[irqn];
+		h = IRQTable[irqn];
 	}
 	else
 	{
-    	h = (IRQHandler_t)0;
-  	}
+		h = (IRQHandler_t)0;
+	}
 
-  	return (h);
+	return h;
 }
  
 int32_t IRQ_Enable (IRQn_ID_t irqn)
@@ -171,7 +189,8 @@ int32_t IRQ_Enable (IRQn_ID_t irqn)
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
 
 int32_t IRQ_Disable (IRQn_ID_t irqn)
@@ -186,9 +205,10 @@ int32_t IRQ_Disable (IRQn_ID_t irqn)
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
- 
+
 uint32_t IRQ_GetEnableState (IRQn_ID_t irqn)
 {
 	uint32_t enable;
@@ -201,15 +221,15 @@ uint32_t IRQ_GetEnableState (IRQn_ID_t irqn)
 		enable = -1;
 	}
 
-	return (enable);
+	return enable;
 }
- 
+
 int32_t IRQ_SetMode (IRQn_ID_t irqn, uint32_t mode)
 {
 	int32_t status = 0;
 	int32_t type, polarity;
 
-	mode = mode & 0xF;	//bits[0:3] is really vaild, bits[4:7] used for fix exti bug 
+	mode = mode & 0xF;	//bits[0:3] is really vaild, bits[4:7] used for fix exti bug
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
 		switch (mode)
@@ -227,12 +247,13 @@ int32_t IRQ_SetMode (IRQn_ID_t irqn, uint32_t mode)
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
 
 uint32_t IRQ_GetMode (IRQn_ID_t irqn)
 {
- 	uint32_t val;
+	uint32_t val;
 	uint32_t mode;
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
@@ -253,7 +274,8 @@ uint32_t IRQ_GetMode (IRQn_ID_t irqn)
 			mode = IRQ_MODE_TRIG_LEVEL_LOW;
 		}
 	}
-	return (mode);
+
+	return mode;
 }
 
 int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority)
@@ -262,13 +284,14 @@ int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority)
 	if ((irqn >= 0) && (irqn < (IRQn_ID_t)IRQ_GIC_LINE_COUNT))
 	{
 		GIC_SetIRQPirority(irqn, priority);
-		status = 0;	
+		status = 0;
 	}
 	else
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
 
 uint32_t IRQ_GetPriority (IRQn_ID_t irqn)
@@ -293,7 +316,8 @@ int32_t IRQ_Clear(IRQn_ID_t irqn)
 	{
 		status = -1;
 	}
-	return (status);
+
+	return status;
 }
 
 
