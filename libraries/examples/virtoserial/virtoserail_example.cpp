@@ -7,7 +7,7 @@ This application echoes back data that was sent to it by the master core. */
 extern "C" {
 #endif
 
-int openamp_test_main(int argc, char *argv[])
+int openamp_test_main(void)
 {
 	int ret;
 	VirtIOSerial uart;
@@ -17,7 +17,7 @@ int openamp_test_main(int argc, char *argv[])
 		static char s[256];
 		ret = uart.readBytes(s, sizeof(s));
 		if (ret > 0) {
-			uart.write((const uint8_t *)s, ret); // write back
+			uart.writeByteS((const uint8_t *)s, ret); // write back
 		}
 #else // method 2
 		if (uart.available()) {

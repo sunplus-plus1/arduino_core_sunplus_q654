@@ -1,5 +1,4 @@
 #include "sp7021_hal_irq_ctrl.h"
-#include "common_all.h"
 
 #ifndef IRQ_GIC_LINE_COUNT
 #define IRQ_GIC_LINE_COUNT      (200U)
@@ -67,7 +66,14 @@ __STATIC_INLINE uint32_t GIC_GetIRQPolarity(IRQn_Type IRQn)
 
 __STATIC_INLINE uint32_t GIC_SetIRQPirority(IRQn_Type IRQn, uint32_t priority)
 {
-	SP_IRQ_CTRL->priority[IRQn/32U] |= 1 << (IRQn%32U);
+	if(priority == 1)
+	{
+		SP_IRQ_CTRL->priority[IRQn/32U] |= 1 << (IRQn%32U);
+	}
+	else
+	{
+		SP_IRQ_CTRL->priority[IRQn/32U] &= ~(1 << IRQn%32U);
+	}
 }
 
 __STATIC_INLINE uint32_t GIC_GetIRQPirority(IRQn_Type IRQn)

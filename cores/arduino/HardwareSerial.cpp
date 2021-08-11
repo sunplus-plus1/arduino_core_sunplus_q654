@@ -201,8 +201,8 @@ size_t HardwareSerial::write(uint8_t c)
   }
     return 1;
 }
-
-size_t HardwareSerial::writeByteS(const uint8_t* str,size_t n)
+#if 0
+size_t HardwareSerial::write(const uint8_t* str,size_t n)
 {
 
   uint8_t index=0;
@@ -237,4 +237,4 @@ size_t HardwareSerial::writeByteS(const uint8_t* str,size_t n)
   }
   return 1;
 }
-
+#endif

@@ -4,7 +4,7 @@
 #include <openamp/remoteproc.h>
 #include <openamp/virtio.h>
 #include <openamp/rpmsg.h>
-#include <config.h>
+#include "sp7021_arm926.h"
 #include "xil_printf.h"
 
 #if defined __cplusplus
@@ -22,9 +22,14 @@ extern "C" {
 #define DEVICE_MEMORY 0xC06	/* Device memory */
 #define RESERVED 0x0		/* reserved memory */
 
+
+extern int __OPENAMP_region_start__[];  /* defined by linker script */
+extern int __OPENAMP_region_end__[];    /* defined by linker script */
+
+
 /* Shared memory */
-#define SHARED_MEM_PA  0x1e800000UL
-#define SHARED_MEM_SIZE 0x80000UL
+#define SHARED_MEM_PA  ((metal_phys_addr_t)__OPENAMP_region_start__)
+#define SHARED_MEM_SIZE (size_t)((void *)__OPENAMP_region_end__ - (void *) __OPENAMP_region_start__)
 #define SHARED_BUF_OFFSET 0x80000UL
 
 /* Remoteproc private data struct */

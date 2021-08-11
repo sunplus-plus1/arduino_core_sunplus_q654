@@ -3,7 +3,7 @@ This application is meant to run on the remote CPU running baremetal code.
 This application echoes back data that was sent to it by the master core. */
 #include "virt_uart.h"
 
-int openamp_test_main(void)
+int openamp_test_main(int argc, char *argv[])
 {
 	int ret;
 

@@ -53,7 +53,6 @@
            |                          |              & Fault
 0x00000000 |--------------------------|
 */
-#include "mmu.inc"
 #include "mem_sp7021.h"
 
 
