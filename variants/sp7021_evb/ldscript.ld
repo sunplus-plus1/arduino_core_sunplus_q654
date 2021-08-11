@@ -6,18 +6,17 @@ __TTB_SIZE = 0x00004000;
 
 MEMORY
 {
-	public	(rx) : 	ORIGIN = 0x200040, LENGTH = 30M
-	RAM	(rw) : 	ORIGIN = 0x2000040, LENGTH = 1M
-	m_ipc_shm    (RW)  : ORIGIN = 0x1E800000, LENGTH = 0x00080000
+	public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M
+	shmem   (rw)  : ORIGIN = ORIGIN(public) + LENGTH(public), LENGTH = 0x80000
 }
 
  /* Symbols needed for OpenAMP to enable rpmsg */
-__OPENAMP_region_start__  = ORIGIN(m_ipc_shm);
-__OPENAMP_region_end__ = ORIGIN(m_ipc_shm)+LENGTH(m_ipc_shm);
+__OPENAMP_region_start__  = ORIGIN(shmem);
+__OPENAMP_region_end__ = ORIGIN(shmem) + LENGTH(shmem);
 
 
 EXTERN(__sp_init)
-PROVIDE(__sp_init = ORIGIN(RAM) + LENGTH(RAM));
+PROVIDE(__sp_init = ORIGIN(public) + LENGTH(public));
 SECTIONS
 {
 	.text :
