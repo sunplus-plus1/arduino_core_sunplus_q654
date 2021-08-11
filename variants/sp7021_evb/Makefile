@@ -45,10 +45,11 @@ SPI_SRC = $(TOP)/libraries/SPI/src
 I2C_SRC = $(TOP)/libraries/Wire/src
 TEST_SRC = $(TOP)/libraries/test
 EXAMPLE_TIMER_SRC = $(TOP)/libraries/examples/timer
+EXAMPLE_I2C_SRC = $(TOP)/libraries/examples/i2c
 #INCLUDE_DIR += -I$(CMSIS_HEADER) -I$(HAL_DRIVER_HEADER) -I$(ARDUNIO_HEADER)
 
 vpath %.c $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC)
-vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC):$(EXAMPLE_TIMER_SRC)
+vpath %.cpp $(CMSIS_SRC):$(HAL_DRIVER_SRC):$(ARDUNIO_SRC):$(WRAPPER_SRC):$(SPI_SRC):$(I2C_SRC):$(TEST_SRC):$(EXAMPLE_TIMER_SRC):$(EXAMPLE_I2C_SRC)
 vpath %.S $(CMSIS_SRC)
 # flags for c only
 CFLAGS += -std=gnu11
@@ -92,7 +93,11 @@ CSOURCES += sunplus_def.c wiring_time.c hooks.c board.c itoa.c $(ARDUNIO_SRC)/av
 CSOURCES += $(TOP)/libraries/DriverWrapper/src/syscall.c
 CXXSOURCES += WInterrupts.cpp interrupt.cpp
 CXXSOURCES += HardwareTimer.cpp new.cpp 
-CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp variant.cpp main.cpp timer_interrupt.cpp VirtIOSerial.cpp  Wire.cpp
+CXXSOURCES += HardwareSerial.cpp WSerial.cpp Stream.cpp Print.cpp WString.cpp SPI.cpp variant.cpp main.cpp VirtIOSerial.cpp Wire.cpp
+
+#example 		(careful: A bin can only compile one of the following examples at the same time.)
+CXXSOURCES  += timer_interrupt.cpp
+#CXXSOURCES  += i2c_example.cpp
 
 
 # HAL

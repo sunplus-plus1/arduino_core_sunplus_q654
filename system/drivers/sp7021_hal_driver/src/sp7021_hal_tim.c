@@ -228,7 +228,6 @@ void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload<<TIMER_RPT_pos);
 	TIMx->counter_val = Structure->Counter;
 	TIMx->reload_val = Structure->ReloadCounter;
-	printf("TIMx->control = 0x%x\n", TIMx->control);
 	
 }
 
@@ -246,13 +245,12 @@ HAL_StatusTypeDef HAL_TIM_Start(TIM_HandleTypeDef *htim)
 
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
-	
 
 	MODIFY_REG(htim->Instance->control, TIMER_GO, 1<<TIMER_GO_Pos);
 
 	/* Change the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
-	printf("%s, control = 0x%x\n", __FUNCTION__, htim->Instance->control);
+
 	/* Return function status */
 	return HAL_OK;
 }

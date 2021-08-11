@@ -1,5 +1,12 @@
 #include "Arduino.h"
-
+/*
+	note to develop:
+	only use timer2 and timer3 of every STC
+	e.x. TIM0 is timer2 of STC
+		 TIM1 is timer3 of STC
+		 TIM2 is timer2 of STC_AV0
+		 TIM3 is timer3 of STC_AV0 and so on....
+*/
 uint32_t start = 0;
 
 void tim0_callback(void)
