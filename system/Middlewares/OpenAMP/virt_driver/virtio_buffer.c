@@ -24,7 +24,10 @@
 #include "virtio_config.h"
 #include "virtio_buffer.h"
 #include <string.h>
-#include "wiring.h"
+//#include "wiring.h"
+#include <stdbool.h>
+
+#define min(a,b) ((a)<(b)?(a):(b))
 
 void virtio_buffer_init(virtio_buffer_t *ring)
 {

@@ -97,6 +97,9 @@ uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count);
 uint32_t HAL_TIM_GetCount(TIM_HandleTypeDef *htim);
 uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim);
+HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim);
+HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim);
+
 
 
 

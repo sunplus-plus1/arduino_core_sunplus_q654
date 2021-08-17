@@ -1,3 +1,6 @@
+
+#if defined (VIRTIOCON)
+
 #include "VirtIOSerial.h"
 #include "virt_uart.h"
 
@@ -76,3 +79,5 @@ size_t VirtIOSerial::write(const uint8_t *buffer, size_t length)
   return virt_uart_write((void *)buffer, length);
 }
 
+
+#endif

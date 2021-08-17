@@ -1,9 +1,12 @@
 /* This is a sample demonstration application that showcases usage of virt_uart
 This application is meant to run on the remote CPU running baremetal code.
 This application echoes back data that was sent to it by the master core. */
+#if defined (VIRTIOCON)
+
+
 #include "virt_uart.h"
 
-int openamp_test_main(int argc, char *argv[])
+int openamp_for_c_test_main(int argc, char *argv[])
 {
 	int ret;
 
@@ -21,3 +24,5 @@ int openamp_test_main(int argc, char *argv[])
 
 	return ret;
 }
+
+#endif

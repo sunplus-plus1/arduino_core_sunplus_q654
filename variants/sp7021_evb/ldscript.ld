@@ -6,7 +6,8 @@ __TTB_SIZE = 0x00004000;
 
 MEMORY
 {
-	public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M
+	/*public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M*/
+	public	(rwx) : ORIGIN = 0x1E000000, LENGTH = 8M
 	shmem   (rw)  : ORIGIN = ORIGIN(public) + LENGTH(public), LENGTH = 0x80000
 }
 
@@ -21,10 +22,11 @@ SECTIONS
 {
 	.text :
 	{
-		KEEP(*startup_sp7021_arm926.o (.text*))
+		KEEP(*(.text*)) 
 		__vectors_start = .;
-		KEEP(*vectors.o(.text*))
-		KEEP(*vectors.o(.rodata*))
+		 KEEP(*(.vectors))
+   		 *(.text*)
+		 *(.rodata*)
 		__vectors_end = .;
 		. = ALIGN(8);
 		*(.rodata*)
