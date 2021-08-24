@@ -1,3 +1,5 @@
+#ifdef VIRTIOCON
+
 #include "platform_info.h"
 #include "virt_uart.h"
 
@@ -92,3 +94,5 @@ int virt_uart_peek(void)
     return -1;
   }
 }
+
+#endif

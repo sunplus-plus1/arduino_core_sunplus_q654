@@ -1,6 +1,10 @@
 #ifndef _VIRTIOSERIAL_H_
 #define _VIRTIOSERIAL_H_
 
+
+#if defined (VIRTIOCON)
+
+
 #include "Stream.h"
 
 class VirtIOSerial : public Stream {
@@ -27,5 +31,9 @@ class VirtIOSerial : public Stream {
 };
 
 extern VirtIOSerial SerialVirtIO;
+
+
+#endif
+
 #endif /* _VIRTIOSERIAL_H_ */
 

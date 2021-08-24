@@ -394,6 +394,42 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 	return u32Feq;
 }
 
+HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim)
+{
+	IRQn_Type irqn =  MAX_IRQ_n;
+		
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
+
+	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	irqn = HAL_TIM_GetIRQ(htim->Instance);
+	if (IRQ_Enable(irqn) == 0)
+		return HAL_OK;
+	else
+		return HAL_ERROR;
+}
+
+
+HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim)
+{
+	IRQn_Type irqn =  MAX_IRQ_n;
+		
+	if (htim == NULL)
+	{
+		return HAL_ERROR;
+	}
+
+	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	irqn = HAL_TIM_GetIRQ(htim->Instance);
+	if (IRQ_Disable(irqn) == 0)
+		return HAL_OK;
+	else
+		return HAL_ERROR;
+
+}
+
 
 #ifdef __cplusplus
 }

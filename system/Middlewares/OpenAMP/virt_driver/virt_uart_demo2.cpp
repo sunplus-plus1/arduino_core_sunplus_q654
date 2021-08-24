@@ -1,13 +1,16 @@
 /* This is a sample demonstration application that showcases usage of VirtIOSerial
 This application is meant to run on the remote CPU running baremetal code.
 This application echoes back data that was sent to it by the master core. */
+
+#if defined (VIRTIOCON)
+
 #include "VirtIOSerial.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int openamp_test_main(int argc, char *argv[])
+int openamp_for_cpp_test_main(int argc, char *argv[])
 {
 	int ret;
 	VirtIOSerial uart;
@@ -36,4 +39,6 @@ int openamp_test_main(int argc, char *argv[])
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
