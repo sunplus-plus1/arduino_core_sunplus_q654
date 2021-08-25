@@ -66,6 +66,12 @@ static inline void digitalModeSet(uint32_t ulPin, uint32_t ulMode)
 
 }
 
+static inline int digitalModeGet(uint32_t ulPin)
+{
+  return HAL_GPIO_Get_Mode(ulPin);
+}
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -225,6 +225,7 @@ typedef struct
 
 #define uart_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR]: file %s on line %d\r\n",__FUNCTION__, __LINE__)))
 
+#define UART_DMA_ALIGN_SIZE		32
 
 /* for tx dma, store data in circ buf for dma */
 #define CIRC_SPACE_TO_END(head,tail,size) \

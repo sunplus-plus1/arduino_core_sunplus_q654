@@ -4,7 +4,9 @@
 #include "variant.h"
 #include "HardwareSerial.h"
 //#include "USBSerial.h"
+#ifdef VIRTIOCON
 #include "VirtIOSerial.h"
+#endif
 
 #if defined (USBCON) && defined(USBD_USE_CDC)
   #ifndef DISABLE_GENERIC_SERIALUSB

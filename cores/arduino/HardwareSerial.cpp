@@ -201,40 +201,4 @@ size_t HardwareSerial::write(uint8_t c)
   }
     return 1;
 }
-#if 0
-size_t HardwareSerial::write(const uint8_t* str,size_t n)
-{
 
-  uint8_t index=0;
-  tx_buffer_index_t i ;
-
-  if(str == NULL)
-    return -1;
-
- // if(n > uart_get_tx_fifo_space(&_serial))
-   // return -1;
-
-  _written = true;
- 
-  // If the output buffer is full, there's nothing for it other than to
-  // wait for the interrupt handler to empty it a bit
-
-  while (_serial.tx_head != _serial.tx_tail) {
-    // nop, the interrupt handler will free up space for us
-  }
-
-  _serial.tx_cnt = n;
-  i = (_serial.tx_head + _serial.tx_cnt) % SERIAL_TX_BUFFER_SIZE;
-
-  while(i>0)
-  {
-      _serial.tx_buff[_serial.tx_head++] = str[index++];
-      i--;
-  }
-
-  if (!serial_tx_active(&_serial)) {
-    uart_attach_tx_callback(&_serial, _tx_complete_irq);
-  }
-  return 1;
-}
-#endif

@@ -435,3 +435,13 @@ void HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
 		gpio_out_val_set(GPIO_Pin,!(gpio_out_val_get(GPIO_Pin)));
 	}
 }
+
+
+int HAL_GPIO_Get_Mode(uint16_t GPIO_Pin)
+{
+	gpio_assert_param(IS_GPIO_PIN(GPIO_Pin));
+	/* get input/output mode. write data in output mode only 
+	   1:output mode  0:input mode 
+	*/
+	return gpio_out_val_get(GPIO_Pin);
+}

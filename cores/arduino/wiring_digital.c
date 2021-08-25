@@ -10,6 +10,11 @@ void pinMode(uint32_t ulPin, uint32_t ulMode)
   digitalModeSet(ulPin,ulMode);
 }
 
+int getpinMode(uint32_t ulPin)
+{
+  return digitalModeGet(ulPin);
+}
+
 void digitalWrite(uint32_t ulPin, uint32_t ulVal)
 {
   digitalWriteFast(ulPin, ulVal);

@@ -401,8 +401,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 
   serial_t *obj = get_serial_obj(huart);
-  if (obj) {
-   int a= obj->tx_callback(obj);
+  
+  if (obj && obj->tx_callback(obj) != -1) {
+    if (HAL_UART_Transmit_IT(huart, &obj->tx_buff[obj->tx_tail], 1) != HAL_OK) 
+	{
+      return;
+    }
   }
 }
 
@@ -413,7 +417,10 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   */
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-
+	serial_t *obj = get_serial_obj(huart);
+	if (obj && !serial_rx_active(obj)) {
+	  HAL_UART_Receive_IT(huart, &(obj->recv), 1);
+	}
 }
 
 #if defined(UART0_BASE)

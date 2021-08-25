@@ -53,6 +53,8 @@ void              HAL_GPIO_DeInit(uint16_t GPIO_Pin);
 GPIO_PinState     HAL_GPIO_ReadPin(uint16_t GPIO_Pin);
 void              HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState);
 void              HAL_GPIO_TogglePin(uint16_t GPIO_Pin);
+int               HAL_GPIO_Get_Mode(uint16_t GPIO_Pin);
+int gpio_oe_val_set(uint32_t bit,int oe_set);
 
 #ifdef __cplusplus
 }
