@@ -337,7 +337,7 @@ IRQn_ID_t IRQ_GetActiveFIQ (void)
 	return GIC_GetActiveFIQ();
 }
 
-
+volatile int irq_no  = 0;
 void IRQ_HANDLE(void)
 {
 	ISR_SAVE_CONTEXT();
@@ -345,6 +345,7 @@ void IRQ_HANDLE(void)
 	IRQn_ID_t irqn = 0;
 	irqn = GIC_GetActiveIRQ();
 	handler = IRQ_GetHandler(irqn);
+	irq_no = irqn;
 	if (handler != NULL)
 		handler();
 	IRQ_Clear(irqn);
@@ -366,36 +367,42 @@ void FIQ_HANDLE(void)
 
 void RESET_HANDLE(void)
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
 	return;
 }
 
 void UNDEF_INS_HANDLE( void )
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
 	return;
 }
 
 void SWI_HANDLE( void )
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
     return;
 }
 
 void PREFE_ABORT_HANDLE( void )
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
 	return;
 }
 
 void DATA_ABORT_HANDLE( void )
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
     return;
 }
 
 void NO_USED_HANDLE( void )
 {
-	printf("%s, %d\n", __FUNCTION__, __LINE__);
+	printf("%s\n", __FUNCTION__);
+	while(1);
     return;
 }

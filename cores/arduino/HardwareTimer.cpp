@@ -196,11 +196,13 @@ void HardwareTimer::setCount(uint32_t val, TimerFormat_t format)
 
 	switch(format){
 		case MICROSEC_FORMAT:
-			u32Count_val = ((val * (getTimerClkFreq() / 1000000)) / Prescalerfactor);
+			//u32Count_val = ((val * (getTimerClkFreq() / 1000000)) / Prescalerfactor);
+			u32Count_val = ((((getTimerClkFreq() / 1000) / Prescalerfactor)-1)*val / 1000);
 			break;
 
 		case HERTZ_FORMAT:
-			u32Count_val = getTimerClkFreq() /(Prescalerfactor*val);
+			//u32Count_val = getTimerClkFreq() /(Prescalerfactor*val);
+			u32Count_val = ((((getTimerClkFreq() / 1000) / Prescalerfactor)-1)*1000 / val);
 			break;
 
 		case TICK_FORMAT:
@@ -216,20 +218,23 @@ void HardwareTimer::setCount(uint32_t val, TimerFormat_t format)
 uint32_t HardwareTimer::getCount(TimerFormat_t format)
 {
 	uint32_t count = LL_TIM_GetCounter(_timerObj.handle.Instance);
-	uint32_t Prescalerfactor = LL_TIM_GetPrescaler(_timerObj.handle.Instance)+1;;
+	uint32_t Prescalerfactor = LL_TIM_GetPrescaler(_timerObj.handle.Instance)+1;
+	uint32_t reload_value = LL_TIM_GetAutoReload(_timerObj.handle.Instance);
 	uint32_t return_value;
 
 	switch(format){
 		case MICROSEC_FORMAT:
-			return_value = (uint32_t)((count * Prescalerfactor * 1000000) / getTimerClkFreq());
+			//return_value = (uint32_t)((count * Prescalerfactor * 1000000) / getTimerClkFreq());
+			return_value = (count * 1000 / (((getTimerClkFreq() / 1000) / Prescalerfactor)-1));
 			break;
 
 		case HERTZ_FORMAT:
-			return_value = (uint32_t)(getTimerClkFreq() / (count  * Prescalerfactor));
+			//return_value = (uint32_t)(getTimerClkFreq() / (count  * Prescalerfactor));
+			return_value = ((((getTimerClkFreq() / 1000) / Prescalerfactor)-1)*1000 / count);
 			break;
 		case TICK_FORMAT:
 		default:
-			return_value = count;
+			return_value = reload_value - count;
 			break;
 	}
 

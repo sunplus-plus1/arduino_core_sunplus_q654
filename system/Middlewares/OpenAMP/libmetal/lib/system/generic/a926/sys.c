@@ -245,11 +245,19 @@ static void metal_a926_irq_set_enable(struct metal_irq_controller *irq_cntr,
 	}
 }
 
+extern int irq_no;
 
 void METAL_IRQHandler()
 {
-	int irq = IRQ_GetActiveIRQ();
-	IRQMetalTable[irq].handler(irq, IRQMetalTable[irq].arg);
+	int irq = irq_no;
+	if (IRQMetalTable[irq].handler != NULL )
+	{
+		IRQMetalTable[irq].handler(irq, IRQMetalTable[irq].arg);
+	}
+	else
+	{
+		printf("irq=%d\n", irq);
+	}
 }
 
 static int metal_a926_irq_register(struct metal_irq_controller *irq_cntr,
