@@ -340,8 +340,8 @@ void HardwareTimer::attachInterrupt(void (*callback)(void))
 	uint32_t index = get_timer_index(_timerObj.handle.Instance);
 	if (index == UNKNOWN_TIMER)
 		return;
-	if (_timerObj.pfcallback != NULL)
-		HAL_TIM_Enable_Interrupt(&(_timerObj.handle));
+	//if (_timerObj.pfcallback != NULL)
+	//	HAL_TIM_Stop(&(_timerObj.handle));
 	_timerObj.pfcallback =callback;
 	
 }
@@ -351,7 +351,8 @@ void HardwareTimer:: detachInterrupt()
 	uint32_t index = get_timer_index(_timerObj.handle.Instance);
 	if (index == UNKNOWN_TIMER)
 		return;
-	HAL_TIM_Disable_Interrupt(&(_timerObj.handle));
+	
+	HAL_TIM_Stop(&(_timerObj.handle));
 	_timerObj.pfcallback = NULL;
 	
 
