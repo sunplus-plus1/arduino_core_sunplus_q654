@@ -11,10 +11,11 @@ SRC="$2"
 OUTPUT="$3"
 LADDR=$4
 RADDR=$5
+FIRMWARE_PATH=$6
 
 ####################
 # check if mkimage is available?
-MKIMAGE=./script/tools/mkimage   # Only our mkimage supports quickboot
+MKIMAGE=$FIRMWARE_PATH./script/tools/mkimage   # Only our mkimage supports quickboot
 TYPE=quickboot
 
 function usage()

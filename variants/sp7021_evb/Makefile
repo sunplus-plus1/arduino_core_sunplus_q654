@@ -8,8 +8,9 @@ else
 endif
 DD = dd status=none bs=1k of=$@ seek=
 
-CROSS = ../../../../crossgcc/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin/arm-none-eabi-
-TOP = ../..
+CROSS = $(ARDUINO_PATH)../../../../crossgcc/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi/bin/arm-none-eabi-
+TOP = $(ARDUINO_PATH)../..
+
 ifneq ($(CROSS),)
 CC = $(CROSS)gcc
 CXX = $(CROSS)g++
@@ -99,7 +100,8 @@ DIRS += $(TOP)/system/Middlewares/OpenAMP/virt_driver
 
 
 #arduino C++ example
-DIRS += $(TOP)/libraries/examples/timer
+#DIRS += $(TOP)/libraries/examples/timer
+#DIRS += $(TOP)/libraries/examples/i2c
 
 
 CSOURCES += $(wildcard $(patsubst %,%/*.c, $(DIRS) ))
@@ -108,7 +110,7 @@ ASOURCES += $(wildcard $(patsubst %,%/*.S, $(DIRS) ))
 
 BIN = bin
 TARGET = rom
-LD_FILE = ldscript.ld
+LD_FILE = $(ARDUINO_PATH)ldscript.ld
 LDFLAGS = -T $(LD_FILE)
 LDFLAGS_COM = -L $(shell dirname `$(CC) -print-libgcc-file-name`) -L $(shell dirname `$(CC) -print-file-name=libc.a`) -lstdc++ -lm -lc -lgcc
 
@@ -143,8 +145,8 @@ $(BIN)/$(TARGET): $(OBJS) $(LD_FILE)
 
 $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 	$(Pecho) "  PACK $@"
-	$P bash ./script/add_uhdr.sh uboot_B $< $(BIN)/$(TARGET).img 0x200040 0x200040
-	$P $(DD)64  if=prebuilt/xboot_nor.img
+	$P bash $(ARDUINO_PATH)./script/add_uhdr.sh uboot_B $< $(FIRMWARE_TOP)$(BIN)/$(TARGET).img 0x200040 0x200040 $(ARDUINO_PATH)
+	$P $(DD)64  if=$(ARDUINO_PATH)prebuilt/xboot_nor.img
 	$P $(DD)256 if=$(BIN)/$(TARGET).img
 	$P ls -l $@
 
