@@ -1,6 +1,5 @@
-#include "Arduino.h"
-#include "Wire.h"
 /*
+	Test i2c on a temperature sensor(SHT3X).
 	The transmission of Arduino layer(twi.c) is implemented as burst_irq transmit.
 	if want to use other mode.Please look over HAL layer(sp7021_hal_i2c.c).
 	And replace function in twi.c(). 
@@ -15,10 +14,8 @@
 			HAL_I2C_Master_Receive_IT()   ---> new receive mode
 		}
 */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "Arduino.h"
+#include "Wire.h"
 
 #define SLAVE_ADDR 0x44
 
@@ -63,7 +60,3 @@ void loop()
 	::printf("\n temp=%d.%d   %d.%d    \n", temp_H, temp_L, RH_H, RH_L);
 	
 }
-
-#ifdef __cplusplus
-}
-#endif
