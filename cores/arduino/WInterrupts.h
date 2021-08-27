@@ -28,6 +28,14 @@
 #define FALLING 0x3
 #define RISING  0x4
 
+#ifdef __cplusplus
+	#include <functional>
+
+	typedef std::function<void(void)> callback_function_t;
+	void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode);
+
+#endif
+
 void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
 
 void detachInterrupt(uint32_t pin);

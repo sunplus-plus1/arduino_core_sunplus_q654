@@ -27,7 +27,7 @@ typedef enum {
 } i2c_index_e;
 
 /* Private Variables */
-static I2C_HandleTypeDef *i2c_handles[I2C_NUM];
+static volatile I2C_HandleTypeDef *i2c_handles[I2C_NUM];
 
 void func_print(uint8_t data)
 {

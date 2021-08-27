@@ -17,7 +17,6 @@ typedef struct
 	uint32_t index;				//exti index: 0~7
 	uint32_t trigger;			//triggle type (default high-level)
 	uint32_t priority;			//IRQ/FIQ (default IRQ)
-	void (*callback)(void);	//intr handle fuction
 } EXTI_HandleTypeDef;
 
 HAL_StatusTypeDef HAL_EXTI_SetMode(EXTI_HandleTypeDef *hexti);

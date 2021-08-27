@@ -19,7 +19,8 @@
 #include "WInterrupts.h"
 #include "interrupt.h"
 
-void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
+void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode)
+//void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
 	uint32_t it_mode = 0;
 
@@ -42,10 +43,16 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 		break;
 	}
 
-	sunplus_interrupt_enable((GPIO_TypeDef *)0, pin, callback, it_mode);
+	sunplus_interrupt_enable(pin, callback, it_mode);
+}
+
+void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
+{
+	callback_function_t _c = callback;
+	attachInterrupt(pin, _c, mode);
 }
 
 void detachInterrupt(uint32_t pin)
 {
-	sunplus_interrupt_disable((GPIO_TypeDef *)0, pin);
+	sunplus_interrupt_disable(pin);
 }
