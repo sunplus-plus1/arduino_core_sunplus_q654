@@ -3,12 +3,14 @@ OUTPUT_ARCH(arm)
 ENTRY(_start)
 
 __TTB_SIZE = 0x00004000;
+__DEBUG_SIZE = 0x00002000;
 
 MEMORY
 {
-	/*public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M*/
-	public	(rwx) : ORIGIN = 0x1E000000, LENGTH = 8M
-	shmem   (rw)  : ORIGIN = ORIGIN(public) + LENGTH(public), LENGTH = 0x80000
+	public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M - __DEBUG_SIZE
+	/*public	(rwx) : ORIGIN = 0x1E000000, LENGTH = 8M*/
+	debug        :  ORIGIN = ORIGIN(public) + LENGTH(public) - __DEBUG_SIZE, LENGTH = __DEBUG_SIZE
+	shmem   (rw)  : ORIGIN = ORIGIN(debug) + LENGTH(debug), LENGTH = 0x80000
 }
 
  /* Symbols needed for OpenAMP to enable rpmsg */
@@ -20,6 +22,12 @@ EXTERN(__sp_init)
 PROVIDE(__sp_init = ORIGIN(public) + LENGTH(public));
 SECTIONS
 {
+	.debug_storage :
+	{
+		__debug_start = .;
+		__except_stack_top = __debug_start + __DEBUG_SIZE;
+	} > debug
+
 	.text :
 	{
 		KEEP(*(.text*)) 

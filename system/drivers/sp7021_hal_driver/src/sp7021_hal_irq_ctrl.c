@@ -364,7 +364,7 @@ void FIQ_HANDLE(void)
 	IRQ_Clear(irqn);
 	ISR_RESTORE_CONTEXT();
 }
-
+#if 0
 void RESET_HANDLE(void)
 {
 	printf("%s\n", __FUNCTION__);
@@ -406,3 +406,41 @@ void NO_USED_HANDLE( void )
 	while(1);
     return;
 }
+#else
+#define ARM_MODE_USER			0x10
+#define ARM_MODE_FIQ			0x11
+#define ARM_MODE_IRQ			0x12
+#define ARM_MODE_SVC			0x13
+#define ARM_MODE_ABORT			0x17
+#define ARM_MODE_UNDEFINED		0x1B
+#define ARM_MODE_SYSTEM			0x1F
+#define ARM_MODE_MASK			0x1F
+
+extern void *__except_stack_top;
+
+/* Exception Handler */
+void do_exec(uint32_t type, uint32_t lr)
+{
+    char *str = "?";
+    int i;
+    uint32_t *bptr = ((uint32_t *)&__except_stack_top) - 13;
+
+    switch (type & ARM_MODE_MASK) {
+    case ARM_MODE_ABORT: str = "ABORT"; break;
+    case ARM_MODE_FIQ: str = "FIQ"; break;
+    case ARM_MODE_IRQ: str = "IRQ"; break;
+    case ARM_MODE_SVC: str = "SVC"; break;
+    case ARM_MODE_SYSTEM: str = "System"; break;
+    case ARM_MODE_UNDEFINED: str = "Undef"; break;
+    case ARM_MODE_USER: str = "User"; break;
+    }
+    printf("[%s]\n", str);
+	printf("CPSR\t= 0x%x\n", type);
+	printf("LR\t= 0x%x\n", lr);
+	
+    for (i = 0; i < 13; i++) {
+        printf("R%d\t= 0x%x\n", i, bptr[i]);
+    }
+    while (1);
+}
+#endif

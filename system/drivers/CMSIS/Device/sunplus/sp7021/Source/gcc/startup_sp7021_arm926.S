@@ -16,6 +16,18 @@ _SP__vectors:
         LDR PC, = IRQ_HANDLE
         LDR PC, = FIQ_HANDLE
 
+RESET_HANDLE:
+UNDEF_INS_HANDLE:
+SWI_HANDLE:
+PREFE_ABORT_HANDLE:
+DATA_ABORT_HANDLE:
+NO_USED_HANDLE:
+	ldr sp, =__except_stack_top
+    stmfd   sp!, {r0 - r12}
+    mrs r0, cpsr
+    mov r1, lr
+    b   do_exec
+	
 .section .text
 .global __sp_init
 
