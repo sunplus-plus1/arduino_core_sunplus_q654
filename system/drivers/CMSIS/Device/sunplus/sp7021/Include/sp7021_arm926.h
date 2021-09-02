@@ -905,6 +905,18 @@ typedef struct {
 	__IOM uint32_t P2C_normal_data[20];
 	__IOM uint32_t P2C_direct_data[8];	
 }IPCC_Typedef;
+
+typedef struct
+{
+   __IOM uint32_t cfg0;
+   __IOM uint32_t cfg1;
+   __IOM uint32_t cntscl;
+   __IOM uint32_t tstscl;
+   __IOM uint32_t cnt;
+   __IOM uint32_t pwh;
+   __IOM uint32_t pwl;
+}ICM_CTRL_REG;
+
 #define SP_IRQ_CTRL  ((IRQ_Ctrl_Type*) IRQ_CTRL_BASE)
 
 
@@ -1092,6 +1104,12 @@ typedef struct {
 /* IPCC Mailbox */
 #define IPC_MAILBOX_BASE	RF_GRP(258, 0)
 #define IPC_MAILBOX	((volatile IPCC_Typedef *)IPC_MAILBOX_BASE)
+
+/*Input Capture*/
+#define SP_ICM0 	((volatile ICM_CTRL_REG *)RF_GRP(81, 0))
+#define SP_ICM1 	((volatile ICM_CTRL_REG *)RF_GRP(81, 7))
+#define SP_ICM2 	((volatile ICM_CTRL_REG *)RF_GRP(81, 14))
+#define SP_ICM3 	((volatile ICM_CTRL_REG *)RF_GRP(81, 21))
 
 /*
 UART LCR register BIT

@@ -6,7 +6,6 @@ void HAL_ICM_IRQHandler(ICM_InitTypeDef *pICM_Init)
 	uint32_t fstate;
 	uint32_t pwh;
 	uint32_t pwl;
-
 	/* patch:a solution of hareware BUG */
 	ICM_Patch(pICM_Init);
 	ICM_GetFifoState(pICM_Init, &fstate);
@@ -18,27 +17,20 @@ void HAL_ICM_IRQHandler(ICM_InitTypeDef *pICM_Init)
 	}
 }
 
-#if 0
-void HAL_ICM_Init(ICM_InitTypeDef *pICM_Init)
-{
-	ICM_InputSigSrc(pICM_Init);
-	ICM_ClkSel(pICM_Init);
-	ICM_SetDetectMode(pICM_Init);
-	ICM_TrigTimesEdgeEvent(pICM_Init);
-	ICM_SetDebounceTimes(pICM_Init);
-	ICM_Enable(pICM_Init);
-
-	printf("(%d)SP_ICM_REG->cfg0:%p:0x%x\n", __LINE__, &(pICM_Init->instance->cfg0), pICM_Init->instance->cfg0);
-	printf("(%d)SP_ICM_REG->cfg1:%p:0x%x\n", __LINE__, &(pICM_Init->instance->cfg1), pICM_Init->instance->cfg1);
-	printf("(%d)pinmux_icm_data:%p:0x%x\n", __LINE__, &(SP_PIN_MUX_CTRL2->pinmux_icm_data[pICM_Init->index/2]),SP_PIN_MUX_CTRL2->pinmux_icm_data[pICM_Init->index/2]);
-}
-#else
 void HAL_ICM_Init(ICM_InitTypeDef *pICM_Init)
 {
 	HAL_ICM_SetConfig(pICM_Init);
+
+	/* set pinmux must be called after setting clksel*/
+	ICM_DATA_SetPinMux(pICM_Init, pICM_Init->Pin_data);
+	if ( (pICM_Init->clksel < 4)&&(pICM_Init->Pin_clk != -1) )
+	{
+		ICM_CLK_SetPinMux(pICM_Init, pICM_Init->Pin_clk);
+	}
+
 	ICM_Enable(pICM_Init);
 }
-#endif
+
 void HAL_ICM_GetConfig(ICM_InitTypeDef *pICM_Init)
 {
 	pICM_Init->muxsel = ICM_GETCFG(0, MUXSEL);
@@ -62,25 +54,26 @@ void HAL_ICM_SetConfig(ICM_InitTypeDef *pICM_Init)
 	pICM_Init->instance->tstscl = pICM_Init->tstscl;
 }
 
-void HAL_ICM_PINMUX(ICM_InitTypeDef *pICM, int data_pinmux, int clk_pinmux)
-{
-	ICM_DATA_SetPinMux(pICM, data_pinmux);
-	if ( (pICM->clksel < 4)&&(clk_pinmux != -1) )
-	{
-		ICM_CLK_SetPinMux(pICM, clk_pinmux);
-	}
-}
-
 /* 
   SP7021 have the function of Pin Multiplex. Here set pin for an external interrupt to use
   by configuring the Pinmux control register.
 */
 void ICM_DATA_SetPinMux(ICM_InitTypeDef *pICM, int data_pinmux)
 {   
-    HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_D, pICM->Pin_data);
+	data_pinmux = GPIO_TO_PINMUX(data_pinmux);
+	if(IS_VALID_PINMUX(data_pinmux) == 0)
+	{
+		return -1;
+	}
+	HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_D, data_pinmux);
 }
 
 void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM, int clk_pinmux)
 {   
-    HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_CLK, pICM->Pin_clk);
+	clk_pinmux = GPIO_TO_PINMUX(clk_pinmux);
+	if(IS_VALID_PINMUX(clk_pinmux) == 0)
+	{
+		return -1;
+	}
+	HAL_PINMUX_Cfg(pICM->index + PINMUX_ICM0_CLK, clk_pinmux);
 }

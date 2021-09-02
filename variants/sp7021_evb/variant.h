@@ -21,6 +21,8 @@
 
 #define NUM_DIGITAL_PINS	(GPIO_P8_07+1)
 
+#define PIN_ICM_DATA	GPIO_P2_03
+#define PIN_ICM_CLK		-1
 
 
 

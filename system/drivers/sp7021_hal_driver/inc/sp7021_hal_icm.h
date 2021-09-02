@@ -11,14 +11,6 @@
 #include "sp70xx.h"
 #include "cmsis_compiler.h"
 
-/* 
-   icm callback function
-   icm   : icm index icm0~3
-   cnt   : internal counter
-   fstate: fifo state
- */
-typedef void (*sp_icm_cbf)(int icm, uint32_t cnt, uint32_t fstate);
-
 typedef enum {
 	ICM0=0,
 	ICM1,
@@ -26,18 +18,6 @@ typedef enum {
 	ICM3,
 	ICM_NUM
 }ICM_NUMTypeDef;
-
-typedef struct
-{
-   __IOM uint32_t cfg0;
-   __IOM uint32_t cfg1;
-   __IOM uint32_t cntscl;
-   __IOM uint32_t tstscl;
-   __IOM uint32_t cnt;
-   __IOM uint32_t pwh;
-   __IOM uint32_t pwl;
-}ICM_CTRL_REG;
-
 
 typedef struct
 {
@@ -70,22 +50,10 @@ typedef struct
 	int fstate;
 }ICM_InitTypeDef;
 
-/* pinmux */
-#define	PINMUX_PIN2_01		10
-#define PINMUX_ICM_DATA		PINMUX_PIN2_01
-#define PINMUX_ICM_CLK		-1
-
-#define CONVERT(X) (*(volatile unsigned long *)(&(X)))
-
 #define MOON2_PIN_MUX_BASE RF_GRP(2, 0)
 #define SP_PIN_MUX_CTRL2  ((GROUP2_Type*) MOON2_PIN_MUX_BASE)
 
 #define ICM_CTRL_BASE RF_GRP(81, 0)
-
-#define SP_ICM0_REG 	((ICM_CTRL_REG *)RF_GRP(81, 0))
-#define SP_ICM1_REG 	((ICM_CTRL_REG *)RF_GRP(81, 7))
-#define SP_ICM2_REG 	((ICM_CTRL_REG *)RF_GRP(81, 14))
-#define SP_ICM3_REG 	((ICM_CTRL_REG *)RF_GRP(81, 21))
 
 /* muxsel: input signal source select */
 #define ICM_MUXSEL_INPUT0	0 // input signal 0
@@ -147,84 +115,58 @@ void ICM_CLK_SetPinMux(ICM_InitTypeDef *pICM_Init, int clk_pinmux);
 
 __STATIC_INLINE void ICM_Enable(ICM_InitTypeDef *pICM_Init)
 {
-	CONVERT(pICM_Init->instance->cfg0) = ICM_ENABLE;
+	pICM_Init->instance->cfg0 = ICM_ENABLE;
 }
 
 __STATIC_INLINE void ICM_Disable(ICM_InitTypeDef *pICM_Init)
 {
-	CONVERT(pICM_Init->instance->cfg0) = ICM_DISABLE;
+	pICM_Init->instance->cfg0 = ICM_DISABLE;
 }
 
 __STATIC_INLINE void ICM_Reload(ICM_InitTypeDef *pICM_Init)
 {
-	CONVERT(pICM_Init->instance->cfg0) = ICM_RELOAD;
+	pICM_Init->instance->cfg0= ICM_RELOAD;
 }
 
 __STATIC_INLINE void ICM_IntrClr(ICM_InitTypeDef *pICM_Init)
 {
-	CONVERT(pICM_Init->instance->cfg0) = ICM_INTCLR;
+	//CONVERT(pICM_Init->instance->cfg0) = ICM_INTCLR;
+	pICM_Init->instance->cfg0 = ICM_INTCLR;
 }
 
 __STATIC_INLINE void ICM_ReadIntrCnt(ICM_InitTypeDef *pICM_Init, uint32_t *cnt)
 {
-	*cnt = CONVERT(pICM_Init->instance->cnt);
+	*cnt = pICM_Init->instance->cnt;
 }
 
 __STATIC_INLINE void ICM_GetFifoState(ICM_InitTypeDef *pICM_Init, uint32_t *state)
 {
-	*state = CONVERT(pICM_Init->instance->cfg1) & ICM_FMASK;
+	*state = pICM_Init->instance->cfg1 & ICM_FMASK;
 }
 
 /* Get pulse width(waveform duty cycle)of test signal */
 __STATIC_INLINE void ICM_GetSigPulseWidth(ICM_InitTypeDef *pICM_Init, uint32_t *pwh, uint32_t *pwl)
 {
-	*pwh = CONVERT(pICM_Init->instance->pwh);
-	*pwl = CONVERT(pICM_Init->instance->pwl);
+	*pwh = pICM_Init->instance->pwh;
+	*pwl = pICM_Init->instance->pwl;
 }
 
 __STATIC_INLINE void ICM_Patch(ICM_InitTypeDef *pICM_Init)
 {
 	uint32_t temp;
-	temp = CONVERT(pICM_Init->instance->cfg0) & ICM_MSK(CLKSEL);					// save the clk selection to temp var
-	CONVERT(pICM_Init->instance->cfg0) = RF_MASK_V(ICM_MSK(CLKSEL), ICM_CLKSEL_SYS << CLKSEL_OFS);	// set clksel to SYSCLK
+	temp = pICM_Init->instance->cfg0 & ICM_MSK(CLKSEL);					// save the clk selection to temp var
+	pICM_Init->instance->cfg0 = RF_MASK_V(ICM_MSK(CLKSEL), ICM_CLKSEL_SYS << CLKSEL_OFS);	// set clksel to SYSCLK
 	ICM_IntrClr(pICM_Init); 														// clear interrupt flag
-	CONVERT(pICM_Init->instance->cfg0) = RF_MASK_V(ICM_MSK(CLKSEL), 0) | temp;		// restore the clk selection
+	pICM_Init->instance->cfg0 = RF_MASK_V(ICM_MSK(CLKSEL), 0) | temp;		// restore the clk selection
 }
 
 
 #define ICM_SETCFG(_cfg, field, val) \
 	do { \
-		CONVERT(pICM_Init->instance->cfg##_cfg) = ((val) << field##_OFS) | (ICM_MSK(field) << 16); \
+		pICM_Init->instance->cfg##_cfg = ((val) << field##_OFS) | (ICM_MSK(field) << 16); \
 	} while (0)
 #define ICM_GETCFG(_cfg, field) \
-	((CONVERT(pICM_Init->instance->cfg##_cfg) & ICM_MSK(field)) >> field##_OFS)
-
-#if 0
-__STATIC_INLINE void ICM_InputSigSrc(ICM_InitTypeDef *pICM_Init)
-{
-	CONVERT(pICM_Init->instance->cfg0) = RF_MASK_V(ICM_MSK(MUXSEL) , pICM_Init->muxsel << MUXSEL_OFS);
-}
-
-__STATIC_INLINE void ICM_ClkSel(ICM_InitTypeDef *pICM_Init)
-{
-	CONVERT(pICM_Init->instance->cfg0) = RF_MASK_V(ICM_MSK(CLKSEL), pICM_Init->clksel << CLKSEL_OFS);
-}
-
-__STATIC_INLINE void ICM_SetDetectMode(ICM_InitTypeDef *pICM_Init)
-{
-	CONVERT(pICM_Init->instance->cfg1) = RF_MASK_V(ICM_MSK(EEMODE), pICM_Init->eemode << EEMODE_OFS);
-}
-
-__STATIC_INLINE void ICM_SetDebounceTimes(ICM_InitTypeDef *pICM_Init)
-{
-	CONVERT(pICM_Init->instance->cfg1) = RF_MASK_V(ICM_MSK(DTIMES), pICM_Init->dtimes << DTIMES_OFS);
-}
-
-__STATIC_INLINE void ICM_TrigTimesEdgeEvent(ICM_InitTypeDef *pICM_Init)
-{
-	CONVERT(pICM_Init->instance->cfg1) = RF_MASK_V(ICM_MSK(ETIMES), pICM_Init->etimes << ETIMES_OFS);
-}
-#endif
+	((pICM_Init->instance->cfg##_cfg & ICM_MSK(field)) >> field##_OFS)
 
 #ifdef __cplusplus
 }

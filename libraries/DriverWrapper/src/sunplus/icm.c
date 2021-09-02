@@ -9,10 +9,10 @@ static int get_instance_index(uint32_t instance)
 	int index;
 	switch(instance)
 	{
-		case (uint32_t)SP_ICM0_REG:index=ICM0;break;
-		case (uint32_t)SP_ICM1_REG:index=ICM1;break;
-		case (uint32_t)SP_ICM2_REG:index=ICM2;break;
-		case (uint32_t)SP_ICM3_REG:index=ICM3;break;
+		case (uint32_t)SP_ICM0:index=ICM0;break;
+		case (uint32_t)SP_ICM1:index=ICM1;break;
+		case (uint32_t)SP_ICM2:index=ICM2;break;
+		case (uint32_t)SP_ICM3:index=ICM3;break;
 	}
 	return index;
 }
@@ -32,7 +32,7 @@ void ICM_Initialization()
 	etimes = 4;
 	dtimes = 3;
 
-	instance = SP_ICM0_REG;
+	instance = SP_ICM0;
 	index = get_instance_index((uint32_t)instance);
 
 	ICM_Init[index].index = index;
@@ -47,14 +47,9 @@ void ICM_Initialization()
 	if (dtimes != -1) ICM_Init[index].dtimes = dtimes;
 	if (cntscl != -1) ICM_Init[index].cntscl = cntscl;
 	if (tstscl != -1) ICM_Init[index].tstscl = tstscl;
+	ICM_Init[index].Pin_data = PIN_ICM_DATA;
+	ICM_Init[index].Pin_clk = PIN_ICM_CLK;
 	HAL_ICM_Init(&ICM_Init[index]);
-
-	/* select pinmux :HAL_ICM_PINMUX must be called after setting clksel*/
-	if (Pin_data != -1)
-		ICM_Init[index].Pin_data = Pin_data;
-	if (Pin_clk != -1)
-		ICM_Init[index].Pin_clk = Pin_clk;
-	HAL_ICM_PINMUX(&ICM_Init[index], PINMUX_ICM_DATA, PINMUX_ICM_CLK);
 
 	/* config interrupt*/
 	IRQn_Type irqn = ICM_Init[index].index + 92;
@@ -67,16 +62,6 @@ void ICM_Initialization()
 	}
 	IRQ_SetMode(irqn, IRQ_MODE_TRIG_EDGE_RISING);
 	IRQ_Enable(irqn);
-#ifdef TEST_PWM
-	/* config pwm */
-	PWM_InitTypeDef PWM_Init={0};
-	PWM_Init.Pin = PINMUX_PIN2_01;
-	PWM_Init.pwm_num = PWM0;
-	PWM_Init.pwm_freq = 8000;
-	PWM_Init.duty_cycle = 50;
-	HAL_PWM_INIT(&PWM_Init);
-	HAL_PWM_ENABLE(PWM0);
-#endif 
 }
 
 void ICM0_IRQHandler()

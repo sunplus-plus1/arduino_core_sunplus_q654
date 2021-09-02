@@ -298,9 +298,9 @@ int TwoWire::read(void)
     /* Commented as not I think it is not useful
      * but kept to show that it is possible to
      * reset rx buffer when no more data available */
-    /*if(rxBufferIndex == rxBufferLength) {
+    if(rxBufferIndex == rxBufferLength) {
       resetRxBuffer();
-    }*/
+    }
   }
   return value;
 }
