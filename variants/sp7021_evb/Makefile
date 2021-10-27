@@ -145,7 +145,7 @@ $(BIN)/$(TARGET): $(OBJS) $(LD_FILE)
 
 $(BIN)/$(SPI_ALL): $(BIN)/$(TARGET).bin Makefile
 	$(Pecho) "  PACK $@"
-	$P bash $(ARDUINO_PATH)./script/add_uhdr.sh uboot_B $< $(FIRMWARE_TOP)$(BIN)/$(TARGET).img 0x200040 0x200040 $(ARDUINO_PATH)
+	$P bash $(ARDUINO_PATH)./script/add_uhdr.sh uboot_B $< $(BIN)/$(TARGET).img 0x200040 0x200040 $(ARDUINO_PATH)
 	$P $(DD)64  if=$(ARDUINO_PATH)prebuilt/xboot_nor.img
 	$P $(DD)256 if=$(BIN)/$(TARGET).img
 	$P ls -l $@

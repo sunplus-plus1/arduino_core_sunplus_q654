@@ -11,8 +11,8 @@
 #define PIN_SPI_SCK 	GPIO_P8_07
 #define PIN_SPI_CS 		GPIO_P8_07
 
-#define PIN_I2C_SDA		GPIO_P1_05
-#define PIN_I2C_SCL		GPIO_P1_04
+#define PIN_I2C_SDA		GPIO_P1_04
+#define PIN_I2C_SCL		GPIO_P1_05
 
 #define PIN_ICM_DATA
 #define PIN_ICM_CLK
