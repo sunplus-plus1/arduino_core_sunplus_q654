@@ -32,12 +32,21 @@ void ICM_Initialization()
 	etimes = 4;
 	dtimes = 3;
 
+#if ICM_SEL_INSTANCE == 0
 	instance = SP_ICM0;
+#elif ICM_SEL_INSTANCE == 1
+	instance = SP_ICM1;
+#elif ICM_SEL_INSTANCE == 2
+	instance = SP_ICM2;
+#elif ICM_SEL_INSTANCE == 3
+	instance = SP_ICM3;
+#endif
+
 	index = get_instance_index((uint32_t)instance);
 
 	ICM_Init[index].index = index;
 	ICM_Init[index].instance = instance;
-	
+
 	/* set icm configure */
 	HAL_ICM_GetConfig(&ICM_Init[index]);
 	if (muxsel != -1) ICM_Init[index].muxsel = muxsel;

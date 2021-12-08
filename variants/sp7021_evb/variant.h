@@ -1,7 +1,13 @@
 //void SystemClock_Config(void);
 #define SERIAL_UART_INSTANCE	1
-#define SPI_SEL_INSTANCE	0    //select spi . SPI0--SPI4
-#define I2C_SEL_INSTANCE	0	 //select i2c . I2C0--I2C3
+/* select spi.(SPI0-SPI4) */
+#define SPI_SEL_INSTANCE	0
+/* select i2c.(I2C0-I2C3) */
+#define I2C_SEL_INSTANCE	0
+/* select icm.(ICM0--ICM3) */
+#define ICM_SEL_INSTANCE    0
+/* select ext_int.(EXT_INT0--EXT_INT7) */
+#define EXT_INT_SEL_INSTANCE	0
 
 #define PIN_SERIAL_TX	GPIO_P3_01
 #define PIN_SERIAL_RX	GPIO_P2_07

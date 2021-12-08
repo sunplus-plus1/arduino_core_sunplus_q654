@@ -31,16 +31,6 @@ extern void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin);
 }
 #endif
 
-static uint32_t get_pin_index(uint32_t pin)
-{
-	uint8_t index = 0;
-	switch(pin)
-	{
-		case PIN_EXT_INT0:index = 0;break;//TODO
-	}
-	return index;
-}
-
 void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32_t mode)
 //void sunplus_interrupt_enable(uint16_t pin, void (*callback)(void), uint32_t mode)
 {
@@ -48,7 +38,23 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	uint8_t index = 0;
 	uint16_t exti_pin = 0;
 
-	index = get_pin_index(pin);
+#if EXT_INT_SEL_INSTANCE == 0
+	index = EXTI0_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 1
+	index = EXTI1_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 2
+	index = EXTI2_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 3
+	index = EXTI3_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 4
+	index = EXTI4_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 5
+	index = EXTI5_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 6
+	index = EXTI6_INDEX;
+#elif EXT_INT_SEL_INSTANCE == 7
+	index = EXTI7_INDEX;
+#endif
 
 	gpio_irq_conf[index].exti_handles.index = index;//0
 	gpio_irq_conf[index].exti_handles.trigger = mode;//4

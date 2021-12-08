@@ -20,7 +20,6 @@
 #include "interrupt.h"
 
 void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode)
-//void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode)
 {
 	uint32_t it_mode = 0;
 
@@ -56,3 +55,4 @@ void detachInterrupt(uint32_t pin)
 {
 	sunplus_interrupt_disable(pin);
 }
+
