@@ -33,77 +33,10 @@ static void _i2c_dma_length_set(I2C_HandleTypeDef *hi2c, uint32_t len);
 static void _i2c_dma_rw_mode_set(I2C_HandleTypeDef *hi2c, I2C_DMA_RW_Mode_e mode);
 static void _i2c_dma_int_en_set(I2C_HandleTypeDef *hi2c,  uint32_t int0);
 static void _i2c_dma_go_set(I2C_HandleTypeDef *hi2c);
-////////////////////////////////////////////////////////////////////////////////////////////
-#if 1
-uint8_t tx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
-uint8_t rx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
 
 static I2C_HandleTypeDef *i2c_handles[4];
-
-int  i2c_check01(I2C_HandleTypeDef *hi2c)
-{
-
-	if(hi2c->State == HAL_I2C_STATE_READY)
-	{
-		return 0;		
-	}
-	return 1;
-}
-
-
-int i2c_check(I2C_HandleTypeDef *hi2c)
-{
-
-    static uint32_t i;
-
-    if(hi2c->State == HAL_I2C_STATE_READY){
-
-	    return 0;
-    }
-
-
-
-//printf("i2c_regs_i2c_check 0x%x \n",i2c_regs);
-
-
-//printf("i2c_regs->int_en0-00: 0x%x \n", i2c_regs->int_en0);
-//printf("i2c_regs->int_en1-00: 0x%x \n", i2c_regs->int_en1);
-//printf("i2c_regs->int_en2-00: 0x%x \n", i2c_regs->int_en2);
-
-//printf("i2c_check->control4: 0x%x \n", i2c_regs->control4);
-
-
-//printf("check->int 0x%x\n",i2c_regs->interrupt);
-
-    if(__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET){
-
-	    //printf("check->int01 0x%x\n",i2c_regs->interrupt);
-	    //printf("check->i01 0x%x\n",i);
-        i++;
-    }else{
-        i =0;
-    }
-
-    if(i>10){
-		printf("%s(%d)\n", __FUNCTION__, __LINE__);
-        if((hi2c->State == HAL_I2C_STATE_BUSY_TX)||(hi2c->State == HAL_I2C_STATE_BUSY_RX)){
-			HAL_I2C_IRQHandler(hi2c);
-        }
-        //printf("check->int 0x%x\n",i2c_regs->interrupt);
-        //printf("check->i 0x%x\n",i);
-       i =0;
-	   return 0;
-       //  timer_test();
-    }
-
-
-return 1;
-
-}
-
-#endif
-
-///////////////////////////////////////////////////////////////////////////////////////////
+uint8_t tx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
+uint8_t rx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
 
 static void i2c_reset(I2C_HandleTypeDef *hi2c)
 {

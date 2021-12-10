@@ -7,12 +7,6 @@
 #include "irq_ctrl.h"
 #include "sp70xx.h"
 
-/* pinmux */
-#define	PINMUX_PIN3_03		20
-#define	PINMUX_PIN3_05		22
-#define PINMUX_I2C_SCL		PINMUX_PIN3_03
-#define PINMUX_I2C_SDA		PINMUX_PIN3_05
-
 /****************************************
 * I2C Master
 ****************************************/
@@ -326,13 +320,6 @@ typedef struct __I2C_HandleTypeDef
 	uint32_t				   BurstRemainder;
 	
 } I2C_HandleTypeDef;
-
-/* pin mux */
-#define	PINMUX_PIN2_02		11
-#define	PINMUX_PIN2_03		12
-#define PINMUX_I2C_SDA		PINMUX_PIN2_02
-#define PINMUX_I2C_SCL		PINMUX_PIN2_03
-
 
 void I2C_HAL_TEST_IRQHandler(void);
 
