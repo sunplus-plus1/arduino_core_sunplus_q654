@@ -14,9 +14,7 @@
 typedef struct
 {
 	IRQn_Type irqn;				//intr num: EXTI0_IRQn~EXTI7_IRQn
-	uint32_t index;				//exti index: 0~7
 	uint32_t trigger;			//triggle type (default high-level)
-	uint32_t priority;			//IRQ/FIQ (default IRQ)
 } EXTI_HandleTypeDef;
 
 HAL_StatusTypeDef HAL_EXTI_SetMode(EXTI_HandleTypeDef *hexti);
