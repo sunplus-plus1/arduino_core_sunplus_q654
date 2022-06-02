@@ -143,8 +143,8 @@ all: $(OBJS)
 	$(CC) -ffunction-sections -fdata-sections $(CFLAGS) $(CCFLAGS) $(LDFLAGS) $+ -o $(BIN)/$(TARGET)
 	$(OBJDUMP) -d -S $(BIN)/$(TARGET) > $(BIN)/$(TARGET).dis
 	$(OBJCOPY) -O binary -S $(BIN)/$(TARGET) $(BIN)/$(TARGET).bin
-
 %.o: %.S
+	$P mkdir -p $(BIN)
 	$(Pecho) "  CC   $<"
 	$P $(CC) $(CFLAGS) $(CCFLAGS) $(CPPFLAGS) -MMD -c -o $@ $<
 
