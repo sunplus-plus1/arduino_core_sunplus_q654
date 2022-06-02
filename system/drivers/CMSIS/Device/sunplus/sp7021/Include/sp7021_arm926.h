@@ -1013,10 +1013,10 @@ typedef struct
 #define TIM6			((TIM_TypeDef *) TIM6_BASE)
 #define TIM7			((TIM_TypeDef *) TIM7_BASE)
 
-#define STC0		((STC_TypeDef *)STC0_BASE)
-#define STC1		((STC_TypeDef *)STC1_BASE)
-#define STC2		((STC_TypeDef *)STC2_BASE)
-#define STC3		((STC_TypeDef *)STC3_BASE)
+#define STC0			((STC_TypeDef *)STC0_BASE)
+#define STC1			((STC_TypeDef *)STC1_BASE)
+#define STC2			((STC_TypeDef *)STC2_BASE)
+#define STC3			((STC_TypeDef *)STC3_BASE)
 
 
 /*  gpio register */

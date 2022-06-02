@@ -57,7 +57,10 @@ void I2C0_IRQHandler(void);
 void I2C1_IRQHandler(void);
 void I2C2_IRQHandler(void);
 void I2C3_IRQHandler(void);
-
+#ifdef SP645
+void I2C4_IRQHandler(void);
+void I2C5_IRQHandler(void);
+#endif
 #ifdef __cplusplus
 }
 #endif

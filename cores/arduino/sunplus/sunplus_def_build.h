@@ -3,6 +3,8 @@
 
 #if defined(SP7021)
     #define CMSIS_STARTUP_FILE "startup_sp7021_arm926.S"
+#elif defined(SP645)
+
 #else
 	#warning "No CMSIS startup file defined"
 #endif

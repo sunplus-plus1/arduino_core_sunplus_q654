@@ -28,7 +28,7 @@
  */
 uint32_t pulseIn(uint32_t pin, uint32_t state, uint32_t timeout)
 {
-
+	return 0;
 }
 
 /* Measures the length (in microseconds) of a pulse on the pin; state is HIGH

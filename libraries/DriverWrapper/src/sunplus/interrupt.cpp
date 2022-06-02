@@ -14,6 +14,14 @@ typedef enum {
 
 //static EXTI_HandleTypeDef exti_handles[EXTI_NUM];
 
+#ifdef SP645
+namespace std {
+	void __throw_bad_function_call() 
+	{ 
+		while(1); 
+	}; 
+}
+#endif
 typedef struct {
 	EXTI_HandleTypeDef exti_handles;
 	std::function<void(void)> callback;

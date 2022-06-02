@@ -1,9 +1,13 @@
 #ifndef __INTERRUPT_H
 #define __INTERRUPT_H
 
+#ifdef SP7021
 #include "sp7021_hal_exti.h"
 #include "sp7021_hal.h"
-
+#elif defined(SP645)
+#include "sp645_hal_exti.h"
+#include "sp645_hal.h"
+#endif
 
 #ifdef __cplusplus
 	#include <functional>

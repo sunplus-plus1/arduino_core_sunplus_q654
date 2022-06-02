@@ -100,7 +100,7 @@ DIRS += $(TOP)/system/Middlewares/OpenAMP/virt_driver
 
 
 #arduino C++ example
-#DIRS += $(TOP)/libraries/examples/timer
+DIRS += $(TOP)/libraries/examples/timer
 #DIRS += $(TOP)/libraries/examples/i2c
 #DIRS += $(TOP)/libraries/examples/exti
 

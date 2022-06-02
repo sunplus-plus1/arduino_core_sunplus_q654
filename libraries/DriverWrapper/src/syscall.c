@@ -79,6 +79,7 @@ int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
     return ret;
 }
 
+#ifdef SP7021
  __attribute__((weak)) caddr_t  _sbrk(int incr)
 {
 	extern char __bss_end__;
@@ -88,7 +89,33 @@ int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
      __brkval += incr;
     return (caddr_t)ret;
 }
+#else
+extern unsigned long _heap_bottom;
+extern unsigned long _heap_top;
 
+static void *heap_end = 0;
+
+void* _sbrk(int incr)
+ {
+	 char *prev_heap_end;
+ 
+	 if (heap_end == 0)
+	 {
+		 heap_end = (void*) &_heap_bottom;
+	 }
+ 
+	 prev_heap_end = heap_end;
+ 
+	 if ((heap_end + incr) > (void*)&_heap_top)
+	 {
+		 return (void*)-1;
+	 }
+ 
+	 heap_end += incr;
+ 
+	 return prev_heap_end;
+ }
+#endif
 
  __attribute__((weak))
  int _close(UNUSED(int file))
@@ -130,6 +157,17 @@ int __write(int fd, const char *buf, int count)
 	 return ret;
 }
 
+#ifdef SP645
+int _write(int file, char *buf, int len)
+{
+    int todo;
+    for (todo = 0; todo < len; todo++){
+        UART_putc(*buf++);
+    }
+    return len;
+}
+#endif
+
 __attribute__((weak))
 void _exit(UNUSED(int status))
 {
@@ -148,4 +186,13 @@ int _getpid(void)
 {
   	return 1;
 }
+
+__attribute__((weak))
+int _fini(void)
+{
+  	return 1;
+}
+
+
+
 

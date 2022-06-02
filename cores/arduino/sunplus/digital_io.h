@@ -53,10 +53,18 @@ static inline void digitalModeSet(uint32_t ulPin, uint32_t ulMode)
         GPIO_Init.Mode = GPIO_INPUT_MODE;
         break;
       case OUTPUT:
+	  	#ifdef SP7021
         GPIO_Init.Mode = GPIO_OUTPUT_MODE;
+		#elif defined(SP645)
+		GPIO_Init.Mode = GPIO_PP_OUTPUT_MODE;
+		#endif
         break;
       case OUTPUT_OPEN_DRAIN:
+	  	#ifdef SP7021
         GPIO_Init.opendrain = GPIO_OD_ENABLE;
+		#elif defined(SP645)
+		GPIO_Init.Mode = GPIO_OD_OUTPUT_MODE;
+		#endif
         break;
       default:
         return;

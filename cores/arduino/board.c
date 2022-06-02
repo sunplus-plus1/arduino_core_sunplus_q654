@@ -1,4 +1,5 @@
 #include "board.h"
+#include "hw_config.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,13 @@
 #include "core_debug.h"
-#include "sp7021_hal_conf.h"
-#include "twi.h"
 #include "Arduino.h"
+
+#ifdef SP7021
+#include "sp7021_hal_conf.h"
+#elif defined(SP645)
+#include "sp645_hal_conf.h"
+#endif
+
+#include "twi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,11 +29,13 @@ typedef enum {
   I2C1_INDEX,
   I2C2_INDEX,
   I2C3_INDEX,
+  I2C4_INDEX,
+  I2C5_INDEX,
   I2C_NUM
 } i2c_index_e;
 
 /* Private Variables */
-static volatile I2C_HandleTypeDef *i2c_handles[I2C_NUM];
+static I2C_HandleTypeDef *i2c_handles[I2C_NUM];
 
 void func_print(uint8_t data)
 {
@@ -80,12 +88,15 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	
 	UNUSED(addressingMode);
 	UNUSED(ownAddress);
-	//printf("Build TWI @%s, %s\n", __DATE__, __TIME__);
 	if (obj == NULL)
 	{
 		return;
 	}
-
+#if defined(SP7021) && I2C_SEL_INSTANCE > 3
+	return;
+#elif defined(SP645) && I2C_SEL_INSTANCE > 5
+    return;
+#endif
     I2C_HandleTypeDef *handle = &(obj->handle);
 	
 #if I2C_SEL_INSTANCE == 0
@@ -96,8 +107,15 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	handle->Instance  = SP_I2CM2;
 #elif I2C_SEL_INSTANCE == 3
 	handle->Instance  = SP_I2CM3;
+#ifdef SP645
+#elif SPI_SEL_INSTANCE == 4
+    handle->Instance  = SP_I2CM4;
+#elif SPI_SEL_INSTANCE == 5
+    handle->Instance  = SP_I2CM5;
 #endif 
-	
+#endif 
+
+#ifdef SP7021
 	i2c_sda = GPIO_TO_PINMUX(obj->pin_sda);
 	if(!IS_VALID_PINMUX(i2c_sda))
 	{
@@ -111,16 +129,9 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		core_debug("ERROR: [I2C] SCL pin error!\n");
 		return;
 	}
-
-	// Enable I2C0 clock if not done
+#endif	
 	if (handle->Instance == SP_I2CM0)
 	{
-		HAL_Module_Clock_enable(I2CM0, 1);
-		HAL_Module_Clock_gate(I2CM0, 1);
-		HAL_Module_Reset(I2CM0, 0);
-		HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA, i2c_sda);
-		HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL, i2c_scl);
-	
 		IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER0_IRQ, I2C0_IRQHandler);
 
@@ -131,12 +142,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	}
 	else if (handle->Instance == SP_I2CM1)// Enable I2C1 clock if not done
 	{
-		HAL_Module_Clock_enable(I2CM1, 1);
-		HAL_Module_Clock_gate(I2CM1, 1);
-		HAL_Module_Reset(I2CM1, 0);
-		HAL_PINMUX_Cfg(PINMUX_I2CM1_SDA, i2c_sda);
-		HAL_PINMUX_Cfg(PINMUX_I2CM1_SCL, i2c_scl);
-
 		IRQ_SetMode(I2C_MASTER1_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER1_IRQ, I2C1_IRQHandler);
 		
@@ -147,12 +152,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	}
 	else if  (handle->Instance == SP_I2CM2)// Enable I2C2 clock if not done
 	{
-		HAL_Module_Clock_enable(I2CM2, 1);
-		HAL_Module_Clock_gate(I2CM2, 1);
-		HAL_Module_Reset(I2CM2, 0);
-		HAL_PINMUX_Cfg(PINMUX_I2CM2_SDA, i2c_sda);
-		HAL_PINMUX_Cfg(PINMUX_I2CM2_SCL, i2c_scl);
-
 		IRQ_SetMode(I2C_MASTER2_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER2_IRQ, I2C2_IRQHandler);
 
@@ -163,12 +162,6 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	}
 	else if (handle->Instance == SP_I2CM3)// Enable I2C3 clock if not done
 	{
-		HAL_Module_Clock_enable(I2CM3, 1);
-		HAL_Module_Clock_gate(I2CM3, 1);
-		HAL_Module_Reset(I2CM3, 0);
-		HAL_PINMUX_Cfg(PINMUX_I2CM3_SDA, i2c_sda);
-		HAL_PINMUX_Cfg(PINMUX_I2CM3_SCL, i2c_scl);
-		
 		IRQ_SetMode(I2C_MASTER3_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C3_IRQHandler);
 		
@@ -177,7 +170,39 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		i2c_handles[I2C3_INDEX]->Index = I2C3_INDEX;
 		i2c_handles[I2C3_INDEX]->gdma = SP_GDMA3;
 	}
-	
+#ifdef SP645	
+	else if  (handle->Instance == SP_I2CM4)// Enable I2C2 clock if not done
+	{
+		IRQ_SetMode(I2C_MASTER4_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
+		IRQ_SetHandler(I2C_MASTER4_IRQ, I2C4_IRQHandler);
+
+		obj->irq = I2C_MASTER4_IRQ;
+		i2c_handles[I2C4_INDEX] = handle;
+		i2c_handles[I2C4_INDEX]->Index = I2C4_INDEX;
+		i2c_handles[I2C4_INDEX]->gdma = SP_GDMA4;
+	}
+	else if (handle->Instance == SP_I2CM5)// Enable I2C3 clock if not done
+	{
+		IRQ_SetMode(I2C_MASTER5_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
+		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C5_IRQHandler);
+		
+		obj->irq = I2C_MASTER5_IRQ;
+		i2c_handles[I2C5_INDEX] = handle;
+		i2c_handles[I2C5_INDEX]->Index = I2C5_INDEX;
+		i2c_handles[I2C5_INDEX]->gdma = SP_GDMA5;
+	}
+#endif
+
+	HAL_Module_Clock_enable(I2CM0 + I2C_SEL_INSTANCE, 1);
+	HAL_Module_Clock_gate(I2CM0 + I2C_SEL_INSTANCE, 1);
+	HAL_Module_Reset(I2CM0 + I2C_SEL_INSTANCE, 0);
+#ifdef SP7021
+    HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA + I2C_SEL_INSTANCE*2, i2c_sda);
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL + I2C_SEL_INSTANCE*2, i2c_scl);
+#elif defined(SP645)
+    HAL_PINMUX_Cfg(PINMUX_I2C_0 + I2C_SEL_INSTANCE, 1);
+#endif
+
 	//handle->Instance			= obj->i2c;
 	handle->Init.Timing			= i2c_getTiming(obj, timing);
 	handle->State = HAL_I2C_STATE_RESET;
@@ -345,6 +370,16 @@ void I2C1_IRQHandler()
 }
 
 void I2C2_IRQHandler()
+{
+	HAL_I2C_IRQHandler(i2c_handles[I2C2_INDEX]);
+}
+
+void I2C4_IRQHandler()
+{
+	HAL_I2C_IRQHandler(i2c_handles[I2C3_INDEX]);
+}
+
+void I2C5_IRQHandler()
 {
 	HAL_I2C_IRQHandler(i2c_handles[I2C2_INDEX]);
 }

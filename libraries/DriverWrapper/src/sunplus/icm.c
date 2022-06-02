@@ -1,5 +1,7 @@
 #include "icm.h"
 
+#ifdef SP7021
+
 #define TEST_PWM
 
 ICM_InitTypeDef ICM_Init[ICM_NUM];
@@ -92,3 +94,5 @@ void ICM3_IRQHandler()
 {
 	HAL_ICM_IRQHandler(&ICM_Init[ICM3]);
 }
+
+#endif
