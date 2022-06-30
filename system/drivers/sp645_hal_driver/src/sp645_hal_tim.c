@@ -18,16 +18,16 @@ static IRQn_Type HAL_TIM_GetIRQ(TIM_TypeDef *tim)
 	switch ((uint32_t)tim)
 	{
 		case  (uint32_t)TIM0 ... (uint32_t)TIM1:
-			IRQn = STC_TIMER2_IRQn + (tim - TIM0)/_OFFSET_BETWEEN_TIMERS;
+			IRQn = STC_TIMER2_IRQn + ((uint32_t)tim - (uint32_t)TIM0)/_OFFSET_BETWEEN_TIMERS;
 			break;
 		case  (uint32_t)TIM2 ... (uint32_t)TIM3:
-			IRQn = STC_AV0_TIMER2_IRQn + (tim - TIM2)/_OFFSET_BETWEEN_TIMERS;
+			IRQn = STC_AV0_TIMER2_IRQn + ((uint32_t)tim - (uint32_t)TIM2)/_OFFSET_BETWEEN_TIMERS;
 			break;
 		case  (uint32_t)TIM4 ... (uint32_t)TIM5:
-			IRQn = STC_AV1_TIMER2_IRQn + (tim - TIM4)/_OFFSET_BETWEEN_TIMERS;
+			IRQn = STC_AV1_TIMER2_IRQn + ((uint32_t)tim - (uint32_t)TIM4)/_OFFSET_BETWEEN_TIMERS;
 			break;
   		case  (uint32_t)TIM6 ... (uint32_t)TIM7:
-			IRQn = STC_AV2_TIMER2_IRQn + (tim - TIM6)/_OFFSET_BETWEEN_TIMERS;
+			IRQn = STC_AV2_TIMER2_IRQn + ((uint32_t)tim - (uint32_t)TIM6)/_OFFSET_BETWEEN_TIMERS;
 			break;
 		default:
 		break;
