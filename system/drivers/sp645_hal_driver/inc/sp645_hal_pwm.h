@@ -53,8 +53,8 @@ typedef struct
 
 
 int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init);
-void HAL_PWM_ENABLE(int pwm_num);
-void HAL_PWM_DISABLE(int pwm_num);
+void HAL_PWM_Start(int pwm_num);
+void HAL_PWM_Stop(int pwm_num);
 void HAL_PWM_Freq_Set(int pwm_num,uint32_t freq,uint32_t duty_cycle);
 int HAL_PWM_Get_Resolution_By_Num(int pwm_num);
 

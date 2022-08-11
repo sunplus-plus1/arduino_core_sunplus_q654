@@ -30,8 +30,7 @@ endif
 LDFLAGS = -T $(LD_FILE) -specs=nano.specs --specs=rdimon.specs  -lc -lrdimon -lm -lgcc -lstdc++ 
 LDFLAGS += -Xlinker -Map=$(BIN)/$(TARGET).map
 
-CFLAGS += -nostartfiles -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wno-error=implicit-function-declaration
-CFLAGS += -Wno-builtin-declaration-mismatch -Werror -Wno-error=discarded-qualifiers  
+CFLAGS += -nostartfiles -mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 
 
 ifeq ($(DEBUG), 1)
     CFLAGS += -ggdb3 -Og

@@ -6,17 +6,51 @@
 extern "C" {
 #endif
 
+
+void HAL_STC_EnableSTCClock(STC_HandleTypeDef *Hstc)
+{
+	MODULE_ID_Type mode_id = STC_0;
+
+	assert_param(IS_STC_INSTANCE(Hstc->Instance));
+
+	switch((uint32_t)Hstc->Instance)
+	{
+		case (uint32_t)STC0: 
+			mode_id = STC_0;
+			break;
+		case (uint32_t)STC1: 
+			mode_id = STC_AV0;
+			break;
+		case (uint32_t)STC2: 
+			mode_id = STC_AV1;
+			break;
+		case (uint32_t)STC3: 
+			mode_id = STC_AV2;
+			break;
+		default: 
+			break;
+	}
+
+	HAL_Module_Clock_enable(mode_id, 1);
+	HAL_Module_Clock_gate(mode_id, 1);
+	HAL_Module_Reset(mode_id, 0);
+
+}
+
 HAL_StatusTypeDef HAL_STC_Init(STC_HandleTypeDef *Hstc)
 {
 	if (Hstc == NULL)
 		return HAL_ERROR;
 	assert_param(IS_STC_INSTANCE(Hstc->Instance));
-	memset(Hstc->Instance, 0, sizeof(STC_TypeDef));
+
+	HAL_STC_EnableSTCClock(Hstc);
+	memset(Hstc->Instance, 0, sizeof(STC_TypeDef));	
 	Hstc->Instance->stc_prescale_val = 0;
 	Hstc->Instance->stc_config = 0;
 	/*External Clock source*/
 	if (Hstc->ClockSource){
 		Hstc->Instance->stc_config = Hstc->ExtDiv;
+		MODIFY_REG(Hstc->Instance->stc_prescale_val, STC_TRIG_SRC, 1<<STC_TRIG_SRC_Pos);
 	}
  	MODIFY_REG(Hstc->Instance->stc_prescale_val, STC_PRESCALER, Hstc->Prescaler<<STC_PRESCALER_Pos);
  	Hstc->Instance->stc_63_48 = 0;

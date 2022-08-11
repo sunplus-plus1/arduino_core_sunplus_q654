@@ -20,7 +20,7 @@ STC_HandleTypeDef SysStandardTimeClk;
 
 HAL_StatusTypeDef HAL_Init(void)
 {
-	HAL_InitTick(STC0);
+	HAL_InitTick(STC2);
 }
 
 HAL_StatusTypeDef HAL_DeInit(void)
@@ -47,7 +47,7 @@ void HAL_IncTick(void)
 __weak void HAL_Delay(uint32_t Delay)
 {
 	uint32_t tickstart = HAL_GetTick();
-	uint32_t wait = Delay;
+	uint32_t wait = 0;
 
 	if (wait < HAL_MAX_DELAY)
 	{

@@ -22,7 +22,7 @@ static inline void *hal_memcpy(void *dest, const void *src, size_t n)
 void SystemInit (void)
 {
 	/*system  init*/
-
+	HAL_Init();
 }
 
 

@@ -700,10 +700,10 @@ typedef struct {
       __IOM uint32_t pwm_mode;
    };
     struct _PWM_DU_REG_ pwm_chx_cfg[4];
-    __IOM uint32_t reserve_1[10];
+    __IOM uint32_t reserve_1[11];
     __IOM uint32_t pwm_version;
     struct _PWM_DD_REG_ pwm_dd_ctrl[4];
-    __IOM uint32_t reserve_2[12];
+    __IOM uint32_t reserve_2[11];
 }PWM_TypeDef;
 
 #define REG_BASE                     0xF8000000
@@ -830,8 +830,8 @@ typedef struct {
 #define UART0_BASE      RF_GRP(18, 0)
 #define UART1_BASE      RF_GRP(19, 0)
 #define UART2_BASE      RF_GRP(16, 0)
-#define UART3_BASE      RF_GRP(17, 0)
-#define UART4_BASE      RF_GRP(271, 0)
+#define UART3_BASE      RF_GRP(135, 0)
+#define UART4_BASE      RF_GRP(17, 0)
 
 
 #define SP_UART0        ((UART_CTRL_Type *)UART0_BASE)
@@ -974,13 +974,13 @@ UART LCR register BIT
 /* gpio register */
 
 #define GPIO_FIRST(X)                (RF_GRP(101, (25+X)))
-#define GPIO_MASTER(X)               (RF_GRP(6, (0+X)))
-#define GPIO_OE(X)                   (RF_GRP(6, (8+X)))
-#define GPIO_OUT(X)                  (RF_GRP(6, (16+X)))
-#define GPIO_IN(X)                   (RF_GRP(6, (24+X)))
-#define GPIO_I_INV(X)                (RF_GRP(7, (0+X)))
-#define GPIO_O_INV(X)                (RF_GRP(7, (8+X)))
-#define GPIO_OD(X)                   (RF_GRP(7, (16+X)))
+#define GPIO_MASTER(X)               (RF_GRP(5, (0+X)))
+#define GPIO_OE(X)                   (RF_GRP(5, (13+X)))
+#define GPIO_OUT(X)                  (RF_GRP(5, (26+X)))
+#define GPIO_IN(X)                   (RF_GRP(6, (7+X)))
+#define GPIO_I_INV(X)                (RF_GRP(6, (15+X)))
+#define GPIO_O_INV(X)                (RF_GRP(6, (22+X)))
+#define GPIO_OD(X)                   (RF_GRP(7, (9+X)))
 
 #define GPIO_P0_00                   0
 #define GPIO_P0_01                   1

@@ -53,7 +53,7 @@ do { \
 } while (0)
 
 
-
+#ifdef SP7021
 /*This funciton for new libc atomic operation for arm926(ARMv5) */
 void __sync_synchronize(void)
 {
@@ -79,7 +79,6 @@ int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
     return ret;
 }
 
-#ifdef SP7021
  __attribute__((weak)) caddr_t  _sbrk(int incr)
 {
 	extern char __bss_end__;
@@ -162,7 +161,7 @@ int _write(int file, char *buf, int len)
 {
     int todo;
     for (todo = 0; todo < len; todo++){
-        UART_putc(*buf++);
+        UART_putc_nl(*(char *)(buf++));
     }
     return len;
 }
