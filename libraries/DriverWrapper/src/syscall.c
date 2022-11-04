@@ -32,8 +32,8 @@ extern int errno;
 #define UART_RTS_B                      (1 << 1)
 
 // UART
-#define UART_REG            SP_UART0
-#define UART_tx_rdy()       (SP_UART0->lsr & UART_LSR_TX_RDY)
+#define UART_REG            SP_UART1
+#define UART_tx_rdy()       (UART_REG->lsr & UART_LSR_TX_RDY)
 #define UART_rx_rdy()       (UART_REG->lsr & UART_LSR_RX_RDY)
 #define UART_tx_empty()     (UART_REG->lsr & UART_TX_EMPTY)
 #define UART_putc_nw(c)     (UART_REG->dr = (c))
