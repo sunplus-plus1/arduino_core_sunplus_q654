@@ -1,6 +1,6 @@
 TOP = .
 
-CHIP    ?= Q645
+CHIP     ?= Q645
 CHIPDIRS ?=	sp645
 FREERTOS ?= 0
 OPENMAP  ?= 0
@@ -16,6 +16,10 @@ else
 CCFLAGS += -DSP7021
 OPENMAP  = 1
 endif
+
+
+LD_SRC = $(VARIANTS_PATH)/ldscript.ldi
+LD_FILE = $(VARIANTS_PATH)/ldscript.ld
 
 #INCLUDE PATH
 #CMSIS header files
@@ -70,7 +74,7 @@ ifeq ($(OPENMAP),1)
 #OpenAMP libmetal log on
 CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
 # virt_uart
-CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO 
+CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO
 #OpenAMP headers files
 CCFLAGS += -I$(TOP)/cores/arduino/sunplus/OpenAMP
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP
@@ -94,7 +98,7 @@ endif
 #include freertos files
 sinclude makefile.freertos
 
-# example 
+# example
 ifeq ($(FREERTOS),1)
 CCFLAGS += -DFREERTOS
 #freertos C++ example
@@ -104,11 +108,9 @@ else
 DIRS += $(TOP)/libraries/examples/timer
 #DIRS += $(TOP)/libraries/examples/i2c
 #DIRS += $(TOP)/libraries/examples/exti
-
 #DIRS = $(TOP)/cores/arduino/sunplus
 #DIRS += $(TOP)/libraries/DriverWrapper/src
 endif
-
 
 CSOURCES += $(wildcard $(patsubst %,%/*.c, $(DIRS) ))
 CXXSOURCES += $(wildcard $(patsubst %,%/*.cpp, $(DIRS) ))
@@ -121,9 +123,12 @@ DEPS = $(OBJS:.o=.d)
 .PHONY: clean all
 
 all: $(OBJS)
-	$(GCC)  $(CFLAGS) $(CCFLAGS) $(LDFLAGS) $+ -o $(BIN)/$(TARGET) $(LDFLAGS_END)
+	$P $(CPP) -P $(CFLAGS) $(LD_SRC) $(LD_FILE)
+	$P $(GCC)  $(CFLAGS) $(CCFLAGS) $(LDFLAGS) $+ -o $(BIN)/$(TARGET) $(LDFLAGS_END)
 	$(OBJDUMP) -d -S $(BIN)/$(TARGET) > $(BIN)/$(TARGET).dis
 	$(OBJCOPY) -O binary -S $(BIN)/$(TARGET) $(BIN)/$(TARGET).bin
+	@echo "firmware buid done !"
+
 %.o: %.S
 	$P mkdir -p $(BIN)
 	$(Pecho) "  CC   $<"
@@ -138,7 +143,7 @@ all: $(OBJS)
 	$P $(CXX) $(CXXFLAGS) $(CCFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	$P -rm -f $(OBJS) $(DEPS) rom.d >/dev/null
+	$P -rm -f $(OBJS) $(DEPS) rom.d $(LD_FILE) >/dev/null
 	$P -rm -rf $(BIN) >/dev/null
 
 

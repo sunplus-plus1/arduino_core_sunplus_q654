@@ -8,7 +8,7 @@ __DEBUG_SIZE = 0x00002000;
 MEMORY
 {
 /*	public	(rwx) : ORIGIN = 0x200040, LENGTH = 8M - __DEBUG_SIZE*/
-	public	(rwx) : ORIGIN = 0x1E000000, LENGTH = 8M  - __DEBUG_SIZE
+	public	(rwx) : ORIGIN = LD_RUN_ADDRESS, LENGTH = 8M  - __DEBUG_SIZE
 	debug        :  ORIGIN = ORIGIN(public) + LENGTH(public) - __DEBUG_SIZE, LENGTH = __DEBUG_SIZE
 	shmem   (rw)  : ORIGIN = ORIGIN(debug) + LENGTH(debug), LENGTH = 0x80000
 }
