@@ -58,10 +58,6 @@ void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
 away as the variables never actually get used.  If the debugger won't show the
 values of the variables, make them global my moving their declaration outside
 of this function. */
-	*(volatile unsigned int *)0xF8000980 = 'I';
-	*(volatile unsigned int *)0xF8000980 = 'R';
-	*(volatile unsigned int *)0xF8000980 = 'Q';
-
     volatile uint32_t r0;
     volatile uint32_t r1;
     volatile uint32_t r2;
@@ -138,6 +134,21 @@ void Default_Handler6(void)
     for (;;) { }
 }
 
+#ifdef FREERTOS
+
+extern void vPortSVCHandler( void );
+extern void xPortPendSVHandler( void );
+extern void xPortSysTickHandler( void );
+
+#else
+__attribute__( ( weak ) ) void vPortSVCHandler( void ) {}
+
+__attribute__( ( weak ) ) void xPortPendSVHandler( void ) {}
+
+__attribute__( ( weak ) ) void xPortSysTickHandler( void ) {}
+
+#endif
+
 const uint32_t* isr_vector[256] __attribute__((section(".isr_vector"))) =
 {
 	(uint32_t*)&_estack,
@@ -151,13 +162,12 @@ const uint32_t* isr_vector[256] __attribute__((section(".isr_vector"))) =
 	0, // reserved
 	0, // reserved
 	0, // reserved   -6
-	0, // reserved,  // SVC_Handler              -5
+	(uint32_t*)&vPortSVCHandler,  // SVC_Handler              -5
 	(uint32_t*)&Default_Handler6, // DebugMon_Handler         -4
 	0, // reserved
-	0, // reserved      // PendSV handler    -2
-	(uint32_t*)&Default_Handler5,     // SysTick_Handler   -1
+	(uint32_t*)&xPortPendSVHandler,      // PendSV handler    -2
+	(uint32_t*)&xPortSysTickHandler,     // SysTick_Handler   -1
 };
-
 
 void _start(void)
 {

@@ -1,0 +1,17 @@
+# Freertos C file
+ifeq ($(FREERTOS),1)
+
+FREERTOS_SRC := $(TOP)/system/freertos
+
+CCFLAGS += -I$(FREERTOS_SRC)/include
+CCFLAGS += -I$(FREERTOS_SRC)/portable/GCC/ARM_CM4F
+
+CSOURCES += $(FREERTOS_SRC)/tasks.c
+CSOURCES += $(FREERTOS_SRC)/list.c
+CSOURCES += $(FREERTOS_SRC)/queue.c
+CSOURCES += $(FREERTOS_SRC)/timers.c
+CSOURCES += $(FREERTOS_SRC)/event_groups.c
+CSOURCES += $(FREERTOS_SRC)/portable/MemMang/heap_3.c
+CSOURCES += $(FREERTOS_SRC)/portable/GCC/ARM_CM4F/port.c
+
+endif
