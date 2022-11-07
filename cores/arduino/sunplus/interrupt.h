@@ -7,6 +7,9 @@
 #elif defined(SP645)
 #include "sp645_hal_exti.h"
 #include "sp645_hal.h"
+#elif defined(SP7350)
+#include "sp7350_hal_exti.h"
+#include "sp7350_hal.h"
 #endif
 
 #ifdef __cplusplus

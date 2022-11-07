@@ -29,7 +29,7 @@ extern int errno;
 #define UART_LSR_TX_RDY     (1 << 0)
 #define UART_LSR_RX_RDY     (1 << 1)
 #define UART_TX_EMPTY       (1 << 6)
-#define UART_RTS_B                      (1 << 1)
+#define UART_RTS_B          (1 << 1)
 
 // UART
 #define UART_REG            SP_UART1
@@ -156,7 +156,7 @@ int __write(int fd, const char *buf, int count)
 	 return ret;
 }
 
-#ifdef SP645
+#if defined(SP645) || defined(SP7350)
 int _write(int file, char *buf, int len)
 {
     int todo;

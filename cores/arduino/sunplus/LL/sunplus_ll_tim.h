@@ -5,6 +5,8 @@
 #include "sp7021_ll_tim.h"
 #elif defined(SP645)
 #include "sp645_ll_tim.h"
+#elif defined(SP7350)
+#include "sp7350_ll_tim.h"
 #endif
 
 #endif

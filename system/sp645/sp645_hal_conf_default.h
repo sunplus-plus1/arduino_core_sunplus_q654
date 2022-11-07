@@ -95,7 +95,7 @@
 }
 #endif
 
-#endif /* __STM32MP1xx_HAL_CONF_DEFAULT_H */
+#endif /* __SP645_HAL_CONF_DEFAULT_H */
 
 
 

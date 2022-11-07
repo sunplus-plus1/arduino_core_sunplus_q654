@@ -10,10 +10,10 @@ TARGET 	= firmware
 
 include ./make.cfg
 
-ifeq ($(CHIP),Q645)
-CCFLAGS += -DSP645
-else
-CCFLAGS += -DSP7021
+#for test.
+ifeq ($(CHIP),SP7350)
+FREERTOS = 1
+else ifeq ($(CHIP),Q628)
 OPENMAP  = 1
 endif
 
@@ -27,7 +27,7 @@ CCFLAGS += -I$(VARIANTS_PATH)
 CCFLAGS += -I$(TOP)/system/drivers/CMSIS/Device/sunplus/$(CHIPDIRS)/Include
 CCFLAGS += -I$(TOP)/system/drivers/CMSIS/Device/sunplus/$(CHIPDIRS)/Source/gcc
 
-ifeq ($(CHIP),Q645)
+ifneq ($(CHIP),Q628)
 CCFLAGS += -I$(TOP)/system/drivers/CMSIS/CMSIS/Core_CM4/Include
 else
 CCFLAGS += -I$(TOP)/system/drivers/CMSIS/CMSIS/Core_ARMV5/Include

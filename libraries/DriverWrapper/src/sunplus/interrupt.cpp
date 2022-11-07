@@ -14,7 +14,7 @@ typedef enum {
 
 //static EXTI_HandleTypeDef exti_handles[EXTI_NUM];
 
-#ifdef SP645
+#if defined(SP645) || defined(SP7350)
 namespace std {
 	void __throw_bad_function_call() 
 	{ 

@@ -35,6 +35,7 @@ void vTask2(void const * argument)
 
 }
 
+#ifdef SP645
 
 #include "HardwareSerial.h"
 int freertos_main (void)
@@ -64,6 +65,13 @@ int freertos_main (void)
 	for(;;);
 }
 
+#else
+int freertos_main (void)
+{
+	printf("cm4 freertos + arduino system start!!! \n");
+	for(;;);
+}
+#endif
 
 
 

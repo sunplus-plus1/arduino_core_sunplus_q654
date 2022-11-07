@@ -19,20 +19,13 @@ void tim0_callback(void)
 
 void setup() 
 {
-	printf("%s, %s\n", __FILE__, __FUNCTION__);
-	
-//	Serial.begin(115200);
-//  Serial.println("\timer interrupt\n ");
-// 	Serial.print("%s\n\n\n");
-
-
   	uint32_t u32Prescal = 0xFFFF;
  	//HAL_Init();
  	HardwareTimer *timer0 = new HardwareTimer(TIM1);
 	timer0->setPrescaleFactor(20200);
 	//timer0->setPrescaleFactor(1000);
 	u32Prescal = timer0->getPrescaleFactor();
-	::printf("u32Prescal= 0x%x\n", u32Prescal);
+	printf("u32Prescal= 0x%x\n", u32Prescal);
 	printf("freq = %d\n", timer0->getTimerClkFreq());
 	timer0->setCount(10000-1, TICK_FORMAT);
 	timer0->setOverflow(10000-1, TICK_FORMAT);
@@ -43,7 +36,6 @@ void setup()
 	timer0->resume();
   
 }
-
 
 
 void loop() 
