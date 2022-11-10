@@ -12,6 +12,7 @@
 #include "sp645_hal_i2c.h"
 #include "sp645_hal_stc.h"
 #include "sp645_hal_cortex.h"
+#include "sp645_hal_wdg.h"
 
 #endif
 

@@ -45,6 +45,7 @@ CCFLAGS += -I$(TOP)/libraries/SPI/src
 CCFLAGS += -I$(TOP)/libraries/SPI/src/utility
 CCFLAGS += -I$(TOP)/libraries/Wire/src
 CCFLAGS += -I$(TOP)/libraries/Wire/src/utility
+CCFLAGS += -I$(TOP)/libraries/IWatchdog/src
 
 #Arduino header files for Arduino Framework
 CCFLAGS += -I$(TOP)/cores/arduino
@@ -64,6 +65,7 @@ DIRS += $(TOP)/libraries/SPI/src
 DIRS += $(TOP)/libraries/SPI/src/utility
 DIRS += $(TOP)/libraries/Wire/src
 DIRS += $(TOP)/libraries/Wire/src/utility
+DIRS += $(TOP)/libraries/IWatchdog/src
 DIRS += $(TOP)/cores/arduino
 DIRS += $(TOP)/cores/arduino/avr
 DIRS += $(TOP)/cores/arduino/sunplus

@@ -12,7 +12,7 @@ static IRQn_Type HAL_TIM_GetIRQ(TIM_TypeDef *tim)
 	IRQn_Type IRQn = MAX_IRQ_n;
 	if ((tim == NULL) || (tim == (TIM_TypeDef*)0xFFFFFFFF))
 		return IRQn;
-	
+
 	assert_param(IS_TIM_INSTANCE(tim));
 
 	switch ((uint32_t)tim)
@@ -39,7 +39,7 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
 {
   timerObj_t *obj;
   assert_param(htim);
-  
+
   obj = (timerObj_t *)((char *)htim - offsetof(timerObj_t, handle));
   return (obj);
 }
@@ -49,20 +49,20 @@ void _HAL_TIM_Set_TimerClk(TIM_HandleTypeDef *htim,uint32_t enable)
 	MODULE_ID_Type mode_id = STC_0;
 	switch((uint32_t)htim->Instance)
 	{
-		case (uint32_t)TIM0 ... (uint32_t)TIM1: 
+		case (uint32_t)TIM0 ... (uint32_t)TIM1:
 			mode_id = STC_0;
 			break;
-		case (uint32_t)TIM2 ... (uint32_t)TIM3: 
+		case (uint32_t)TIM2 ... (uint32_t)TIM3:
 			mode_id = STC_AV0;
 			break;
-		case (uint32_t)TIM4 ... (uint32_t)TIM5: 
+		case (uint32_t)TIM4 ... (uint32_t)TIM5:
 			mode_id = STC_AV1;
 			break;
-		case (uint32_t)TIM6 ... (uint32_t)TIM7: 
+		case (uint32_t)TIM6 ... (uint32_t)TIM7:
 			mode_id = STC_AV2;
 			break;
 			break;
-		default: 
+		default:
 			break;
 	}
 	HAL_Module_Clock_enable(mode_id, enable);
@@ -95,7 +95,7 @@ void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
-		
+
 	if (htim == NULL)
   	{
     	return HAL_ERROR;
@@ -106,6 +106,7 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 	if (htim->State == HAL_TIM_STATE_RESET)
 	{
 		htim->Lock = HAL_UNLOCKED;
+
 		irqn = HAL_TIM_GetIRQ(htim->Instance);
 		IRQ_SetHandler(irqn, htim->IrqHandle);
 		IRQ_Enable(irqn);
@@ -117,10 +118,10 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 	htim->Instance->reload_val = 0;
 	htim->Instance->counter_val = 0;
 	TIM_SetConfig(htim->Instance, &htim->Init);
-	
+
 	/* Initialize the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
-	
+
 	return HAL_OK;
 }
 
@@ -226,7 +227,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 	uint32_t u32Src = 0;
 	uint32_t u32Prescaler = 0;
 	uint32_t u32Counter = 0;
-		
+
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(HAL_TIM_GetCLKSrc(htim) == CLK_SLAVE_WRAP_SRC) /* time0 used timer1 clk src,get timer1's freq */
 	{
@@ -248,7 +249,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			break;
 		}
 	}
-	
+
 	u32Src = READ_BIT(hMtim->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos;
 	u32Prescaler = hMtim->prescale_val;
 	u32Counter = hMtim->counter_val;
@@ -258,7 +259,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			u32Feq = HSI_VALUE;
 			break;
 		case CLK_STC_SRC:
-		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)hMtim / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));/*get stc base address by timer address */ 
+		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)hMtim / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));/*get stc base address by timer address */
 			break;
 		case CLK_RTC_SRC:
 			break;
@@ -269,20 +270,20 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			u32Feq = HSI_VALUE;
 			break;
 	}
-	
+
 	u32Feq = u32Feq/(u32Prescaler+1);
 	if ((READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos) == CLK_SLAVE_WRAP_SRC)
 	{
 		if(u32Counter != 0)
 			u32Feq /= u32Counter;
-	}	
+	}
 	return u32Feq;
 }
 
 HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
-		
+
 	if (htim == NULL)
   	{
     	return HAL_ERROR;

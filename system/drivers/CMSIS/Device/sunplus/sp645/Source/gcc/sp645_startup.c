@@ -46,7 +46,7 @@ __attribute__((naked)) void Reset_Handler(void)
     {
         *dest++ = 0;
     }
-	
+
     // jump to board initialisation
     void _start(void);
     _start();
@@ -172,11 +172,16 @@ const uint32_t* isr_vector[256] __attribute__((section(".isr_vector"))) =
 void _start(void)
 {
 	SCB->VTOR = (uint32_t)isr_vector; // Set Vector Table
+
+	*(volatile unsigned int *)0xF8000900 = 'K';
+	*(volatile unsigned int *)0xF8000900 = 'K';
+
 	printf("CM4  build @ " __DATE__ " " __TIME__ "\n");
 	printf("isr_vector : %p\n", isr_vector);
 	printf("_sbss      : %p\n", &_sbss);
 	printf("_ebss      : %p\n", &_ebss);
 	printf("_estack    : %p\n\n", &_estack);
+
 	SystemInit();
 	main(0, 0);
 	exit(0);
