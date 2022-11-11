@@ -1,13 +1,12 @@
-#ifndef __SP645_HAL_WDG_H
-#define __SP645_HAL_WDG_H
-
+#ifndef __SP7021_HAL_WDG_H
+#define __SP7021_HAL_WDG_H
+#if 0
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-#include "sp645_hal_def.h"
-#include "sp645_cm4.h"
-#include "sp64xx.h"
+#include "sp7021_hal_def.h"
+#include "sp70xx.h"
 
 /**
   * @brief  IWDG Handle Structure definition
@@ -83,5 +82,6 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg);
 
 #ifdef __cplusplus
 }
+#endif
 #endif
 #endif

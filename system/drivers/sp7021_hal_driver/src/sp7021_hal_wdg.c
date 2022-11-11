@@ -1,5 +1,5 @@
-#include "sp645_hal_wdg.h"
-
+#include "sp7021_hal_wdg.h"
+#if 0
 HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 {
 	MODULE_ID_Type id;
@@ -52,4 +52,4 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 	/* Return function status */
 	return HAL_OK;
 }
-
+#endif

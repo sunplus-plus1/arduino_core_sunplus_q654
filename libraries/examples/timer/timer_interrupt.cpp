@@ -10,7 +10,7 @@
 uint32_t start = 0;
 uint32_t ticks = 2;
 
-IWatchdogClass *wdg1;
+//IWatchdogClass *wdg1;
 
 void tim0_callback(void)
 {
@@ -19,8 +19,8 @@ void tim0_callback(void)
 	start = HAL_GetTick();
 	//printf("start:%lu\n", start);
 
-	wdg1->reload();
-	printf("feed dog1!\n");
+//	wdg1->reload();
+//	printf("feed dog1!\n");
 
 	//wdg0->get(&ticks, NULL);
 	//printf("!!!get current timeout %d\n", ticks);
@@ -46,8 +46,8 @@ void setup()
 	timer0->resume();
 #endif
 
-	wdg1 = new IWatchdogClass(WDG1);
-	wdg1->begin(2, 0); // param 0 is unused
+//	wdg1 = new IWatchdogClass(WDG1);
+//	wdg1->begin(2, 0); // param 0 is unused
 
 }
 
