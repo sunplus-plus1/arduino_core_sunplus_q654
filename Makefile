@@ -5,6 +5,9 @@ CHIPDIRS ?=	sp645
 FREERTOS ?= 0
 OPENMAP  ?= 0
 
+#for cunit test
+CUNIT = 0
+
 BIN 	= bin
 TARGET 	= firmware
 
@@ -69,6 +72,15 @@ DIRS += $(TOP)/libraries/IWatchdog/src
 DIRS += $(TOP)/cores/arduino
 DIRS += $(TOP)/cores/arduino/avr
 DIRS += $(TOP)/cores/arduino/sunplus
+
+ifeq ($(CUNIT),1)
+CCFLAGS += -I$(TOP)/CUnit/Cunit/Headers
+CCFLAGS += -I$(TOP)/CUnit
+DIRS += $(TOP)/CUnit/Cunit/Sources
+DIRS += $(TOP)/CUnit/Cunit/Sources/Basic
+DIRS += $(TOP)/CUnit/Cunit/Sources/Framework
+DIRS += $(TOP)/CUnit
+endif
 
 
 ###  OPENAMP ###

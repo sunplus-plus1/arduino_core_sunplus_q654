@@ -174,32 +174,22 @@ static void __uart_tx_irq_handler(UART_HandleTypeDef *huart)
 
 	UART_Txdma *txdma_reg;
 	UART_TxGdma *txgdma_reg;
-	
 	if(huart->gState != HAL_UART_STATE_BUSY_TX)
 		return;
-	
 	/*  transmit data by uart register */
 	if(huart->pTxBuffPtr)
 	{	
-		if (huart->pTxBuffPtr[huart->tx_index] && huart->tx_size > huart->tx_index) 
+		if(huart->tx_size > huart->tx_index) 
 		{
 			WRITE_REG(huart->Instance->dr,huart->pTxBuffPtr[huart->tx_index]);
 			huart->tx_index++;
-			if(huart->tx_size = huart->tx_index)
+			if(huart->tx_size == huart->tx_index)
 			{
 				huart->tx_index = 0;
 				__stop_tx_irq(huart);
 				huart->gState = HAL_UART_STATE_READY;
 				huart->TxCpltCallback(huart);
 			}
-		}
-		else
-		{
-			huart->tx_index = 0;
-			__stop_tx_irq(huart);
-			huart->gState = HAL_UART_STATE_READY;
-			huart->TxCpltCallback(huart);
-			return;	
 		}
 		return;
 	}

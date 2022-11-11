@@ -45,7 +45,7 @@ __attribute__((constructor(101))) void premain(void)
 /*
  * \brief Main entry point of Arduino application
  */
-int main(void)
+__attribute__( ( weak ) ) int main(void)
 {
   initVariant();
 
