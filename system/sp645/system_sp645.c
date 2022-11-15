@@ -22,13 +22,36 @@ static inline void *hal_memcpy(void *dest, const void *src, size_t n)
 void SystemInit (void)
 {
 	/*system  init*/
+	SystemCoreClockUpdate();
+
 	HAL_Init();
 }
 
 
 void SystemCoreClockUpdate (void)
 {
-	//SystemCoreClock = HAL_PLL_Get_ARM926Freq();
+		
+	uint8_t val = READ_BIT(MOON2_REG->sft_cfg[3], CM4_FREQ_Msk)>>CM4_FREQ_Pos;
+
+	switch(val){
+		case 0:
+			SystemCoreClock = HSI_VALUE;
+		break;
+
+		case 1:
+			SystemCoreClock = HSI_VALUE/2;
+		break;
+
+		case 2:
+			SystemCoreClock = HSI_VALUE/4;
+		break;
+
+		default:
+			SystemCoreClock = HSI_VALUE;
+			break;
+			
+	}
+	
 
 }
 

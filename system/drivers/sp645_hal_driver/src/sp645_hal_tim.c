@@ -2,6 +2,7 @@
 #include "sp645_hal_tim.h"
 
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -256,7 +257,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 
 	switch (u32Src){
 		case CLK_SYS_SRC:
-			u32Feq = HSI_VALUE;
+			u32Feq = SystemCoreClock;
 			break;
 		case CLK_STC_SRC:
 		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)hMtim / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));/*get stc base address by timer address */
@@ -264,10 +265,10 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 		case CLK_RTC_SRC:
 			break;
 		case CLK_EXT_SRC:
-			u32Feq = HSE_VALUE/2;
+			u32Feq = SystemCoreClock/2;
 			break;
 		default:
-			u32Feq = HSI_VALUE;
+			u32Feq = SystemCoreClock;
 			break;
 	}
 

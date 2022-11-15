@@ -1,10 +1,11 @@
-#ifndef __sp7021_HAL_PLL_H
-#define __sp7021_HAL_PLL_H
+#ifndef __sp645_HAL_PLL_H
+#define __sp645_HAL_PLL_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#if 0
 #include "sp70xx.h"
 #include "sp7021_arm926.h"
 #include "sp7021_hal_def.h"
@@ -17,7 +18,7 @@ extern "C" {
 #define __HAL_PLL_GET_SYS_DIV() ((uint32_t)((SYS_CLK->clk_setting&SYSCLK_DIV_Msk)>>SYSCLK_DIV_Pos))
 
 #define __HAL_PLL_GET_SYS_ARM926_DIV() ((uint32_t)((SYS_CLK->clk_setting&ARM926CLK_DIV_Msk)>>ARM926CLK_DIV_Pos))
-
+#endif
 
 #ifdef __cplusplus
 }

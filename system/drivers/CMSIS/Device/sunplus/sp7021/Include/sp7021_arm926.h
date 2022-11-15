@@ -583,9 +583,8 @@ PINMUX_GPIO_INT7,
 #define IRQ_CTRL_BASE    0x9C000480
 
 #include "core_armv5.h"
-
 #include <stdint.h>
-
+#include "system_sp7021.h"
 
 
 

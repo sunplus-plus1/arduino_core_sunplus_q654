@@ -109,7 +109,7 @@ typedef struct __SPI_HandleTypeDef
 #define CLEAN_RW_BYTE          (~0x780)
 #define CLEAN_SPI_MODE         (~0x7)
 
-#define SPI_CLK_RATE           HSI_VALUE
+#define SPI_CLK_RATE           SystemCoreClock
 
 
 #define IS_SPI_MODE(__MODE__)      (((__MODE__) >= SPI_MODE0) &&\

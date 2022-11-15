@@ -169,6 +169,12 @@ const uint32_t* isr_vector[256] __attribute__((section(".isr_vector"))) =
 	(uint32_t*)&xPortSysTickHandler,     // SysTick_Handler   -1
 };
 
+void _init(void)
+{
+
+}
+extern void __libc_init_array (void);
+
 void _start(void)
 {
 	SCB->VTOR = (uint32_t)isr_vector; // Set Vector Table
@@ -181,8 +187,8 @@ void _start(void)
 	printf("_sbss      : %p\n", &_sbss);
 	printf("_ebss      : %p\n", &_ebss);
 	printf("_estack    : %p\n\n", &_estack);
-
 	SystemInit();
+	__libc_init_array();
 	main(0, 0);
 	exit(0);
 }

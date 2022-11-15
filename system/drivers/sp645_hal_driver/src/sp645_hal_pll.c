@@ -1,10 +1,10 @@
 
-#include "sp7021_hal_pll.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#if 0
 uint32_t HAL_PLL_GetSystemFreq(void)
 {
 	if (__HAL_PLL_GET_SYS_BYPASS())
@@ -20,7 +20,7 @@ uint32_t HAL_PLL_Get_ARM926Freq(void)
 	
 	return (HAL_PLL_GetSystemFreq()>>__HAL_PLL_GET_SYS_ARM926_DIV());
 }
-
+#endif
 
 
 #ifdef __cplusplus

@@ -444,6 +444,9 @@ typedef enum{
 
 #include "core_cm4.h"
 #include <stdint.h>
+#include "system_sp645.h"
+
+
 
 typedef struct {
     __IOM uint32_t sft_cfg[32];
@@ -724,6 +727,13 @@ typedef struct {
 #define MOON2_REG                    ((volatile MOON_REG_Type *)RF_GRP(2, 0))
 #define MOON3_REG                    ((volatile MOON_REG_Type *)RF_GRP(3, 0))
 #define MOON4_REG                    ((volatile MOON_REG_Type *)RF_GRP(4, 0))
+
+
+/********************  Bit definition for MON register  ********************/
+#define CM4_FREQ_Pos (5)
+#define CM4_FREQ_Msk (3U << CM4_FREQ_Pos) /*0x00000060*/
+
+
 
 /* IRQ */
 #define SP_IRQ_CTRL                  ((volatile IRQ_Ctrl_Type*) RF_GRP(9, 0))
@@ -1320,6 +1330,10 @@ UART LCR register BIT
 #define DIRECT_OVERWITE_DATA7_Pos	(31)
 #define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
 #define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
+
+
+
+
 
 
 /* -------------------  Start of section using anonymous unions  ------------------ */

@@ -444,6 +444,7 @@ typedef enum{
 
 #include "core_cm4.h"
 #include <stdint.h>
+#include "system_sp7350.h"
 
 typedef struct {
     __IOM uint32_t sft_cfg[32];

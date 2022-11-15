@@ -1,5 +1,6 @@
 #include "sp645_hal_uart.h"
 
+
 DMA_Buffer_t g_dma_buffer[2];
 
 __weak void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -315,7 +316,7 @@ static void __uart_txdma_config(UART_HandleTypeDef *huart)
 		}
 
 		huart->xmit.head = huart->xmit.tail = 0;
-		WRITE_REG(txdma_reg->txdma_tmr_unit,	HSI_VALUE / 1000);  	/* 1 msec */
+		WRITE_REG(txdma_reg->txdma_tmr_unit,	SystemCoreClock / 1000);  	/* 1 msec */
 		/* must be set before txdma_start_addr */
 		WRITE_REG(txdma_reg->txdma_wr_adr,		(uint32_t) huart->txdma_buf);
 		/* txdma_reg->txdma_rd_adr is updated by h/w too */
@@ -369,7 +370,7 @@ static void __uart_rxdma_config(UART_HandleTypeDef *huart)
 		/* Force to use CLK_HIGH_UART in this mode */
 		/* Switch clock source when setting baud rate */
 
-		WRITE_REG(rxdma_reg->rxdma_timeout_set,	((HSI_VALUE / 2) / 1000000 * 1000));  /* 1 msec */
+		WRITE_REG(rxdma_reg->rxdma_timeout_set,	((SystemCoreClock / 2) / 1000000 * 1000));  /* 1 msec */
 		/*
 		 * When there are only rxdma_length_thr[15:0] bytes of free buffer
 		 * => Trigger interrupt
