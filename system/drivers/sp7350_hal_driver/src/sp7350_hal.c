@@ -32,7 +32,7 @@ __weak HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx)
 		SysStandardTimeClk.Instance = STCx;
 		SysStandardTimeClk.ClockSource = 0;
 		SysStandardTimeClk.ExtDiv = 0;
-		/*the 1tick = 1us, 1MHz */	
+		/*the 1tick = 1us, 1MHz */
 		SysStandardTimeClk.Prescaler = (HSI_VALUE/DEFAULT_SYS_STC_CLK);
 		HAL_STC_Init(&SysStandardTimeClk);
 }
@@ -63,6 +63,23 @@ uint32_t HAL_GetTick(void)
 	uint32_t ticks = 0;
 	ticks = (uint32_t)HAL_STC_GetCounter(&SysStandardTimeClk);
 	return ticks;
+}
+
+uint32_t HAL_GetSysClk(void)
+{
+	uint32_t temp, freq_Hz;
+
+	/* G3.24 bit[1:0] 500M/333M/400M */
+	temp = READ_BIT(MOON3_REG->sft_cfg[24], 0x3);
+	if (temp == 0x0) {
+		freq_Hz = 500000000;
+	} else if (temp == 0x1) {
+		freq_Hz = 333000000;
+	} else {
+		freq_Hz = 400000000;
+	}
+
+	return freq_Hz;
 }
 
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq)

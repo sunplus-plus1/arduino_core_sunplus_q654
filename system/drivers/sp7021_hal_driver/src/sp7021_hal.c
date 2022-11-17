@@ -37,7 +37,7 @@ __weak HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx)
 		SysStandardTimeClk.Instance = STCx;
 		SysStandardTimeClk.ClockSource = 0;
 		SysStandardTimeClk.ExtDiv = 0;
-		/*the 1tick = 1us, 1MHz */	
+		/*the 1tick = 1us, 1MHz */
 		SysStandardTimeClk.Prescaler = (SystemCoreClock/DEFAULT_SYS_STC_CLK);
 		HAL_STC_Init(&SysStandardTimeClk);
 }
@@ -121,7 +121,7 @@ void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin)
 			PINMUX_1_CFG->pinmux_cfg[1] = RF_MASK_V((1 << (id-0x10)), (pin << (id-0x10)));
 		}
 	}
-	else 
+	else
 	{
 		/* G1.1*/
 		if((id == PINMUX_SPI_FLASH) || (id == PINMUX_SPI_FLASH_4BIT) || (id == PINMUX_ACHIP_DEBUG)\
@@ -152,7 +152,7 @@ void HAL_Module_Clock_gate(MODULE_ID_Type id, uint32_t enable)
 		CLK_GATE->clock_gate_enable[id/16] = RF_MASK_V_SET(1<<(id%16));
 	else
 		CLK_GATE->clock_gate_enable[id/16] = RF_MASK_V_CLR(1<<(id%16));
-	
+
 }
 
 
@@ -162,7 +162,7 @@ void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable)
 		MODULE_REST->reset[id/16] = (1<<(id%16)<<16)| (1<<(id%16));
 	else
 		MODULE_REST->reset[id/16] = (1<<(id%16)<<16)| (0<<(id%16));
-	
+
 }
 
 void HAL_lreg(int group)

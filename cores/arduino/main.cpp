@@ -47,6 +47,7 @@ __attribute__((constructor(101))) void premain(void)
  */
 __attribute__( ( weak ) ) int main(void)
 {
+
   initVariant();
 
   setup();

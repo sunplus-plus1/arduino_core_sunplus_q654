@@ -33,7 +33,7 @@ __weak HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx)
 		SysStandardTimeClk.Instance = STCx;
 		SysStandardTimeClk.ClockSource = 0;
 		SysStandardTimeClk.ExtDiv = 0;
-		/*the 1tick = 1us, 1MHz */	
+		/*the 1tick = 1us, 1MHz */
 		SysStandardTimeClk.Prescaler = (SystemCoreClock/DEFAULT_SYS_STC_CLK);
 		HAL_STC_Init(&SysStandardTimeClk);
 }
@@ -70,7 +70,6 @@ HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq)
 {
 
 }
-
 
 void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin)
 {

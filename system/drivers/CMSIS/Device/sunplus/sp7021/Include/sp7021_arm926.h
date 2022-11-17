@@ -3,7 +3,7 @@
 #define __SP7021_ARM926_H
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif /* __cplusplus */
 
 /**
@@ -15,209 +15,209 @@
 typedef enum IRQn
 {
  /******  SP7021 Q628 specific Interrupt Numbers ************************************************************************/
-   TEGN_INIT_FIELD_START_IRQn  = 0,     /*!< TEGN START                                           			      */
-   TEGN_INIT_FIELD_END_IRQn    = 1,     /*!< TEGN END                                    						  */
-   RESERVED_2 				   = 2, 	/*!< RESERVED interrupt                                                   */
-   RESERVED_3         		   = 3, 	/*!< RESERVED interrupt                                                   */
-   TEGN_INI1_USER_IRQn         = 4,     /*!< TEGN For USER                              						  */
-   TEGN_INI2_USER_IRQn         = 5,     /*!< TEGN For USER         												  */
-   RESERVED_6                  = 6,     /*!< RESERVED interrupt                                                   */
-   RESERVED_7                  = 7,     /*!< RESERVED interrupt                                                   */
-   RESERVED_8                  = 8,     /*!< RESERVED interrupt                                                   */
-   RESERVED_9                  = 9,     /*!< RESERVED interrupt                                                   */
-   USBC1_OTG_IRQn              = 10,    /*!< USB Controller 1 OTG interrupt                                      */
-   USBC0_OTG_IRQn              = 11,    /*!< USB Controller 0 OTG interrupt                                      */
-   RESERVED_12                 = 12,    /*!< RESERVED interrupt                                                  */
-   USBC0_DEVICE_IRQn           = 13,    /*!< USB Controller 0 Device Interrupt                                   */
-   USBC0_EHCI_IRQn             = 14,    /*!< USB Controller 0 EHCI Interrupt                                     */
-   USBC0_OHCI_IRQn             = 15,    /*!< USB Controller 0 OHCI Interrupt                                     */
-   USBC1_DEVICE_IRQn		   = 16,	/*!< USB Controller 1 Device Interrupt								   */
-   USBC1_EHCI_IRQn 			   = 17,	/*!< USB Controller 1 EHCI Interrupt									   */
-   USBC1_OHCI_IRQn 			   = 18,	/*!< USB Controller 1 OHCI Interrupt									   */
-   RESERVED_19                 = 19,    /*!< RESERVED interrupt                                                  */
-   EMCC_IRQn                   = 20,    /*!< eMMC interrupt                                                  */
-   SDCARD_IRQn                 = 21,    /*!< SD Card interrupt                                                  */
-   SDIO_IRQn                   = 22,    /*!< SDIO interrupt                                                  */
-   RESERVED_23                 = 23,    /*!< RESERVED interrupt                                                  */
-   RESERVED_24                 = 24,    /*!< RESERVED interrupt                                                  */
-   RBUS_IRQn                   = 25,    /*!< RBUS interrupt                                                  */
-   NOC_IRQn                    = 26,    /*!< NoC interrupt                                                  */
-   RESERVED_27                 = 27,    /*!< RESERVED interrupt                                                  */
-   SDPORT_IRQn                 = 28,    /*!< Security for protect address                                                  */
-   PI_EXTI0_IRQn               = 29,     /*!< EXTI Line0 from FPGA(PIO) Interrupt                                                 */
-   PI_EXTI1_IRQn               = 30,     /*!< EXTI Line1  from FPGA(PIO) Interrupt                                                 */
-   RESERVED_31                 = 31,    /*!< RESERVED interrupt                                                  */
-   RESERVED_32                 = 32,    /*!< RESERVED interrupt                                                  */
-   RESERVED_33                 = 33,    /*!< RESERVED interrupt                                                  */
-   RESERVED_34                 = 34,    /*!< RESERVED interrupt                                                  */
-   RESERVED_35                 = 35,    /*!< RESERVED interrupt                                                  */
-   UPHY0_IRQn                  = 36,    /*!< USB PHY 0 interrupt                                                  */
-   UPHY1_IRQn                  = 37,     /*!< USB PHY 0 Interrupt                                                 */
-   RESERVED_38                 = 38,    /*!< RESERVED interrupt                                                  */
-   PFCNT_SENSOR_IRQn           = 39,    /*!< P-chip Sensor interrupt                                                  */
-   RESERVED_40                 = 40,    /*!< RESERVED interrupt                                                  */
-   IOP_INT0_IRQn               = 41,    /*!< IOP INT0 interrupt                                                  */
-   IOP_INT1_IRQn               = 42,    /*!< IOP INT0 interrupt                                                  */
-   RESERVED_43                 = 43,    /*!< RESERVED interrupt                                                  */
-   RESERVED_44                 = 44,    /*!< RESERVED interrupt                                                  */
-   RESERVED_45                 = 45,    /*!< RESERVED interrupt                                                  */
-   REMOVE_MBUS_IRQn            = 46,    /*!< MBUS Remove interrupt                                                  */
-   RESERVED_47                 = 47,    /*!< RESERVED interrupt                                                  */
-   RESERVED_48                 = 48,    /*!< RESERVED interrupt                                                  */
-   CSI0_INT_FIELD_START_IRQn   = 49,    /*!< MIPI CSI0 FIELD Start interrupt                                                  */
-   CSI0_INT_FIELD_END_IRQn     = 50,    /*!< MIPI CSI0 FIELD End interrupt                                                  */
-   CSI1_INT_FIELD_START_IRQn   = 51,    /*!< MIPI CSI1 FIELD Start interrupt                                                  */
-   CSI1_INT_FIELD_END_IRQn     = 52,    /*!< MIPI CSI1 FIELD End interrupt                                                  */
-   UART0_IRQn                  = 53,    /*!< UART0 interrupt                                                  */
-   UART1_IRQn                  = 54,    /*!< UART1 interrupt                                                  */
-   UART2_IRQn                  = 55,    /*!< UART2 interrupt                                                  */
-   UART3_IRQn                  = 56,    /*!< UART3 interrupt                                                  */
-   RESERVED_57                 = 57,    /*!< RESERVED interrupt                                                  */
-   BCH_IRQ_IRQn                = 58,    /*!< SPI Nand BCH interrupt                                                  */
-   LOSD_IRQn                   = 59,    /*!< Audio LOSD interrupt                                                  */
-   AUD_FIFO_IRQn               = 60,    /*!< Audio FIFO interrupt                                                  */
-   RESERVED_61                 = 61,    /*!< RESERVED interrupt                                                  */
-   RESERVED_62                 = 62,    /*!< RESERVED interrupt                                                  */
-   RESERVED_63                 = 63,    /*!< RESERVED interrupt                                                  */
-   RESERVED_64                 = 64,    /*!< RESERVED interrupt                                                  */
-   RESERVED_65                 = 65,    /*!< RESERVED interrupt                                                  */
-   L2SW_IRQn                   = 66,    /*!< Ethernet Switch interrupt                                                  */
-   SPI_COMBO1_DMA_W_IRQn       = 67,    /*!< SPI Combo1 DMA write interrupt                                                  */
-   SPI_SLAVE1_IRQn             = 68,    /*!< SPI Slave1 interrupt                                                  */
-   SPI_MASTER1_IRQn            = 69,    /*!< SPI Master1 interrupt                                                  */
-   SPI_COMBO2_DMA_W_IRQn       = 70,    /*!< SPI Combo2 DMA write interrupt                                                  */
-   SPI_SLAVE2_IRQn             = 71,    /*!< SPI Slave2 interrupt                                                  */
-   SPI_MASTER2_IRQn            = 72,    /*!< SPI Master2 interrupt                                                  */
-   SPI_COMBO3_DMA_W_IRQn	   = 73,	 /*!< SPI Combo3 DMA write interrupt												  */
-   SPI_SLAVE3_IRQn 			   = 74,	 /*!< SPI Slave3 interrupt													*/
-   SPI_MASTER3_IRQn			   = 75,	 /*!< SPI Master3 interrupt 												 */
-   RESERVED_76                 = 76,    /*!< RESERVED interrupt                                                  */
-   RESERVED_77                 = 77,    /*!< RESERVED interrupt                                                  */
-   RESERVED_78                 = 78,    /*!< RESERVED interrupt                                                  */
-   RESERVED_79                 = 79,    /*!< RESERVED interrupt                                                  */
-   RESERVED_80                 = 80,    /*!< RESERVED interrupt                                                  */
-   RESERVED_81                 = 81,    /*!< RESERVED interrupt                                                  */
-   RESERVED_82                 = 82,    /*!< RESERVED interrupt                                                  */
-   RESERVED_83                 = 83,    /*!< RESERVED interrupt                                                  */
-   RESERVED_84                 = 84,    /*!< RESERVED interrupt                                                  */
-   RESERVED_85                 = 85,    /*!< RESERVED interrupt                                                  */
-   RESERVED_86                 = 86,    /*!< RESERVED interrupt                                                  */
-   RESERVED_87                 = 87,    /*!< RESERVED interrupt                                                  */
-   RESERVED_88                 = 88,    /*!< RESERVED interrupt                                                  */
-   RESERVED_89                 = 89,    /*!< RESERVED interrupt                                                  */
-   RESERVED_90                 = 90,    /*!< RESERVED interrupt                                                  */
-   RESERVED_91                 = 91,    /*!< RESERVED interrupt                                                  */
-   ICM0_IRQn                   = 92,    /*!< Input capture 0 interrupt                                                  */
-   ICM1_IRQn                   = 93,    /*!< Input capture 1 interrupt                                                  */
-   ICM2_IRQn                   = 94,    /*!< Input capture 2 interrupt                                                  */
-   ICM3_IRQn                   = 95,    /*!< Input capture 3 interrupt                                                  */
-   RESERVED_96                 = 96,    /*!< RESERVED interrupt                                                  */
-   RESERVED_97                 = 97,    /*!< RESERVED interrupt                                                  */
-   MSI_UART_DMA0_IRQn          = 98,    /*!< MSI UART DMA0 interrupt                                                  */
-   MSI_UART_DMA1_IRQn          = 99,    /*!< MSI UART DMA1 interrupt                                                  */
-   RESERVED_100                = 100,    /*!< RESERVED interrupt                                                  */
-   RESERVED_101                = 101,    /*!< RESERVED interrupt                                                  */
-   RESERVED_102                = 102,    /*!< RESERVED interrupt                                                  */
-   AXI_MON_IRQn                = 103,    /*!< AXI Clobal Monitor interrupt                                                  */
-   RESERVED_104                = 104,    /*!< RESERVED interrupt                                                  */
-   HDMI_TX_IRQn                = 105,    /*!< HDMI TX interrupt                                                  */
-   RESERVED_106                = 106,    /*!< RESERVED interrupt                                                  */
-   RESERVED_107                = 107,    /*!< RESERVED interrupt                                                  */
-   RESERVED_108                = 108,    /*!< RESERVED interrupt                                                  */
-   RESERVED_109                = 109,    /*!< RESERVED interrupt                                                  */
-   RESERVED_110                = 110,    /*!< RESERVED interrupt                                                  */
-   RESERVED_111                = 111,    /*!< RESERVED interrupt                                                  */
-   RESERVED_112                = 112,    /*!< RESERVED interrupt                                                  */
-   RESERVED_113                = 113,    /*!< RESERVED interrupt                                                  */
-   RESERVED_114                = 114,    /*!< RESERVED interrupt                                                  */
-   RESERVED_115                = 115,    /*!< RESERVED interrupt                                                  */
-   RESERVED_116                = 116,    /*!< RESERVED interrupt                                                  */
-   RESERVED_117                = 117,    /*!< RESERVED interrupt                                                  */
-   RESERVED_118                = 118,    /*!< RESERVED interrupt                                                  */
-   RESERVED_119                = 119,    /*!< RESERVED interrupt                                                  */
-   EXTI0_IRQn                  = 120,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI1_IRQn                  = 121,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI2_IRQn                  = 122,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI3_IRQn                  = 123,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI4_IRQn                  = 124,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI5_IRQn                  = 125,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI6_IRQn                  = 126,    /*!< GPIO Externl  interrupt                                                  */
-   EXTI7_IRQn                  = 127,    /*!< GPIO Externl  interrupt                                                  */
-   DMA0_IRQn                   = 128,    /*!< CBDMA0  interrupt                                                  */
-   DMA1_IRQn                   = 129,    /*!< CBDMA1  interrupt                                                  */
-   RESERVED_130                = 130,    /*!< RESERVED interrupt                                                  */
-   RESERVED_131                = 131,    /*!< RESERVED interrupt                                                  */
-   RESERVED_132                = 132,    /*!< RESERVED interrupt                                                  */
-   RESERVED_133                = 133,    /*!< RESERVED interrupt                                                  */
-   UART4_IRQn                  = 134,    /*!< UART4 interrupt                                                  */
-   RESERVED_135                = 135,    /*!< RESERVED interrupt                                                  */
-   RESERVED_136                = 136,    /*!< RESERVED interrupt                                                  */
-   RESERVED_137                = 137,    /*!< RESERVED interrupt                                                  */
-   UART_DMA0_IRQn              = 138,    /*!< UART DMA0  interrupt                                                  */
-   UART_DMA1_IRQn              = 139,    /*!< UART DMA1  interrupt                                                  */
-   RESERVED_140                = 140,    /*!< RESERVED interrupt                                                  */
-   RESERVED_141                = 141,    /*!< RESERVED interrupt                                                  */
-   UADBG_IRQn                  = 142,    /*!< UART to AXI  interrupt                                                  */
-   SPI_FLASH_IRQn              = 143,    /*!< SPI Flash  interrupt                                                  */
-   SPI_COMBO0_DMA_W_IRQn	   = 144,	 /*!< SPI Combo0 DMA write interrupt												  */
-   SPI_SLAVE0_IRQn 			   = 145,	 /*!< SPI Slave0 interrupt													*/
-   SPI_MASTER0_IRQn			   = 146,	 /*!< SPI Master0 interrupt 												 */
-   RESERVED_147                = 147,    /*!< RESERVED interrupt                                                  */
-   SECURIYT_IRQn               = 148,    /*!< Securiyt interrupt                                                  */
-   SPI_NAND_IRQn               = 149,    /*!< SPI Nand interrupt                                                  */
-   STC_TIMER_W_IRQn            = 150,    /*!< STC Wathcdog interrupt                                                  */
-   STC_TIMER0_IRQn             = 151,    /*!< STC TIMER 0 interrupt                                                  */
-   STC_TIMER1_IRQn             = 152,    /*!< STC TIMER 1 interrupt                                                  */
-   STC_TIMER2_IRQn             = 153,    /*!< STC TIMER 2 interrupt                                                  */
-   STC_TIMER3_IRQn             = 154,    /*!< STC TIMER 3 interrupt                                                  */
-   STC_AV0_TIMER0_IRQn 		   = 155,	  /*!< STC TIMER 0 interrupt												  */
-   STC_AV0_TIMER1_IRQn 		   = 156,	  /*!< STC TIMER 1 interrupt												  */
-   STC_AV0_TIMER2_IRQn 		   = 157,	  /*!< STC TIMER 2 interrupt												  */
-   STC_AV0_TIMER3_IRQn 		   = 158,	  /*!< STC TIMER 3 interrupt												  */
-   STC_AV1_TIMER0_IRQn 		   = 159,	   /*!< STC TIMER 0 interrupt												   */
-   STC_AV1_TIMER1_IRQn 		   = 160,	   /*!< STC TIMER 1 interrupt												   */
-   STC_AV1_TIMER2_IRQn 		   = 161,	   /*!< STC TIMER 2 interrupt												   */
-   STC_AV1_TIMER3_IRQn 		   = 162,	   /*!< STC TIMER 3 interrupt												   */
-   RTC_IRQn 		           = 163,	   /*!< RTC TIMER  interrupt												   */
-   STC_AV2_TIMER0_IRQn 		   = 164,		/*!< STC TIMER 0 interrupt													*/
-   STC_AV2_TIMER1_IRQn 		   = 165,		/*!< STC TIMER 1 interrupt													*/
-   STC_AV2_TIMER2_IRQn 		   = 166,		/*!< STC TIMER 2 interrupt													*/
-   STC_AV2_TIMER3_IRQn 		   = 167,		/*!< STC TIMER 3 interrupt													*/
-   STC_AV0_TIMER_W_IRQn		   = 168,	  /*!< STC TWatchdog interrupt													*/
-   RESERVED_169                = 169,    /*!< RESERVED interrupt                                                  */
-   RESERVED_170                = 170,    /*!< RESERVED interrupt                                                  */
-   RESERVED_171                = 171,    /*!< RESERVED interrupt                                                  */
-   RESERVED_172                = 172,    /*!< RESERVED interrupt                                                  */
-   RESERVED_173                = 173,    /*!< RESERVED interrupt                                                  */
-   I2C_MASTER0_IRQ             = 174,    /*!< I2C 0  interrupt                                                  */
-   I2C_MASTER1_IRQ             = 175,    /*!< I2C 1  interrupt                                                  */
-   I2C_MASTER2_IRQ             = 176,    /*!< I2C 2  interrupt                                                  */
-   I2C_MASTER3_IRQ             = 177,    /*!< I2C 3  interrupt                                                  */
-   I2C_DDC0_IRQ                = 178,    /*!< I2C DDC0 interrupt                                                  */
-   RESERVED_179                = 179,    /*!< RESERVED interrupt                                                  */
-   RESERVED_180                = 180,    /*!< RESERVED interrupt                                                  */
-   RESERVED_181                = 181,    /*!< RESERVED interrupt                                                  */
+	TEGN_INIT_FIELD_START_IRQn  = 0,     /*!< TEGN START                       */
+	TEGN_INIT_FIELD_END_IRQn    = 1,     /*!< TEGN END                                    						  */
+	RESERVED_2                  = 2,     /*!< RESERVED interrupt                                                   */
+	RESERVED_3                  = 3,     /*!< RESERVED interrupt                                                   */
+	TEGN_INI1_USER_IRQn         = 4,     /*!< TEGN For USER                              						  */
+	TEGN_INI2_USER_IRQn         = 5,     /*!< TEGN For USER         												  */
+	RESERVED_6                  = 6,     /*!< RESERVED interrupt                                                   */
+	RESERVED_7                  = 7,     /*!< RESERVED interrupt                                                   */
+	RESERVED_8                  = 8,     /*!< RESERVED interrupt                                                   */
+	RESERVED_9                  = 9,     /*!< RESERVED interrupt                                                   */
+	USBC1_OTG_IRQn              = 10,    /*!< USB Controller 1 OTG interrupt                                      */
+	USBC0_OTG_IRQn              = 11,    /*!< USB Controller 0 OTG interrupt                                      */
+	RESERVED_12                 = 12,    /*!< RESERVED interrupt                                                  */
+	USBC0_DEVICE_IRQn           = 13,    /*!< USB Controller 0 Device Interrupt                                   */
+	USBC0_EHCI_IRQn             = 14,    /*!< USB Controller 0 EHCI Interrupt                                     */
+	USBC0_OHCI_IRQn             = 15,    /*!< USB Controller 0 OHCI Interrupt                                     */
+	USBC1_DEVICE_IRQn           = 16,    /*!< USB Controller 1 Device Interrupt								   */
+	USBC1_EHCI_IRQn             = 17,    /*!< USB Controller 1 EHCI Interrupt									   */
+	USBC1_OHCI_IRQn             = 18,    /*!< USB Controller 1 OHCI Interrupt									   */
+	RESERVED_19                 = 19,    /*!< RESERVED interrupt                                                  */
+	EMCC_IRQn                   = 20,    /*!< eMMC interrupt                                                  */
+	SDCARD_IRQn                 = 21,    /*!< SD Card interrupt                                                  */
+	SDIO_IRQn                   = 22,    /*!< SDIO interrupt                                                  */
+	RESERVED_23                 = 23,    /*!< RESERVED interrupt                                                  */
+	RESERVED_24                 = 24,    /*!< RESERVED interrupt                                                  */
+	RBUS_IRQn                   = 25,    /*!< RBUS interrupt                                                  */
+	NOC_IRQn                    = 26,    /*!< NoC interrupt                                                  */
+	RESERVED_27                 = 27,    /*!< RESERVED interrupt                                                  */
+	SDPORT_IRQn                 = 28,    /*!< Security for protect address                                                  */
+	PI_EXTI0_IRQn               = 29,    /*!< EXTI Line0 from FPGA(PIO) Interrupt                                                 */
+	PI_EXTI1_IRQn               = 30,    /*!< EXTI Line1  from FPGA(PIO) Interrupt                                                 */
+	RESERVED_31                 = 31,    /*!< RESERVED interrupt                                                  */
+	RESERVED_32                 = 32,    /*!< RESERVED interrupt                                                  */
+	RESERVED_33                 = 33,    /*!< RESERVED interrupt                                                  */
+	RESERVED_34                 = 34,    /*!< RESERVED interrupt                                                  */
+	RESERVED_35                 = 35,    /*!< RESERVED interrupt                                                  */
+	UPHY0_IRQn                  = 36,    /*!< USB PHY 0 interrupt                                                  */
+	UPHY1_IRQn                  = 37,    /*!< USB PHY 0 Interrupt                                                 */
+	RESERVED_38                 = 38,    /*!< RESERVED interrupt                                                  */
+	PFCNT_SENSOR_IRQn           = 39,    /*!< P-chip Sensor interrupt                                                  */
+	RESERVED_40                 = 40,    /*!< RESERVED interrupt                                                  */
+	IOP_INT0_IRQn               = 41,    /*!< IOP INT0 interrupt                                                  */
+	IOP_INT1_IRQn               = 42,    /*!< IOP INT0 interrupt                                                  */
+	RESERVED_43                 = 43,    /*!< RESERVED interrupt                                                  */
+	RESERVED_44                 = 44,    /*!< RESERVED interrupt                                                  */
+	RESERVED_45                 = 45,    /*!< RESERVED interrupt                                                  */
+	REMOVE_MBUS_IRQn            = 46,    /*!< MBUS Remove interrupt                                                  */
+	RESERVED_47                 = 47,    /*!< RESERVED interrupt                                                  */
+	RESERVED_48                 = 48,    /*!< RESERVED interrupt                                                  */
+	CSI0_INT_FIELD_START_IRQn   = 49,    /*!< MIPI CSI0 FIELD Start interrupt                                                  */
+	CSI0_INT_FIELD_END_IRQn     = 50,    /*!< MIPI CSI0 FIELD End interrupt                                                  */
+	CSI1_INT_FIELD_START_IRQn   = 51,    /*!< MIPI CSI1 FIELD Start interrupt                                                  */
+	CSI1_INT_FIELD_END_IRQn     = 52,    /*!< MIPI CSI1 FIELD End interrupt                                                  */
+	UART0_IRQn                  = 53,    /*!< UART0 interrupt                                                  */
+	UART1_IRQn                  = 54,    /*!< UART1 interrupt                                                  */
+	UART2_IRQn                  = 55,    /*!< UART2 interrupt                                                  */
+	UART3_IRQn                  = 56,    /*!< UART3 interrupt                                                  */
+	RESERVED_57                 = 57,    /*!< RESERVED interrupt                                                  */
+	BCH_IRQ_IRQn                = 58,    /*!< SPI Nand BCH interrupt                                                  */
+	LOSD_IRQn                   = 59,    /*!< Audio LOSD interrupt                                                  */
+	AUD_FIFO_IRQn               = 60,    /*!< Audio FIFO interrupt                                                  */
+	RESERVED_61                 = 61,    /*!< RESERVED interrupt                                                  */
+	RESERVED_62                 = 62,    /*!< RESERVED interrupt                                                  */
+	RESERVED_63                 = 63,    /*!< RESERVED interrupt                                                  */
+	RESERVED_64                 = 64,    /*!< RESERVED interrupt                                                  */
+	RESERVED_65                 = 65,    /*!< RESERVED interrupt                                                  */
+	L2SW_IRQn                   = 66,    /*!< Ethernet Switch interrupt                                                  */
+	SPI_COMBO1_DMA_W_IRQn       = 67,    /*!< SPI Combo1 DMA write interrupt                                                  */
+	SPI_SLAVE1_IRQn             = 68,    /*!< SPI Slave1 interrupt                                                  */
+	SPI_MASTER1_IRQn            = 69,    /*!< SPI Master1 interrupt                                                  */
+	SPI_COMBO2_DMA_W_IRQn       = 70,    /*!< SPI Combo2 DMA write interrupt                                                  */
+	SPI_SLAVE2_IRQn             = 71,    /*!< SPI Slave2 interrupt                                                  */
+	SPI_MASTER2_IRQn            = 72,    /*!< SPI Master2 interrupt                                                  */
+	SPI_COMBO3_DMA_W_IRQn       = 73,    /*!< SPI Combo3 DMA write interrupt												  */
+	SPI_SLAVE3_IRQn             = 74,    /*!< SPI Slave3 interrupt													*/
+	SPI_MASTER3_IRQn            = 75,    /*!< SPI Master3 interrupt 												 */
+	RESERVED_76                 = 76,    /*!< RESERVED interrupt                                                  */
+	RESERVED_77                 = 77,    /*!< RESERVED interrupt                                                  */
+	RESERVED_78                 = 78,    /*!< RESERVED interrupt                                                  */
+	RESERVED_79                 = 79,    /*!< RESERVED interrupt                                                  */
+	RESERVED_80                 = 80,    /*!< RESERVED interrupt                                                  */
+	RESERVED_81                 = 81,    /*!< RESERVED interrupt                                                  */
+	RESERVED_82                 = 82,    /*!< RESERVED interrupt                                                  */
+	RESERVED_83                 = 83,    /*!< RESERVED interrupt                                                  */
+	RESERVED_84                 = 84,    /*!< RESERVED interrupt                                                  */
+	RESERVED_85                 = 85,    /*!< RESERVED interrupt                                                  */
+	RESERVED_86                 = 86,    /*!< RESERVED interrupt                                                  */
+	RESERVED_87                 = 87,    /*!< RESERVED interrupt                                                  */
+	RESERVED_88                 = 88,    /*!< RESERVED interrupt                                                  */
+	RESERVED_89                 = 89,    /*!< RESERVED interrupt                                                  */
+	RESERVED_90                 = 90,    /*!< RESERVED interrupt                                                  */
+	RESERVED_91                 = 91,    /*!< RESERVED interrupt                                                  */
+	ICM0_IRQn                   = 92,    /*!< Input capture 0 interrupt                                                  */
+	ICM1_IRQn                   = 93,    /*!< Input capture 1 interrupt                                                  */
+	ICM2_IRQn                   = 94,    /*!< Input capture 2 interrupt                                                  */
+	ICM3_IRQn                   = 95,    /*!< Input capture 3 interrupt                                                  */
+	RESERVED_96                 = 96,    /*!< RESERVED interrupt                                                  */
+	RESERVED_97                 = 97,    /*!< RESERVED interrupt                                                  */
+	MSI_UART_DMA0_IRQn          = 98,    /*!< MSI UART DMA0 interrupt                                                  */
+	MSI_UART_DMA1_IRQn          = 99,    /*!< MSI UART DMA1 interrupt                                                  */
+	RESERVED_100                = 100,    /*!< RESERVED interrupt                                                  */
+	RESERVED_101                = 101,    /*!< RESERVED interrupt                                                  */
+	RESERVED_102                = 102,    /*!< RESERVED interrupt                                                  */
+	AXI_MON_IRQn                = 103,    /*!< AXI Clobal Monitor interrupt                                                  */
+	RESERVED_104                = 104,    /*!< RESERVED interrupt                                                  */
+	HDMI_TX_IRQn                = 105,    /*!< HDMI TX interrupt                                                  */
+	RESERVED_106                = 106,    /*!< RESERVED interrupt                                                  */
+	RESERVED_107                = 107,    /*!< RESERVED interrupt                                                  */
+	RESERVED_108                = 108,    /*!< RESERVED interrupt                                                  */
+	RESERVED_109                = 109,    /*!< RESERVED interrupt                                                  */
+	RESERVED_110                = 110,    /*!< RESERVED interrupt                                                  */
+	RESERVED_111                = 111,    /*!< RESERVED interrupt                                                  */
+	RESERVED_112                = 112,    /*!< RESERVED interrupt                                                  */
+	RESERVED_113                = 113,    /*!< RESERVED interrupt                                                  */
+	RESERVED_114                = 114,    /*!< RESERVED interrupt                                                  */
+	RESERVED_115                = 115,    /*!< RESERVED interrupt                                                  */
+	RESERVED_116                = 116,    /*!< RESERVED interrupt                                                  */
+	RESERVED_117                = 117,    /*!< RESERVED interrupt                                                  */
+	RESERVED_118                = 118,    /*!< RESERVED interrupt                                                  */
+	RESERVED_119                = 119,    /*!< RESERVED interrupt                                                  */
+	EXTI0_IRQn                  = 120,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI1_IRQn                  = 121,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI2_IRQn                  = 122,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI3_IRQn                  = 123,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI4_IRQn                  = 124,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI5_IRQn                  = 125,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI6_IRQn                  = 126,    /*!< GPIO Externl  interrupt                                                  */
+	EXTI7_IRQn                  = 127,    /*!< GPIO Externl  interrupt                                                  */
+	DMA0_IRQn                   = 128,    /*!< CBDMA0  interrupt                                                  */
+	DMA1_IRQn                   = 129,    /*!< CBDMA1  interrupt                                                  */
+	RESERVED_130                = 130,    /*!< RESERVED interrupt                                                  */
+	RESERVED_131                = 131,    /*!< RESERVED interrupt                                                  */
+	RESERVED_132                = 132,    /*!< RESERVED interrupt                                                  */
+	RESERVED_133                = 133,    /*!< RESERVED interrupt                                                  */
+	UART4_IRQn                  = 134,    /*!< UART4 interrupt                                                  */
+	RESERVED_135                = 135,    /*!< RESERVED interrupt                                                  */
+	RESERVED_136                = 136,    /*!< RESERVED interrupt                                                  */
+	RESERVED_137                = 137,    /*!< RESERVED interrupt                                                  */
+	UART_DMA0_IRQn              = 138,    /*!< UART DMA0  interrupt                                                  */
+	UART_DMA1_IRQn              = 139,    /*!< UART DMA1  interrupt                                                  */
+	RESERVED_140                = 140,    /*!< RESERVED interrupt                                                  */
+	RESERVED_141                = 141,    /*!< RESERVED interrupt                                                  */
+	UADBG_IRQn                  = 142,    /*!< UART to AXI  interrupt                                                  */
+	SPI_FLASH_IRQn              = 143,    /*!< SPI Flash  interrupt                                                  */
+	SPI_COMBO0_DMA_W_IRQn       = 144,    /*!< SPI Combo0 DMA write interrupt												  */
+	SPI_SLAVE0_IRQn             = 145,    /*!< SPI Slave0 interrupt													*/
+	SPI_MASTER0_IRQn            = 146,    /*!< SPI Master0 interrupt 												 */
+	RESERVED_147                = 147,    /*!< RESERVED interrupt                                                  */
+	SECURIYT_IRQn               = 148,    /*!< Securiyt interrupt                                                  */
+	SPI_NAND_IRQn               = 149,    /*!< SPI Nand interrupt                                                  */
+	STC_TIMER_W_IRQn            = 150,    /*!< STC Wathcdog interrupt                                                  */
+	STC_TIMER0_IRQn             = 151,    /*!< STC TIMER 0 interrupt                                                  */
+	STC_TIMER1_IRQn             = 152,    /*!< STC TIMER 1 interrupt                                                  */
+	STC_TIMER2_IRQn             = 153,    /*!< STC TIMER 2 interrupt                                                  */
+	STC_TIMER3_IRQn             = 154,    /*!< STC TIMER 3 interrupt                                                  */
+	STC_AV0_TIMER0_IRQn         = 155,    /*!< STC TIMER 0 interrupt												  */
+	STC_AV0_TIMER1_IRQn         = 156,    /*!< STC TIMER 1 interrupt												  */
+	STC_AV0_TIMER2_IRQn         = 157,    /*!< STC TIMER 2 interrupt												  */
+	STC_AV0_TIMER3_IRQn         = 158,    /*!< STC TIMER 3 interrupt												  */
+	STC_AV1_TIMER0_IRQn         = 159,    /*!< STC TIMER 0 interrupt												   */
+	STC_AV1_TIMER1_IRQn         = 160,    /*!< STC TIMER 1 interrupt												   */
+	STC_AV1_TIMER2_IRQn         = 161,    /*!< STC TIMER 2 interrupt												   */
+	STC_AV1_TIMER3_IRQn         = 162,    /*!< STC TIMER 3 interrupt												   */
+	RTC_IRQn                    = 163,    /*!< RTC TIMER  interrupt												   */
+	STC_AV2_TIMER0_IRQn         = 164,    /*!< STC TIMER 0 interrupt													*/
+	STC_AV2_TIMER1_IRQn         = 165,    /*!< STC TIMER 1 interrupt													*/
+	STC_AV2_TIMER2_IRQn         = 166,    /*!< STC TIMER 2 interrupt													*/
+	STC_AV2_TIMER3_IRQn         = 167,    /*!< STC TIMER 3 interrupt													*/
+	STC_AV0_TIMER_W_IRQn        = 168,    /*!< STC TWatchdog interrupt													*/
+	RESERVED_169                = 169,    /*!< RESERVED interrupt                                                  */
+	RESERVED_170                = 170,    /*!< RESERVED interrupt                                                  */
+	RESERVED_171                = 171,    /*!< RESERVED interrupt                                                  */
+	RESERVED_172                = 172,    /*!< RESERVED interrupt                                                  */
+	RESERVED_173                = 173,    /*!< RESERVED interrupt                                                  */
+	I2C_MASTER0_IRQ             = 174,    /*!< I2C 0  interrupt                                                  */
+	I2C_MASTER1_IRQ             = 175,    /*!< I2C 1  interrupt                                                  */
+	I2C_MASTER2_IRQ             = 176,    /*!< I2C 2  interrupt                                                  */
+	I2C_MASTER3_IRQ             = 177,    /*!< I2C 3  interrupt                                                  */
+	I2C_DDC0_IRQ                = 178,    /*!< I2C DDC0 interrupt                                                  */
+	RESERVED_179                = 179,    /*!< RESERVED interrupt                                                  */
+	RESERVED_180                = 180,    /*!< RESERVED interrupt                                                  */
+	RESERVED_181                = 181,    /*!< RESERVED interrupt                                                  */
 
-   /* Mailbox interrupt*/
-   IPC_P2C_DIRECT_INT0_IRQn    = 182,    /*!< P Chip send interrupt 0 to C chip (Mailbox direct transport data0)  */
-   IPC_P2C_DIRECT_INT1_IRQn    = 183,    /*!< P Chip send interrupt 1 to C chip (Mailbox direct transport data1)  */
-   IPC_P2C_DIRECT_INT2_IRQn    = 184,    /*!< P Chip send interrupt 2 to C chip (Mailbox direct transport data2)  */
-   IPC_P2C_DIRECT_INT3_IRQn    = 185,    /*!< P Chip send interrupt 3 to C chip (Mailbox direct transport data3)  */
-   IPC_P2C_DIRECT_INT4_IRQn    = 186,    /*!< P Chip send interrupt 4 to C chip (Mailbox direct transport data4)  */
-   IPC_P2C_DIRECT_INT5_IRQn    = 187,    /*!< P Chip send interrupt 5 to C chip (Mailbox direct transport data5)  */
-   IPC_P2C_DIRECT_INT6_IRQn    = 188,    /*!< P Chip send interrupt 6 to C chip (Mailbox direct transport data6)  */
-   IPC_P2C_DIRECT_INT7_IRQn    = 189,    /*!< P Chip send interrupt 7 to C chip (Mailbox direct transport data7)  */
-   IPC_C2P_DIRECT_INT0_IRQn    = 190,    /*!< C Chip send interrupt 0 to P chip (Mailbox direct transport data0)  */
-   IPC_C2P_DIRECT_INT1_IRQn	   = 191,	 /*!< C Chip send interrupt 1 to P chip (Mailbox direct transport data1)  */
-   IPC_C2P_DIRECT_INT2_IRQn	   = 192,	 /*!< C Chip send interrupt 2 to P chip (Mailbox direct transport data2)  */
-   IPC_C2P_DIRECT_INT3_IRQn	   = 193,	 /*!< C Chip send interrupt 3 to P chip (Mailbox direct transport data3)  */
-   IPC_C2P_DIRECT_INT4_IRQn	   = 194,	 /*!< C Chip send interrupt 4 to P chip (Mailbox direct transport data4)  */
-   IPC_C2P_DIRECT_INT5_IRQn	   = 195,	 /*!< C Chip send interrupt 5 to P chip (Mailbox direct transport data5)  */
-   IPC_C2P_DIRECT_INT6_IRQn	   = 196,	 /*!< C Chip send interrupt 6 to P chip (Mailbox direct transport data6)  */
-   IPC_C2P_DIRECT_INT7_IRQn	   = 197,	 /*!< C Chip send interrupt 7 to P chip (Mailbox direct transport data7)  */
-   IPC_P2C_NORMAL_IRQn		   = 198,	 /*!< P Chip send interrupt  to C chip (Mailbox normal transport data)    */
-   IPC_C2P_NORMAL_IRQn	       = 199,	 /*!< C Chip send interrupt  to P chip (Mailbox normal transport data)	  */
-   MAX_IRQ_n
+	/* Mailbox interrupt*/
+	IPC_P2C_DIRECT_INT0_IRQn    = 182,    /*!< P Chip send interrupt 0 to C chip (Mailbox direct transport data0)  */
+	IPC_P2C_DIRECT_INT1_IRQn    = 183,    /*!< P Chip send interrupt 1 to C chip (Mailbox direct transport data1)  */
+	IPC_P2C_DIRECT_INT2_IRQn    = 184,    /*!< P Chip send interrupt 2 to C chip (Mailbox direct transport data2)  */
+	IPC_P2C_DIRECT_INT3_IRQn    = 185,    /*!< P Chip send interrupt 3 to C chip (Mailbox direct transport data3)  */
+	IPC_P2C_DIRECT_INT4_IRQn    = 186,    /*!< P Chip send interrupt 4 to C chip (Mailbox direct transport data4)  */
+	IPC_P2C_DIRECT_INT5_IRQn    = 187,    /*!< P Chip send interrupt 5 to C chip (Mailbox direct transport data5)  */
+	IPC_P2C_DIRECT_INT6_IRQn    = 188,    /*!< P Chip send interrupt 6 to C chip (Mailbox direct transport data6)  */
+	IPC_P2C_DIRECT_INT7_IRQn    = 189,    /*!< P Chip send interrupt 7 to C chip (Mailbox direct transport data7)  */
+	IPC_C2P_DIRECT_INT0_IRQn    = 190,    /*!< C Chip send interrupt 0 to P chip (Mailbox direct transport data0)  */
+	IPC_C2P_DIRECT_INT1_IRQn    = 191,	 /*!< C Chip send interrupt 1 to P chip (Mailbox direct transport data1)  */
+	IPC_C2P_DIRECT_INT2_IRQn    = 192,	 /*!< C Chip send interrupt 2 to P chip (Mailbox direct transport data2)  */
+	IPC_C2P_DIRECT_INT3_IRQn    = 193,	 /*!< C Chip send interrupt 3 to P chip (Mailbox direct transport data3)  */
+	IPC_C2P_DIRECT_INT4_IRQn    = 194,	 /*!< C Chip send interrupt 4 to P chip (Mailbox direct transport data4)  */
+	IPC_C2P_DIRECT_INT5_IRQn    = 195,	 /*!< C Chip send interrupt 5 to P chip (Mailbox direct transport data5)  */
+	IPC_C2P_DIRECT_INT6_IRQn    = 196,	 /*!< C Chip send interrupt 6 to P chip (Mailbox direct transport data6)  */
+	IPC_C2P_DIRECT_INT7_IRQn    = 197,	 /*!< C Chip send interrupt 7 to P chip (Mailbox direct transport data7)  */
+	IPC_P2C_NORMAL_IRQn         = 198,	 /*!< P Chip send interrupt  to C chip (Mailbox normal transport data)    */
+	IPC_C2P_NORMAL_IRQn         = 199,	 /*!< C Chip send interrupt  to P chip (Mailbox normal transport data)	  */
+	MAX_IRQ_n
 } IRQn_Type;
 
 
@@ -625,6 +625,10 @@ typedef struct{
    RESERVED(0[4], uint32_t)                    /*!< reserved */
 }GROUP3_Type;
 
+typedef struct {
+    __IOM uint32_t sft_cfg[32];
+}GROUP4_Type;
+
 typedef struct
 {
   __IOM uint32_t type[7];              /*!< \brief  interrupt type 0:level-type, 1: edge-type */
@@ -669,7 +673,11 @@ typedef struct
 	__IOM uint32_t counter_val;					/*!< \brief 16-bit counter , it down to 0, the timer will generate the interrupt*/
 }TIM_TypeDef;
 
-
+typedef struct
+{
+	__IOM uint32_t control;           /*!< \brief write command to this register to control the watchdog */
+	__IOM uint32_t counter_val;       /*!< \brief 16-bit counter , it down to 0, the wathcdog will generate the interrupt */
+}WDG_TypeDef;
 
 typedef struct{
     __IOM uint32_t dr;  /* data register */
@@ -936,7 +944,7 @@ typedef struct
 
 /*APB RBUS register group*/
 #define MOON0_GROUP_NO 		(0)
-#define MOON1_GROUP_NO     (1)
+#define MOON1_GROUP_NO		(1)
 #define MOON2_GROUP_NO		(2)
 #define MOON3_GROUP_NO		(3)
 #define MOON4_GROUP_NO		(4)
@@ -973,9 +981,16 @@ typedef struct
 #define MOON3_GROUP_BASE    RF_GRP(3,0)
 #define PINMUX_3_CFG    ((GROUP3_Type*) MOON3_GROUP_BASE)
 
+#define MOON4_GROUP_BASE   RF_GRP(4, 0)
+#define MOON4_REG       ((GROUP4_Type*) MOON4_GROUP_BASE)
+
+
 #define PWM_BASE            RF_GRP(244, 0)
 #define PWM_CTRL_REG    ((PWM_TypeDef *)PWM_BASE)
 
+/*WATCHDOG TIEMR*/
+#define WDG0_BASE RF_GRP(12, 12)
+#define WDG1_BASE RF_GRP(96, 12)
 
 /*TIMER0 & TIMER1 is a group*/
 #define TIM0_BASE RF_GRP(12, 16)
@@ -993,15 +1008,17 @@ typedef struct
 #define TIM6_BASE RF_GRP(99, 16)
 #define TIM7_BASE RF_GRP(99, 20)
 
-
 /*Standard Time Clock (STC)*/
-#define STC0_BASE  RF_GRP(12, 0)
-#define STC1_BASE  RF_GRP(96, 0)
-#define STC2_BASE  RF_GRP(97, 0)
-#define STC3_BASE  RF_GRP(99, 0)
+#define STC0_BASE RF_GRP(12, 0)
+#define STC1_BASE RF_GRP(96, 0)
+#define STC2_BASE RF_GRP(97, 0)
+#define STC3_BASE RF_GRP(99, 0)
 
 #define SYSCLK_BASE RF_GRP(4, 26)
 #define SYS_CLK			((SYS_CLKDef*)SYSCLK_BASE)
+
+#define WDG0			((WDG_TypeDef *) WDG0_BASE)
+#define WDG1			((WDG_TypeDef *) WDG1_BASE)
 
 #define TIM0			((TIM_TypeDef *) TIM0_BASE)
 #define TIM1			((TIM_TypeDef *) TIM1_BASE)
@@ -1016,6 +1033,8 @@ typedef struct
 #define STC1			((STC_TypeDef *)STC1_BASE)
 #define STC2			((STC_TypeDef *)STC2_BASE)
 #define STC3			((STC_TypeDef *)STC3_BASE)
+
+/****************** WDG Instances : All supported instances *******************/
 
 
 /*  gpio register */
@@ -1084,10 +1103,10 @@ typedef struct
 #define I2CM2_BASE      RF_GRP(144, 0)
 #define I2CM3_BASE      RF_GRP(146, 0)
 
-#define GDMA0_BASE     RF_GRP(141, 0)
-#define GDMA1_BASE     RF_GRP(143, 0)
-#define GDMA2_BASE     RF_GRP(145, 0)
-#define GDMA3_BASE     RF_GRP(147, 0)
+#define GDMA0_BASE      RF_GRP(141, 0)
+#define GDMA1_BASE      RF_GRP(143, 0)
+#define GDMA2_BASE      RF_GRP(145, 0)
+#define GDMA3_BASE      RF_GRP(147, 0)
 
 
 #define SP_I2CM0 	((volatile I2C_TypeDef *)I2CM0_BASE)
@@ -1229,10 +1248,10 @@ UART LCR register BIT
 #define STC_EXT_DIV			(STC_EXT_DIV_Msk)				/*The external clock divder for STC*/
 
 /****************** STC Instances : All supported instances *******************/
-#define IS_STC_INSTANCE(INSTANCE)       (((INSTANCE) == STC0)   || \
-										           ((INSTANCE) == STC1)   || \
-                                         ((INSTANCE) == STC2)   || \
-                                         ((INSTANCE) == STC3))
+#define IS_STC_INSTANCE(INSTANCE) (((INSTANCE) == STC0)   || \
+                                   ((INSTANCE) == STC1)   || \
+                                   ((INSTANCE) == STC2)   || \
+                                   ((INSTANCE) == STC3))
 
 #define IS_SPI_ALL_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SPI0) || \
                                            ((__INSTANCE__) == SPI1) || \
@@ -1240,10 +1259,13 @@ UART LCR register BIT
                                            ((__INSTANCE__) == SPI3))
 
 #define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART0) || \
-                                    ((__INSTANCE__) == SP_UART1) || \
-                                    ((__INSTANCE__) == SP_UART2) || \
-                                    ((__INSTANCE__) == SP_UART3)  || \
-                                    ((__INSTANCE__) == SP_UART4))
+                                        ((__INSTANCE__) == SP_UART1) || \
+                                        ((__INSTANCE__) == SP_UART2) || \
+                                        ((__INSTANCE__) == SP_UART3)  || \
+                                        ((__INSTANCE__) == SP_UART4))
+
+#define IS_WDG_INSTANCE(INSTANCE) (((INSTANCE) == WDG0) || \
+				   ((INSTANCE) == WDG1))
 
 /******************************************************************************/
 /*                                                                            */
@@ -1266,7 +1288,7 @@ UART LCR register BIT
 
 /****************** TIM Instances : All supported instances *******************/
 #define IS_TIM_INSTANCE(INSTANCE)       (((INSTANCE) == TIM0)   || \
-										 ((INSTANCE) == TIM1)   || \
+                                         ((INSTANCE) == TIM1)   || \
                                          ((INSTANCE) == TIM2)   || \
                                          ((INSTANCE) == TIM3)   || \
                                          ((INSTANCE) == TIM4)   || \

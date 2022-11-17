@@ -18,14 +18,10 @@ extern "C" {
 
 #define __HAL_PLL_GET_SYS_ARM926_DIV() ((uint32_t)((SYS_CLK->clk_setting&ARM926CLK_DIV_Msk)>>ARM926CLK_DIV_Pos))
 
-
-
+uint32_t HAL_PLL_GetSystemFreq(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-

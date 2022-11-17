@@ -32,7 +32,7 @@ typedef enum
   EXTI5_IRQn                       = 5,      /*!< EXTI Line5 Interrupt                          */
   EXTI6_IRQn                       = 6,      /*!< EXTI Line6 Interrupt                          */
   EXTI7_IRQn                       = 7,      /*!< EXTI Line7 Interrupt                          */
-  I2C_MASTER0_IRQ                  = 8,      /*!< I2C 0  interrupt                              */ 
+  I2C_MASTER0_IRQ                  = 8,      /*!< I2C 0  interrupt                              */
   IPC_CA552CM4_INT0_IRQn           = 9,      /*!< Mailbox CA55 notify to CM4 interrupt 0        */
   IPC_CA552CM4_INT1_IRQn           = 10,      /*!< Mailbox CA55 notify to CM4 interrupt 1       */
   CPIO_LEFT_IRQn                   = 11,      /*!< CPIO Left side interrupt                     */
@@ -40,7 +40,7 @@ typedef enum
   IPC_CA552CM4_INT2_IRQn           = 13,      /*!< Mailbox CA55 notify to CM4 interrupt 2       */
   IPC_CA552CM4_INT3_IRQn           = 14,      /*!< Mailbox CA55 notify to CM4 interrupt 3       */
   SDIO_IRQn                        = 15,      /*!< SDIO Interrupt                               */
-  CARD_IRQn                        = 16,      /*!< SD Card interrupt                            */ 
+  CARD_IRQn                        = 16,      /*!< SD Card interrupt                            */
   EMMC_IRQn                        = 17,      /*!< EMMC Interrupt                               */
   SPI_FLASH_IRQn                   = 18,      /*!< SPI NOR Flash Interrupt                      */
   SPI_COMBO0_DMA_W_IRQn            = 19,      /*!< SPI Combo0 DMA write interrupt               */
@@ -118,18 +118,18 @@ typedef enum
   VCL_INTR3_IRQn                   = 91,      /*!< VCL ISP Interrupt3                           */
   VCL_INTR4_IRQn                   = 92,      /*!< VCL ISP Interrupt4                           */
   VCL_INTR5_IRQn                   = 93,      /*!< VCL ISP Interrupt5                           */
-  I2C_MASTER1_IRQ                  = 94,      /*!< I2C 1  interrupt                             */ 
-  I2C_MASTER2_IRQ                  = 95,      /*!< I2C 2  interrupt                             */ 
-  I2C_MASTER3_IRQ                  = 96,      /*!< I2C 3  interrupt                             */ 
-  I2C_MASTER4_IRQ                  = 97,      /*!< I2C 4  interrupt                             */ 
-  I2C_MASTER5_IRQ                  = 98,      /*!< I2C 5  interrupt                             */ 
-  RTC_PREIODIC_IRQ                 = 99,      /*!< RTC Prediodic interrupt                      */ 
-  AUD_LOSD_IRQ                     = 100,      /*!< Audio LOSD interrupt                        */ 
-  AUD_FIFO_IRQ                     = 101,      /*!< Audio FIFO interrupt                        */ 
-  AUD_TWS_LATCH_IRQ                = 102,      /*!< Audio TWS Latch interrupt                   */ 
-  AUD_TWS_SAMPLE_IRQ               = 103,      /*!< Audio TWS Sample interrupt                  */ 
-  RESERVED_104                     = 104,      /*!< RESERVED interrupt                          */ 
-  RESERVED_105                     = 105,      /*!< RESERVED interrupt                          */ 
+  I2C_MASTER1_IRQ                  = 94,      /*!< I2C 1  interrupt                             */
+  I2C_MASTER2_IRQ                  = 95,      /*!< I2C 2  interrupt                             */
+  I2C_MASTER3_IRQ                  = 96,      /*!< I2C 3  interrupt                             */
+  I2C_MASTER4_IRQ                  = 97,      /*!< I2C 4  interrupt                             */
+  I2C_MASTER5_IRQ                  = 98,      /*!< I2C 5  interrupt                             */
+  RTC_PREIODIC_IRQ                 = 99,      /*!< RTC Prediodic interrupt                      */
+  AUD_LOSD_IRQ                     = 100,      /*!< Audio LOSD interrupt                        */
+  AUD_FIFO_IRQ                     = 101,      /*!< Audio FIFO interrupt                        */
+  AUD_TWS_LATCH_IRQ                = 102,      /*!< Audio TWS Latch interrupt                   */
+  AUD_TWS_SAMPLE_IRQ               = 103,      /*!< Audio TWS Sample interrupt                  */
+  RESERVED_104                     = 104,      /*!< RESERVED interrupt                          */
+  RESERVED_105                     = 105,      /*!< RESERVED interrupt                          */
   SPI_COMBO2_DMA_W_IRQn            = 106,       /*!< SPI Combo2 DMA write interrupt             */
   SPI_MASTER2_IRQn                 = 107,       /*!< SPI Combo2 Master interrupt                */
   SPI_SLAVE2_IRQn                  = 108,       /*!< SPI Combo2 Slave interrupt                 */
@@ -376,7 +376,7 @@ typedef enum{
   PINMUX_SPI_COM4_MST,
   PINMUX_SPI_COM4_SLV,
   PINMUX_SPI_COM5_MST,
-  PINMUX_SPI_COM5_SLV, 
+  PINMUX_SPI_COM5_SLV,
   /*G1.3*/
   PINMUX_I2C_0,
   PINMUX_I2C_1,
@@ -401,7 +401,7 @@ typedef enum{
   PINMUX_UAHSM,
   PINMUX_UAHSM_EXT,
   PINMUX_CPIOL_I2C,
-  PINMUX_CPIOR_I2C, 
+  PINMUX_CPIOR_I2C,
   PINMUX_GPIO_INT0=75|PINMUX_DFMP_3BIT,
    /*G1.5*/
   PINMUX_GPIO_INT1=80|PINMUX_DFMP_3BIT,
@@ -419,10 +419,10 @@ typedef enum{
   PINMUX_U3PHY1_DEBUG,
   PINMUX_PROBE_PORT
 }PINMUX_Type;
-  
-  
-  
-  
+
+
+
+
 /** Macro to write new value to the bits in register */
 
 #define SET_BIT(REG, BIT)     ((REG) |= (BIT))
@@ -518,13 +518,13 @@ typedef struct {
 typedef struct{
 	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
 	__IOM uint32_t stc_31_16;				 /*!< \brief  standard time clock counter, 16~31 bit */
-	__IOM uint32_t stc_47_32;	
+	__IOM uint32_t stc_47_32;
 	__IOM uint32_t stc_63_48;
 	__IOM uint32_t stc_64;					 /*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
-	__IOM uint32_t stc_prescale_val;		
-	__IOM uint32_t stc_config;	
+	__IOM uint32_t stc_prescale_val;
+	__IOM uint32_t stc_config;
 	RESERVED(0[19], uint32_t)
-	__IOM uint32_t stcl_15_0;	
+	__IOM uint32_t stcl_15_0;
 	__IOM uint32_t stcl_31_16;
 	__IOM uint32_t stcl_32;
 	__IOM uint32_t atc_15_0;
@@ -631,13 +631,19 @@ typedef struct
 } GDMA_TypeDef;
 
 
-typedef struct 
+typedef struct
 {
     __IOM uint32_t control;           /*!< \brief timer control register for >*/
     __IOM uint32_t counter_val;       /*!< \brief 16-bit counter , it down to 0, the timer will generate the interrupt*/
     __IOM uint32_t reload_val;        /*!< \brief when count reaches to 0, the value will reload to the count >*/
     __IOM uint32_t prescale_val;	  /*!< \brief 16-bit prescale for timer>*/
 }TIM_TypeDef;
+
+typedef struct
+{
+    __IOM uint32_t control;           /*!< \brief write command to this register to control the watchdog */
+    __IOM uint32_t counter_val;       /*!< \brief 16-bit counter , it down to 0, the wathcdog will generate the interrupt */
+}WDG_TypeDef;
 
 typedef struct
 {
@@ -653,14 +659,14 @@ typedef struct {
 	__IOM uint32_t C2M_over_write_monitor_status;
 	RESERVED(0, uint32_t);
 	__IOM uint32_t C2M_normal_data[20];
-	__IOM uint32_t C2M_direct_data[8];	
-	
+	__IOM uint32_t C2M_direct_data[8];
+
 	__IOM uint32_t M2C_normal_trigger;		//CM4 tiger the INT to CA55
 	__IOM uint32_t M2C_write_monitor_status;
 	__IOM uint32_t M2C_over_write_monitor_status;
 	RESERVED(1, uint32_t);
 	__IOM uint32_t M2C_normal_data[20];
-	__IOM uint32_t M2C_direct_data[8];	
+	__IOM uint32_t M2C_direct_data[8];
 }IPCC_Typedef;
 
 #define STATIC_ASSERT(b) extern int _static_assert[b ? 1 : -1]
@@ -721,7 +727,7 @@ typedef struct {
 #define MOON1_REG                    ((volatile MOON_REG_Type *)RF_GRP(1, 0))
 #define MOON2_REG                    ((volatile MOON_REG_Type *)RF_GRP(2, 0))
 #define MOON3_REG                    ((volatile MOON_REG_Type *)RF_GRP(3, 0))
-
+#define MOON4_REG                    ((volatile MOON_REG_Type *)RF_GRP(4, 0))
 
 /* IRQ */
 #define SP_IRQ_CTRL                  ((volatile IRQ_Ctrl_Type*) RF_GRP(9, 0))
@@ -816,6 +822,23 @@ typedef struct {
 #define IS_TIM_INSTANCE(INSTANCE)    (((INSTANCE) == TIM0)   || ((INSTANCE) == TIM1) ||  ((INSTANCE) == TIM2)  ||  ((INSTANCE) == TIM3)    ||\
                                       ((INSTANCE) == TIM4)   || ((INSTANCE) == TIM5)  ||  ((INSTANCE) == TIM6)  ||  ((INSTANCE) == TIM7)   )
 
+/******************************************************************************/
+/*                                                                            */
+/*                        watchdog module                                     */
+/*                                                                            */
+/******************************************************************************/
+#define WDG0_BASE                   RF_GRP(23, 7)
+#define WDG1_BASE                   RF_GRP(96, 10)
+#define WDG2_BASE                   RF_GRP(97, 10)
+
+#define WDG0                         ((WDG_TypeDef *) WDG0_BASE)
+#define WDG1                         ((WDG_TypeDef *) WDG1_BASE)
+#define WDG2                         ((WDG_TypeDef *) WDG2_BASE)
+
+/****************** WDG Instances : All supported instances *******************/
+#define IS_WDG_INSTANCE(INSTANCE)    (((INSTANCE) == WDG0)   || \
+                                      ((INSTANCE) == WDG1)   || \
+                                      ((INSTANCE) == WDG2)
 
 /******************************************************************************/
 /*                                                                            */
@@ -949,8 +972,8 @@ UART LCR register BIT
 #define SPI_SW_RST             (1<<1)
 #define SPI_START_FD           (1<<0)
 
-#define SPI_TOTAL_SIZE         TOTAL_LENGTH(0xFF)     
-#define SPI_TX_SIZE            TX_LENGTH(0xFF) 
+#define SPI_TOTAL_SIZE         TOTAL_LENGTH(0xFF)
+#define SPI_TX_SIZE            TX_LENGTH(0xFF)
 
 /******************************************************************************/
 /*                        I2C module                                          */
@@ -1072,7 +1095,7 @@ UART LCR register BIT
 /********************  Bit definition for IPC Mailbox register  ***************/
 
 
-#define IS_IPCC_INSTANCE(INSTANCE)       (((INSTANCE) == IPC_MAILBOX))  
+#define IS_IPCC_INSTANCE(INSTANCE)       (((INSTANCE) == IPC_MAILBOX))
 
 
 #define NORMAL_LOCK_DATA0_Pos	(4)

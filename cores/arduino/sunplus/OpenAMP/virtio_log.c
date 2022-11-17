@@ -24,7 +24,6 @@
 
 #include "virtio_config.h"
 #include "virtio_log.h"
-
 char virtio_log_buffer[VIRTIO_LOG_BUFFER_SIZE];
 
 void virtio_log(uint8_t *data, uint32_t size)

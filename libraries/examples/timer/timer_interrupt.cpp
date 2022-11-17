@@ -8,9 +8,9 @@
 		 TIM3 is timer3 of STC_AV0 and so on....
 */
 uint32_t start = 0;
-uint32_t ticks = 2;
+uint32_t wdg_remain_time = 2;
 
-//IWatchdogClass *wdg1;
+IWatchdogClass *wdg1;
 
 void tim0_callback(void)
 {
@@ -19,20 +19,24 @@ void tim0_callback(void)
 	start = HAL_GetTick();
 	//printf("start:%lu\n", start);
 
-//	wdg1->reload();
-//	printf("feed dog1!\n");
+	//wdg1->get(&wdg_remain_time, NULL);
+	//printf("wdg_remain_time %d ms\n", wdg_remain_time);
 
-	//wdg0->get(&ticks, NULL);
-	//printf("!!!get current timeout %d\n", ticks);
+	//wdg1->reload();
 }
 
 void setup()
 {
 #if 1
+	//printf("[2]%s %s \n", __DATE__, __TIME__);
   	uint32_t u32Prescal = 0xFFFF;
  	//HAL_Init();
+
+	uint32_t sys_freq = HAL_PLL_GetSystemFreq();
+	printf("sys_freq = %d\n", sys_freq);
+
  	HardwareTimer *timer0 = new HardwareTimer(TIM1);
-	timer0->setPrescaleFactor(60000);// 10kHz
+	timer0->setPrescaleFactor(sys_freq / 10000);// 10kHz
 	//timer0->setPrescaleFactor(1000);
 	u32Prescal = timer0->getPrescaleFactor();
 	printf("u32Prescal= 0x%x\n", u32Prescal);
@@ -45,10 +49,8 @@ void setup()
 	start = (uint32_t)HAL_GetTick();
 	timer0->resume();
 #endif
-
-//	wdg1 = new IWatchdogClass(WDG1);
-//	wdg1->begin(2, 0); // param 0 is unused
-
+	//wdg1 = new IWatchdogClass(WDG1);
+	//wdg1->begin(3000, 0); // param 0 is unused
 }
 
 

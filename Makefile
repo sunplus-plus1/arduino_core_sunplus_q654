@@ -17,7 +17,7 @@ include ./make.cfg
 ifeq ($(CHIP),SP7350)
 FREERTOS = 1
 else ifeq ($(CHIP),Q628)
-OPENMAP  = 1
+OPENAMP  = 1
 endif
 
 
@@ -48,7 +48,7 @@ CCFLAGS += -I$(TOP)/libraries/SPI/src
 CCFLAGS += -I$(TOP)/libraries/SPI/src/utility
 CCFLAGS += -I$(TOP)/libraries/Wire/src
 CCFLAGS += -I$(TOP)/libraries/Wire/src/utility
-#CCFLAGS += -I$(TOP)/libraries/IWatchdog/src
+CCFLAGS += -I$(TOP)/libraries/IWatchdog/src
 
 #Arduino header files for Arduino Framework
 CCFLAGS += -I$(TOP)/cores/arduino
@@ -68,7 +68,7 @@ DIRS += $(TOP)/libraries/SPI/src
 DIRS += $(TOP)/libraries/SPI/src/utility
 DIRS += $(TOP)/libraries/Wire/src
 DIRS += $(TOP)/libraries/Wire/src/utility
-#DIRS += $(TOP)/libraries/IWatchdog/src
+DIRS += $(TOP)/libraries/IWatchdog/src
 DIRS += $(TOP)/cores/arduino
 DIRS += $(TOP)/cores/arduino/avr
 DIRS += $(TOP)/cores/arduino/sunplus
@@ -84,7 +84,7 @@ endif
 
 
 ###  OPENAMP ###
-ifeq ($(OPENMAP),1)
+ifeq ($(OPENAMP),1)
 #OpenAMP libmetal log on
 CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
 # virt_uart

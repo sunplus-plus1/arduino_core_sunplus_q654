@@ -9,6 +9,8 @@
 #include "sp645_cm4.h"
 #include "sp64xx.h"
 
+#define STC_FREQ 90000
+
 /**
   * @brief  IWDG Handle Structure definition
   */
@@ -30,54 +32,11 @@ typedef void (*WdgCallbackFunc)(void);
 #define WDG_CMD_CLRF		0x7482		/*!< Clear WDG interrupt flag           */
 #define WDG_CMD_CNTMAX		0xDEAF		/*!< Set WDG conuter maximum value      */
 
-#if 0
-#define HAL_WDG_UNLOCK(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_UNLOCK)
-#define HAL_WDG_LOCK(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_LOCK)
-#define HAL_WDG_STOP(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_STOP)
-#define HAL_WDG_START(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_START)
-#define HAL_WDG_CLRF(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_CLRF)
-#define HAL_WDG_CNTMAX(__HANDLE__)		WRITE_REG((__HANDLE__)->Instance->control, WDG_CMD_CNTMAX)
-#endif
-
-__STATIC_INLINE void HAL_WDG_UNLOCK(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_UNLOCK);
-}
-
-__STATIC_INLINE void HAL_WDG_LOCK(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_LOCK);
-}
-
-__STATIC_INLINE void HAL_WDG_STOP(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_STOP);
-}
-
-__STATIC_INLINE void HAL_WDG_START(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_START);
-}
-
-__STATIC_INLINE void HAL_WDG_CLRF(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_CLRF);
-}
-
-__STATIC_INLINE void HAL_WDG_CNTMAX(WDG_TypeDef *Instance)
-{
-	WRITE_REG(Instance->control, WDG_CMD_CNTMAX);
-}
-
-__STATIC_INLINE void HAL_WDG_SETCNT(WDG_TypeDef *Instance, uint16_t value)
-{
-	WRITE_REG(Instance->counter_val, value);
-}
-
-__STATIC_INLINE uint16_t HAL_WDG_GETCNT(WDG_TypeDef *Instance)
-{
-	return READ_REG(Instance->counter_val);
-}
+void HAL_WDG_IRQHandler(void *arg);
+void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t val_ms);
+uint32_t HAL_WDG_GetTimeout(WDG_HandleTypeDef *hwdg);
+void HAL_WDG_Stop(WDG_HandleTypeDef *hwdg);
+void HAL_WDG_Start(WDG_HandleTypeDef *hwdg);
 
 HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg);
 

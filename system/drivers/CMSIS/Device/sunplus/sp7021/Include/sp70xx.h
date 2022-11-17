@@ -12,7 +12,7 @@ typedef enum
 	RESET = 0,
 	SET = !RESET
 } FlagStatus;
-  
+
 
 
 
@@ -35,7 +35,7 @@ typedef enum
 #define false   0
 #endif
 
-typedef enum 
+typedef enum
 {
 	ERROR = 0,
 	SUCCESS = !ERROR
@@ -57,7 +57,8 @@ typedef enum
 
 #define POSITION_VAL(VAL)     (__CLZ(__RBIT(VAL)))
 
-
+#define BITS_PER_LONG 32
+#define GENMASK(h, l) (((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
 
 #include "sp7021_hal.h"
 
@@ -67,5 +68,5 @@ typedef enum
 }
 #endif
 
-#endif 
+#endif
 

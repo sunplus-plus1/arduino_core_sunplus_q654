@@ -13,7 +13,7 @@ typedef enum
   HAL_TICK_FREQ_10HZ        = 100000U,
   HAL_TICK_FREQ_100HZ       = 10000U,
   HAL_TICK_FREQ_1KHZ        = 1000U,
-  HAL_TICK_FREQ_1MHZ		= 1U,	
+  HAL_TICK_FREQ_1MHZ		= 1U,
   HAL_TICK_FREQ_DEFAULT      = HAL_TICK_FREQ_1MHZ
 } HAL_TickFreqTypeDef;
 
@@ -44,5 +44,5 @@ void HAL_lreg(int group);
 }
 #endif
 
-#endif 
+#endif
 

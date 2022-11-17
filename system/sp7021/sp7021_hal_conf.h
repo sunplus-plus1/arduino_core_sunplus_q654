@@ -10,6 +10,9 @@
 #include "sp7021_hal_uart.h"
 #include "sp7021_hal_spi.h"
 #include "sp7021_hal_i2c.h"
+#include "sp7021_hal_wdg.h"
+#include "sp7021_hal_pll.h"
+
 #endif
 
 

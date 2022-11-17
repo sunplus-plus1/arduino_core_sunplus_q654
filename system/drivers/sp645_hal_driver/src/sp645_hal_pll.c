@@ -1,41 +1,31 @@
+#include "sp645_hal_pll.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if 0
 uint32_t HAL_PLL_GetSystemFreq(void)
 {
-	if (__HAL_PLL_GET_SYS_BYPASS())
-		return HSE_VALUE;
 
-	return ((__HAL_PLL_GET_SYS_NS()+1)*(HSE_VALUE/2))>>(__HAL_PLL_GET_SYS_DIV());
+	uint32_t clk_sel, clk_div, sys_freq;
 
+	clk_sel = __HAL_PLL_GET_SYS_CLK_SEL();
+	clk_div = __HAL_PLL_GET_SYS_DIV();
+
+	if (clk_sel == 0x0)
+	{
+		sys_freq = 600000000 >> clk_div;
+	}
+	else if (clk_sel == 0x1)
+	{
+		sys_freq = 750000000 >> clk_div;
+	}
+	else
+	{
+		sys_freq = 500000000 >> clk_div;
+	}
+
+	return sys_freq;
 }
 
 
-uint32_t HAL_PLL_Get_ARM926Freq(void)
+uint32_t HAL_PLL_GetCortexM4Freq(void)
 {
-	
-	return (HAL_PLL_GetSystemFreq()>>__HAL_PLL_GET_SYS_ARM926_DIV());
+	return (HAL_PLL_GetSystemFreq() >> __HAL_PLL_GET_SYS_CM4_DIV());
 }
-#endif
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-
