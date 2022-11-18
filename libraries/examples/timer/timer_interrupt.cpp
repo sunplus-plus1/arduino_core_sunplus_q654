@@ -8,9 +8,13 @@
 		 TIM3 is timer3 of STC_AV0 and so on....
 */
 uint32_t start = 0;
-uint32_t wdg_remain_time = 2;
 
+//#define WDG_TEST
+
+#ifdef WDG_TEST
+uint32_t wdg_remain_time = 2;
 IWatchdogClass *wdg1;
+#endif
 
 void tim0_callback(void)
 {
@@ -19,11 +23,20 @@ void tim0_callback(void)
 	start = HAL_GetTick();
 	//printf("start:%lu\n", start);
 
-	//wdg1->get(&wdg_remain_time, NULL);
-	//printf("wdg_remain_time %d ms\n", wdg_remain_time);
-
-	//wdg1->reload();
+#ifdef WDG_TEST
+	wdg1->get(&wdg_remain_time, NULL);
+	printf("wdg_remain_time %d ms\n", wdg_remain_time);
+	wdg1->reload();
+#endif
 }
+
+
+#ifdef WDG_TEST
+void wdg1_callback(void)
+{
+	printf("feed dog timeout!\n");
+}
+#endif
 
 void setup()
 {
@@ -49,8 +62,11 @@ void setup()
 	start = (uint32_t)HAL_GetTick();
 	timer0->resume();
 #endif
-	//wdg1 = new IWatchdogClass(WDG1);
-	//wdg1->begin(3000, 0); // param 0 is unused
+#ifdef WDG_TEST
+	wdg1 = new IWatchdogClass(WDG2);
+	wdg1->attachInterrupt(wdg1_callback);
+	wdg1->begin(1000, 0); // param 0 is unused
+#endif
 }
 
 

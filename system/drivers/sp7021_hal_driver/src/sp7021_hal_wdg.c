@@ -94,7 +94,6 @@ static void _wdg_StcInit(STC_HandleTypeDef *stc, STC_TypeDef *stcx)
 	HAL_STC_Init(stc);
 }
 
-
 void HAL_WDG_IRQHandler(void *arg)
 {
 	assert_param(arg);
@@ -159,7 +158,6 @@ void HAL_WDG_Start(WDG_HandleTypeDef *hwdg)
 HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 {
 	assert_param(hwdg->Instance);
-
 
 	MODULE_ID_Type id;
 	IRQn_Type irq;

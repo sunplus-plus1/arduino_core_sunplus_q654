@@ -30,6 +30,7 @@ IWatchdogClass::IWatchdogClass(WDG_TypeDef *instance)
 
 	IWatchdog_Handle[index] = &_watchdogObj;
 	_watchdogObj.handle.Instance = instance;
+	_watchdogObj.handle.IrqMode = 0;
 	_watchdogObj.__this = (void *)this;
 
 	switch(index)
@@ -184,8 +185,8 @@ static void WDG0_IRQHandler(void)
 	if ((IWatchdog_Handle[WDG0_INDEX] != NULL)
 		&& (IWatchdog_Handle[WDG0_INDEX]->pfcallback))
 	{
-		 IWatchdog_Handle[WDG0_INDEX]->pfcallback();
-		 HAL_WDG_IRQHandler(IWatchdog_Handle[WDG0_INDEX]);
+		IWatchdog_Handle[WDG0_INDEX]->pfcallback();
+		HAL_WDG_IRQHandler(&IWatchdog_Handle[WDG0_INDEX]->handle);
 	}
 }
 #endif
@@ -196,8 +197,8 @@ static void WDG1_IRQHandler(void)
 	if ((IWatchdog_Handle[WDG1_INDEX] != NULL)
 		&& (IWatchdog_Handle[WDG1_INDEX]->pfcallback))
 	{
-		 IWatchdog_Handle[WDG1_INDEX]->pfcallback();
-		 HAL_WDG_IRQHandler(IWatchdog_Handle[WDG1_INDEX]);
+		IWatchdog_Handle[WDG1_INDEX]->pfcallback();
+		HAL_WDG_IRQHandler(&IWatchdog_Handle[WDG1_INDEX]->handle);
 	}
 }
 #endif
@@ -208,8 +209,8 @@ static void WDG2_IRQHandler(void)
 	if ((IWatchdog_Handle[WDG2_INDEX] != NULL)
 		&& (IWatchdog_Handle[WDG2_INDEX]->pfcallback))
 	{
-		 IWatchdog_Handle[WDG2_INDEX]->pfcallback();
-		 HAL_WDG_IRQHandler(IWatchdog_Handle[WDG2_INDEX]);
+		IWatchdog_Handle[WDG2_INDEX]->pfcallback();
+		HAL_WDG_IRQHandler(&IWatchdog_Handle[WDG2_INDEX]->handle);
 	}
 }
 #endif

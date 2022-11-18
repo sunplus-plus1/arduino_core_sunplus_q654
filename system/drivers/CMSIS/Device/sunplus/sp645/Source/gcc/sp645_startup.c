@@ -179,9 +179,6 @@ void _start(void)
 {
 	SCB->VTOR = (uint32_t)isr_vector; // Set Vector Table
 
-	*(volatile unsigned int *)0xF8000900 = 'K';
-	*(volatile unsigned int *)0xF8000900 = 'K';
-
 	printf("CM4  build @ " __DATE__ " " __TIME__ "\n");
 	printf("isr_vector : %p\n", isr_vector);
 	printf("_sbss      : %p\n", &_sbss);
