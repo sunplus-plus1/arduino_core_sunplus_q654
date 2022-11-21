@@ -17,9 +17,11 @@
 typedef struct
 {
 	WDG_TypeDef		*Instance;	/*!< Register base address       */
-	uint32_t		StcFreq;	/*!< corresponding STC frequency */
+	uint32_t		StcFreq;	/*!< Corresponding STC frequency */
+	uint8_t			BitShift;	/*!< Enable the RBUS/WDG Reset   */
+	uint8_t			IrqMode;	/*!< count to 0 entry irq handle */
 	IRQHandler_t		IrqHandle;
-	STC_HandleTypeDef 	Stc;		/*!< corresponding STC           */
+	STC_HandleTypeDef 	Stc;		/*!< Corresponding STC           */
 } WDG_HandleTypeDef;
 
 typedef void (*WdgCallbackFunc)(void);
