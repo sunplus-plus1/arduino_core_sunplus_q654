@@ -31,6 +31,7 @@ IWatchdogClass::IWatchdogClass(WDG_TypeDef *instance)
 	IWatchdog_Handle[index] = &_watchdogObj;
 	_watchdogObj.handle.Instance = instance;
 	_watchdogObj.handle.IrqMode = 0;
+	_watchdogObj.handle.StcFreq = 100000;
 	_watchdogObj.__this = (void *)this;
 
 	switch(index)

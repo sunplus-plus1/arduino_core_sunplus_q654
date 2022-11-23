@@ -75,6 +75,8 @@ static void _wdg_StcInit(STC_HandleTypeDef *stc, STC_TypeDef *stcx)
 {
 	uint32_t freq;
 
+	assert_param(stcx);
+
 	/* get the previous corresponding stc freq */
 	freq = _wdg_GetStcFreq(stcx);
 	printf("[WDG] Get the stc freq %d before init\n", freq);

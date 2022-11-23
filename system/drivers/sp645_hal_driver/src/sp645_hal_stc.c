@@ -15,19 +15,19 @@ void HAL_STC_EnableSTCClock(STC_HandleTypeDef *Hstc)
 
 	switch((uint32_t)Hstc->Instance)
 	{
-		case (uint32_t)STC0: 
+		case (uint32_t)STC0:
 			mode_id = STC_0;
 			break;
-		case (uint32_t)STC1: 
+		case (uint32_t)STC1:
 			mode_id = STC_AV0;
 			break;
-		case (uint32_t)STC2: 
+		case (uint32_t)STC2:
 			mode_id = STC_AV1;
 			break;
-		case (uint32_t)STC3: 
+		case (uint32_t)STC3:
 			mode_id = STC_AV2;
 			break;
-		default: 
+		default:
 			break;
 	}
 
@@ -41,10 +41,11 @@ HAL_StatusTypeDef HAL_STC_Init(STC_HandleTypeDef *Hstc)
 {
 	if (Hstc == NULL)
 		return HAL_ERROR;
+
 	assert_param(IS_STC_INSTANCE(Hstc->Instance));
 
 	HAL_STC_EnableSTCClock(Hstc);
-	memset(Hstc->Instance, 0, sizeof(STC_TypeDef));	
+	memset(Hstc->Instance, 0, sizeof(STC_TypeDef));
 	Hstc->Instance->stc_prescale_val = 0;
 	Hstc->Instance->stc_config = 0;
 	/*External Clock source*/
@@ -79,10 +80,10 @@ HAL_StatusTypeDef HAL_STC_SetExtDiv(STC_HandleTypeDef *Hstc, uint32_t u32div)
 	if (Hstc == NULL)
 		return HAL_ERROR;
 	assert_param(IS_STC_INSTANCE(Hstc->Instance));
-	
+
 	MODIFY_REG(Hstc->Instance->stc_config, STC_EXT_DIV, Hstc->Instance->stc_config << STC_EXT_DIV_Pos);
 	Hstc->ExtDiv = u32div;
-	
+
 	return HAL_OK;
 }
 

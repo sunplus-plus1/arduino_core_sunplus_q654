@@ -6,7 +6,7 @@ FREERTOS ?= 0
 OPENAMP  ?= 0
 
 #for cunit test
-CUNIT = 0
+CUNIT ?= 0
 
 BIN 	= bin
 TARGET 	= firmware

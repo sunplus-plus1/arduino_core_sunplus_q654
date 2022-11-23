@@ -21,10 +21,8 @@
 #ifndef CUNIT_EXAMPLETESTS_H_SEEN
 #define CUNIT_EXAMPLETESTS_H_SEEN
 
-
 int Add_Timer_Tests(void);
-
-
+int Add_Watchdog_Tests(void);
 
 #endif  /* CUNIT_EXAMPLETESTS_H_SEEN */
 

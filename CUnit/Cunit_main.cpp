@@ -2,21 +2,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ExampleTests.h"      
+#include "ExampleTests.h"
 #include "Basic.h"
 
 
-static void test_case1(void) 
-{ 
-	CU_ASSERT(1); 
+static void test_case1(void)
+{
+	CU_ASSERT(1);
 }
-static void test_case2(void) 
-{ 
-	CU_ASSERT_EQUAL(1, 2); 
+static void test_case2(void)
+{
+	CU_ASSERT_EQUAL(1, 2);
 }
-static void test_case3(void) 
-{ 
-	CU_ASSERT_STRING_EQUAL("abc", "edf"); 
+static void test_case3(void)
+{
+	CU_ASSERT_STRING_EQUAL("abc", "edf");
 }
 
 /**
@@ -32,35 +32,34 @@ int main(void)
 	CU_pSuite pSuite;
 	int test_return = 0;
 
-	/*1.初始化注册点*/
 	if (CU_initialize_registry()) {
 		printf("\nInitialization of Test Registry failed.");
 		return -1;
 	}
 	#if 0
-	/*2.添加测试集*/
+
 	pSuite = CU_add_suite("suite_for_test", NULL, NULL);
 	if (NULL == pSuite) {
 		return -1;
 	}
-	/*3.添加测试用例*/
+
 	CU_add_test(pSuite, "test_case1", test_case1);
 	CU_add_test(pSuite, "test_case2", test_case2);
 	CU_add_test(pSuite, "test_case3", test_case3);
 	#else
-		
+
 	Add_Timer_Tests();
+	Add_Watchdog_Tests();
 
 	#endif
-	
-	/*4.设置测试模式，这里选择冗余模式，即最大程度的输出测试细节*/
+
 	CU_basic_set_mode(CU_BRM_VERBOSE);
-	/*5.设置发生错误后的action，这里选择继续跑测试**/
+
 	CU_set_error_action(error_action);
-	/*6.开始测试*/
+
 	test_return = CU_basic_run_tests();
 	printf("\nTests completed with return value %d.\n", test_return);
-	/*7.清理注册点，释放内存*/
+
 	CU_cleanup_registry();
 
 	return 0;
