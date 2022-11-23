@@ -13,7 +13,7 @@ typedef enum
   HAL_TICK_FREQ_10HZ        = 100000U,
   HAL_TICK_FREQ_100HZ       = 10000U,
   HAL_TICK_FREQ_1KHZ        = 1000U,
-  HAL_TICK_FREQ_1MHZ		= 1U,	
+  HAL_TICK_FREQ_1MHZ		= 1U,
   HAL_TICK_FREQ_DEFAULT      = HAL_TICK_FREQ_1MHZ
 } HAL_TickFreqTypeDef;
 
@@ -31,6 +31,7 @@ HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx);
 void HAL_IncTick(void);
 void HAL_Delay(uint32_t Delay);
 uint32_t HAL_GetTick(void);
+uint32_t HAL_GetSysClk(void);
 
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq);
 HAL_TickFreqTypeDef HAL_GetTickFreq(void);
@@ -48,5 +49,5 @@ void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable);
 }
 #endif
 
-#endif 
+#endif
 

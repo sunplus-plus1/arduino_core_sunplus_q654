@@ -13,6 +13,8 @@
 #include "sp7350_hal_i2c.h"
 #include "sp7350_hal_stc.h"
 #include "sp7350_hal_cortex.h"
+#include "sp7350_hal_wdg.h"
+#include "sp7350_hal_pll.h"
 
 #endif
 

@@ -6,6 +6,7 @@
 #include "cmsis_compiler.h"
 #include "sp645_hal_stc.h"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -20,7 +21,7 @@ STC_HandleTypeDef SysStandardTimeClk;
 
 HAL_StatusTypeDef HAL_Init(void)
 {
-	HAL_InitTick(STC2);
+	HAL_InitTick(STC3);
 }
 
 HAL_StatusTypeDef HAL_DeInit(void)
@@ -32,8 +33,8 @@ __weak HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx)
 		SysStandardTimeClk.Instance = STCx;
 		SysStandardTimeClk.ClockSource = 0;
 		SysStandardTimeClk.ExtDiv = 0;
-		/*the 1tick = 1us, 1MHz */	
-		SysStandardTimeClk.Prescaler = (HSI_VALUE/DEFAULT_SYS_STC_CLK);
+		/*the 1tick = 1us, 1MHz */
+		SysStandardTimeClk.Prescaler = (SystemCoreClock/DEFAULT_SYS_STC_CLK);
 		HAL_STC_Init(&SysStandardTimeClk);
 }
 
@@ -69,7 +70,6 @@ HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq)
 {
 
 }
-
 
 void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin)
 {

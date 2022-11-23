@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#define SPI_CLK_RATE           HSI_VALUE
+#define SPI_CLK_RATE           SystemCoreClock
 #define CLEAN_RW_BYTE          (~0x780)
 #define CLEAN_SPI_MODE         (~0x7)
 

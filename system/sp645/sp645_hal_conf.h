@@ -13,6 +13,7 @@
 #include "sp645_hal_stc.h"
 #include "sp645_hal_cortex.h"
 #include "sp645_hal_wdg.h"
+#include "sp645_hal_pll.h"
 
 #endif
 

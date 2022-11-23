@@ -159,14 +159,14 @@ uint32_t HardwareTimer::getPrescaleFactor(void)
 uint32_t HardwareTimer::getTimerClkFreq(void)
 {
 	uint32_t u32Src = 0;
-	uint32_t u32Feq = HSI_VALUE; 
+	uint32_t u32Feq = SystemCoreClock; 
 	//u32Src = HAL_TIM_GetCLKSrc(&(_timerObj.handle));
 	u32Src = LL_TIM_GetClockSource(_timerObj.handle.Instance);
 	printf("u32Src = %d\n", u32Src);
 	switch (u32Src)
 	{
 		case CLK_SYS_SRC:
-			u32Feq = HSI_VALUE;
+			u32Feq = SystemCoreClock;
 			break;
 		case CLK_STC_SRC:
 			break;

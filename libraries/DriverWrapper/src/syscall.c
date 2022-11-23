@@ -156,7 +156,7 @@ int __write(int fd, const char *buf, int count)
 	 return ret;
 }
 
-#if defined(SP7350)
+#ifndef VIRTIOCON
 int _write(int file, char *buf, int len)
 {
     int todo;

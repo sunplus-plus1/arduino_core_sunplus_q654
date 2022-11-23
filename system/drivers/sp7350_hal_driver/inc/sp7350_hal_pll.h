@@ -1,29 +1,23 @@
-#ifndef __sp7021_HAL_PLL_H
-#define __sp7021_HAL_PLL_H
+#ifndef __sp7350_HAL_PLL_H
+#define __sp7350_HAL_PLL_H
+
+#include "sp7350xx.h"
+#include "sp7350_cm4.h"
+#include "sp7350_hal_def.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "sp70xx.h"
-#include "sp7021_arm926.h"
-#include "sp7021_hal_def.h"
+#define __HAL_PLL_GET_SYS_CLK_SEL() (READ_BIT(MOON3_REG->sft_cfg[24], GENMASK(1, 0)) >> 0)
 
+#define __HAL_PLL_GET_SYS_CM4_SEL() (READ_BIT(MOON3_REG->sft_cfg[27], GENMASK(4, 2)) >> 2)
 
-#define __HAL_PLL_GET_SYS_BYPASS() ((uint32_t)((SYS_CLK->pll_ctrl&PLLSYS_BYPASS_Msk)>>PLLSYS_BYPASS_Pos))
-
-#define __HAL_PLL_GET_SYS_NS() ((uint32_t)((SYS_CLK->pll_ctrl&PLLSYS_NS_Msk)>>PLLSYS_NS_Pos))
-
-#define __HAL_PLL_GET_SYS_DIV() ((uint32_t)((SYS_CLK->clk_setting&SYSCLK_DIV_Msk)>>SYSCLK_DIV_Pos))
-
-#define __HAL_PLL_GET_SYS_ARM926_DIV() ((uint32_t)((SYS_CLK->clk_setting&ARM926CLK_DIV_Msk)>>ARM926CLK_DIV_Pos))
-
+uint32_t HAL_PLL_GetSystemFreq(void);
+uint32_t HAL_PLL_GetCortexM4Freq(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-

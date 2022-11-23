@@ -1,41 +1,49 @@
-
-#include "sp7021_hal_pll.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "sp7350_hal_pll.h"
 
 uint32_t HAL_PLL_GetSystemFreq(void)
 {
-	if (__HAL_PLL_GET_SYS_BYPASS())
-		return HSE_VALUE;
+	uint32_t clk_sel, clk_div, sys_freq;
 
-	return ((__HAL_PLL_GET_SYS_NS()+1)*(HSE_VALUE/2))>>(__HAL_PLL_GET_SYS_DIV());
+	clk_sel = __HAL_PLL_GET_SYS_CLK_SEL();
 
+	if (clk_sel == 0x0)
+	{
+		sys_freq = 500000000;
+	}
+	else if (clk_sel == 0x1)
+	{
+		sys_freq = 333000000;
+	}
+	else
+	{
+		sys_freq = 400000000;
+	}
+
+	return sys_freq;
 }
 
 
-uint32_t HAL_PLL_Get_ARM926Freq(void)
+uint32_t HAL_PLL_GetCortexM4Freq(void)
 {
-	
-	return (HAL_PLL_GetSystemFreq()>>__HAL_PLL_GET_SYS_ARM926_DIV());
+	uint32_t clk_sel, sys_freq;
+
+	clk_sel = __HAL_PLL_GET_SYS_CM4_SEL();
+
+	if (clk_sel == 0x0)
+	{
+		sys_freq = 400000000;
+	}
+	else if (clk_sel == 0x1)
+	{
+		sys_freq = 100000000;
+	}
+	else if (clk_sel == 0x3)
+	{
+		sys_freq = 200000000;
+	}
+	else if (clk_sel == 0x7)
+	{
+		sys_freq = 25000000;
+	}
 }
-
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -42,7 +42,7 @@
 
 #ifdef __cplusplus
 #include "HardwareTimer.h"
-//#include "IWatchdog.h"
+#include "IWatchdog.h"
 #include "Tone.h"
 #include "WCharacter.h"
 #include "WSerial.h"

@@ -49,6 +49,14 @@ NO_USED_HANDLE:
 
 .global _start
 _start:
+	ldr r3, =0x9c000900
+wait_done:
+	ldr r4, [r3, #4]
+	lsls r4, r4, #25
+	bpl wait_done
+	mov r4, #'K'
+	str r4, [r3, #0]
+	str r4, [r3, #0]
      MRS R0, CPSR
      BIC R0, R0, #MODEMASK
 
@@ -113,7 +121,7 @@ clbss_e:
 
     bl __libc_init_array
     bl SystemInit
-	bl main
+    bl main
 
 .global _init
 _init:
