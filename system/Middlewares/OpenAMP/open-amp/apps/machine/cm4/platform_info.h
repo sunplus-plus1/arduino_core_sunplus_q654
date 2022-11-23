@@ -12,8 +12,8 @@ extern "C" {
 #endif
 
 /* MBOX */
-#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(259, 31)) /* MBOX_CA7_DIRECT[7] */
-#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(258, 31)) /* MBOX_A926_DIRECT[7] */
+#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(256, 31)) /* MBOX_CM4_TO_CA55_DIRECT[7] */
+#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(255, 31)) /* MBOX_CA55_TO_CM4_DIRECT[7] */
 #define IRQ_NOTIFICATION	197 /* A926_DIRECT_INT7 */
 
 /* Memory attributes */
