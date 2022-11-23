@@ -40,7 +40,13 @@ MEMORY
 {
   RAM       (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 4M
 
+	shmem   (rw)  : ORIGIN = ORIGIN(RAM) + LENGTH(RAM), LENGTH = 0x80000
 }
+
+ /* Symbols needed for OpenAMP to enable rpmsg */
+__OPENAMP_region_start__  = ORIGIN(shmem);
+__OPENAMP_region_end__ = ORIGIN(shmem) + LENGTH(shmem);
+
 
 /* Sections */
 SECTIONS

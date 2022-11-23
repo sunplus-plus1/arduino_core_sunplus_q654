@@ -156,7 +156,7 @@ int __write(int fd, const char *buf, int count)
 	 return ret;
 }
 
-#if defined(SP645) || defined(SP7350)
+#if defined(SP7350)
 int _write(int file, char *buf, int len)
 {
     int todo;

@@ -1,9 +1,9 @@
 TOP = .
 
 CHIP     ?= Q645
-CHIPDIRS ?=	sp645
+CHIPDIRS ?= sp645
 FREERTOS ?= 0
-OPENMAP  ?= 0
+OPENAMP  ?= 0
 
 #for cunit test
 CUNIT = 0
@@ -16,8 +16,8 @@ include ./make.cfg
 #for test.
 ifeq ($(CHIP),SP7350)
 FREERTOS = 1
-else ifeq ($(CHIP),Q628)
-OPENMAP  = 1
+else #ifeq ($(CHIP),Q628)
+OPENAMP  = 1
 endif
 
 
@@ -84,7 +84,7 @@ endif
 
 
 ###  OPENAMP ###
-ifeq ($(OPENMAP),1)
+ifeq ($(OPENAMP),1)
 #OpenAMP libmetal log on
 CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
 # virt_uart
@@ -94,14 +94,23 @@ CCFLAGS += -I$(TOP)/cores/arduino/sunplus/OpenAMP
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/libmetal/lib/include
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/lib/include
+ifeq ($(CHIP),Q628)
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/a926
+else
+CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/cm4
+endif
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/virt_driver
 
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic
+ifeq ($(CHIP),Q628)
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/a926
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine
+DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine/a926
+else
+DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/cm4
+DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine/cm4
+endif
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/proxy
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/remoteproc
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/rpmsg

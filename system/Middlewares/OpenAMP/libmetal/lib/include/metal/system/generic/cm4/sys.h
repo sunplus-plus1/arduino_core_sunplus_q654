@@ -5,16 +5,16 @@
  */
 
 /*
- * @file	generic/a926/sys.h
- * @brief	generic a926 system primitives for libmetal.
+ * @file	generic/cm4/sys.h
+ * @brief	generic cm4 system primitives for libmetal.
  */
 
 #ifndef __METAL_GENERIC_SYS__H__
-#error "Include metal/sys.h instead of metal/generic/@PROJECT_MACHINE@/sys.h"
+#error "Include metal/sys.h instead of metal/generic/cm4/sys.h"
 #endif
 
-#ifndef __METAL_GENERIC_A926_SYS__H__
-#define __METAL_GENERIC_A926_SYS__H__
+#ifndef __METAL_GENERIC_CM4_SYS__H__
+#define __METAL_GENERIC_CM4_SYS__H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,4 +38,4 @@ static inline void sys_irq_disable(unsigned int vector)
 }
 #endif
 
-#endif /* __METAL_GENERIC_A926_SYS__H__ */
+#endif /* __METAL_GENERIC_CM4_SYS__H__ */
