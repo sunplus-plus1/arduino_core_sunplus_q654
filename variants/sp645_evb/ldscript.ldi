@@ -38,12 +38,11 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);
 /* Memories definition */
 MEMORY
 {
-  RAM       (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 4M
-
-	shmem   (rw)  : ORIGIN = ORIGIN(RAM) + LENGTH(RAM), LENGTH = 0x80000
+  RAM       (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 8M
+  shmem     (rw)     : ORIGIN = ORIGIN(RAM) + LENGTH(RAM), LENGTH = 0x108000 /* 1M + 16K + 16K */
 }
 
- /* Symbols needed for OpenAMP to enable rpmsg */
+/* Symbols needed for OpenAMP to enable rpmsg */
 __OPENAMP_region_start__  = ORIGIN(shmem);
 __OPENAMP_region_end__ = ORIGIN(shmem) + LENGTH(shmem);
 
