@@ -230,7 +230,7 @@ static int IRQTypeTable[IRQ_GIC_LINE_COUNT] =
 	IRQ_MODE_TRIG_EDGE_RISING
 };
 
-static void metal_a926_irq_set_enable(struct metal_irq_controller *irq_cntr,
+static void metal_sp_irq_set_enable(struct metal_irq_controller *irq_cntr,
 				      int irq, unsigned int state)
 {
 	if (irq < irq_cntr->irq_base ||
@@ -260,7 +260,7 @@ void METAL_IRQHandler()
 	}
 }
 
-static int metal_a926_irq_register(struct metal_irq_controller *irq_cntr,
+static int metal_sp_irq_register(struct metal_irq_controller *irq_cntr,
 					int irq, metal_irq_handler hd, void *arg)
 {
 	//TODO: FIXME
@@ -273,18 +273,18 @@ static int metal_a926_irq_register(struct metal_irq_controller *irq_cntr,
 	return 0;
 }
 
-static METAL_IRQ_CONTROLLER_DECLARE(a926_irq_cntr,
+static METAL_IRQ_CONTROLLER_DECLARE(sp_irq_cntr,
 				    0, 224,
 				    NULL,
-				    metal_a926_irq_set_enable,
-					metal_a926_irq_register,
+				    metal_sp_irq_set_enable,
+					metal_sp_irq_register,
 				    NULL)
 
-int metal_a926_irq_init(void)
+int metal_sp_irq_init(void)
 {
 	int ret;
 
-	ret =  metal_irq_register_controller(&a926_irq_cntr);
+	ret =  metal_irq_register_controller(&sp_irq_cntr);
 	if (ret < 0) {
 		metal_log(METAL_LOG_ERROR, "%s: register irq controller failed.\n",
 			  __func__);

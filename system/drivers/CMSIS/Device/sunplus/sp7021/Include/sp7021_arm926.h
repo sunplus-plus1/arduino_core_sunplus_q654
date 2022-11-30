@@ -1669,6 +1669,11 @@ UART LCR register BIT
 #define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
 #define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
 
+/* MBOX */
+#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(259, 31)) /* MBOX_CA7_DIRECT[7] */
+#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(258, 31)) /* MBOX_A926_DIRECT[7] */
+#define IRQ_NOTIFICATION	197 /* A926_DIRECT_INT7 */
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

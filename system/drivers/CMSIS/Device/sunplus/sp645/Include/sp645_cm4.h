@@ -1331,10 +1331,10 @@ UART LCR register BIT
 #define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
 #define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
 
-
-
-
-
+/* MBOX */
+#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(256, 31)) /* MBOX_CM4_TO_CA55_DIRECT[7] */
+#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(255, 31)) /* MBOX_CA55_TO_CM4_DIRECT[7] */
+#define IRQ_NOTIFICATION	(IPC_CA552CM4_INT7_IRQn) /* ca55 to cm4 */
 
 /* -------------------  Start of section using anonymous unions  ------------------ */
 #if defined ( __CC_ARM   )

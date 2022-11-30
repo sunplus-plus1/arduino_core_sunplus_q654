@@ -4,17 +4,16 @@
 #include <openamp/remoteproc.h>
 #include <openamp/virtio.h>
 #include <openamp/rpmsg.h>
+#if defined(SP7021)
+#include "sp7021_arm926.h"
+#elif defined(SP645)
 #include "sp645_cm4.h"
+#endif
 #include "xil_printf.h"
 
 #if defined __cplusplus
 extern "C" {
 #endif
-
-/* MBOX */
-#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(256, 31)) /* MBOX_CM4_TO_CA55_DIRECT[7] */
-#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(255, 31)) /* MBOX_CA55_TO_CM4_DIRECT[7] */
-#define IRQ_NOTIFICATION	(IPC_CA552CM4_INT7_IRQn) /* ca55 to cm4 */
 
 /* Memory attributes */
 #define NORM_NONCACHE 0x11DE2	/* Normal Non-cacheable */

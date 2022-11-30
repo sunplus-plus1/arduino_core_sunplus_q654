@@ -88,17 +88,13 @@ ifeq ($(OPENAMP),1)
 #OpenAMP libmetal log on
 CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
 # virt_uart
-CCFLAGS += -DVIRTIOCON -DENABLE_SERIALVIRTIO
+CCFLAGS += -DVIRTIOCON -DVIRTIO_SLAVE_ONLY
 #OpenAMP headers files
 CCFLAGS += -I$(TOP)/cores/arduino/sunplus/OpenAMP
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/libmetal/lib/include
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/lib/include
-ifeq ($(CHIP),Q628)
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/a926
-else
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/cm4
-endif
+CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/sunplus
 CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/virt_driver
 
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP
@@ -106,11 +102,10 @@ DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic
 ifeq ($(CHIP),Q628)
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/a926
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine/a926
 else
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/cm4
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine/cm4
 endif
+DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/proxy
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/remoteproc
 DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/rpmsg
@@ -128,7 +123,8 @@ CCFLAGS += -DFREERTOS
 CXXSOURCES += $(TOP)/libraries/examples/rtos/example.cpp
 else
 #arduino C++ example
-DIRS += $(TOP)/libraries/examples/timer
+DIRS += $(TOP)/libraries/examples/VirtIOSerial
+#DIRS += $(TOP)/libraries/examples/timer
 #DIRS += $(TOP)/libraries/examples/i2c
 #DIRS += $(TOP)/libraries/examples/exti
 #DIRS = $(TOP)/cores/arduino/sunplus

@@ -7,7 +7,7 @@
 /**************************************************************************
  * FILE NAME
  *
- *       cm4_rproc.c
+ *       sp_rproc.c
  *
  * DESCRIPTION
  *
@@ -21,17 +21,21 @@
 #include <metal/device.h>
 #include <metal/irq.h>
 #include "platform_info.h"
+#if defined(SP7021)
+#include "core_armv5.h"
+#elif defined(SP645)
 #include "core_cm4.h"
+#endif
 
-static int cm4_proc_irq_handler(int vect_id, void *data)
+static int sp_proc_irq_handler(int vect_id, void *data)
 {
 	struct remoteproc *rproc = data;
 	struct remoteproc_priv *prproc;
 
+#if defined(SP7021)
 	if (MBOX_NOTIFICATION == 0xDEADC0DE) {
 		MBOX_NOTIFICATION = 0;
-		printf("!!!!!! cm4 reset !!!!!!\n");
-#if 0 // FIXME
+		printf("!!!!!! a926 reset !!!!!!\n");
 		MMU_Disable();
 		IRQ_Clear(vect_id);
 		__asm volatile (
@@ -39,8 +43,8 @@ static int cm4_proc_irq_handler(int vect_id, void *data)
 			"STMFD	SP!, {R0}		\n\t"	/* Push R0. */
 			"LDMFD	SP!, {PC}^		"		/* Pop PC.  */
 		);
-#endif
 	}
+#endif
 
 	(void)vect_id;
 	if (!rproc)
@@ -51,7 +55,7 @@ static int cm4_proc_irq_handler(int vect_id, void *data)
 }
 
 static struct remoteproc *
-cm4_proc_init(struct remoteproc *rproc,
+sp_proc_init(struct remoteproc *rproc,
 			struct remoteproc_ops *ops, void *arg)
 {
 	struct remoteproc_priv *prproc = arg;
@@ -66,14 +70,14 @@ cm4_proc_init(struct remoteproc *rproc,
 
 	/* Register interrupt handler and enable interrupt */
 	irq_vect = IRQ_NOTIFICATION;
-	metal_irq_register(irq_vect, cm4_proc_irq_handler, rproc);
+	metal_irq_register(irq_vect, sp_proc_irq_handler, rproc);
 	metal_irq_enable(irq_vect);
 	xil_printf("Successfully intialize remoteproc.\r\n");
 	return rproc;
 }
 
 static void *
-cm4_proc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
+sp_proc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 			metal_phys_addr_t *da, size_t size,
 			unsigned int attribute, struct metal_io_region **io)
 {
@@ -113,7 +117,7 @@ cm4_proc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
 	return metal_io_phys_to_virt(tmpio, mem->pa);
 }
 
-static int cm4_proc_notify(struct remoteproc *rproc, uint32_t id)
+static int sp_proc_notify(struct remoteproc *rproc, uint32_t id)
 {
 	struct remoteproc_priv *prproc;
 
@@ -129,11 +133,11 @@ static int cm4_proc_notify(struct remoteproc *rproc, uint32_t id)
 
 /* processor operations from r5 to a53. It defines
  * notification operation and remote processor managementi operations. */
-struct remoteproc_ops cm4_proc_ops = {
-	.init = cm4_proc_init,
+struct remoteproc_ops sp_proc_ops = {
+	.init = sp_proc_init,
 	.remove = NULL,
-	.mmap = cm4_proc_mmap,
-	.notify = cm4_proc_notify,
+	.mmap = sp_proc_mmap,
+	.notify = sp_proc_notify,
 	.start = NULL,
 	.stop = NULL,
 	.shutdown = NULL,
