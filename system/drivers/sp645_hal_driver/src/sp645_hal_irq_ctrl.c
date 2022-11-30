@@ -8,7 +8,7 @@ GROUP_3 	3:1  PREEMPT:3bit Sub:1bit
 GROUP_4 	4:0  PREEMPT:4bit Sub:0bit
 */
 #define NVIC_PRIORITY_GROUP        (NVIC_PRIORITYGROUP_2)
-#define NVIC_PREEMPTPRIORITY       (2)  
+#define NVIC_PREEMPTPRIORITY       (2)
 #define NVIC_SUBPRIORITY_MAX       (4)
 
 int32_t IRQ_Initialize (void)
@@ -31,7 +31,7 @@ int32_t IRQ_SetHandler (IRQn_ID_t irqn, IRQHandler_t handler)
 		HAL_NVIC_SetVector(irqn, (uint32_t)handler);
 		return 0;
 	}
-	
+
 	return -1;
 }
 
@@ -49,7 +49,7 @@ IRQHandler_t IRQ_GetHandler (IRQn_ID_t irqn)
 
 	return h;
 }
- 
+
 int32_t IRQ_Enable (IRQn_ID_t irqn)
 {
 	if ((irqn >=0) && (irqn < MAX_IRQ_n))
@@ -78,20 +78,31 @@ int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority)
 		HAL_NVIC_SetPriority(irqn, NVIC_PREEMPTPRIORITY,priority);
 		status = 0;
 	}
-	
+
 	return -1;
 }
 
 uint32_t IRQ_GetPriority (IRQn_ID_t irqn)
 {
     uint32_t preemptpriority,subpriority=0;
-	
+
 	if ((irqn >= 0) && (irqn < MAX_IRQ_n))
 	{
 		HAL_NVIC_GetPriority(irqn,NVIC_PRIORITY_GROUP,&preemptpriority,&subpriority);
 	}
 
 	return subpriority;
+}
+
+uint32_t IRQ_GetCurrentIRQNum(void)
+{
+	IRQn_ID_t irqn;
+
+	irqn = (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) >> SCB_ICSR_VECTACTIVE_Pos;
+
+	irqn -= 16;
+
+	return irqn;
 }
 
 int32_t IRQ_Clear(IRQn_ID_t irqn)

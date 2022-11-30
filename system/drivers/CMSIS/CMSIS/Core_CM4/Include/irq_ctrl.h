@@ -123,7 +123,7 @@ int32_t IRQ_SetPriority (IRQn_ID_t irqn, uint32_t priority);
 /// \return current interrupt priority value with optional IRQ_PRIORITY_ERROR bit set.
 uint32_t IRQ_GetPriority (IRQn_ID_t irqn);
 
-
+uint32_t IRQ_GetCurrentIRQNum(void);
 
 #endif  // IRQ_CTRL_H_
 
