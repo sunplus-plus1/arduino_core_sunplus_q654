@@ -111,6 +111,27 @@ uint32_t HAL_STC_GetPrescaler(STC_HandleTypeDef *Hstc)
 
 }
 
+uint32_t HAL_STC_GetClk(STC_TypeDef *STC_Instance)
+{
+	uint32_t uFreq = 0;
+	if (STC_Instance == NULL)
+		return 0;
+	assert_param(IS_STC_INSTANCE(STC_Instance));
+
+	if (!IS_STC_INSTANCE(STC_Instance))
+		return 0;
+
+	if ((STC_Instance->stc_prescale_val&STC_TRIG_SRC_Msk)>>STC_TRIG_SRC_Pos == 0){
+		uFreq = HSI_VALUE/(STC_Instance->stc_prescale_val&STC_PRESCALER_Msk+1);
+	}	
+	else{
+		uFreq = HSI_VALUE/(STC_Instance->stc_config&STC_EXT_DIV_Msk +1);
+		uFreq = uFreq/(STC_Instance->stc_prescale_val&STC_PRESCALER_Msk+1);
+	}	
+
+	return uFreq;
+}
+
 
 uint32_t HAL_STC_GetExtDiv(STC_HandleTypeDef *Hstc)
 {

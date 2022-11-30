@@ -62,7 +62,6 @@ void _HAL_TIM_Set_TimerClk(TIM_HandleTypeDef *htim,uint32_t enable)
 		case (uint32_t)TIM6 ... (uint32_t)TIM7:
 			mode_id = STC_AV2;
 			break;
-			break;
 		default:
 			break;
 	}
@@ -78,6 +77,7 @@ void HAL_TIM_EnableTimerClock(TIM_HandleTypeDef *htim)
 	_HAL_TIM_Set_TimerClk(htim,1);
 }
 
+/*The STC include the 2 timers, so you disable the timer to diable the STC moudle*/
 void HAL_TIM_DisableTimerClock(TIM_HandleTypeDef *htim)
 {
 	assert_param(htim);
@@ -101,17 +101,22 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
   	{
     	return HAL_ERROR;
   	}
-
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
 
 	if (htim->State == HAL_TIM_STATE_RESET)
 	{
 		htim->Lock = HAL_UNLOCKED;
 
 		irqn = HAL_TIM_GetIRQ(htim->Instance);
-		IRQ_SetHandler(irqn, htim->IrqHandle);
-		IRQ_Enable(irqn);
-		printf("set timer irq=%d  handler=%x \n",irqn,htim->IrqHandle);
+		if (htim->IrqHandle != NULL){
+			IRQ_SetHandler(irqn, htim->IrqHandle);
+			IRQ_Enable(irqn);
+		}else{
+			IRQ_Disable(irqn);
+		}
+		//printf("set timer irq=%d  handler=%x \n",irqn,htim->IrqHandle);
 	}
 	htim->State = HAL_TIM_STATE_BUSY;
 	htim->Instance->control = 0;
@@ -129,34 +134,49 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 
 HAL_StatusTypeDef HAL_TIM_DeInit(TIM_HandleTypeDef *htim)
 {
-  /* Check the parameters */
-  assert_param(IS_TIM_INSTANCE(htim->Instance));
+  	/* Check the parameters */
+	if (htim == NULL)
+    	return HAL_ERROR;
+	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
 
-  htim->State = HAL_TIM_STATE_BUSY;
+	htim->State = HAL_TIM_STATE_BUSY;
+	
+  	/* Disable the TIM Peripheral Clock */
+  	MODIFY_REG(htim->Instance->control, TIMER_GO, 0<<TIMER_GO_Pos);
 
-  /* Disable the TIM Peripheral Clock */
-  MODIFY_REG(htim->Instance->control, TIMER_GO, 0<<TIMER_GO_Pos);
+  	/* Change TIM state */
+  	htim->State = HAL_TIM_STATE_RESET;
 
-  /* Change TIM state */
-  htim->State = HAL_TIM_STATE_RESET;
+  	/* Release Lock */
+  	__HAL_UNLOCK(htim);
 
-  /* Release Lock */
-  __HAL_UNLOCK(htim);
-
-  return HAL_OK;
+	return HAL_OK;
 }
 
 
 HAL_TIM_StateTypeDef HAL_TIM_GetState(TIM_HandleTypeDef *htim)
 {
+  	/* Check the parameters */
+	if (htim == NULL)
+    	return HAL_ERROR;
+
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+
   	return htim->State;
 }
 
 HAL_StatusTypeDef HAL_TIM_Start(TIM_HandleTypeDef *htim)
 {
-	/* Check the parameters */
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+  	/* Check the parameters */
+	if (htim == NULL)
+    	return HAL_ERROR;
 
+	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
 
@@ -171,9 +191,13 @@ HAL_StatusTypeDef HAL_TIM_Start(TIM_HandleTypeDef *htim)
 
 HAL_StatusTypeDef HAL_TIM_Stop(TIM_HandleTypeDef *htim)
 {
-	/* Check the parameters */
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+  	/* Check the parameters */
+	if (htim == NULL)
+    	return HAL_ERROR;
 
+	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
 
@@ -188,7 +212,15 @@ HAL_StatusTypeDef HAL_TIM_Stop(TIM_HandleTypeDef *htim)
 
 HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Prescaler)
 {
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
 	htim->Instance->prescale_val = u32Prescaler;
 	htim->Init.Prescaler = u32Prescaler;
 	return HAL_OK;
@@ -196,13 +228,29 @@ HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Pres
 
 uint32_t HAL_TIM_GetPrescaler(TIM_HandleTypeDef *htim)
 {
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
  	return htim->Instance->prescale_val;
 }
 
 HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count)
 {
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
 	htim->Instance->counter_val = u32Count;
 	htim->Instance->reload_val = u32Count;
 	return HAL_OK;
@@ -210,14 +258,30 @@ HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count)
 
 uint32_t HAL_TIM_GetCount(TIM_HandleTypeDef *htim)
 {
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
 	return htim->Instance->counter_val;
 }
 
 uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim)
 {
 	uint32_t u32Src = 0;
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
 	return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
 }
 
@@ -229,7 +293,15 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 	uint32_t u32Prescaler = 0;
 	uint32_t u32Counter = 0;
 
+  	/* Check the parameters */
+	if (htim == NULL)
+  	{
+    	return HAL_ERROR;
+  	}
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	if(!IS_TIM_INSTANCE(htim->Instance))
+		return HAL_ERROR;
+	
 	if(HAL_TIM_GetCLKSrc(htim) == CLK_SLAVE_WRAP_SRC) /* time0 used timer1 clk src,get timer1's freq */
 	{
 		switch ((uint32_t)htim->Instance)
@@ -260,7 +332,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			u32Feq = SystemCoreClock;
 			break;
 		case CLK_STC_SRC:
-		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)hMtim / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));/*get stc base address by timer address */
+		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)((uint32_t)hMtim/0x80*0x80));/*get stc base address by timer address */
 			break;
 		case CLK_RTC_SRC:
 			break;
