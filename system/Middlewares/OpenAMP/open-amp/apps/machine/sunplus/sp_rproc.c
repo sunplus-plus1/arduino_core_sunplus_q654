@@ -41,7 +41,7 @@ static int sp_proc_irq_handler(int vect_id, void *data)
 		__asm volatile (
 			"LDR	R0, =0xffff00c0	\n\t"
 			"STMFD	SP!, {R0}		\n\t"	/* Push R0. */
-			"LDMFD	SP!, {PC}^		"		/* Pop PC.  */
+			"LDMFD	SP!, {PC}^		"	/* Pop PC.  */
 		);
 	}
 #endif
@@ -51,6 +51,10 @@ static int sp_proc_irq_handler(int vect_id, void *data)
 		return METAL_IRQ_NOT_HANDLED;
 	prproc = rproc->priv;
 	atomic_flag_clear(&prproc->nokick);
+
+	/* clear the mailbox interrupt(CA55 to CM4) */
+	uint32_t read = MBOX_NOTIFICATION;
+
 	return METAL_IRQ_HANDLED;
 }
 

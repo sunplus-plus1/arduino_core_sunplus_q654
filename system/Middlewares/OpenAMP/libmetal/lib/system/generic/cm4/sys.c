@@ -53,8 +53,6 @@ void METAL_IRQHandler(void)
 	{
 		printf("irq=%d\n", irq);
 	}
-
-	uint32_t read = MBOX_NOTIFICATION;
 }
 
 static int metal_sp_irq_register(struct metal_irq_controller *irq_cntr,
