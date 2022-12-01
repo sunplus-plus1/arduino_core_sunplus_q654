@@ -44,8 +44,7 @@ static void metal_sp_irq_set_enable(struct metal_irq_controller *irq_cntr,
 void METAL_IRQHandler(void)
 {
 	int irq = IRQ_GetCurrentIRQNum();
-	printf(">>>>>> %s:get irq %d\n", __FUNCTION__, irq);
-	//int irq = 0;
+
 	if (IRQMetalTable[irq].handler != NULL )
 	{
 		IRQMetalTable[irq].handler(irq, IRQMetalTable[irq].arg);
@@ -54,13 +53,14 @@ void METAL_IRQHandler(void)
 	{
 		printf("irq=%d\n", irq);
 	}
+
+	uint32_t read = MBOX_NOTIFICATION;
 }
 
 static int metal_sp_irq_register(struct metal_irq_controller *irq_cntr,
 					int irq, metal_irq_handler hd, void *arg)
 {
-	//TODO: FIXME
-	printf(">>>>>> %s:%d @ %p\n", __FUNCTION__, irq, hd);
+	//printf(">>>>>> %s:irq=%d @ %p\n", __FUNCTION__, irq, hd);
 	IRQMetalTable[irq].handler = hd;
 	IRQMetalTable[irq].arg = arg;
 
@@ -92,6 +92,9 @@ int metal_sp_irq_init(void)
 void sys_irq_restore_enable(unsigned int flags)
 {
 	__enable_irq();
+	/* FIXME: Assembler messages: writing to APSR
+	 * without specifying a bitmask is deprecated.
+	 */
 	__set_xPSR(flags);
 }
 
@@ -99,19 +102,16 @@ unsigned int sys_irq_save_disable(void)
 {
 	__disable_irq();
 	return __get_xPSR();
-	//return 0;
 }
 
 void metal_machine_cache_flush(void *addr, unsigned int len)
 {
-	//HAL_DCACHE_FLUSH(addr, len);
-	//L1C_DCacheFlush(addr, len);
+	/* CM4 have no cache */
 }
 
 void metal_machine_cache_invalidate(void *addr, unsigned int len)
 {
-	//HAL_DCACHE_INVALIDATE(addr, len);
-	//L1C_InvlidateDCache(addr, len);
+	/* CM4 have no cache */
 }
 
 /**
