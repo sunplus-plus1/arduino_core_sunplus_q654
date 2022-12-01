@@ -157,7 +157,7 @@ int remoteproc_set_rsc_table(struct remoteproc *rproc,
 struct remoteproc *remoteproc_init(struct remoteproc *rproc,
 				   struct remoteproc_ops *ops, void *priv)
 {
-	printf(">>> remoteproc_init: %p\n", rproc);
+	//printf(">>> remoteproc_init: %p\n", rproc);
 	if (rproc) {
 		memset(rproc, 0, sizeof(*rproc));
 		rproc->state = RPROC_OFFLINE;
@@ -166,7 +166,7 @@ struct remoteproc *remoteproc_init(struct remoteproc *rproc,
 		metal_list_init(&rproc->vdevs);
 	}
 	rproc = ops->init(rproc, ops, priv);
-	printf("<<< remoteproc_init: %p\n", rproc);
+	//printf("<<< remoteproc_init: %p\n", rproc);
 	return rproc;
 }
 
