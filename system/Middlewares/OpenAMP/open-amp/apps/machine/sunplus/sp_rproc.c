@@ -32,19 +32,19 @@ static int sp_proc_irq_handler(int vect_id, void *data)
 	struct remoteproc *rproc = data;
 	struct remoteproc_priv *prproc;
 
+	if (MBOX_NOTIFICATION == 0xDEADC0DE) { /* clear intr for Q645/SP7350 */
 #if defined(SP7021)
-	if (MBOX_NOTIFICATION == 0xDEADC0DE) {
 		MBOX_NOTIFICATION = 0;
 		printf("!!!!!! a926 reset !!!!!!\n");
 		MMU_Disable();
 		IRQ_Clear(vect_id);
 		__asm volatile (
 			"LDR	R0, =0xffff00c0	\n\t"
-			"STMFD	SP!, {R0}		\n\t"	/* Push R0. */
-			"LDMFD	SP!, {PC}^		"	/* Pop PC.  */
+			"STMFD	SP!, {R0}	\n\t"	/* Push R0. */
+			"LDMFD	SP!, {PC}^	"	/* Pop PC.  */
 		);
-	}
 #endif
+	}
 
 	(void)vect_id;
 	if (!rproc)
@@ -52,15 +52,12 @@ static int sp_proc_irq_handler(int vect_id, void *data)
 	prproc = rproc->priv;
 	atomic_flag_clear(&prproc->nokick);
 
-	/* clear the mailbox interrupt(CA55 to CM4) */
-	uint32_t read = MBOX_NOTIFICATION;
-
 	return METAL_IRQ_HANDLED;
 }
 
 static struct remoteproc *
 sp_proc_init(struct remoteproc *rproc,
-			struct remoteproc_ops *ops, void *arg)
+	     struct remoteproc_ops *ops, void *arg)
 {
 	struct remoteproc_priv *prproc = arg;
 	unsigned int irq_vect;
@@ -82,8 +79,8 @@ sp_proc_init(struct remoteproc *rproc,
 
 static void *
 sp_proc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,
-			metal_phys_addr_t *da, size_t size,
-			unsigned int attribute, struct metal_io_region **io)
+	     metal_phys_addr_t *da, size_t size,
+	     unsigned int attribute, struct metal_io_region **io)
 {
 	struct remoteproc_mem *mem;
 	metal_phys_addr_t lpa, lda;
