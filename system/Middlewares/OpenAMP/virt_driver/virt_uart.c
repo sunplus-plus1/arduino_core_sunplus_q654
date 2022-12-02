@@ -50,8 +50,10 @@ void *virt_uart_open(void)
 	// create rpmsg endpoint
 	ret = rpmsg_create_ept(&uart->ept, rpdev, RPMSG_SERVICE_NAME,
 				src_addr++, RPMSG_ADDR_ANY, virt_uart_cb, NULL);
-	if (ret)
+	if (ret) {
+		free(uart);
 		return NULL;
+	}
 
 	// initial virtio ring buffer
 	virtio_buffer_init(&uart->ring);
