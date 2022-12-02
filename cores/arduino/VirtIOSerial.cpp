@@ -8,7 +8,7 @@ VirtIOSerial SerialVirtIO;
 
 void VirtIOSerial::begin(void)
 {
-  virt_uart_open();
+  uart = virt_uart_open();
 }
 
 void VirtIOSerial::begin(uint32_t /* baud_count */)
@@ -23,12 +23,12 @@ void VirtIOSerial::begin(uint32_t /* baud_count */, uint8_t /* config */)
 
 void VirtIOSerial::end()
 {
-  virt_uart_close();
+  virt_uart_close(uart);
 }
 
 int VirtIOSerial::available()
 {
-  return virt_uart_available();
+  return virt_uart_available(uart);
 }
 
 int VirtIOSerial::availableForWrite()
@@ -39,7 +39,7 @@ int VirtIOSerial::availableForWrite()
 
 int VirtIOSerial::peek()
 {
-  return virt_uart_peek();
+  return virt_uart_peek(uart);
 }
 
 int VirtIOSerial::read()
@@ -55,7 +55,7 @@ int VirtIOSerial::read()
 
 size_t VirtIOSerial::readBytes(char *buffer, size_t length)
 {
-  return virt_uart_read(buffer, length);
+  return virt_uart_read(uart, buffer, length);
 }
 
 String VirtIOSerial::readString()
@@ -76,7 +76,7 @@ size_t VirtIOSerial::write(uint8_t ch)
 
 size_t VirtIOSerial::write(const uint8_t *buffer, size_t length)
 {
-  return virt_uart_write((void *)buffer, length);
+  return virt_uart_write(uart, (void *)buffer, length);
 }
 
 

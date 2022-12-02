@@ -8,13 +8,13 @@
 extern "C" {
 #endif
 
-int virt_uart_open(void);
-void virt_uart_close(void);
-void virt_uart_poll(void);
-int virt_uart_read(void *buf, int len);
-int virt_uart_write(void *buf, int len);
-int virt_uart_available(void);
-int virt_uart_peek(void);
+void *virt_uart_open(void);
+void virt_uart_close(void *uart);
+void virt_uart_poll();
+int virt_uart_read(void *uart, void *buf, int len);
+int virt_uart_write(void *uart, void *buf, int len);
+int virt_uart_available(void *uart);
+int virt_uart_peek(void *uart);
 
 #ifdef __cplusplus
 }

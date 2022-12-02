@@ -8,6 +8,9 @@
 #include "Stream.h"
 
 class VirtIOSerial : public Stream {
+  private:
+    void *uart;
+
   public:
     void begin(void);
     void begin(uint32_t);
@@ -36,4 +39,3 @@ extern VirtIOSerial SerialVirtIO;
 #endif
 
 #endif /* _VIRTIOSERIAL_H_ */
-
