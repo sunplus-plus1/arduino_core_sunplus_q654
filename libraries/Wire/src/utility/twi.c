@@ -9,9 +9,9 @@
 
 #include "twi.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 /* Private Defines */
 /// @brief I2C timout in tick unit
@@ -21,17 +21,17 @@ extern "C" {
 
 #define I2C_MAX_FREQ			400
 #define I2C_INIT_FREQ			100
-#define I2C_FREQ				27000
+#define I2C_FREQ			27000
 
 /*  Family specific description for I2C */
 typedef enum {
-  I2C0_INDEX,
-  I2C1_INDEX,
-  I2C2_INDEX,
-  I2C3_INDEX,
-  I2C4_INDEX,
-  I2C5_INDEX,
-  I2C_NUM
+	I2C0_INDEX,
+	I2C1_INDEX,
+	I2C2_INDEX,
+	I2C3_INDEX,
+	I2C4_INDEX,
+	I2C5_INDEX,
+	I2C_NUM
 } i2c_index_e;
 
 /* Private Variables */
@@ -44,20 +44,18 @@ void func_print(uint8_t data)
 
 /**
 * @brief Compute I2C timing according current I2C clock source and
-required I2C clock.
+* required I2C clock.
 * @param  obj : pointer to i2c_t structure
-* @param frequency
- Required I2C clock in kHz.
+* @param frequency : Required I2C clock in kHz.
 * @retval I2C timing or 0 in case of error.which set in freq_custom bit.
 */
-static uint32_t i2c_getTiming(i2c_t *obj, uint32_t frequency)
+static uint32_t i2c_getTiming(i2c_t * obj, uint32_t frequency)
 {
 
-	if(frequency > I2C_MAX_FREQ)
-	{
+	if (frequency > I2C_MAX_FREQ) {
 		frequency = I2C_MAX_FREQ;
 	}
-	
+
 	UNUSED(obj);
 
 	return frequency;
@@ -68,7 +66,7 @@ static uint32_t i2c_getTiming(i2c_t *obj, uint32_t frequency)
   * @param  obj : pointer to i2c_t structure
   * @retval none
   */
-void i2c_init(i2c_t *obj)
+void i2c_init(i2c_t * obj)
 {
 	//printf("%d   %d\n", temptest.pin_sda, temptest.pin_scl);
 	i2c_custom_init(obj, 100, 0, 0x33);
@@ -85,53 +83,27 @@ void i2c_init(i2c_t *obj)
 void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint32_t ownAddress)
 {
 	uint32_t i2c_sda, i2c_scl;
-	
+
 	UNUSED(addressingMode);
 	UNUSED(ownAddress);
 	if (obj == NULL)
-	{
 		return;
-	}
-#if defined(SP7021) && I2C_SEL_INSTANCE > 3
-	return;
-#elif defined(SP645) && I2C_SEL_INSTANCE > 5
-    return;
-#endif
-    I2C_HandleTypeDef *handle = &(obj->handle);
-	
-#if I2C_SEL_INSTANCE == 0
-	handle->Instance  = SP_I2CM0;
-#elif I2C_SEL_INSTANCE == 1
-	handle->Instance  = SP_I2CM1;
-#elif I2C_SEL_INSTANCE == 2
-	handle->Instance  = SP_I2CM2;
-#elif I2C_SEL_INSTANCE == 3
-	handle->Instance  = SP_I2CM3;
-#ifdef SP645
-#elif SPI_SEL_INSTANCE == 4
-    handle->Instance  = SP_I2CM4;
-#elif SPI_SEL_INSTANCE == 5
-    handle->Instance  = SP_I2CM5;
-#endif 
-#endif 
 
+	I2C_HandleTypeDef *handle = &(obj->handle);
 #ifdef SP7021
 	i2c_sda = GPIO_TO_PINMUX(obj->pin_sda);
-	if(!IS_VALID_PINMUX(i2c_sda))
-	{
+	if (!IS_VALID_PINMUX(i2c_sda)) {
 		core_debug("ERROR: [I2C] SDA pin error!\n");
 		return;
 	}
-	
+
 	i2c_scl = GPIO_TO_PINMUX(obj->pin_scl);
-	if(!IS_VALID_PINMUX(i2c_scl))
-	{
+	if (!IS_VALID_PINMUX(i2c_scl)) {
 		core_debug("ERROR: [I2C] SCL pin error!\n");
 		return;
 	}
-#endif	
-	if (handle->Instance == SP_I2CM0)
-	{
+#endif
+	if (handle->Instance == SP_I2CM0) {
 		IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER0_IRQ, I2C0_IRQHandler);
 
@@ -140,18 +112,18 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		i2c_handles[I2C0_INDEX]->Index = I2C0_INDEX;
 		i2c_handles[I2C0_INDEX]->gdma = SP_GDMA0;
 	}
-	else if (handle->Instance == SP_I2CM1)// Enable I2C1 clock if not done
-	{
+	/* Enable I2C1 clock if not done */
+	else if (handle->Instance == SP_I2CM1) {
 		IRQ_SetMode(I2C_MASTER1_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER1_IRQ, I2C1_IRQHandler);
-		
+
 		obj->irq = I2C_MASTER1_IRQ;
 		i2c_handles[I2C1_INDEX] = handle;
 		i2c_handles[I2C1_INDEX]->Index = I2C1_INDEX;
 		i2c_handles[I2C1_INDEX]->gdma = SP_GDMA1;
 	}
-	else if  (handle->Instance == SP_I2CM2)// Enable I2C2 clock if not done
-	{
+	/* Enable I2C2 clock if not done */
+	else if (handle->Instance == SP_I2CM2) {
 		IRQ_SetMode(I2C_MASTER2_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER2_IRQ, I2C2_IRQHandler);
 
@@ -160,19 +132,18 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		i2c_handles[I2C2_INDEX]->Index = I2C2_INDEX;
 		i2c_handles[I2C2_INDEX]->gdma = SP_GDMA2;
 	}
-	else if (handle->Instance == SP_I2CM3)// Enable I2C3 clock if not done
-	{
+	/* Enable I2C3 clock if not done */
+	else if (handle->Instance == SP_I2CM3) {
 		IRQ_SetMode(I2C_MASTER3_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C3_IRQHandler);
-		
+
 		obj->irq = I2C_MASTER3_IRQ;
 		i2c_handles[I2C3_INDEX] = handle;
 		i2c_handles[I2C3_INDEX]->Index = I2C3_INDEX;
 		i2c_handles[I2C3_INDEX]->gdma = SP_GDMA3;
 	}
-#ifdef SP645	
-	else if  (handle->Instance == SP_I2CM4)// Enable I2C2 clock if not done
-	{
+#ifdef SP645			/* Enable I2C2 clock if not done */
+	else if (handle->Instance == SP_I2CM4) {
 		IRQ_SetMode(I2C_MASTER4_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER4_IRQ, I2C4_IRQHandler);
 
@@ -180,31 +151,30 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		i2c_handles[I2C4_INDEX] = handle;
 		i2c_handles[I2C4_INDEX]->Index = I2C4_INDEX;
 		i2c_handles[I2C4_INDEX]->gdma = SP_GDMA4;
+
 	}
-	else if (handle->Instance == SP_I2CM5)// Enable I2C3 clock if not done
-	{
+	/* Enable I2C3 clock if not done */
+	else if (handle->Instance == SP_I2CM5) {
 		IRQ_SetMode(I2C_MASTER5_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
 		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C5_IRQHandler);
-		
+
 		obj->irq = I2C_MASTER5_IRQ;
 		i2c_handles[I2C5_INDEX] = handle;
 		i2c_handles[I2C5_INDEX]->Index = I2C5_INDEX;
 		i2c_handles[I2C5_INDEX]->gdma = SP_GDMA5;
 	}
 #endif
-
-	HAL_Module_Clock_enable(I2CM0 + I2C_SEL_INSTANCE, 1);
-	HAL_Module_Clock_gate(I2CM0 + I2C_SEL_INSTANCE, 1);
-	HAL_Module_Reset(I2CM0 + I2C_SEL_INSTANCE, 0);
+	HAL_Module_Clock_enable(I2CM0 + handle->Index, 1);
+	HAL_Module_Clock_gate(I2CM0 + handle->Index, 1);
+	HAL_Module_Reset(I2CM0 + handle->Index, 0);
 #ifdef SP7021
-    HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA + I2C_SEL_INSTANCE*2, i2c_sda);
-	HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL + I2C_SEL_INSTANCE*2, i2c_scl);
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA + handle->Index * 2, i2c_sda);
+	HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL + handle->Index * 2, i2c_scl);
 #elif defined(SP645)
-    HAL_PINMUX_Cfg(PINMUX_I2C_0 + I2C_SEL_INSTANCE, 1);
+	HAL_PINMUX_Cfg(PINMUX_I2C_0 + handle->Index, 1);
 #endif
 
-	//handle->Instance			= obj->i2c;
-	handle->Init.Timing			= i2c_getTiming(obj, timing);
+	handle->Init.Timing = i2c_getTiming(obj, timing);
 	handle->State = HAL_I2C_STATE_RESET;
 
 	/* Init the I2C */
@@ -216,10 +186,9 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
   * @param  obj : pointer to i2c_t structure
   * @retval none
   */
-void i2c_deinit(i2c_t *obj)
+void i2c_deinit(i2c_t * obj)
 {
-	if (obj == NULL)
-	{
+	if (obj == NULL) {
 		return;
 	}
 	IRQ_Disable(obj->irq);
@@ -232,7 +201,7 @@ void i2c_deinit(i2c_t *obj)
   * @param  frequency : i2c transmission speed
   * @retval none
   */
-void i2c_setTiming(i2c_t *obj, uint32_t frequency)
+void i2c_setTiming(i2c_t * obj, uint32_t frequency)
 {
 	obj->handle.Init.Timing = i2c_getTiming(obj, frequency);
 	HAL_I2C_Init(&(obj->handle));
@@ -246,51 +215,41 @@ void i2c_setTiming(i2c_t *obj, uint32_t frequency)
   * @param  size: number of bytes to be write.
   * @retval read status
   */
-i2c_status_e i2c_master_write(i2c_t *obj, uint8_t dev_address,
-                              uint8_t *data, uint16_t size)
+i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, uint16_t size)
 {
 	i2c_status_e ret = I2C_OK;
 	uint32_t tickstart = HAL_GetTick();
 	uint32_t delta = 0;
 	uint32_t err = 0;
-	
-	if (HAL_I2C_Master_Transmit_IT(&(obj->handle), dev_address, data, size) == HAL_OK)
-	{
-	// wait for transfer completion
-		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY) && (delta < I2C_TIMEOUT_TICK))
-		{
+
+	if (HAL_I2C_Master_Transmit(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
+		// wait for transfer completion
+		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
+		       && (delta < I2C_TIMEOUT_TICK)) {
 			delta = (HAL_GetTick() - tickstart);
-			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE)
-			{
+			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE) {
 				break;
 			}
 		}
 
 		err = HAL_I2C_GetError(&(obj->handle));
-		if ((delta >= I2C_TIMEOUT_TICK)|| ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT))
-		{
+		if ((delta >= I2C_TIMEOUT_TICK)
+		    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
 			ret = I2C_TIMEOUT;
-		}
-		else
-		{
-			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK)
-			{
+		} else {
+			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
 				ret = I2C_NACK_ADDR;
 			}
-			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK)
-			{
+			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
 				ret = I2C_NACK_DATA;
-			}
-			else if (err != HAL_I2C_ERR_NONE)
-			{
+			} else if (err != HAL_I2C_ERR_NONE) {
 				ret = I2C_ERROR;
 			}
 		}
-    }
+	}
 
-  return ret;
+	return ret;
 }
-
 
 /**
   * @brief  read bytes in master mode at a given address
@@ -300,63 +259,54 @@ i2c_status_e i2c_master_write(i2c_t *obj, uint8_t dev_address,
   * @param  size: number of bytes to be read.
   * @retval read status
   */
-i2c_status_e i2c_master_read(i2c_t *obj, uint8_t dev_address, uint8_t *data, uint16_t size)
+i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, uint16_t size)
 {
 	i2c_status_e ret = I2C_OK;
 	uint32_t tickstart = HAL_GetTick();
 	uint32_t delta = 0;
 	uint32_t err = 0;
 
-	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK)
-	{
-	    // wait for transfer completion
-		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY) && (delta < I2C_TIMEOUT_TICK))
-		{
+	if (HAL_I2C_Master_Receive(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
+		/* wait for transfer completion */
+		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
+		       && (delta < I2C_TIMEOUT_TICK)) {
 			delta = (HAL_GetTick() - tickstart);
-			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE)
-			{
+			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE) {
 				break;
 			}
 		}
 
-	    err = HAL_I2C_GetError(&(obj->handle));
-	    if ((delta >= I2C_TIMEOUT_TICK)|| ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT))
-		{
+		err = HAL_I2C_GetError(&(obj->handle));
+		if ((delta >= I2C_TIMEOUT_TICK)
+		    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
 			ret = I2C_TIMEOUT;
-	    }
-		else
-		{
-			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK)
-			{
+		} else {
+			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
 				ret = I2C_NACK_ADDR;
 			}
-			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK)
-			{
+			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
 				ret = I2C_NACK_DATA;
-			}
-			else if (err != HAL_I2C_ERR_NONE)
-			{
+			} else if (err != HAL_I2C_ERR_NONE) {
 				ret = I2C_ERROR;
 			}
-	    }
+		}
 	}
 
 	return ret;
 }
 
-
 /* Aim of the function is to get i2c_s pointer using hi2c pointer */
 /* Highly inspired from magical linux kernel's "container_of" */
 /* (which was not directly used since not compatible with IAR toolchain) */
-i2c_t *get_i2c_obj(I2C_HandleTypeDef *hi2c)
+i2c_t *get_i2c_obj(I2C_HandleTypeDef * hi2c)
 {
-  struct i2c_s *obj_s;
-  i2c_t *obj;
+	struct i2c_s *obj_s;
+	i2c_t *obj;
 
-  obj_s = (struct i2c_s *)((char *)hi2c - offsetof(struct i2c_s, handle));
-  obj = (i2c_t *)((char *)obj_s - offsetof(i2c_t, i2c));
+	obj_s = (struct i2c_s *)((char *)hi2c - offsetof(struct i2c_s, handle));
+	obj = (i2c_t *) ((char *)obj_s - offsetof(i2c_t, handle));
 
-  return (obj);
+	return (obj);
 }
 
 void I2C0_IRQHandler()
@@ -389,7 +339,6 @@ void I2C3_IRQHandler()
 	HAL_I2C_IRQHandler(i2c_handles[I2C3_INDEX]);
 }
 
-
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif

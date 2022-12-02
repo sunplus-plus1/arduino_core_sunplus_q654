@@ -27,97 +27,88 @@
 extern "C" {
 #include "utility/twi.h"
 }
-
 #define BUFFER_LENGTH 32
-
 #define MASTER_ADDRESS 0x33
-
 #ifndef I2C_ADDRESSINGMODE_7BIT
 #define I2C_ADDRESSINGMODE_7BIT 0
 #endif
-
 #define FREQ_100KHZ 100
-
 // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
+class TwoWire:public Stream {
+private:
+	uint8_t * rxBuffer;
+	uint8_t rxBufferAllocated;
+	uint8_t rxBufferIndex;
+	uint8_t rxBufferLength;
 
-class TwoWire : public Stream {
-  private:
-    uint8_t *rxBuffer;
-    uint8_t rxBufferAllocated;
-    uint8_t rxBufferIndex;
-    uint8_t rxBufferLength;
+	uint8_t txAddress;
+	uint8_t *txBuffer;
+	uint8_t txBufferAllocated;
+	uint8_t txBufferIndex;
+	uint8_t txBufferLength;
 
-    uint8_t txAddress;
-    uint8_t *txBuffer;
-    uint8_t txBufferAllocated;
-    uint8_t txBufferIndex;
-    uint8_t txBufferLength;
+	uint8_t transmitting;
 
-    uint8_t transmitting;
+	uint8_t ownAddress;
+	i2c_t _i2c;
 
-    uint8_t ownAddress;
-    i2c_t _i2c;
+	void allocateRxBuffer(size_t length);
+	void allocateTxBuffer(size_t length);
 
-    void allocateRxBuffer(size_t length);
-    void allocateTxBuffer(size_t length);
+	void resetRxBuffer(void);
+	void resetTxBuffer(void);
 
-    void resetRxBuffer(void);
-    void resetTxBuffer(void);
+public:
+	 TwoWire();
+	 TwoWire(uint8_t sda, uint8_t scl);
+//#ifdef SP645
+	 TwoWire(volatile I2C_TypeDef *instance);
+//#endif
+	// setSCL/SDA have to be called before begin()
+	void setSCL(uint32_t scl) {
+		_i2c.pin_scl = scl;
+	};
+	void setSDA(uint32_t sda) {
+		_i2c.pin_sda = sda;
+	};
 
-  public:
-    TwoWire();
-    TwoWire(uint8_t sda, uint8_t scl);
-    // setSCL/SDA have to be called before begin()
-    void setSCL(uint32_t scl)
-    {
-      _i2c.pin_scl = scl;
-    };
-    void setSDA(uint32_t sda)
-    {
-      _i2c.pin_sda = sda;
-    };
+	void begin(bool generalCall = false);
+	void begin(uint8_t, uint8_t);
+	void begin(uint8_t, bool generalCall = false);
+	void begin(int, bool generalCall = false);
+	void end();
+	void setClock(uint32_t);
+	void beginTransmission(uint8_t);
+	void beginTransmission(int);
+	uint8_t endTransmission(void);
+	uint8_t endTransmission(uint8_t);
+	uint8_t requestFrom(uint8_t, uint8_t);
+	uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
+	uint8_t requestFrom(uint8_t, size_t, bool);
+	uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
+	uint8_t requestFrom(int, int);
+	uint8_t requestFrom(int, int, int);
+	virtual size_t write(uint8_t);
+	virtual size_t write(const uint8_t *, size_t);
+	virtual int available(void);
+	virtual int read(void);
+	virtual int peek(void);
+	virtual void flush(void);
 
-    void begin(bool generalCall = false);
-    void begin(uint8_t, uint8_t);
-    void begin(uint8_t, bool generalCall = false);
-    void begin(int, bool generalCall = false);
-    void end();
-    void setClock(uint32_t);
-    void beginTransmission(uint8_t);
-    void beginTransmission(int);
-    uint8_t endTransmission(void);
-    uint8_t endTransmission(uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t);
-    uint8_t requestFrom(uint8_t, uint8_t, uint8_t);
-    uint8_t requestFrom(uint8_t, size_t, bool);
-    uint8_t requestFrom(uint8_t, uint8_t, uint32_t, uint8_t, uint8_t);
-    uint8_t requestFrom(int, int);
-    uint8_t requestFrom(int, int, int);
-    virtual size_t write(uint8_t);
-    virtual size_t write(const uint8_t *, size_t);
-    virtual int available(void);
-    virtual int read(void);
-    virtual int peek(void);
-    virtual void flush(void);
-
-    inline size_t write(unsigned long n)
-    {
-      return write((uint8_t)n);
-    }
-    inline size_t write(long n)
-    {
-      return write((uint8_t)n);
-    }
-    inline size_t write(unsigned int n)
-    {
-      return write((uint8_t)n);
-    }
-    inline size_t write(int n)
-    {
-      return write((uint8_t)n);
-    }
-    using Print::write;
+	inline size_t write(unsigned long n) {
+		return write((uint8_t) n);
+	}
+	inline size_t write(long n) {
+		return write((uint8_t) n);
+	}
+	inline size_t write(unsigned int n) {
+		return write((uint8_t) n);
+	}
+	inline size_t write(int n) {
+		return write((uint8_t) n);
+	}
+	using Print::write;
 };
 
 extern TwoWire Wire;

@@ -985,19 +985,19 @@ UART LCR register BIT
 /******************************************************************************/
 /*                        I2C module                                          */
 /******************************************************************************/
-#define SP_I2CM0 	((volatile I2C_TypeDef *)RF_GRP(140, 0))
-#define SP_I2CM1 	((volatile I2C_TypeDef *)RF_GRP(142, 0))
-#define SP_I2CM2 	((volatile I2C_TypeDef *)RF_GRP(144, 0))
-#define SP_I2CM3 	((volatile I2C_TypeDef *)RF_GRP(146, 0))
-#define SP_I2CM4 	((volatile I2C_TypeDef *)RF_GRP(508, 0))
-#define SP_I2CM5 	((volatile I2C_TypeDef *)RF_GRP(510, 0))
+#define SP_I2CM0 	((I2C_TypeDef *)RF_GRP(140, 0))
+#define SP_I2CM1 	((I2C_TypeDef *)RF_GRP(142, 0))
+#define SP_I2CM2 	((I2C_TypeDef *)RF_GRP(144, 0))
+#define SP_I2CM3 	((I2C_TypeDef *)RF_GRP(146, 0))
+#define SP_I2CM4 	((I2C_TypeDef *)RF_GRP(508, 0))
+#define SP_I2CM5 	((I2C_TypeDef *)RF_GRP(510, 0))
 
-#define SP_GDMA0 	((volatile GDMA_TypeDef *)RF_GRP(141, 0))
-#define SP_GDMA1 	((volatile GDMA_TypeDef *)RF_GRP(143, 0))
-#define SP_GDMA2 	((volatile GDMA_TypeDef *)RF_GRP(145, 0))
-#define SP_GDMA3 	((volatile GDMA_TypeDef *)RF_GRP(147, 0))
-#define SP_GDMA4 	((volatile GDMA_TypeDef *)RF_GRP(509, 0))
-#define SP_GDMA5 	((volatile GDMA_TypeDef *)RF_GRP(511, 0))
+#define SP_GDMA0 	((GDMA_TypeDef *)RF_GRP(141, 0))
+#define SP_GDMA1 	((GDMA_TypeDef *)RF_GRP(143, 0))
+#define SP_GDMA2 	((GDMA_TypeDef *)RF_GRP(145, 0))
+#define SP_GDMA3 	((GDMA_TypeDef *)RF_GRP(147, 0))
+#define SP_GDMA4 	((GDMA_TypeDef *)RF_GRP(509, 0))
+#define SP_GDMA5 	((GDMA_TypeDef *)RF_GRP(511, 0))
 /******************************************************************************/
 /*                                                                            */
 /*                        gpio/pinmux define                                  */
