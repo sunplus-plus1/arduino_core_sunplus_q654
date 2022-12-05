@@ -335,10 +335,6 @@ void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 
 	assert_param(GPIO_Init);
 	assert_param(IS_GPIO_PIN(GPIO_Init->Pin));
-	assert_param(IS_GPIO_PIN(GPIO_Init->Mode));
-	assert_param(IS_GPIO_PIN(GPIO_Init->ds));
-	assert_param(IS_GPIO_PIN(GPIO_Init->out_value));
-	assert_param(IS_GPIO_PIN(GPIO_Init->pull));
 
 	/* set pin to gpio mode */
 	gpio_first_val_set(GPIO_Init->Pin,1);

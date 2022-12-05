@@ -537,35 +537,18 @@ typedef struct{
 
 typedef struct{
    // SPI_MASTER
-   __IOM uint32_t mst_tx_data_addr;
-   __IOM uint32_t mst_tx_data_3_2_1_0;
-   __IOM uint32_t mst_tx_data_7_6_5_4;
-   __IOM uint32_t mst_tx_data_11_10_9_8;
-   __IOM uint32_t mst_tx_data_15_14_13_12;
-   RESERVED(0[4], uint32_t);
-   __IOM uint32_t mst_rx_data_3_2_1_0;
-   __IOM uint32_t mst_rx_data_7_6_5_4;
-   __IOM uint32_t mst_rx_data_11_10_9_8;
-   __IOM uint32_t mst_rx_data_15_14_13_12;
+   RESERVED(0[5], uint32_t);
+   __IOM uint32_t dma_rxtx_size;
+   __IOM uint32_t dma_tx_address;
+   __IOM uint32_t dma_rx_address;
+   __IOM uint32_t dma_config;
+   RESERVED(1[4], uint32_t);
    __IOM uint32_t fifo_data;
    __IOM uint32_t spi_status;
    __IOM uint32_t spi_config;
-  RESERVED(1[1], uint32_t);
-   __IOM uint32_t spi_ctl_clk_sel;
-   __IOM uint32_t spi_byte_no;
-   __IOM uint32_t spi_int_busy;
-   __IOM uint32_t spi_dma_ctrl;
-   __IOM uint32_t spi_dma_length;
-   __IOM uint32_t spi_dma_addr;
-   RESERVED(2[1], uint32_t);
-   __IOM uint32_t spi_dma_status;
-   RESERVED(3[1], uint32_t);
-   __IOM uint32_t uart_dma_ctrl;
-   RESERVED(4[1], uint32_t);
-   __IOM uint32_t spi_mst_debug_sel;
-   __IOM uint32_t spi_combo_debug_sel;
-   __IOM uint32_t spi_extra_cycle;
-   __IOM uint32_t spi_dma_data_rdy;
+   __IOM uint32_t spi_clk_inv;
+   __IOM uint32_t spi_out_int_config;
+
 }SPI_TypeDef;
 
 typedef struct
@@ -778,6 +761,12 @@ typedef struct {
                                       ((INSTANCE) == STC2)   || \
                                       ((INSTANCE) == STC3))
 
+#define IS_SPI_ALL_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SPI0) || \
+                                           ((__INSTANCE__) == SPI1) || \
+                                           ((__INSTANCE__) == SPI2) || \
+                                           ((__INSTANCE__) == SPI3))
+
+
 /******************************************************************************/
 /*                                                                            */
 /*                        timer/counter                                       */
@@ -864,6 +853,9 @@ typedef struct {
 #define UART2_BASE      RF_GRP(16, 0)
 #define UART3_BASE      RF_GRP(135, 0)
 #define UART4_BASE      RF_GRP(17, 0)
+#define UART5_BASE      RF_GRP(261, 0)
+#define UART6_BASE      RF_GRP(262, 0)
+#define UART7_BASE      RF_GRP(263, 0)
 
 
 #define SP_UART0        ((UART_CTRL_Type *)UART0_BASE)
@@ -871,6 +863,9 @@ typedef struct {
 #define SP_UART2        ((UART_CTRL_Type *)UART2_BASE)
 #define SP_UART3        ((UART_CTRL_Type *)UART3_BASE)
 #define SP_UART4        ((UART_CTRL_Type *)UART4_BASE)
+#define SP_UART5        ((UART_CTRL_Type *)UART5_BASE)
+#define SP_UART6        ((UART_CTRL_Type *)UART6_BASE)
+#define SP_UART7        ((UART_CTRL_Type *)UART7_BASE)
 
 /*
 UART LCR register BIT
@@ -930,18 +925,63 @@ UART LCR register BIT
 #define UART_LSR_RECEIVE_FIFO_STATUS         (1 << 1)
 
 
+
+#define UART_TXDMA0        ((UART_Txdma *)RF_GRP(276, 0))
+#define UART_TXDMA1        ((UART_Txdma *)RF_GRP(276, 16))
+#define UART_TXDMA2        ((UART_Txdma *)RF_GRP(279, 0))
+#define UART_TXDMA3        ((UART_Txdma *)RF_GRP(279, 16))
+
+
+#define UART_TXGDMA0        ((UART_TxGdma *)RF_GRP(273, 0))
+#define UART_TXGDMA1        ((UART_TxGdma *)RF_GRP(274, 0))
+#define UART_TXGDMA2        ((UART_TxGdma *)RF_GRP(277, 0))
+#define UART_TXGDMA3        ((UART_TxGdma *)RF_GRP(278, 0))
+
+#define UART_RXDMA0        ((UART_Rxdma *)RF_GRP(275, 0))
+#define UART_RXDMA1        ((UART_Rxdma *)RF_GRP(275, 16))
+#define UART_RXDMA2        ((UART_Rxdma *)RF_GRP(270, 0))
+#define UART_RXDMA3        ((UART_Rxdma *)RF_GRP(270, 16))
+
+#define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART0) || \
+                                    ((__INSTANCE__) == SP_UART1) || \
+                                    ((__INSTANCE__) == SP_UART2) || \
+                                    ((__INSTANCE__) == SP_UART3) || \
+                                    ((__INSTANCE__) == SP_UART4) || \
+                                    ((__INSTANCE__) == SP_UART5) || \
+                                    ((__INSTANCE__) == SP_UART6)  || \
+                                    ((__INSTANCE__) == SP_UART7))
+
+#define IS_UART_TXDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_TXDMA0) || \
+                                    ((__INSTANCE__) == UART_TXDMA1) || \
+                                    ((__INSTANCE__) == UART_TXDMA2) || \
+                                    ((__INSTANCE__) == UART_TXDMA3))
+
+#define IS_UART_TXGDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_TXGDMA0) || \
+                                    ((__INSTANCE__) == UART_TXGDMA1) || \
+                                    ((__INSTANCE__) == UART_TXGDMA2) || \
+                                    ((__INSTANCE__) == UART_TXGDMA3))
+
+#define IS_UART_RXDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_RXDMA0) || \
+                                    ((__INSTANCE__) == UART_RXDMA1) || \
+                                    ((__INSTANCE__) == UART_RXDMA2) || \
+                                    ((__INSTANCE__) == UART_RXDMA3))
+
 /******************************************************************************/
 /*                        SPI module                                          */
 /******************************************************************************/
-#define SPI0_BASE      RF_GRP(91, 0)
-#define SPI1_BASE      RF_GRP(489, 0)
-#define SPI2_BASE      RF_GRP(492, 0)
-#define SPI3_BASE      RF_GRP(495, 0)
+#define SPI0_BASE      RF_GRP(89, 0)
+#define SPI1_BASE      RF_GRP(91, 0)
+#define SPI2_BASE      RF_GRP(93, 0)
+#define SPI3_BASE      RF_GRP(128, 0)
+#define SPI4_BASE      RF_GRP(130, 0)
+#define SPI5_BASE      RF_GRP(132, 0)
 
 #define SPI0        ((volatile SPI_TypeDef *)SPI0_BASE)
 #define SPI1        ((volatile SPI_TypeDef *)SPI1_BASE)
 #define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
 #define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
+#define SPI4        ((volatile SPI_TypeDef *)SPI4_BASE)
+#define SPI5        ((volatile SPI_TypeDef *)SPI5_BASE)
 
 #define CLK_DIVIDER(x)         (x<<16)
 #define FINISH_FLAG_MASK       (1<<15)
@@ -961,15 +1001,15 @@ UART LCR register BIT
 
 #define CLEAR_MASTER_INT      (1<<6)
 
-#define GET_LEN(x)            ((x>>24) & 0xFF)
-#define GET_TX_LEN(x)         ((x>>16) & 0xFF)
-#define GET_RX_CNT(x)         ((x>>12) & 0x0F)
+#define GET_LEN(x)            ((x>>9) & 0xFF)
+#define GET_TX_LEN(x)         ((x>>1) & 0xFF)
+#define GET_RX_CNT(x)         ((x>>14) & 0x0F)
 #define GET_TX_CNT(x)         ((x>>8)  & 0x0F)
 
-#define TOTAL_LENGTH(x)        (x<<24)
-#define TX_LENGTH(x)           (x<<16)
-#define RX_CNT                 (0x0F<<12)
-#define TX_CNT                 (0x0F<<12)
+#define TOTAL_LENGTH(x)        (x<<9)
+#define TX_LENGTH(x)           (x<<1)
+#define RX_CNT                 (0x3F<<14)
+#define TX_CNT                 (0x3F<<8)
 #define SPI_BUSY               (1<<7)
 #define FINISH_FLAG            (1<<6)
 #define RX_FULL_FLAG           (1<<5)
@@ -985,19 +1025,19 @@ UART LCR register BIT
 /******************************************************************************/
 /*                        I2C module                                          */
 /******************************************************************************/
-#define SP_I2CM0 	((I2C_TypeDef *)RF_GRP(140, 0))
-#define SP_I2CM1 	((I2C_TypeDef *)RF_GRP(142, 0))
-#define SP_I2CM2 	((I2C_TypeDef *)RF_GRP(144, 0))
-#define SP_I2CM3 	((I2C_TypeDef *)RF_GRP(146, 0))
-#define SP_I2CM4 	((I2C_TypeDef *)RF_GRP(508, 0))
-#define SP_I2CM5 	((I2C_TypeDef *)RF_GRP(510, 0))
+#define SP_I2CM0 	((volatile I2C_TypeDef *)RF_GRP(140, 0))
+#define SP_I2CM1 	((volatile I2C_TypeDef *)RF_GRP(142, 0))
+#define SP_I2CM2 	((volatile I2C_TypeDef *)RF_GRP(144, 0))
+#define SP_I2CM3 	((volatile I2C_TypeDef *)RF_GRP(146, 0))
+#define SP_I2CM4 	((volatile I2C_TypeDef *)RF_GRP(508, 0))
+#define SP_I2CM5 	((volatile I2C_TypeDef *)RF_GRP(510, 0))
 
-#define SP_GDMA0 	((GDMA_TypeDef *)RF_GRP(141, 0))
-#define SP_GDMA1 	((GDMA_TypeDef *)RF_GRP(143, 0))
-#define SP_GDMA2 	((GDMA_TypeDef *)RF_GRP(145, 0))
-#define SP_GDMA3 	((GDMA_TypeDef *)RF_GRP(147, 0))
-#define SP_GDMA4 	((GDMA_TypeDef *)RF_GRP(509, 0))
-#define SP_GDMA5 	((GDMA_TypeDef *)RF_GRP(511, 0))
+#define SP_GDMA0 	((volatile GDMA_TypeDef *)RF_GRP(141, 0))
+#define SP_GDMA1 	((volatile GDMA_TypeDef *)RF_GRP(143, 0))
+#define SP_GDMA2 	((volatile GDMA_TypeDef *)RF_GRP(145, 0))
+#define SP_GDMA3 	((volatile GDMA_TypeDef *)RF_GRP(147, 0))
+#define SP_GDMA4 	((volatile GDMA_TypeDef *)RF_GRP(509, 0))
+#define SP_GDMA5 	((volatile GDMA_TypeDef *)RF_GRP(511, 0))
 /******************************************************************************/
 /*                                                                            */
 /*                        gpio/pinmux define                                  */
@@ -1014,82 +1054,14 @@ UART LCR register BIT
 #define GPIO_O_INV(X)                (RF_GRP(6, (22+X)))
 #define GPIO_OD(X)                   (RF_GRP(7, (9+X)))
 
-#define GPIO_P0_00                   0
-#define GPIO_P0_01                   1
-#define GPIO_P0_02                   2
-#define GPIO_P0_03                   3
-#define GPIO_P0_04                   4
-#define GPIO_P0_05                   5
-#define GPIO_P0_06                   6
-#define GPIO_P0_07                   7
-#define GPIO_P1_00                   8
-#define GPIO_P1_01                   9
-#define GPIO_P1_02                   10
-#define GPIO_P1_03                   11
-#define GPIO_P1_04                   12
-#define GPIO_P1_05                   13
-#define GPIO_P1_06                   14
-#define GPIO_P1_07                   15
-#define GPIO_P2_00                   16
-#define GPIO_P2_01                   17
-#define GPIO_P2_02                   18
-#define GPIO_P2_03                   19
-#define GPIO_P2_04                   20
-#define GPIO_P2_05                   21
-#define GPIO_P2_06                   22
-#define GPIO_P2_07                   23
-#define GPIO_P3_00                   24
-#define GPIO_P3_01                   25
-#define GPIO_P3_02                   26
-#define GPIO_P3_03                   27
-#define GPIO_P3_04                   28
-#define GPIO_P3_05                   29
-#define GPIO_P3_06                   30
-#define GPIO_P3_07                   31
-#define GPIO_P4_00                   32
-#define GPIO_P4_01                   33
-#define GPIO_P4_02                   34
-#define GPIO_P4_03                   35
-#define GPIO_P4_04                   36
-#define GPIO_P4_05                   37
-#define GPIO_P4_06                   38
-#define GPIO_P4_07                   39
-#define GPIO_P5_00                   40
-#define GPIO_P5_01                   41
-#define GPIO_P5_02                   42
-#define GPIO_P5_03                   43
-#define GPIO_P5_04                   44
-#define GPIO_P5_05                   45
-#define GPIO_P5_06                   46
-#define GPIO_P5_07                   47
-#define GPIO_P6_00                   48
-#define GPIO_P6_01                   49
-#define GPIO_P6_02                   50
-#define GPIO_P6_03                   51
-#define GPIO_P6_04                   52
-#define GPIO_P6_05                   53
-#define GPIO_P6_06                   54
-#define GPIO_P6_07                   55
-#define GPIO_P7_00                   56
-#define GPIO_P7_01                   57
-#define GPIO_P7_02                   58
-#define GPIO_P7_03                   59
-#define GPIO_P7_04                   60
-#define GPIO_P7_05                   61
-#define GPIO_P7_06                   62
-#define GPIO_P7_07                   63
-#define GPIO_P8_00                   64
-#define GPIO_P8_01                   65
-#define GPIO_P8_02                   66
-#define GPIO_P8_03                   67
-#define GPIO_P8_04                   68
-#define GPIO_P8_05                   69
-#define GPIO_P8_06                   70
-#define GPIO_P8_07                   71
+#define GPIO_MIN                    0
+#define GPIO_MAX                   107
 
-#define IS_GPIO_PIN(pin)             (((pin) >= GPIO_P0_00) && ((pin) <= GPIO_P8_07))
-#define IS_PINMUX_PIN(pin)           (((pin) >= GPIO_P0_00) && ((pin) <= GPIO_P8_07))
-#define IS_VALID_PINMUX(pin)         (((pin) >= GPIO_P0_00) && ((pin) <= GPIO_P8_07))
+#define GPIO_(X)					(X)
+
+#define IS_GPIO_PIN(pin)             (((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
+#define IS_PINMUX_PIN(pin)           (((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
+#define IS_VALID_PINMUX(pin)         (((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
 #define GPIO_TO_PINMUX(x)            IS_PINMUX_PIN(x)?(x):-1
 
 

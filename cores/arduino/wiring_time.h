@@ -54,6 +54,7 @@ extern uint32_t micros(void) ;
  * \param ms the number of milliseconds to pause (uint32_t)
  */
 extern void delay(uint32_t ms) ;
+void delay_us(uint32_t us);
 
 #ifdef __cplusplus
 }

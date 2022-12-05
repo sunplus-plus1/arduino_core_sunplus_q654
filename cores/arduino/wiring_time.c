@@ -45,6 +45,17 @@ if (ms != 0) {
 }
 }
 
+void delay_us(uint32_t us)
+{
+
+if (us != 0) {
+  uint32_t start = getCurrentMillis();
+  do {
+	yield();
+  } while (getCurrentMillis() - start < us);
+}
+}
+
 #ifdef __cplusplus
 }
 #endif

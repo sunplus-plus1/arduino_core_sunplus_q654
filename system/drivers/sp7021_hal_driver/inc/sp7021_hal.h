@@ -31,6 +31,7 @@ HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx);
 void HAL_IncTick(void);
 void HAL_Delay(uint32_t Delay);
 uint32_t HAL_GetTick(void);
+void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin);
 
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq);
 HAL_TickFreqTypeDef HAL_GetTickFreq(void);

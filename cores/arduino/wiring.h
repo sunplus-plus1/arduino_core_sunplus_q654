@@ -38,6 +38,8 @@
 #include "wiring_time.h"
 #include "WInterrupts.h"
 
+#include "wiring_pwm.h"
+
 #include "board.h"
 
 #ifdef __cplusplus

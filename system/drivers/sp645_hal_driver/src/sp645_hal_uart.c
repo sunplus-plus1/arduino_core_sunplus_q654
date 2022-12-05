@@ -1,7 +1,8 @@
 #include "sp645_hal_uart.h"
+#include <stdlib.h>
 
-
-DMA_Buffer_t g_dma_buffer[2];
+#define UART_FREE(Handle)			do { if(Handle) { free(Handle);Handle=NULL;} }while(0)
+#define UART_MALLOC(Handle,size)     do { Handle = (uint8_t*)malloc(size); if(Handle == NULL) { return HAL_ERROR; }; } while(0)
 
 __weak void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -47,9 +48,8 @@ static HAL_StatusTypeDef UART_WaitOnFlagUntilTimeout(UART_HandleTypeDef *huart, 
 	return HAL_OK;
 }
 
-static void __uart_lcr_config(UART_HandleTypeDef *huart)
+static void _uart_lcr_config(UART_HandleTypeDef *huart)
 {
-	assert_param(huart);
 
 	if(IS_UART_LCR_VOTE_SELECT(huart->Init.LcrInit.vote_select))
 	{
@@ -77,7 +77,7 @@ static void __uart_lcr_config(UART_HandleTypeDef *huart)
 	}
 }
 
-static void __uart_mcr_config(UART_HandleTypeDef *huart)
+static void _uart_mcr_config(UART_HandleTypeDef *huart)
 {
 
 	if(IS_UART_ONE_OF_TWO_STATUS(huart->Init.McrInit.auto_calibrate))
@@ -136,7 +136,7 @@ static inline uint32_t __get_txdma_buf_space(UART_HandleTypeDef *huart)
 }
 
 
-static inline void __stop_tx_irq(UART_HandleTypeDef *huart)
+static inline void _stop_tx_irq(UART_HandleTypeDef *huart)
 {
 	volatile unsigned int isc;
 	isc = READ_REG(huart->Instance->isc);
@@ -144,14 +144,14 @@ static inline void __stop_tx_irq(UART_HandleTypeDef *huart)
 	WRITE_REG(huart->Instance->isc, isc);
 }
 
-static inline void __start_tx_irq(UART_HandleTypeDef *huart)
+static inline void _start_tx_irq(UART_HandleTypeDef *huart)
 {
 	volatile unsigned int isc;
 	isc = READ_REG(huart->Instance->isc) | SP_UART_ISC_TXM;
 	WRITE_REG(huart->Instance->isc, isc);
 }
 
-static inline void __stop_rx_irq(UART_HandleTypeDef *huart)
+static inline void _stop_rx_irq(UART_HandleTypeDef *huart)
 {
 	volatile unsigned int isc;
 	isc = READ_REG(huart->Instance->isc);
@@ -159,14 +159,14 @@ static inline void __stop_rx_irq(UART_HandleTypeDef *huart)
 	WRITE_REG(huart->Instance->isc, isc);
 }
 
-static inline void __start_rx_irq(UART_HandleTypeDef *huart)
+static inline void _start_rx_irq(UART_HandleTypeDef *huart)
 {
 	volatile unsigned int isc = 0;
 	isc = SP_UART_ISC_RXM;
 	WRITE_REG(huart->Instance->isc, isc);
 }
 
-static void __uart_tx_irq_handler(UART_HandleTypeDef *huart)
+static void _uart_tx_irq_handler(UART_HandleTypeDef *huart)
 {
 	uint32_t tx_buf_available;
 	uint32_t addr_sw, addr_start;
@@ -187,7 +187,7 @@ static void __uart_tx_irq_handler(UART_HandleTypeDef *huart)
 			if(huart->tx_size == huart->tx_index)
 			{
 				huart->tx_index = 0;
-				__stop_tx_irq(huart);
+				_stop_tx_irq(huart);
 				huart->gState = HAL_UART_STATE_READY;
 				huart->TxCpltCallback(huart);
 			}
@@ -196,15 +196,13 @@ static void __uart_tx_irq_handler(UART_HandleTypeDef *huart)
 	}
 
 	/*  transmit data by dma register */
-	assert_param(huart->txdma);
-	assert_param(huart->txgdma);
 
 	txdma_reg = huart->txdma;
 	txgdma_reg = huart->txgdma;
 
 	if (uart_circ_empty(huart->xmit))
 	{
-		__stop_tx_irq(huart);
+		_stop_tx_irq(huart);
 		huart->gState = HAL_UART_STATE_READY;
 		huart->TxCpltCallback(huart);
 		return;
@@ -241,20 +239,25 @@ static void __uart_tx_irq_handler(UART_HandleTypeDef *huart)
 	if (uart_circ_empty(huart->xmit))
 	{
 		huart->gState = HAL_UART_STATE_READY;
-		__stop_tx_irq(huart);
+		_stop_tx_irq(huart);
 		huart->TxCpltCallback(huart);
 	}
 }
 
-static void __uart_rx_irq_handler(UART_HandleTypeDef *huart)
+static void _uart_rx_irq_handler(UART_HandleTypeDef *huart)
 {
-	assert_param(huart->pRxBuffPtr);
+	if(huart->pRxBuffPtr == NULL)
+	{
+		huart->RxState = HAL_UART_STATE_READY;
+		huart->ErrorCallback(huart);
+		return;
+	}
 
 	if(huart->RxState != HAL_UART_STATE_BUSY_RX)
 		return;
 
 	/*  receive data by uart register */
-	if(huart->pRxBuffPtr)
+	if(huart->pRxBuffPtr && huart->rx_size)
 	{
 		while (huart->Instance->lsr & SP_UART_LSR_RX)
 		{
@@ -267,14 +270,13 @@ static void __uart_rx_irq_handler(UART_HandleTypeDef *huart)
 			}
 			/* get data */
 			if((huart->Instance->lsr & UART_LSR_RECEIVE_FIFO_STATUS) == UART_LSR_RECEIVE_FIFO_NOT_EMPTY){
-				char ch = READ_REG(huart->Instance->dr);
-				huart->pRxBuffPtr[huart->rx_index++] = ch;
+				huart->pRxBuffPtr[huart->rx_index++] = READ_REG(huart->Instance->dr);
 				if(huart->rx_size == huart->rx_index)
 				{
-					huart->rx_index = 0;
-					huart->RxState = HAL_UART_STATE_READY;
-					huart->RxCpltCallback(huart);
-					return;
+					/* stop receive and clear interrupt */
+					_stop_rx_irq(huart);
+					huart->rx_size = 0;
+					break; 
 				}
 			}
 		}
@@ -287,34 +289,18 @@ static void __uart_rx_irq_handler(UART_HandleTypeDef *huart)
 }
 
 
-static void __uart_txdma_config(UART_HandleTypeDef *huart)
+static int _uart_txdma_config(UART_HandleTypeDef *huart)
 {
-	assert_param(huart);
-	assert_param(huart->txdma);
-	assert_param(huart->txgdma);
-	assert_param(huart->Instance);
-
 	UART_Txdma *txdma_reg = huart->txdma;
 	UART_TxGdma *txgdma_reg = huart->txgdma;
-	if(huart->txdma_buf == NULL)
-	{
-		if(g_dma_buffer[0].tx_used == 0)
-		{
-			huart->txdma_buf = (int8_t *)g_dma_buffer[0].tx_buffer;
-			huart->xmit.buf = (int8_t *)g_dma_buffer[0].tx_data_buffer;
-			g_dma_buffer[0].tx_used = 1;
-		}
-		else if(g_dma_buffer[1].tx_used == 0)
-		{
-			huart->txdma_buf = (int8_t *)g_dma_buffer[1].tx_buffer;
-			huart->xmit.buf = (int8_t *)g_dma_buffer[1].tx_data_buffer;
-			g_dma_buffer[1].tx_used = 1;
-		}
-		else
-		{
-			return;
-		}
 
+	if(huart->txdma_buf == NULL && huart->xmit.buf == NULL)
+	{
+		UART_MALLOC(huart->txdma_buf,UARXDMA_BUF_SZ);
+		UART_MALLOC(huart->xmit.buf,UARXDMA_BUF_SZ);
+
+		memset(huart->txdma_buf,0,UARXDMA_BUF_SZ);
+		memset(huart->xmit.buf,0,UARXDMA_BUF_SZ);
 		huart->xmit.head = huart->xmit.tail = 0;
 		WRITE_REG(txdma_reg->txdma_tmr_unit,	SystemCoreClock / 1000);  	/* 1 msec */
 		/* must be set before txdma_start_addr */
@@ -330,15 +316,12 @@ static void __uart_txdma_config(UART_HandleTypeDef *huart)
 		/* Use ring buffer for UART's Tx */
 		WRITE_REG(txdma_reg->txdma_enable,		0x5);
 	}
+	return HAL_OK;
 }
 
-static void __uart_rxdma_config(UART_HandleTypeDef *huart)
+static int _uart_rxdma_config(UART_HandleTypeDef *huart)
 {
 	uint8_t ch;
-
-	assert_param(huart);
-	assert_param(huart->rxdma);
-	assert_param(huart->Instance);
 
 	UART_Rxdma *rxdma_reg = huart->rxdma;
 
@@ -350,20 +333,10 @@ static void __uart_rxdma_config(UART_HandleTypeDef *huart)
 		{
 			ch = READ_REG(huart->Instance->dr);
 		}
-		if(g_dma_buffer[0].rx_used == 0)
-		{
-			huart->rxdma_buf = (uint8_t* )g_dma_buffer[0].rx_buffer;
-			g_dma_buffer[0].rx_used = 1;
-		}
-		else if(g_dma_buffer[1].rx_used == 0)
-		{
-			huart->rxdma_buf = (uint8_t* )g_dma_buffer[1].rx_buffer;
-			g_dma_buffer[1].rx_used = 1;
-		}
-		else
-		{
-			return;
-		}
+
+		UART_MALLOC(huart->rxdma_buf,UARXDMA_BUF_SZ);
+		memset(huart->rxdma_buf,0,UARXDMA_BUF_SZ);
+
 		WRITE_REG(rxdma_reg->rxdma_start_addr,		(uint32_t)huart->rxdma_buf);
 		WRITE_REG(rxdma_reg->rxdma_rd_adr,			(uint32_t)huart->rxdma_buf);
 
@@ -387,6 +360,7 @@ static void __uart_rxdma_config(UART_HandleTypeDef *huart)
 
 		WRITE_REG(rxdma_reg->rxdma_enable_sel,		(READ_REG(rxdma_reg->rxdma_enable_sel) | (DMA_GO)));
 	}
+	return HAL_OK;
 }
 
 int HAL_UART_Get_TX_FIFO_Space(UART_HandleTypeDef *huart)
@@ -395,13 +369,17 @@ int HAL_UART_Get_TX_FIFO_Space(UART_HandleTypeDef *huart)
 	return (READ_REG(huart->Instance->txr)&0x3f);
 }
 
-void HAL_UART_Rxdma_IRQ_Handler(UART_HandleTypeDef *huart)
+void HAL_UART_Rxdma_IRQ_Handler(void *arg)
 {
 	uint32_t offset_sw, offset_hw, rx_size, dma_start;
 	uint32_t icount_rx,tmp_u32;
 	uint8_t *sw_ptr, *buf_end_ptr, *u8_ptr;
 	uint8_t tmp_buf[UART_DMA_ALIGN_SIZE];
 	int i=0;
+
+	assert_param(arg);
+
+	UART_HandleTypeDef *huart = (UART_HandleTypeDef *)arg;
 
 	UART_Rxdma *rxdma_reg = huart->rxdma;
 
@@ -424,8 +402,8 @@ void HAL_UART_Rxdma_IRQ_Handler(UART_HandleTypeDef *huart)
 	icount_rx = 0;
 	while (rx_size > icount_rx && huart->rx_index < huart->rx_size)
 	{
-		if (!(((unsigned long)(sw_ptr)) & (UART_DMA_ALIGN_SIZE - 1))	/* 32-byte aligned */
-		    && ((rx_size - icount_rx) >= UART_DMA_ALIGN_SIZE) && ((huart->rx_size - icount_rx) >= UART_DMA_ALIGN_SIZE))
+		if (!(((unsigned long)(sw_ptr)) & 0xf)	&& ((rx_size - icount_rx) >= UART_DMA_ALIGN_SIZE) \
+			&& ((huart->rx_size - icount_rx) >= UART_DMA_ALIGN_SIZE)) 
 		{
 			memcpy(tmp_buf, sw_ptr, UART_DMA_ALIGN_SIZE);
 			u8_ptr = (uint8_t *)(tmp_buf);
@@ -435,8 +413,8 @@ void HAL_UART_Rxdma_IRQ_Handler(UART_HandleTypeDef *huart)
 			}
 			sw_ptr += UART_DMA_ALIGN_SIZE;
 			icount_rx += UART_DMA_ALIGN_SIZE;
-		}
-		else
+		} 
+		else if(huart->rx_index < huart->rx_size)
 		{
 			huart->pRxBuffPtr[huart->rx_index++] = *sw_ptr;
 			sw_ptr++;
@@ -457,44 +435,59 @@ void HAL_UART_Rxdma_IRQ_Handler(UART_HandleTypeDef *huart)
 	{
 		WRITE_REG(rxdma_reg->rxdma_rd_adr,(tmp_u32 - UARXDMA_BUF_SZ));
 	}
-	/* do dma for the next data*/
-	WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) | DMA_INT);
-	WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) | DMA_GO);
+	if(huart->rx_size == huart->rx_index)
+	{
+		WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) & ~DMA_INT);
+		WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) & ~DMA_GO);
+		huart->RxCpltCallback(huart);
+	}
+	else
+	{
+		/* do dma for the next data*/
+		WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) | DMA_INT);
+		WRITE_REG(rxdma_reg->rxdma_enable_sel,READ_REG((rxdma_reg->rxdma_enable_sel)) |  DMA_GO);
+	}
 }
 
 void HAL_UART_IRQHandler(void *arg)
 {
-	assert_param(arg);
-
 	UART_HandleTypeDef *huart = (UART_HandleTypeDef *)arg;
 
-	assert_param(huart->Instance);
+	if (huart == NULL || huart->Instance == NULL)
+	{
+	  return ;
+	}
 
 	unsigned int isc_temp = huart->Instance->isc;
 
 	if(isc_temp & SP_UART_ISC_RX)
 	{
-		__uart_rx_irq_handler(huart);
+		_uart_rx_irq_handler(huart);
 	}
 
 	if(isc_temp & SP_UART_ISC_TX)
 	{
-		__uart_tx_irq_handler(huart);
+		_uart_tx_irq_handler(huart);
 	}
 }
 
 HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
 {
-	int c = 0;
+	int c = 0,ret = HAL_OK;
+	uint8_t *data = pData;
 
-	assert_param(huart);
-	assert_param(huart->txdma);
-	assert_param(huart->txgdma);
-	assert_param(huart->Instance);
+	if(!huart || !huart->Instance || !huart->txdma || !huart->txgdma)
+	{
+		return	HAL_ERROR;
+	}
+	if(!IS_UART_TXDMA_INSTANCE(huart->txdma) || !IS_UART_TXGDMA_INSTANCE(huart->txgdma) || !IS_UART_INSTANCE(huart->Instance))
+	{
+		return	HAL_ERROR;
+	}
 
 	if (huart->gState == HAL_UART_STATE_READY)
 	{
-		if ((pData == NULL) || (Size == 0U))
+		if ((data == NULL) || (Size == 0U))
 	    {
 	      return  HAL_ERROR;
 	    }
@@ -506,9 +499,13 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
 		/*
 			0. config tx dma
 	    */
-	    __uart_txdma_config(huart);
+	    ret = _uart_txdma_config(huart);
 
-		__HAL_UNLOCK(huart);
+		if(ret != HAL_OK)
+		{
+			__HAL_UNLOCK(huart);
+			return  HAL_ERROR;;
+		}
 
 		/*
 		    2. copy data to fix dma position
@@ -521,9 +518,9 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
 				c = Size;
 			if (c <= 0)
 				break;
-			memcpy(huart->xmit.buf + huart->xmit.head, pData, c);
+			memcpy(huart->xmit.buf + huart->xmit.head, data, c);
 			huart->xmit.head = (huart->xmit.head + c) & (UATXDMA_BUF_SZ - 1);
-			pData += c;
+			data += c;
 			Size -= c;
 		}
 		/* Writting zero to flush RX FIFO */
@@ -531,7 +528,8 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
 		/*
 		    3. enable uart irq. send data in irq by dma mode
 		*/
-		__start_tx_irq(huart);
+		_start_tx_irq(huart);
+		__HAL_UNLOCK(huart);
 
 		return HAL_OK;
 	}
@@ -543,10 +541,16 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
 
 HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
 {
+	int ret = HAL_OK;
 
-	assert_param(huart);
-	assert_param(huart->rxdma);
-	assert_param(huart->Instance);
+	if (huart == NULL || huart->Instance == NULL || huart->rxdma == NULL)
+	{
+	  return HAL_ERROR;
+	}
+	if(!IS_UART_RXDMA_INSTANCE(huart->rxdma) || !IS_UART_INSTANCE(huart->Instance))
+	{
+		return	HAL_ERROR;
+	}
 
 	if (huart->RxState == HAL_UART_STATE_READY)
 	{
@@ -564,11 +568,10 @@ HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, uint8_t *pData
 	    huart->rx_index = 0;
 
 	    /* config rxdma  */
-	    __uart_rxdma_config(huart);
-
+	    ret = _uart_rxdma_config(huart);
 	    __HAL_UNLOCK(huart);
 
-	    return HAL_OK;
+	    return ret;
 	}
 	else
 	{
@@ -579,7 +582,11 @@ HAL_StatusTypeDef HAL_UART_Receive_DMA(UART_HandleTypeDef *huart, uint8_t *pData
 
 HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
 {
-	assert_param(huart);
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
+
 	if (huart->gState == HAL_UART_STATE_READY)
 	{
 		if ((pData == NULL) || (Size == 0U))
@@ -593,7 +600,7 @@ HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData
 	    huart->pTxBuffPtr = pData;
 	    huart->tx_size = Size;
 	    huart->tx_index = 0;
-		__start_tx_irq(huart);
+		_start_tx_irq(huart);
 
 	    __HAL_UNLOCK(huart);
 
@@ -608,7 +615,10 @@ HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData
 
 HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
 {
-	assert_param(huart);
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
 
 	if (huart->RxState == HAL_UART_STATE_READY)
 	{
@@ -625,7 +635,7 @@ HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData,
 		huart->rx_index = 0;
 
 		/* start rx irq */
-		__start_rx_irq(huart);
+		_start_rx_irq(huart);
 
 	    __HAL_UNLOCK(huart);
 
@@ -643,8 +653,10 @@ HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, u
 	uint8_t  *pdata8bits;
 	uint32_t tickstart;
 
-	assert_param(huart);
-	assert_param(huart->Instance);
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	    return HAL_ERROR;
+	}
 
 	if (huart->gState == HAL_UART_STATE_READY)
 	{
@@ -692,9 +704,10 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
 	uint8_t  *pdata8bits;
 	uint32_t tickstart;
 
-	assert_param(huart);
-	assert_param(huart->Instance);
-
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
 
 	if (huart->RxState == HAL_UART_STATE_READY)
 	{
@@ -745,8 +758,10 @@ HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart)
 {
 	uint8_t ch;
 
-	assert_param(huart);
-	assert_param(huart->Instance);
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
 
 	__HAL_LOCK(huart);
 
@@ -754,7 +769,7 @@ HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart)
 
 	 __HAL_UNLOCK(huart);
 
-	__stop_rx_irq(huart);
+	_stop_rx_irq(huart);
 
 	/* clear fifo if there is data in rxfifo */
 	WRITE_REG(huart->Instance->txr, 0);
@@ -766,15 +781,17 @@ HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart)
 
 HAL_StatusTypeDef HAL_UART_AbortTransmit(UART_HandleTypeDef *huart)
 {
-	assert_param(huart);
-
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+		return HAL_ERROR;
+	}
 	__HAL_LOCK(huart);
 
 	huart->tx_size = 0;
 
 	 __HAL_UNLOCK(huart);
 
-	__stop_tx_irq(huart);
+	_stop_tx_irq(huart);
 
 	huart->gState = HAL_UART_STATE_READY;
 
@@ -785,19 +802,19 @@ HAL_StatusTypeDef HAL_UART_Abort(UART_HandleTypeDef *huart)
 {
 	uint8_t ch;
 
-	assert_param(huart);
-	assert_param(huart->Instance);
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
 
-	UART_Rxdma *rxdma_reg = huart->rxdma;
+	_stop_tx_irq(huart);
 
-	__stop_tx_irq(huart);
-
-	__stop_rx_irq(huart);
+	_stop_rx_irq(huart);
 
 	/* Drop whatever is still in buffer */
-	if(rxdma_reg)
+	if(huart->rxdma)
 	{
-		WRITE_REG(rxdma_reg->rxdma_rd_adr,READ_REG(rxdma_reg->rxdma_wr_adr));
+		WRITE_REG(huart->rxdma->rxdma_rd_adr,READ_REG(huart->rxdma->rxdma_wr_adr));
 	}
 
 	/* Writting zero to flush TX FIFO */
@@ -823,34 +840,14 @@ uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart)
   return (uint32_t)(temp1 | temp2);
 }
 
-HAL_StatusTypeDef HAL_UART_Config_DMA_Buf(uint32_t* dma_start_addr)
-{
-	if((uint32_t)dma_start_addr & 0xfff)
-	{
-		return HAL_ERROR;
-	}
-
-	memset(g_dma_buffer,0,sizeof(DMA_Buffer_t) * 2);
-
-	g_dma_buffer[0].tx_buffer      =  (uint8_t *)dma_start_addr;
-	g_dma_buffer[0].tx_data_buffer =  g_dma_buffer[0].tx_buffer + UATXDMA_BUF_SZ;
-	g_dma_buffer[0].rx_buffer      =  g_dma_buffer[0].tx_data_buffer + UATXDMA_BUF_SZ;
-	g_dma_buffer[0].tx_used        =  0;
-
-	g_dma_buffer[1].tx_buffer      =  g_dma_buffer[0].rx_buffer + UATXDMA_BUF_SZ;
-	g_dma_buffer[1].tx_data_buffer =  g_dma_buffer[1].tx_buffer + UATXDMA_BUF_SZ;
-	g_dma_buffer[1].rx_buffer      =  g_dma_buffer[1].tx_data_buffer + UATXDMA_BUF_SZ;
-	g_dma_buffer[1].tx_used        =  0;
-
-	return HAL_OK;
-}
-
 HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 {
 
-	assert_param(IS_UART_INSTANCE(huart->Instance));
+	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
+	{
+	  return HAL_ERROR;
+	}
 
-	/* step 1: config pinmux */
 	switch((uint32_t)huart->Instance)
 	{
 		case (uint32_t)SP_UART0:
@@ -868,8 +865,17 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 		case (uint32_t)SP_UART4:
 			huart->uart_idx = 4;
 			break;
-		default:
+		case (uint32_t)SP_UART5:
+			huart->uart_idx = 6;
 			break;
+		case (uint32_t)SP_UART6:
+			huart->uart_idx = 7;
+			break;
+		case (uint32_t)SP_UART7:
+			huart->uart_idx = 8;
+			break;
+		default:
+			return HAL_ERROR;
 	}
 
 	/* step 3: set uart baudrate */
@@ -879,12 +885,12 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 	/* config line control register */
 	if(huart->Init.LcrInit.LCR_Init != UART_INIT_USE_DEFAULT_VALUE)
 	{
-		__uart_lcr_config(huart);
+		_uart_lcr_config(huart);
 	}
 
 	if(huart->Init.McrInit.MCR_Init != UART_INIT_USE_DEFAULT_VALUE)
 	{
-		__uart_mcr_config(huart);
+		_uart_mcr_config(huart);
 	}
 
 	UART_InitCallbacksToDefault(huart);
@@ -897,23 +903,28 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 
 HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 {
-  if (huart == NULL)
+
+  /* Check the parameters */
+  if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
   {
     return HAL_ERROR;
   }
 
-  /* Check the parameters */
-  assert_param(huart->Instance);
-  assert_param(IS_UART_INSTANCE(huart->Instance));
+  if(huart->txdma_buf && IS_UART_TXDMA_INSTANCE(huart->txdma))
+  {
+	  WRITE_REG(huart->txdma->txdma_sel,0xf); //unbind uartx
+	  UART_FREE(huart->txdma_buf);
+	  UART_FREE(huart->xmit.buf);
+  }
+  if(huart->rxdma_buf && IS_UART_RXDMA_INSTANCE(huart->rxdma))
+  {
+	  WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_INT);
+	  WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_GO);
+	  UART_FREE(huart->rxdma_buf);
+  }
 
-  if(huart->txdma_buf == g_dma_buffer[0].tx_buffer)
-  {
-  	memset(&g_dma_buffer[0],0,sizeof(DMA_Buffer_t));
-  }
-  else if(huart->txdma_buf == g_dma_buffer[1].tx_buffer)
-  {
-  	memset(&g_dma_buffer[1],0,sizeof(DMA_Buffer_t));
-  }
+  _stop_rx_irq(huart);
+  _stop_tx_irq(huart);
 
   huart->gState = HAL_UART_STATE_READY;
   huart->RxState = HAL_UART_STATE_READY;

@@ -35,7 +35,6 @@ static gpio_irq_conf_str gpio_irq_conf[EXTI_NUM];
 extern "C" {
 #endif
 
-extern void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin);
 
 #ifdef __cplusplus
 }
@@ -79,6 +78,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	uint16_t exti_pin = 0;
 	uint8_t index = 0;
 
+#ifdef SP7021
 	exti_pin = GPIO_TO_PINMUX(pin);
 	if(!IS_VALID_PINMUX(exti_pin))
 	{
@@ -86,8 +86,9 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 		//core_debug("ERROR: [EXTI] pin error!\n");
 		return;
 	}
-	HAL_PINMUX_Cfg(PINMUX_GPIO_INT0, exti_pin);
-
+#else
+	exti_pin = pin;
+#endif
 	index = get_idle_exti();
 
 	gpio_irq_conf[index].active = 1;
@@ -97,6 +98,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 
 	if(index == EXTI7_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT7, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI7_IRQn;
 		/* Set mode level-high, level-low, edge-rising, edge-falling*/
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
@@ -112,6 +114,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI6_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT6, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI6_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI6_IRQn, EXTI6_IRQHandler);
@@ -120,6 +123,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI5_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT5, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI5_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI5_IRQn, EXTI5_IRQHandler);
@@ -128,6 +132,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI4_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT4, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI4_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI4_IRQn, EXTI4_IRQHandler);
@@ -136,6 +141,7 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI3_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT3, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI3_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI3_IRQn, EXTI3_IRQHandler);
@@ -144,14 +150,16 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI2_INDEX)
 	{
-		gpio_irq_conf[index].exti_handles.irqn = EXTI5_IRQn;
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT2, exti_pin);
+		gpio_irq_conf[index].exti_handles.irqn = EXTI2_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI5_IRQn, EXTI5_IRQHandler);
-		IRQ_SetPriority(EXTI5_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI5_IRQn);
+		IRQ_SetHandler(EXTI2_IRQn, EXTI2_IRQHandler);
+		IRQ_SetPriority(EXTI2_IRQn, IRQ_TYPE_IRQ);
+		IRQ_Enable(EXTI2_IRQn);
 	}
 	else if(index == EXTI1_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT1, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI1_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI1_IRQn, EXTI1_IRQHandler);
@@ -160,10 +168,11 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	}
 	else if(index == EXTI0_INDEX)
 	{
+		HAL_PINMUX_Cfg(PINMUX_GPIO_INT0, exti_pin);
 		gpio_irq_conf[index].exti_handles.irqn = EXTI0_IRQn;
 		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
 		IRQ_SetHandler(EXTI0_IRQn, EXTI0_IRQHandler);
-		IRQ_SetPriority(EXTI0_IRQn, IRQ_TYPE_IRQ);
+		IRQ_SetPriority(EXTI0_IRQn, 0xe0);
 		IRQ_Enable(EXTI0_IRQn);
 	}
 }

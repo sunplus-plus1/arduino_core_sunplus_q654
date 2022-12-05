@@ -88,7 +88,7 @@ typedef struct __SPI_HandleTypeDef
 #define SPI_FIRSTBIT_LSB                (0x00000001U)
 
 #define SPI_FREQ_MIN                    (40000)     /* spi clk  min is 40k */
-#define SPI_FREQ_MAX                    (50000000)  /* spi clk  max is 50M */
+#define SPI_FREQ_MAX                    (25000000)  /* spi clk  max is 25M */
 /* SPI MST DMA_SIZE */
 #define MST_DMA_RSIZE(x)       (x<<16)
 #define MST_DMA_WSIZE(x)       (x<<0)
@@ -97,8 +97,8 @@ typedef struct __SPI_HandleTypeDef
 #define MST_DMA_EN             (1<<1)
 #define MST_DMA_START          (1<<0)
 
-/* full duplex, fifo length is config 16 byte */
-#define SPI_FIFO_MAX_LENGTH     (16)
+/* full duplex, fifo length is config 64 byte */
+#define SPI_FIFO_MAX_LENGTH     (64)
 
 /* SPI MST STATUS */
 

@@ -125,7 +125,11 @@ else
 #arduino C++ example
 DIRS += $(TOP)/libraries/examples/VirtIOSerial
 #DIRS += $(TOP)/libraries/examples/timer
+#DIRS += $(TOP)/libraries/examples/uart
+#DIRS += $(TOP)/libraries/examples/spi
 #DIRS += $(TOP)/libraries/examples/i2c
+#DIRS += $(TOP)/libraries/examples/gpio
+#DIRS += $(TOP)/libraries/examples/pwm
 #DIRS += $(TOP)/libraries/examples/exti
 #DIRS = $(TOP)/cores/arduino/sunplus
 #DIRS += $(TOP)/libraries/DriverWrapper/src

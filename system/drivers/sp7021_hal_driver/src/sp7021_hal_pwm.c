@@ -87,16 +87,11 @@ static int __Get_available_new_dd(int pwm_num,uint32_t dd_freq)
 }
 
 /*frequency = (1 / sys clk * PWM DD0(16bit)) * 256    freq = 12Hz~791Khz*/
-static int __PWM_Set_by_period(int pwm_num,uint32_t freq,uint32_t duty_cycle)
+static int __PWM_Set_by_period(int pwm_num,uint32_t period_ns,uint32_t duty_ns)
 {
 	uint32_t dd_sel_new = ePWM_DD_MAX;
 	uint32_t duty = 0, dd_freq = 0;
-	uint32_t period_ns,duty_ns;
 	uint64_t tmp;
-
-	/* get period and duty*/
-	period_ns = 1000000000/freq;
-	duty_ns = period_ns*duty_cycle/100;
 
 	tmp = 202500000 * (uint64_t)period_ns+(256000000000ULL >> 1);
 	dd_freq = (uint32_t)(tmp/256000000000ULL);
@@ -140,39 +135,43 @@ static int __PWM_Set_by_period(int pwm_num,uint32_t freq,uint32_t duty_cycle)
 
 int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init)
 {
-
 	pwm_assert_param(PWM_Init);
-	pwm_assert_param(PWM_Init->pwm_freq);
-	pwm_assert_param(IS_PWM_NUM_VALID(PWM_Init->pwm_num));
-	pwm_assert_param(IS_PWM_DUTY_VALID(PWM_Init->duty_cycle));
-	
-	PWM_Init->Pin = GPIO_TO_PINMUX(PWM_Init->Pin);
-	if(IS_VALID_PINMUX(PWM_Init->Pin) == 0)
+	if(!PWM_Init || !IS_PWM_NUM_VALID(PWM_Init->pwm_num))
 	{
-		return -1;
+		return HAL_ERROR;
 	}
-	/* set pwm pinmux */
-	HAL_PINMUX_Cfg((PINMUX_PWM0+PWM_Init->pwm_num),PWM_Init->Pin);
 
 	/* only init the pwm ctrl regster once */
 	__PWM_Register_Init();
 
-	return __PWM_Set_by_period(PWM_Init->pwm_num,PWM_Init->pwm_freq,PWM_Init->duty_cycle);
+	return __PWM_Set_by_period(PWM_Init->pwm_num,PWM_Init->period_ns,PWM_Init->duty_ns);
 }
 
 
-void HAL_PWM_ENABLE(int pwm_num)
+void HAL_PWM_Start(int pwm_num)
 {
-	pwm_assert_param(IS_PWM_NUM_VALID(pwm_num));
+	if(!IS_PWM_NUM_VALID(pwm_num))
+	{
+		return ;
+	}
 
 	PWM_CTRL_REG->pwm_bypass &= ~(1<<pwm_num); //bypass disable
 	PWM_CTRL_REG->pwm_en |= 1<<pwm_num; 	   // set pwm enable
 }
 
-void HAL_PWM_DISABLE(int pwm_num)
+void HAL_PWM_Stop(int pwm_num)
 {
-	pwm_assert_param(IS_PWM_NUM_VALID(pwm_num));
+	if(!IS_PWM_NUM_VALID(pwm_num))
+	{
+		return ;
+	}
 
 	PWM_CTRL_REG->pwm_bypass &= ~(1<<pwm_num);	//bypass disable
 	PWM_CTRL_REG->pwm_en &= ~(1<<pwm_num); 		//  pwm  disable
 }
+
+void HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
+{
+	__PWM_Set_by_period(pwm_num,period,duty);
+}
+

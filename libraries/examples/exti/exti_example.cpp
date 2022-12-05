@@ -17,6 +17,7 @@
 GPIO_InitTypeDef gpio;
 static int trigger;
 
+#define INPUT_PIN	 GPIO_(26)
 void gpio_int_irq_callback()
 {
 /* 
@@ -26,55 +27,51 @@ void gpio_int_irq_callback()
  */
 	if (trigger == HIGH)
 	{
-		::printf("exti high-level!\n");
-		HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_LOW);
+		printf("exti high-level!\n");
+		digitalWrite(INPUT_PIN, LOW);
 	}
 	else if (trigger == RISING)
 	{
-		::printf("exti edge-rising!\n");
+		printf("exti edge-rising!\n");
 	}
 }
 
 void setup()
 {
-	trigger = RISING;
-	
-	gpio.Pin = GPIO_P4_06;
-	gpio.opendrain = GPIO_OD_DISABLE;
-	gpio.Mode = GPIO_OUTPUT_MODE;
-	HAL_GPIO_Init(&gpio);
+	trigger = HIGH;
+	pinMode(INPUT_PIN, OUTPUT);
+	digitalWrite(INPUT_PIN, LOW);
 }
 
 void loop()
 {
 	int i = 0;
-	attachInterrupt(PIN_EXT_INT0, &gpio_int_irq_callback, trigger);
+	//attachInterrupt(PIN_EXT_INT0, &gpio_int_irq_callback, trigger);
 	if(trigger == RISING)
 	{
 		/* 5 pulses , 3 seconds per pulse*/
 		i = 5;
 		while(i)
 		{
-			HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_LOW);
+			digitalWrite(INPUT_PIN, LOW);
 			delay(3000);
-			HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_HIGH);
-			delay(3000);
+			digitalWrite(INPUT_PIN, HIGH);
+
 			i--;
 		}
-		HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_LOW);
+		digitalWrite(INPUT_PIN, LOW);
 	}
 
 	if(trigger == HIGH)
 	{
 		/* 1 pulses , 1 seconds high level*/
 		i = 2;
-		while(i)
+		while(1)
 		{
-			HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_LOW);
+			digitalWrite(INPUT_PIN, LOW);
 			delay(1000);
-			HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_HIGH);
+			digitalWrite(INPUT_PIN, HIGH);
 			delay(1000);
-			HAL_GPIO_WritePin(GPIO_P4_06, GPIO_OUT_LOW);
 			i--;
 		}
 	}

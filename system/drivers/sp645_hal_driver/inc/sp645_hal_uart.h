@@ -289,7 +289,6 @@ HAL_StatusTypeDef HAL_UART_Receive_IT(UART_HandleTypeDef *huart, uint8_t *pData,
 HAL_StatusTypeDef HAL_UART_AbortTransmit(UART_HandleTypeDef *huart);
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart);
 HAL_StatusTypeDef HAL_UART_Abort(UART_HandleTypeDef *huart);
-HAL_StatusTypeDef HAL_UART_Config_DMA_Buf(uint32_t* dma_start_addr);
 uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart);
 int HAL_UART_Get_TX_FIFO_Space(UART_HandleTypeDef *huart);
 void HAL_UART_IRQHandler(void *arg);
