@@ -32,7 +32,7 @@ extern int errno;
 #define UART_RTS_B          (1 << 1)
 
 // UART
-#define UART_REG            SP_UART0
+#define UART_REG            SP_UART1
 #define UART_tx_rdy()       (UART_REG->lsr & UART_LSR_TX_RDY)
 #define UART_rx_rdy()       (UART_REG->lsr & UART_LSR_RX_RDY)
 #define UART_tx_empty()     (UART_REG->lsr & UART_TX_EMPTY)
@@ -84,7 +84,7 @@ int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
 	extern char __bss_end__;
 	static char *__brkval = &__bss_end__;
     char *ret = __brkval;
-	
+
      __brkval += incr;
     return (caddr_t)ret;
 }
@@ -97,21 +97,21 @@ static void *heap_end = 0;
 void* _sbrk(int incr)
  {
 	 char *prev_heap_end;
- 
+
 	 if (heap_end == 0)
 	 {
 		 heap_end = (void*) &_heap_bottom;
 	 }
- 
+
 	 prev_heap_end = heap_end;
- 
+
 	 if ((heap_end + incr) > (void*)&_heap_top)
 	 {
 		 return (void*)-1;
 	 }
- 
+
 	 heap_end += incr;
- 
+
 	 return prev_heap_end;
  }
 #endif
@@ -121,7 +121,7 @@ void* _sbrk(int incr)
  {
    return -1;
  }
- 
+
  __attribute__((weak))
  int _fstat(UNUSED(int file), struct stat *st)
  {
@@ -134,13 +134,13 @@ void* _sbrk(int incr)
  {
 	return 1;
  }
- 
+
  __attribute__((weak))
  int _lseek(UNUSED(int file), UNUSED(int ptr), UNUSED(int dir))
  {
 	return 0;
  }
- 
+
  __attribute__((weak))
  int _read(UNUSED(int file), UNUSED(char *ptr), UNUSED(int len))
  {

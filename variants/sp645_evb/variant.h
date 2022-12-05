@@ -22,7 +22,7 @@
 
 
 
-/* EXT_INT0:  from  1 ~ 7 */
+/* EXT_INT0:  set  x1 ~ x7 */
 
 #define PIN_EXT_INT0	1
 

@@ -25,16 +25,16 @@ void attachInterrupt(uint32_t pin, callback_function_t callback, uint32_t mode)
 
 	switch (mode)
 	{
-	case FALLING :
+	case FALLING:
 		it_mode = IRQ_MODE_TRIG_EDGE_FALLING;
 		break;
-	case LOW :
+	case LOW:
 		it_mode = IRQ_MODE_TRIG_LEVEL_LOW;
 		break;
-	case RISING :
+	case RISING:
 		it_mode = IRQ_MODE_TRIG_EDGE_RISING;
 		break;
-	case HIGH :
+	case HIGH:
 		it_mode = IRQ_MODE_TRIG_LEVEL_HIGH;
 		break;
 	default:

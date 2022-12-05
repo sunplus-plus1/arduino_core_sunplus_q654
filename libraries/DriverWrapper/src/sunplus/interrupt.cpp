@@ -12,14 +12,30 @@ typedef enum {
   EXTI_NUM
 } exti_index_e;
 
-//static EXTI_HandleTypeDef exti_handles[EXTI_NUM];
+struct irq_conf{
+	IRQn_Type irqn;
+	PINMUX_Type pinctrl;
+	uint32_t priority;	/* arm926 don't have NVIC, priority only irq and fiq;
+				 * cortex-m4 provide priority level 0~255
+				 */
+	void (*handler)(void);
+} exti_config[8] = {
+	{EXTI0_IRQn, PINMUX_GPIO_INT0, IRQ_TYPE_IRQ, EXTI0_IRQHandler},
+	{EXTI1_IRQn, PINMUX_GPIO_INT1, IRQ_TYPE_IRQ, EXTI1_IRQHandler},
+	{EXTI2_IRQn, PINMUX_GPIO_INT2, IRQ_TYPE_IRQ, EXTI2_IRQHandler},
+	{EXTI3_IRQn, PINMUX_GPIO_INT3, IRQ_TYPE_IRQ, EXTI3_IRQHandler},
+	{EXTI4_IRQn, PINMUX_GPIO_INT4, IRQ_TYPE_IRQ, EXTI4_IRQHandler},
+	{EXTI5_IRQn, PINMUX_GPIO_INT5, IRQ_TYPE_IRQ, EXTI5_IRQHandler},
+	{EXTI6_IRQn, PINMUX_GPIO_INT6, IRQ_TYPE_IRQ, EXTI6_IRQHandler},
+	{EXTI7_IRQn, PINMUX_GPIO_INT7, IRQ_TYPE_IRQ, EXTI7_IRQHandler},
+};
 
 #if defined(SP645) || defined(SP7350)
 namespace std {
-	void __throw_bad_function_call() 
-	{ 
-		while(1); 
-	}; 
+	void __throw_bad_function_call()
+	{
+		while(1);
+	};
 }
 #endif
 typedef struct {
@@ -44,7 +60,7 @@ uint8_t get_idle_exti(void)
 {
 	uint8_t index, i;
 
-	for(i = 7; i >= 0; i--)
+	for(i = 0; i < 8; i++)
 	{
 		if (gpio_irq_conf[i].active == 0)
 		{
@@ -60,7 +76,7 @@ uint8_t get_current_exti(uint16_t pin)
 {
 	uint8_t index, i;
 
-	for(i = 7; i >= 0; i--)
+	for(i = 0; i < 8; i++)
 	{
 		if ((gpio_irq_conf[i].active == 1)&&(gpio_irq_conf[i].pin == pin))
 		{
@@ -78,7 +94,6 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 	uint16_t exti_pin = 0;
 	uint8_t index = 0;
 
-#ifdef SP7021
 	exti_pin = GPIO_TO_PINMUX(pin);
 	if(!IS_VALID_PINMUX(exti_pin))
 	{
@@ -86,95 +101,27 @@ void sunplus_interrupt_enable(uint16_t pin, callback_function_t callback, uint32
 		//core_debug("ERROR: [EXTI] pin error!\n");
 		return;
 	}
-#else
-	exti_pin = pin;
-#endif
+
 	index = get_idle_exti();
 
 	gpio_irq_conf[index].active = 1;
 	gpio_irq_conf[index].pin = pin;
 	gpio_irq_conf[index].callback = callback;
-	gpio_irq_conf[index].exti_handles.trigger = mode;//4
+	gpio_irq_conf[index].exti_handles.trigger = mode;
 
-	if(index == EXTI7_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT7, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI7_IRQn;
-		/* Set mode level-high, level-low, edge-rising, edge-falling*/
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		/*
-		 * Regsiter Handler, implement in HAL layer
-		 * (system/drivers/sp7021_hal_driver/src/sp7021_hal_irq_ctrl.c)
-		 */
-		IRQ_SetHandler(EXTI7_IRQn, EXTI7_IRQHandler);
-		/* arm926 don't have NVIC, priority only irq and fiq */
-		IRQ_SetPriority(EXTI7_IRQn, IRQ_TYPE_IRQ);
-		/* enable irq */
-		IRQ_Enable(EXTI7_IRQn);
-	}
-	else if(index == EXTI6_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT6, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI6_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI6_IRQn, EXTI6_IRQHandler);
-		IRQ_SetPriority(EXTI6_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI6_IRQn);
-	}
-	else if(index == EXTI5_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT5, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI5_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI5_IRQn, EXTI5_IRQHandler);
-		IRQ_SetPriority(EXTI5_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI5_IRQn);
-	}
-	else if(index == EXTI4_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT4, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI4_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI4_IRQn, EXTI4_IRQHandler);
-		IRQ_SetPriority(EXTI4_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI4_IRQn);
-	}
-	else if(index == EXTI3_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT3, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI3_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI3_IRQn, EXTI3_IRQHandler);
-		IRQ_SetPriority(EXTI3_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI3_IRQn);
-	}
-	else if(index == EXTI2_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT2, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI2_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI2_IRQn, EXTI2_IRQHandler);
-		IRQ_SetPriority(EXTI2_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI2_IRQn);
-	}
-	else if(index == EXTI1_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT1, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI1_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI1_IRQn, EXTI1_IRQHandler);
-		IRQ_SetPriority(EXTI1_IRQn, IRQ_TYPE_IRQ);
-		IRQ_Enable(EXTI1_IRQn);
-	}
-	else if(index == EXTI0_INDEX)
-	{
-		HAL_PINMUX_Cfg(PINMUX_GPIO_INT0, exti_pin);
-		gpio_irq_conf[index].exti_handles.irqn = EXTI0_IRQn;
-		HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
-		IRQ_SetHandler(EXTI0_IRQn, EXTI0_IRQHandler);
-		IRQ_SetPriority(EXTI0_IRQn, 0xe0);
-		IRQ_Enable(EXTI0_IRQn);
-	}
+	HAL_PINMUX_Cfg(exti_config[index].pinctrl, exti_pin);
+	gpio_irq_conf[index].exti_handles.irqn = exti_config[index].irqn;
+
+	/* Set mode level-high, level-low, edge-rising, edge-falling*/
+	HAL_EXTI_SetMode(&(gpio_irq_conf[index].exti_handles));
+
+	/* Regsiter Handler, implement in HAL layer */
+	IRQ_SetHandler(exti_config[index].irqn, exti_config[index].handler);
+
+	IRQ_SetPriority(exti_config[index].irqn, exti_config[index].priority);
+
+	/* enable irq */
+	IRQ_Enable(exti_config[index].irqn);
 }
 
 void sunplus_interrupt_enable(uint16_t pin, void (*callback)(void), uint32_t mode)
@@ -197,8 +144,7 @@ void sunplus_interrupt_disable(uint16_t pin)
 
 void EXTI0_IRQHandler(void)
 {
-	uint8_t index = EXTI0_INDEX;
-	uint32_t irqn = EXTI0_IRQn;
+	uint8_t index = EXTI0_INDEX;;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -213,7 +159,6 @@ void EXTI0_IRQHandler(void)
 void EXTI1_IRQHandler(void)
 {
 	uint8_t index = EXTI1_INDEX;
-	uint32_t irqn = EXTI1_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -228,7 +173,6 @@ void EXTI1_IRQHandler(void)
 void EXTI2_IRQHandler(void)
 {
 	uint8_t index = EXTI2_INDEX;
-	uint32_t irqn = EXTI2_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -243,7 +187,6 @@ void EXTI2_IRQHandler(void)
 void EXTI3_IRQHandler(void)
 {
 	uint8_t index = EXTI3_INDEX;
-	uint32_t irqn = EXTI3_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -258,7 +201,6 @@ void EXTI3_IRQHandler(void)
 void EXTI4_IRQHandler(void)
 {
 	uint8_t index = EXTI4_INDEX;
-	uint32_t irqn = EXTI4_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -273,7 +215,6 @@ void EXTI4_IRQHandler(void)
 void EXTI5_IRQHandler(void)
 {
 	uint8_t index = EXTI5_INDEX;
-	uint32_t irqn = EXTI5_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -288,7 +229,6 @@ void EXTI5_IRQHandler(void)
 void EXTI6_IRQHandler(void)
 {
 	uint8_t index = EXTI6_INDEX;
-	uint32_t irqn = EXTI6_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))
@@ -303,7 +243,6 @@ void EXTI6_IRQHandler(void)
 void EXTI7_IRQHandler(void)
 {
 	uint8_t index = EXTI7_INDEX;
-	uint32_t irqn = EXTI7_IRQn;
 	uint32_t it_mode = gpio_irq_conf[index].exti_handles.trigger;
 
 	if(HAL_EXTI_EdgePatch(&(gpio_irq_conf[index].exti_handles)))

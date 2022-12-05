@@ -1,6 +1,6 @@
 #include "sp7021_hal_exti.h"
 
-/* There is BUG in EXIT edge triggerger, workaround for the trouble */
+/* There is BUG in EXIT edge trigger, workaround for the trouble */
 HAL_StatusTypeDef HAL_EXTI_SetMode(EXTI_HandleTypeDef *hexti)
 {
 	int idx = 0;
