@@ -26,7 +26,7 @@ TwoWire *i2cm_test;
 
 void setup()
 {
-	i2cm_test = new TwoWire(SP_I2CM4);
+	i2cm_test = new TwoWire(SP_I2CM3);
 }
 
 void loop()
