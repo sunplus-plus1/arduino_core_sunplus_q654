@@ -1,40 +1,9 @@
 ifeq ($(LVGL),1)
 
 # lvgl
-DIRS += $(TOP)/libraries/lvgl/src/core
-DIRS += $(TOP)/libraries/lvgl/src/draw
-DIRS += $(TOP)/libraries/lvgl/src/draw/sw
-DIRS += $(TOP)/libraries/lvgl/src/font
-DIRS += $(TOP)/libraries/lvgl/src/hal
-DIRS += $(TOP)/libraries/lvgl/src/misc
-DIRS += $(TOP)/libraries/lvgl/src/widgets
-
-# lvgl extra
-DIRS += $(TOP)/libraries/lvgl/src/extra
-DIRS += $(TOP)/libraries/lvgl/src/extra/layouts/flex
-DIRS += $(TOP)/libraries/lvgl/src/extra/layouts/grid
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/calendar
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/chart
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/colorwheel
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/imgbtn
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/keyboard
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/list
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/meter
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/msgbox
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/spinbox
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/tabview
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/tileview
-DIRS += $(TOP)/libraries/lvgl/src/extra/widgets/win
-#DIRS += $(TOP)/libraries/lvgl/src/extra/themes/default
+DIRS += $(shell find $(TOP)/libraries/lvgl/src -type d)
 
 # lvgl demo
-DIRS += $(TOP)/libraries/lvgl/demos/benchmark
-DIRS += $(TOP)/libraries/lvgl/demos/benchmark/assets
-DIRS += $(TOP)/libraries/lvgl/demos/keypad_encoder
-DIRS += $(TOP)/libraries/lvgl/demos/music
-DIRS += $(TOP)/libraries/lvgl/demos/music/assets
-DIRS += $(TOP)/libraries/lvgl/demos/stress
-DIRS += $(TOP)/libraries/lvgl/demos/widgets
-DIRS += $(TOP)/libraries/lvgl/demos/widgets/assets
+DIRS += $(shell find $(TOP)/libraries/lvgl/demos -type d)
 
 endif
