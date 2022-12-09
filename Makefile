@@ -4,6 +4,7 @@ CHIP     ?= Q645
 CHIPDIRS ?= sp645
 FREERTOS ?= 0
 OPENAMP  ?= 0
+LVGL     ?= 0
 
 #for cunit test
 CUNIT ?= 0
@@ -19,7 +20,6 @@ FREERTOS = 1
 else #ifeq ($(CHIP),Q628)
 OPENAMP  = 1
 endif
-
 
 LD_SRC = $(VARIANTS_PATH)/ldscript.ldi
 LD_FILE = $(VARIANTS_PATH)/ldscript.ld
@@ -69,6 +69,7 @@ DIRS += $(TOP)/libraries/SPI/src/utility
 DIRS += $(TOP)/libraries/Wire/src
 DIRS += $(TOP)/libraries/Wire/src/utility
 DIRS += $(TOP)/libraries/IWatchdog/src
+
 DIRS += $(TOP)/cores/arduino
 DIRS += $(TOP)/cores/arduino/avr
 DIRS += $(TOP)/cores/arduino/sunplus
@@ -82,39 +83,9 @@ DIRS += $(TOP)/CUnit/Cunit/Sources/Framework
 DIRS += $(TOP)/CUnit
 endif
 
-
-###  OPENAMP ###
-ifeq ($(OPENAMP),1)
-#OpenAMP libmetal log on
-CCFLAGS += -DDEFAULT_LOGGER_ON -DMETAL_INTERNAL
-# virt_uart
-CCFLAGS += -DVIRTIOCON -DVIRTIO_SLAVE_ONLY
-#OpenAMP headers files
-CCFLAGS += -I$(TOP)/cores/arduino/sunplus/OpenAMP
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/libmetal/lib/include
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/lib/include
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/open-amp/apps/machine/sunplus
-CCFLAGS += -I$(TOP)/system/Middlewares/OpenAMP/virt_driver
-
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic
-ifeq ($(CHIP),Q628)
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/a926
-else
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/libmetal/generic/cm4
-endif
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/machine
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/proxy
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/remoteproc
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/rpmsg
-DIRS += $(TOP)/cores/arduino/sunplus/OpenAMP/open-amp/virtio
-DIRS += $(TOP)/system/Middlewares/OpenAMP/virt_driver
-endif
-
-#include freertos files
 sinclude makefile.freertos
+sinclude makefile.openamp
+sinclude makefile.lvgl
 
 # example
 ifeq ($(FREERTOS),1)
@@ -123,8 +94,11 @@ CCFLAGS += -DFREERTOS
 CXXSOURCES += $(TOP)/libraries/examples/rtos/example.cpp
 else
 #arduino C++ example
+ifeq ($(OPENAMP),1)
 DIRS += $(TOP)/libraries/examples/VirtIOSerial
-#DIRS += $(TOP)/libraries/examples/timer
+else
+DIRS += $(TOP)/libraries/examples/timer
+endif
 #DIRS += $(TOP)/libraries/examples/uart
 #DIRS += $(TOP)/libraries/examples/spi
 #DIRS += $(TOP)/libraries/examples/i2c
