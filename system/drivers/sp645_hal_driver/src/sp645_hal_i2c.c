@@ -717,7 +717,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c,
 {
 	uint32_t int0 = 0;
 
-	if (hi2c->State == HAL_I2C_STATE_READY)
+	if (hi2c->State != HAL_I2C_STATE_READY)
 		return HAL_BUSY;
 
 	i2c_interrupt_control_mask(hi2c->Index, 0);
@@ -1367,11 +1367,4 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 	default:
 		break;
 	}
-}
-
-void I2C_HAL_TEST_IRQHandler()
-{
-	//xtdebug
-	//printf(">>>>>Index=%d State=%x\n", i2c_handles[0]->Index, i2c_handles[0]->State);
-	HAL_I2C_IRQHandler(i2c_handles[0]);
 }
