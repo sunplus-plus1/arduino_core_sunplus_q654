@@ -813,6 +813,11 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c)
 	return hi2c->ErrorCode;
 }
 
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c)
+{
+	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
+}
+
 static HAL_StatusTypeDef i2c_timeout(I2C_HandleTypeDef * hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
 
@@ -1008,7 +1013,7 @@ static void _i2c_data_set_modify(I2C_HandleTypeDef * hi2c, unsigned char *wdata,
 {
 	unsigned int i, j;
 	unsigned int index = (size - 1) / 4;
-	unsigned int cnt = size / 4;	// size 2,cnt 0 
+	unsigned int cnt = size / 4;	// size 2,cnt 0
 	unsigned int remain = size % 4;	//remain 2
 	unsigned int reg_val[8] = { 0 };
 
@@ -1311,10 +1316,4 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 	default:
 		break;
 	}
-}
-
-void I2C_HAL_TEST_IRQHandler()
-{
-	//printf(">>>>>Index=%d State=%x\n", i2c_handles[0]->Index, i2c_handles[0]->State);//xtdebug
-	HAL_I2C_IRQHandler(i2c_handles[0]);
 }

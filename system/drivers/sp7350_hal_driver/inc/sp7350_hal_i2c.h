@@ -144,7 +144,7 @@
 #define I2C_MASTER_NUM			4
 #define I2C_MSG_DATA_SIZE		255
 
-#define I2C_CLK_SOURCE_FREQ		27000  // KHz(27MHz)
+#define I2C_CLK_SOURCE_FREQ		25000  // KHz(25MHz)
 
 #define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->Instance->interrupt) & \
                                                     (__FLAG__)) == (__FLAG__)) ? SET : RESET)
@@ -162,11 +162,11 @@ CYG_MACRO_START                                 \
 CYG_MACRO_END
 
 // Invalidate cache lines in the given range without writing to memory.
-#define HAL_DCACHE_INVALIDATE( _base_ , _size_ ) 
+#define HAL_DCACHE_INVALIDATE( _base_ , _size_ )
 
 // Write dirty cache lines to memory for the given address range.
 #define HAL_DCACHE_STORE( _base_ , _size_ )
-											
+
 
 /**
   * @}
@@ -235,7 +235,7 @@ typedef enum
 } I2C_Status_e;
 
 typedef enum
-{	
+{
 	I2C_DMA_WRITE_MODE,
 	I2C_DMA_READ_MODE
 } I2C_DMA_RW_Mode_e;
@@ -254,7 +254,7 @@ typedef enum
 } I2C_Active_Mode_e;
 
 typedef struct
-{ 
+{
 	uint32_t Timing;              /*!< Specifies the I2C_TIMINGR_register value.
                                   This parameter calculated by referring to I2C initialization
                                          section in Reference manual */
@@ -278,13 +278,13 @@ typedef struct __I2C_HandleTypeDef
 	__IO HAL_I2C_StateTypeDef  State;          /*!< I2C communication state                   */
 	__IO uint32_t              ErrorCode;      /*!< I2C Error code                            */
 	__IO uint32_t              AddrEventCount; /*!< I2C Address Event counter     	*/
-	
+
 	volatile GDMA_TypeDef	   *gdma;
 	uint8_t 				   Index;
 	__IO uint16_t 			   RegDataIndex;
 	uint32_t				   BurstCount;
 	uint32_t				   BurstRemainder;
-	
+
 } I2C_HandleTypeDef;
 
 void I2C_HAL_TEST_IRQHandler(void);
@@ -305,15 +305,15 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t D
 												  uint32_t Size);
 HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
 												 uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, 
-												uint32_t Size);											 
+HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
+												uint32_t Size);
 HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
                                               uint16_t Size);
 HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
                                              uint16_t Size);
-HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef *hi2c);
-
-uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c);
+HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
+uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
 
 void HAL_I2C_IRQHandler( I2C_HandleTypeDef *hi2c);
 #endif

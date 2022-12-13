@@ -60,11 +60,9 @@ private:
 	void resetTxBuffer(void);
 
 public:
-	 TwoWire();
-	 TwoWire(uint8_t sda, uint8_t scl);
-//#ifdef SP645
-	 TwoWire(volatile I2C_TypeDef *instance);
-//#endif
+	TwoWire();
+	TwoWire(uint8_t sda, uint8_t scl);
+	TwoWire(I2C_TypeDef * instance);
 	// setSCL/SDA have to be called before begin()
 	void setSCL(uint32_t scl) {
 		_i2c.pin_scl = scl;

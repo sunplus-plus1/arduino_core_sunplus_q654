@@ -323,5 +323,9 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef * hi2c, uint16_t D
 HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint16_t Size);
 HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint16_t Size);
 
+HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
+uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
+
 void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c);
 #endif

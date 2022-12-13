@@ -139,10 +139,10 @@
 #define I2C_CLKEN(id, val)          ((1 << (16 + id)) | (val << id))
 #define I2C_GCLKEN(id, val)         ((1 << (16 + id)) | (val << id))
 
-#define I2C_MASTER_NUM			4
+#define I2C_MASTER_NUM			5
 #define I2C_MSG_DATA_SIZE		255
 
-#define I2C_CLK_SOURCE_FREQ		27000	// KHz(27MHz)
+#define I2C_CLK_SOURCE_FREQ		25000	// KHz(25MHz)
 
 #define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->Instance->interrupt) & \
                                                     (__FLAG__)) == (__FLAG__)) ? SET : RESET)
@@ -258,8 +258,8 @@ typedef struct {
 typedef struct __I2C_HandleTypeDef {
 	__IO I2C_TypeDef *Instance;	/*!< I2C registers base address */
 	I2C_InitTypeDef Init;	/*!< I2C communication parameters */
-	__IO uint8_t *pBuffPtr;	/*!< Pointer to I2C transfer buffer */
-	__IO uint32_t XferSize;	/*!< I2C transfer size */
+	uint8_t *pBuffPtr;	/*!< Pointer to I2C transfer buffer */
+	uint32_t XferSize;	/*!< I2C transfer size */
 	__IO uint32_t XferCount;	/*!< I2C transfer counter */
 	__IO uint32_t XferOptions;	/*!< I2C sequantial transfer options, this parameter can
 					   be a value of @ref I2C_XFEROPTIONS */
@@ -301,8 +301,18 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c, uint1
 HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
 						uint8_t * pData, uint16_t Size);
 HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
-
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
 uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
 
 void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c);
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void I2C_HAL_IT_MODE_TEST(void);
+#ifdef __cplusplus
+}
+#endif
+
 #endif

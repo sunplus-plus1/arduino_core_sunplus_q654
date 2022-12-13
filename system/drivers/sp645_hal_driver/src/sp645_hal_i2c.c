@@ -35,7 +35,6 @@ static void _i2c_dma_rw_mode_set(I2C_HandleTypeDef * hi2c, I2C_DMA_RW_Mode_e mod
 static void _i2c_dma_int_en_set(I2C_HandleTypeDef * hi2c, uint32_t int0);
 static void _i2c_dma_go_set(I2C_HandleTypeDef * hi2c);
 
-static I2C_HandleTypeDef *i2c_handles[4];
 uint8_t tx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
 uint8_t rx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
 
@@ -58,7 +57,6 @@ HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef * hi2c)
 
 	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
 
-	i2c_handles[hi2c->Index] = hi2c;
 	i2c_reset(hi2c);
 	hi2c->State = HAL_I2C_STATE_READY;
 	return HAL_OK;
@@ -838,6 +836,11 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c)
 	return hi2c->ErrorCode;
 }
 
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c)
+{
+	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
+}
+
 static HAL_StatusTypeDef i2c_timeout(I2C_HandleTypeDef * hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
 
@@ -887,6 +890,20 @@ static void i2c_interrupt_control_mask(int i2c_no, int enable)
 			IRQ_Enable(I2C_MASTER3_IRQ);
 		} else {
 			IRQ_Disable(I2C_MASTER3_IRQ);
+		}
+	case 4:
+		if (enable != 0) {
+			/* enable timer0 interrupt */
+			IRQ_Enable(I2C_MASTER4_IRQ);
+		} else {
+			IRQ_Disable(I2C_MASTER4_IRQ);
+		}
+	case 5:
+		if (enable != 0) {
+			/* enable timer0 interrupt */
+			IRQ_Enable(I2C_MASTER5_IRQ);
+		} else {
+			IRQ_Disable(I2C_MASTER5_IRQ);
 		}
 		break;
 	}
@@ -983,7 +1000,7 @@ static void _i2c_clock_freq_set(I2C_HandleTypeDef * hi2c, uint32_t freq)
 		div = I2C_CTL2_FREQ_CUSTOM_MASK;
 	}
 
-	hi2c->Instance->control0 &= ~(I2C_CTL0_FREQ(I2C_CTL0_FREQ_MASK));
+	hi2c->Instance->control0 &= ~(I2C_CTL0_FREQ(I2C_CTL0_FREQ_MASK));//G140.0 bit[26:24] set 0x0:custom
 
 	hi2c->Instance->control2 &= ~(I2C_CTL2_FREQ_CUSTOM(I2C_CTL2_FREQ_CUSTOM_MASK));
 	hi2c->Instance->control2 |= I2C_CTL2_FREQ_CUSTOM(div);
@@ -1195,15 +1212,17 @@ __STATIC_INLINE void _i2c_dma_go_set(I2C_HandleTypeDef * hi2c)
 	hi2c->gdma->dma_config |= I2C_DMA_CFG_DMA_GO;
 }
 
+uint32_t debug_count = 0;
 void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 {
 	unsigned int i, j, k;
 	unsigned int status3, bit_index, flag;
 	unsigned char w_data[32] = { 0 };
+	debug_count ++;
 
-	//printf("i2c_dma_regs->int_flag00 0x%x\n",i2c_dma_regs->int_flag );
 	if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_ADDRESS_NACK_FLAG) == SET) {
 		printf("I2C slave address NACK !!\n");
+		printf("!!!!! cnt %d\n", debug_count);
 		hi2c->ErrorCode |= HAL_I2C_ERR_ADDRESS_NACK;
 		i2c_reset(hi2c);
 		hi2c->State = HAL_I2C_STATE_READY;
@@ -1240,15 +1259,11 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 					if (k >= 8) {
 						k -= 8;
 					}
-					_i2c_data_get(hi2c, k,
-						      (uint32_t *) (&hi2c->
-								    pBuffPtr[hi2c->XferCount]));
+					_i2c_data_get(hi2c, k, (uint32_t *) (&hi2c->pBuffPtr[hi2c->XferCount]));
 					hi2c->XferCount += 4;
 				}
 
-				flag =
-				    ((1 << I2C_BURST_RDATA_BYTES) -
-				     1) << (I2C_BURST_RDATA_BYTES * i);
+				flag = ((1 << I2C_BURST_RDATA_BYTES) - 1) << (I2C_BURST_RDATA_BYTES * i);
 				_i2c_rdata_flag_clear(hi2c, flag);
 
 				hi2c->RegDataIndex += (I2C_BURST_RDATA_BYTES / 4);
@@ -1259,7 +1274,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 
 			}
 		}
-		//printf("i2c_regs->interrupt01 0x%x\n",i2c_regs->interrupt);
+
 		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) {
 			//printf("I2C_INT_DONE_FLAG00 ");
 			if ((hi2c->BurstRemainder) && (hi2c->State == HAL_I2C_STATE_BUSY_RX)) {
@@ -1269,16 +1284,13 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 					if (k >= 8) {
 						k -= 8;
 					}
-					_i2c_data_get(hi2c, k,
-						      (uint32_t *) (&rx_buffer[hi2c->Index][j]));
+					_i2c_data_get(hi2c, k, (uint32_t *) (&rx_buffer[hi2c->Index][j]));
 					j += 4;
 				}
 
 				for (i = 0; i < hi2c->BurstRemainder; i++) {
-					hi2c->pBuffPtr[hi2c->XferCount + i] =
-					    rx_buffer[hi2c->Index][i];
+					hi2c->pBuffPtr[hi2c->XferCount + i] = rx_buffer[hi2c->Index][i];
 				}
-				//printf("I2C_data i %d ",i);
 			}
 			i2c_reset(hi2c);	// reset
 			hi2c->State = HAL_I2C_STATE_READY;
@@ -1286,8 +1298,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 		break;
 
 	case HAL_I2C_STATE_BUSY_TX:
-		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_EMPTY_THRESHOLD_FLAG) ==
-		    SET && (hi2c->BurstCount > 0)) {
+		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_EMPTY_THRESHOLD_FLAG) == SET && (hi2c->BurstCount > 0)) {
 			for (i = 0; i < I2C_EMPTY_THRESHOLD_VALUE; i++) {
 				for (j = 0; j < 4; j++) {
 					/* write_cnt <= 32, DataIndex = DataTotalLen = write_cnt */
@@ -1303,9 +1314,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 				hi2c->BurstCount--;
 
 				if (hi2c->BurstCount == 0) {
-					_i2c_int_en0_disable(hi2c,
-							     (I2C_EN0_EMPTY_THRESHOLD_INT
-							      | I2C_EN0_EMPTY_INT));
+					_i2c_int_en0_disable(hi2c, (I2C_EN0_EMPTY_THRESHOLD_INT | I2C_EN0_EMPTY_INT));
 					break;
 				}
 			}
@@ -1322,12 +1331,9 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 	case HAL_I2C_STATE_BUSY_DMA_TX:
 		if ((__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) ||
 		    (__HAL_DMA_GET_FLAG(hi2c, I2C_DMA_INT_DMA_DONE_FLAG) == SET)) {
-			//printf("I2C_DMA finish\n");
 			i2c_reset(hi2c);	// reset
 			hi2c->State = HAL_I2C_STATE_READY;
 			i2c_interrupt_control_mask(hi2c->Index, 0);
-			//printf("exit h->i 0x%x\n",hi2c->Instance->interrupt);
-			//printf(">>>exit irq\n");
 		} else {
 			if (__HAL_DMA_GET_FLAG(hi2c, I2C_DMA_INT_WCNT_ERROR_FLAG) == SET) {
 				printf("I2C DMA WCNT ERR !!\n");

@@ -9,14 +9,14 @@
 
 #include "twi.h"
 
-//#ifdef __cplusplus
-//extern "C" {
-//#endif
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* Private Defines */
 /// @brief I2C timout in tick unit
 #ifndef I2C_TIMEOUT_TICK
-#define I2C_TIMEOUT_TICK        700
+#define I2C_TIMEOUT_TICK        1000 /* 1ms */
 #endif
 
 #define I2C_MAX_FREQ			400
@@ -156,7 +156,7 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	/* Enable I2C3 clock if not done */
 	else if (handle->Instance == SP_I2CM5) {
 		IRQ_SetMode(I2C_MASTER5_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C5_IRQHandler);
+		IRQ_SetHandler(I2C_MASTER5_IRQ, I2C5_IRQHandler);
 
 		obj->irq = I2C_MASTER5_IRQ;
 		i2c_handles[I2C5_INDEX] = handle;
@@ -164,6 +164,7 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		i2c_handles[I2C5_INDEX]->gdma = SP_GDMA5;
 	}
 #endif
+	//FIXME:enable config error,
 	HAL_Module_Clock_enable(I2CM0 + handle->Index, 1);
 	HAL_Module_Clock_gate(I2CM0 + handle->Index, 1);
 	HAL_Module_Reset(I2CM0 + handle->Index, 0);
@@ -222,7 +223,15 @@ i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, 
 	uint32_t delta = 0;
 	uint32_t err = 0;
 
+#if defined(BURST_MODE)
 	if (HAL_I2C_Master_Transmit(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
+#elif defined (IT_MODE)
+	if (HAL_I2C_Master_Transmit_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#elif defined(DMA_MODE)
+	if (HAL_I2C_Master_Transmit_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#elif defined(DMA_IT_MODE)
+	if (HAL_I2C_Master_Transmit_DMA_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#endif
 		// wait for transfer completion
 		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
 		       && (delta < I2C_TIMEOUT_TICK)) {
@@ -231,22 +240,23 @@ i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, 
 				break;
 			}
 		}
+	}
 
-		err = HAL_I2C_GetError(&(obj->handle));
-		if ((delta >= I2C_TIMEOUT_TICK)
-		    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
-			ret = I2C_TIMEOUT;
-		} else {
-			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
-				ret = I2C_NACK_ADDR;
-			}
-			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
-				ret = I2C_NACK_DATA;
-			} else if (err != HAL_I2C_ERR_NONE) {
-				ret = I2C_ERROR;
-			}
+	err = HAL_I2C_GetError(&(obj->handle));
+	if ((delta >= I2C_TIMEOUT_TICK)
+	    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
+		ret = I2C_TIMEOUT;
+	} else {
+		if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
+			ret = I2C_NACK_ADDR;
+		}
+		if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
+			ret = I2C_NACK_DATA;
+		} else if (err != HAL_I2C_ERR_NONE) {
+			ret = I2C_ERROR;
 		}
 	}
+	HAL_I2C_ClearError(&(obj->handle));
 
 	return ret;
 }
@@ -266,7 +276,16 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 	uint32_t delta = 0;
 	uint32_t err = 0;
 
+#if defined(BURST_MODE)
 	if (HAL_I2C_Master_Receive(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
+#elif defined (IT_MODE)
+	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#elif defined(DMA_MODE)
+	if (HAL_I2C_Master_Receive_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#elif defined(DMA_IT_MODE)
+	if (HAL_I2C_Master_Receive_DMA_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
+#endif
+		uint32_t state = obj->handle.State;
 		/* wait for transfer completion */
 		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
 		       && (delta < I2C_TIMEOUT_TICK)) {
@@ -275,22 +294,23 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 				break;
 			}
 		}
+	}
 
-		err = HAL_I2C_GetError(&(obj->handle));
-		if ((delta >= I2C_TIMEOUT_TICK)
-		    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
-			ret = I2C_TIMEOUT;
-		} else {
-			if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
-				ret = I2C_NACK_ADDR;
-			}
-			if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
-				ret = I2C_NACK_DATA;
-			} else if (err != HAL_I2C_ERR_NONE) {
-				ret = I2C_ERROR;
-			}
+	err = HAL_I2C_GetError(&(obj->handle));
+	if ((delta >= I2C_TIMEOUT_TICK)
+	    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
+		ret = I2C_TIMEOUT;
+	} else {
+		if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
+			ret = I2C_NACK_ADDR;
+		}
+		if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
+			ret = I2C_NACK_DATA;
+		} else if (err != HAL_I2C_ERR_NONE) {
+			ret = I2C_ERROR;
 		}
 	}
+	HAL_I2C_ClearError(&(obj->handle));
 
 	return ret;
 }
@@ -324,21 +344,21 @@ void I2C2_IRQHandler()
 	HAL_I2C_IRQHandler(i2c_handles[I2C2_INDEX]);
 }
 
-void I2C4_IRQHandler()
-{
-	HAL_I2C_IRQHandler(i2c_handles[I2C3_INDEX]);
-}
-
-void I2C5_IRQHandler()
-{
-	HAL_I2C_IRQHandler(i2c_handles[I2C2_INDEX]);
-}
-
 void I2C3_IRQHandler()
 {
 	HAL_I2C_IRQHandler(i2c_handles[I2C3_INDEX]);
 }
 
-//#ifdef __cplusplus
-//}
-//#endif
+void I2C4_IRQHandler()
+{
+	HAL_I2C_IRQHandler(i2c_handles[I2C4_INDEX]);
+}
+
+void I2C5_IRQHandler()
+{
+	HAL_I2C_IRQHandler(i2c_handles[I2C5_INDEX]);
+}
+
+#ifdef __cplusplus
+}
+#endif

@@ -1081,15 +1081,15 @@ typedef struct {
 #define GDMA2_BASE      RF_GRP(145, 0)
 #define GDMA3_BASE      RF_GRP(147, 0)
 
-#define SP_I2CM0 	((volatile I2C_TypeDef *)I2CM0_BASE)
-#define SP_I2CM1 	((volatile I2C_TypeDef *)I2CM1_BASE)
-#define SP_I2CM2 	((volatile I2C_TypeDef *)I2CM2_BASE)
-#define SP_I2CM3 	((volatile I2C_TypeDef *)I2CM3_BASE)
+#define SP_I2CM0 	((I2C_TypeDef *)I2CM0_BASE)
+#define SP_I2CM1 	((I2C_TypeDef *)I2CM1_BASE)
+#define SP_I2CM2 	((I2C_TypeDef *)I2CM2_BASE)
+#define SP_I2CM3 	((I2C_TypeDef *)I2CM3_BASE)
 
-#define SP_GDMA0 	((volatile GDMA_TypeDef *)GDMA0_BASE)
-#define SP_GDMA1 	((volatile GDMA_TypeDef *)GDMA1_BASE)
-#define SP_GDMA2 	((volatile GDMA_TypeDef *)GDMA2_BASE)
-#define SP_GDMA3 	((volatile GDMA_TypeDef *)GDMA3_BASE)
+#define SP_GDMA0 	((GDMA_TypeDef *)GDMA0_BASE)
+#define SP_GDMA1 	((GDMA_TypeDef *)GDMA1_BASE)
+#define SP_GDMA2 	((GDMA_TypeDef *)GDMA2_BASE)
+#define SP_GDMA3 	((GDMA_TypeDef *)GDMA3_BASE)
 
 /* IPCC Mailbox */
 #define IPC_MAILBOX_BASE	RF_GRP(258, 0)

@@ -45,7 +45,7 @@ static void i2c_reset(I2C_HandleTypeDef *hi2c)
     _i2c_int_en0_set(hi2c, 0);
 	_i2c_int_en1_set(hi2c, 0);
 	_i2c_int_en2_set(hi2c, 0);
-	
+
 	_i2c_dma_int_en_set(hi2c, 0);
 }
 
@@ -124,7 +124,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevA
 			}
 		}
 		hi2c->XferCount = i;
-		
+
 		int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT | I2C_EN0_DATA_NACK_INT
 				| I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT );
 
@@ -506,7 +506,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t D
 		_i2c_int_en2_set(hi2c, int2);
 
 	    HAL_DCACHE_INVALIDATE(hi2c->pBuffPtr, Size);   // cache data map to dram
-	
+
 		if(Size < 4)
 	    	_i2c_dma_length_set(hi2c, 4);
 	    else
@@ -629,7 +629,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t D
 			}
 		}
 		hi2c->XferCount = i;
-		
+
 		int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT | I2C_EN0_DATA_NACK_INT
 				| I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT );
 
@@ -638,7 +638,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t D
 
 		_i2c_clock_freq_set(hi2c, hi2c->Init.Timing);
 		_i2c_slave_addr_set(hi2c, DevAddress);
-		
+
 		_i2c_trans_cnt_set(hi2c, Size, 0);					// set write/read count
 		_i2c_active_mode_set(hi2c, I2C_TRIGGER);			// Trigger mode
 		_i2c_rw_mode_set(hi2c, I2C_WRITE_MODE);				// set read mode
@@ -647,9 +647,9 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t D
 	    _i2c_manual_trigger(hi2c);   						// start Trigger
 
 		_i2c_int_en0_set(hi2c, int0 | I2C_EN0_CTL_EMPTY_THRESHOLD(I2C_EMPTY_THRESHOLD_VALUE));
-		
+
 		i2c_interrupt_control_mask(hi2c->Index, 1);
-		
+
 		__HAL_UNLOCK(hi2c);
 		return HAL_OK;
 	}
@@ -746,12 +746,12 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef *hi2c, uint16
 		hi2c->State     		= HAL_I2C_STATE_BUSY_DMA_TX;
 		hi2c->pBuffPtr  		= pData;
 		hi2c->XferCount 		= 0;
-		
+
 	    _i2c_reset(hi2c);		// reset
 
 		int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT | I2C_EN0_DATA_NACK_INT
 				| I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT );
-		
+
 		_i2c_dma_mode_enable(hi2c);						// enable DMA
 
 	    _i2c_clock_freq_set(hi2c, hi2c->Init.Timing);   // 27M/270 =  100k hz
@@ -863,9 +863,14 @@ uint32_t HAL_I2C_GetError(I2C_HandleTypeDef *hi2c)
   return hi2c->ErrorCode;
 }
 
+void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c)
+{
+	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
+}
+
 static HAL_StatusTypeDef i2c_timeout(I2C_HandleTypeDef *hi2c, uint32_t Timeout, uint32_t Tickstart)
 {
-	
+
 	if (((HAL_GetTick() - Tickstart) > Timeout) && (Timeout != 0U))
 	{
         hi2c->State = HAL_I2C_STATE_READY;
@@ -1062,10 +1067,10 @@ static void _i2c_data_set_modify(I2C_HandleTypeDef *hi2c, unsigned char *wdata, 
 {
 	unsigned int i, j;
 	unsigned int index = (size - 1) / 4;
-	unsigned int cnt = size / 4;  // size 2,cnt 0 
+	unsigned int cnt = size / 4;  // size 2,cnt 0
 	unsigned int remain = size % 4; //remain 2
 	unsigned int reg_val[8] = {0};
-	
+
 	if(cnt > 0)
 	{
 		for(i = 0; i < cnt; i++)
@@ -1076,7 +1081,7 @@ static void _i2c_data_set_modify(I2C_HandleTypeDef *hi2c, unsigned char *wdata, 
 			}
 		}
 	}
-	
+
 	if(remain != 0)
 	{
 		for(i = 0; i < remain; i++)
@@ -1084,13 +1089,13 @@ static void _i2c_data_set_modify(I2C_HandleTypeDef *hi2c, unsigned char *wdata, 
 			reg_val[cnt] |= (wdata[cnt * 4 + i] << (i*8));
 		}
 	}
-	
+
 	printf("\n");
 	printf(">>>>>>>>wdata[0]=0x%x\n", wdata[0]);
 	printf(">>>>>>>>wdata[1]=0x%x\n", wdata[1]);
 	printf(">>>>>>>>reg_val[0]=0x%x\n", reg_val[0]);
 	printf("\n");
-	
+
 	switch (index)
 	{
 		case 7:hi2c->Instance->data28_31 = reg_val[7];
@@ -1387,14 +1392,8 @@ void HAL_I2C_IRQHandler( I2C_HandleTypeDef *hi2c)
 				}
 			}
 			break;
-			
+
 		default:
 			break;
 	}
-}
-
-void I2C_HAL_TEST_IRQHandler()
-{
-	//printf(">>>>>Index=%d State=%x\n", i2c_handles[0]->Index, i2c_handles[0]->State);//xtdebug
-	HAL_I2C_IRQHandler(i2c_handles[0]);
 }

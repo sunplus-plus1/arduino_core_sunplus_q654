@@ -10,6 +10,12 @@ extern "C" {
 /* offsetof is a gcc built-in function, this is the manual implementation */
 #define OFFSETOF(type, member) ((uint32_t) (&(((type *)(0))->member)))
 
+/* select transmit/receive mode */
+//#define BURST_MODE
+#define IT_MODE
+//#define DMA_MODE
+//#define DMA_IT_MODE
+
 typedef struct i2c_s i2c_t;
 
 struct i2c_s {

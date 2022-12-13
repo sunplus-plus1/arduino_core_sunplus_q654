@@ -36,13 +36,12 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 #endif
 }
 
-//#ifdef SP645
-TwoWire::TwoWire(volatile I2C_TypeDef *instance)
+TwoWire::TwoWire(I2C_TypeDef *instance)
 {
+	_i2c.pin_sda = SDA;
+	_i2c.pin_scl = SCL;
 	_i2c.handle.Instance = instance;
-	TwoWire(SDA, SCL);
 }
-//#endif
 
 // Public Methods //////////////////////////////////////////////////////////////
 
@@ -118,7 +117,6 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddres
 	if (rxBuffer == nullptr) {
 		setWriteError();
 	} else {
-
 		if (I2C_OK == i2c_master_read(&_i2c, address, rxBuffer, quantity)) {
 			read = quantity;
 		}

@@ -24,8 +24,13 @@ uint32_t HAL_PLL_GetSystemFreq(void)
 	return sys_freq;
 }
 
-
 uint32_t HAL_PLL_GetCortexM4Freq(void)
 {
 	return (HAL_PLL_GetSystemFreq() >> __HAL_PLL_GET_SYS_CM4_DIV());
+}
+
+/* Param val: the val 0b0/0b1/0b1x corresponding div 1/2/4 */
+void HAL_PLL_SetCortexM4Freq(uint8_t val)
+{
+	__HAL_PLL_SET_SYS_CM4_DIV(val);
 }
