@@ -36,7 +36,7 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 #endif
 }
 
-TwoWire::TwoWire(I2C_TypeDef *instance)
+TwoWire::TwoWire(volatile I2C_TypeDef *instance)
 {
 	_i2c.pin_sda = SDA;
 	_i2c.pin_scl = SCL;

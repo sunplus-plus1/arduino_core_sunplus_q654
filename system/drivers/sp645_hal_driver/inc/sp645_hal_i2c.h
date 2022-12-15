@@ -140,7 +140,7 @@
 #define I2C_GCLKEN(id, val)         ((1 << (16 + id)) | (val << id))
 
 #define I2C_MASTER_NUM			5
-#define I2C_MSG_DATA_SIZE		255
+#define I2C_MSG_DATA_SIZE		16
 
 #define I2C_CLK_SOURCE_FREQ		25000	// KHz(25MHz)
 

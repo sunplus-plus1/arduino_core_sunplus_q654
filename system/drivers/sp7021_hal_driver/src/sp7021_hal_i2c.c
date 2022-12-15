@@ -62,7 +62,6 @@ HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef * hi2c)
 	//_i2c_enable(hi2c);
 	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
 
-	i2c_handles[hi2c->Index] = hi2c;
 	i2c_reset(hi2c);
 	hi2c->State = HAL_I2C_STATE_READY;
 	return HAL_OK;
@@ -274,12 +273,12 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c, uint16_t DevA
 					if (status3 & (1 << bit_index)) {
 						for (j = 0; j < (I2C_BURST_RDATA_BYTES / 4); j++)	//4
 						{
-							k = hi2c->BurstRemainder + j;
+							k = hi2c->RegDataIndex + j; // why use the burstremainder as index
 							if (k >= 8) {
 								k -= 8;
 							}
-							_i2c_data_get(hi2c, k, (uint32_t *) (&rx_buffer[hi2c->XferCount]));
-							hi2c->XferCount += 4;
+							_i2c_data_get(hi2c, k, (uint32_t *) (&hi2c->pBuffPtr[hi2c->XferCount]));
+							hi2c->XferCount += 4; //140.24 one reg store 4 bytes
 						}
 						_i2c_rdata_flag_clear(hi2c, (((1 << I2C_BURST_RDATA_BYTES) - 1) << (I2C_BURST_RDATA_BYTES * i)));
 						hi2c->RegDataIndex += (I2C_BURST_RDATA_BYTES / 4);
@@ -1206,7 +1205,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 				bit_index = (I2C_BURST_RDATA_BYTES - 1) + (I2C_BURST_RDATA_BYTES * i);	// 15  31
 				if (status3 & (1 << bit_index)) {
 					for (j = 0; j < (I2C_BURST_RDATA_BYTES / 4); j++) {
-						k = hi2c->BurstRemainder + j;
+						k = hi2c->RegDataIndex + j;
 						if (k >= 8) {
 							k -= 8;
 						}
@@ -1276,7 +1275,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 
 	case HAL_I2C_STATE_BUSY_DMA_RX:	//xtxtxt
 	case HAL_I2C_STATE_BUSY_DMA_TX:
-		if ((__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) || (__HAL_DMA_GET_FLAG(hi2c, I2C_DMA_INT_DMA_DONE_FLAG) == SET)) {
+		if ((__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) && (__HAL_DMA_GET_FLAG(hi2c, I2C_DMA_INT_DMA_DONE_FLAG) == SET)) {
 			//printf("I2C_DMA finish\n");
 			i2c_reset(hi2c);	// reset
 			hi2c->State = HAL_I2C_STATE_READY;

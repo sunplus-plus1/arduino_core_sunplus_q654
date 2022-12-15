@@ -11,8 +11,8 @@ extern "C" {
 #define OFFSETOF(type, member) ((uint32_t) (&(((type *)(0))->member)))
 
 /* select transmit/receive mode */
-//#define BURST_MODE
-#define IT_MODE
+#define BURST_MODE
+//#define IT_MODE
 //#define DMA_MODE
 //#define DMA_IT_MODE
 

@@ -21,7 +21,6 @@ extern "C" {
 
 #define I2C_MAX_FREQ			400
 #define I2C_INIT_FREQ			100
-#define I2C_FREQ			27000
 
 /*  Family specific description for I2C */
 typedef enum {
@@ -278,7 +277,7 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 
 #if defined(BURST_MODE)
 	if (HAL_I2C_Master_Receive(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
-#elif defined (IT_MODE)
+#elif defined(IT_MODE)
 	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
 #elif defined(DMA_MODE)
 	if (HAL_I2C_Master_Receive_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
