@@ -1,5 +1,7 @@
 ifeq ($(LVGL),1)
 
+CCFLAGS += -I$(TOP)/libraries/lvgl
+
 # lvgl
 DIRS += $(shell find $(TOP)/libraries/lvgl/src -type d)
 

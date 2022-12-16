@@ -96,6 +96,8 @@ else
 #arduino C++ example
 ifeq ($(OPENAMP),1)
 DIRS += $(TOP)/libraries/examples/VirtIOSerial
+else ifeq ($(LVGL),1)
+DIRS += $(TOP)/libraries/examples/lvgl
 else
 DIRS += $(TOP)/libraries/examples/timer
 endif
