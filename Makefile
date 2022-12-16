@@ -94,7 +94,9 @@ CCFLAGS += -DFREERTOS
 CXXSOURCES += $(TOP)/libraries/examples/rtos/example.cpp
 else
 #arduino C++ example
-ifeq ($(OPENAMP),1)
+ifeq ($(LVGL),1)
+DIRS += $(TOP)/libraries/examples/lvgl
+else ifeq ($(OPENAMP),1)
 DIRS += $(TOP)/libraries/examples/VirtIOSerial
 else
 DIRS += $(TOP)/libraries/examples/timer
