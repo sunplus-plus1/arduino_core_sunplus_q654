@@ -6,6 +6,7 @@ extern "C" {
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif
+#include "demos/widgets/lv_demo_widgets.h"
 
 #define HOR_RES 480
 #define VER_RES 320
@@ -67,6 +68,8 @@ void setup()
 {
 	lv_init();
 	hal_init();
+
+	lv_demo_widgets();
 }
 
 void loop()
