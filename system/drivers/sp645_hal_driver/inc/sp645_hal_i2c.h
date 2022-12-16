@@ -101,9 +101,13 @@
 //i2c master status2
 #define I2C_SW_RESET_DONE                 (1<<0)
 
-#define I2C_BURST_RDATA_BYTES        16
-#define I2C_BURST_RDATA_FLAG         0x80008000
-#define I2C_BURST_RDATA_ALL_FLAG     0xFFFFFFFF
+#define I2C_DATA_REG_NUMS		8
+#define I2C_DATA_REG_SIZE		4
+#define I2C_DATA_REG_TOTAL_SIZE		32 /* The maximum size of data buffer we can access */
+
+#define I2C_BURST_RDATA_BYTES		16 /* Generate the burst interrupt after receive this BYTES */
+#define I2C_BURST_RDATA_FLAG		0x80008000
+#define I2C_BURST_RDATA_ALL_FLAG	0xFFFFFFFF
 
 //burst write use
 #define I2C_EMPTY_THRESHOLD_VALUE    4

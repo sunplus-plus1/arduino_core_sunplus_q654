@@ -1,7 +1,5 @@
 #include "sp645_hal_i2c.h"
 
-#define MAX_NBYTE_SIZE		32U
-
 static void i2c_interrupt_control_mask(int i2c_no, int enable);
 static HAL_StatusTypeDef i2c_timeout(I2C_HandleTypeDef * hi2c, uint32_t Timeout,
 				     uint32_t Tickstart);
@@ -34,8 +32,6 @@ static void _i2c_dma_length_set(I2C_HandleTypeDef * hi2c, uint32_t len);
 static void _i2c_dma_rw_mode_set(I2C_HandleTypeDef * hi2c, I2C_DMA_RW_Mode_e mode);
 static void _i2c_dma_int_en_set(I2C_HandleTypeDef * hi2c, uint32_t int0);
 static void _i2c_dma_go_set(I2C_HandleTypeDef * hi2c);
-
-uint8_t rx_buffer[I2C_MASTER_NUM][I2C_MSG_DATA_SIZE];
 
 static void i2c_reset(I2C_HandleTypeDef * hi2c)
 {
@@ -99,9 +95,9 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef * hi2c,
 	 * handle first 32 byte data and the remaining bytes
 	 * every 4 bytes count as a burst, calculate the hi2c->BurstCount.
 	 */
-	if (Size > MAX_NBYTE_SIZE) {
-		hi2c->BurstCount = (Size - MAX_NBYTE_SIZE) / 4;
-		if ((Size - MAX_NBYTE_SIZE) % 4) {
+	if (Size > I2C_DATA_REG_TOTAL_SIZE) {
+		hi2c->BurstCount = (Size - I2C_DATA_REG_TOTAL_SIZE) / 4;
+		if ((Size - I2C_DATA_REG_TOTAL_SIZE) % 4) {
 			hi2c->BurstCount += 1;
 		}
 
@@ -183,9 +179,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef * hi2c,
 				hi2c->BurstCount--;
 
 				if (hi2c->BurstCount == 0) {
-					_i2c_int_en0_disable(hi2c,
-							     (I2C_EN0_EMPTY_THRESHOLD_INT
-							      | I2C_EN0_EMPTY_INT));
+					_i2c_int_en0_disable(hi2c, (I2C_EN0_EMPTY_THRESHOLD_INT |
+								    I2C_EN0_EMPTY_INT));
 					break;
 				}
 			}
@@ -204,7 +199,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c,
 					 uint16_t DevAddress, uint8_t * pData,
 					 uint32_t Size, uint32_t Timeout)
 {
-	uint32_t i, j, k;
+	uint32_t i, j, loop;
 	uint32_t status3, bit_index;
 	uint32_t int0 = 0, int1 = 0, int2 = 0;
 	uint32_t tickstart = 0;
@@ -218,16 +213,14 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c,
 
 	hi2c->State = HAL_I2C_STATE_BUSY_RX;
 	hi2c->pBuffPtr = pData;
+	hi2c->XferSize = Size;
 	hi2c->XferCount = 0;
 	hi2c->RegDataIndex = 0;
-	hi2c->BurstCount = 0;
-	hi2c->BurstRemainder = 0;
 	hi2c->BurstCount = Size / I2C_BURST_RDATA_BYTES;
 	hi2c->BurstRemainder = Size % I2C_BURST_RDATA_BYTES;
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+		I2C_EN0_DATA_NACK_INT |I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 	int1 = I2C_BURST_RDATA_FLAG;
 	int2 = I2C_BURST_RDATA_ALL_FLAG;
 
@@ -257,15 +250,13 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c,
 			return HAL_ERROR;
 		}
 
-		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_ADDRESS_NACK_FLAG)
-		    == SET) {
+		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_ADDRESS_NACK_FLAG) == SET) {
 			printf("I2C slave address NACK !!\n");
 			hi2c->ErrorCode |= HAL_I2C_ERR_ADDRESS_NACK;
 			i2c_reset(hi2c);
 			hi2c->State = HAL_I2C_STATE_READY;
 			break;
-		} else if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DATA_NACK_FLAG)
-			   == SET) {
+		} else if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DATA_NACK_FLAG) == SET) {
 			printf("read I2C slave data NACK !!\n");
 			hi2c->ErrorCode |= HAL_I2C_ERR_RECEIVE_NACK;
 			i2c_reset(hi2c);
@@ -282,48 +273,36 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c,
 		if (hi2c->BurstCount == 0)
 			continue;
 
+		/* Get the bytes postion in data register */
 		_i2c_rdata_flag_get(hi2c, (uint32_t *)&status3);
-		for (i = 0; i < (32 / I2C_BURST_RDATA_BYTES); i++)
-		{
+		for (i = 0; i < (I2C_DATA_REG_TOTAL_SIZE / I2C_BURST_RDATA_BYTES); i++) {
 			bit_index = (I2C_BURST_RDATA_BYTES - 1) + (I2C_BURST_RDATA_BYTES * i);
 			if (status3 & (1 << bit_index)) {
-				for (j = 0; j < (I2C_BURST_RDATA_BYTES / 4); j++)
-				{
-					k = hi2c->RegDataIndex + j;
-					if (k >= 8) {
-						k -= 8;
-					}
-					_i2c_data_get(hi2c, k, (uint32_t *)(&hi2c->pBuffPtr[hi2c->XferCount]));
+				for (j = 0; j < (I2C_BURST_RDATA_BYTES / I2C_DATA_REG_SIZE); j++) {
+					_i2c_data_get(hi2c, hi2c->RegDataIndex,
+						      (uint32_t *)(&hi2c->pBuffPtr[hi2c->XferCount]));
+					hi2c->RegDataIndex = (hi2c->RegDataIndex + 1) % I2C_DATA_REG_NUMS;
 					hi2c->XferCount += 4;
 				}
 				_i2c_rdata_flag_clear(hi2c, (((1 << I2C_BURST_RDATA_BYTES) - 1) << (I2C_BURST_RDATA_BYTES * i)));
-				hi2c->RegDataIndex += (I2C_BURST_RDATA_BYTES / 4);
-				if (hi2c->RegDataIndex >= 8) {
-					hi2c->RegDataIndex -= 8;
-				}
 				hi2c->BurstCount--;
 			}
 		}
-
 	}
 
-	if ((__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) &&
-	    (hi2c->BurstRemainder) && (hi2c->State == HAL_I2C_STATE_BUSY_RX)) {
+	if ((hi2c->State == HAL_I2C_STATE_BUSY_RX) && (hi2c->BurstRemainder) &&
+	    (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET)) {
+		loop = hi2c->BurstRemainder / I2C_DATA_REG_SIZE;
+		if (hi2c->BurstRemainder % I2C_DATA_REG_SIZE)
+			loop ++;
 
-		j = 0;
-		for (i = 0; i < (I2C_BURST_RDATA_BYTES / 4); i++) {
-			k = hi2c->RegDataIndex + i;
-			if (k >= 8) {
-				k -= 8;
-			}
-			_i2c_data_get(hi2c, k, (uint32_t *) (&rx_buffer[hi2c->Index][j]));
-			j += 4;
+		for (j = 0; j < loop; j++) {
+			_i2c_data_get(hi2c, hi2c->RegDataIndex,
+				      (uint32_t *)(&hi2c->pBuffPtr[hi2c->XferCount]));
+			hi2c->RegDataIndex = (hi2c->RegDataIndex + 1) % I2C_DATA_REG_NUMS;
+			/* Dont care the last XferCount. Not use. */
+			hi2c->XferCount += I2C_DATA_REG_SIZE;
 		}
-
-		for (i = 0; i < hi2c->BurstRemainder; i++) {
-			hi2c->pBuffPtr[hi2c->XferCount + i] = rx_buffer[hi2c->Index][i];
-		}
-
 	}
 	/* reset */
 	_i2c_reset(hi2c);
@@ -470,9 +449,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef * hi2c,
 	hi2c->State = HAL_I2C_STATE_BUSY_DMA_RX;
 	hi2c->pBuffPtr = pData;
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+	     	I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 
 	int1 = I2C_BURST_RDATA_FLAG;
 	int2 = I2C_BURST_RDATA_ALL_FLAG;
@@ -590,9 +568,9 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef * hi2c,
 		return HAL_ERROR;
 	}
 
-	if (Size > MAX_NBYTE_SIZE) {
-		hi2c->BurstCount = (Size - MAX_NBYTE_SIZE) / 4;
-		if ((Size - MAX_NBYTE_SIZE) % 4) {
+	if (Size > I2C_DATA_REG_TOTAL_SIZE) {
+		hi2c->BurstCount = (Size - I2C_DATA_REG_TOTAL_SIZE) / 4;
+		if ((Size - I2C_DATA_REG_TOTAL_SIZE) % 4) {
 			hi2c->BurstCount += 1;
 		}
 
@@ -606,9 +584,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef * hi2c,
 	}
 	hi2c->XferCount = i;
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+	     	I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 
 	if (hi2c->BurstCount)
 		int0 |= I2C_EN0_EMPTY_THRESHOLD_INT;
@@ -667,9 +644,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef * hi2c,
 
 	_i2c_reset(hi2c);	// reset
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+		I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 
 	int1 = I2C_BURST_RDATA_FLAG;
 	int2 = I2C_BURST_RDATA_ALL_FLAG;
@@ -688,6 +664,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef * hi2c,
 	_i2c_manual_trigger(hi2c);
 
 	_i2c_int_en0_set(hi2c, int0);
+	/* Generate the interrupt when receive the specific size of data */
 	_i2c_int_en1_set(hi2c, int1);
 	_i2c_int_en2_set(hi2c, int2);
 
@@ -727,9 +704,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c,
 
 	_i2c_reset(hi2c);	// reset
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+	     	I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 
 	_i2c_dma_mode_enable(hi2c);	// enable DMA
 
@@ -747,7 +723,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c,
 	else
 		_i2c_dma_length_set(hi2c, Size);
 
-	_i2c_dma_addr_set(hi2c, (uint32_t) hi2c->pBuffPtr);
+	_i2c_dma_addr_set(hi2c, (uint32_t)hi2c->pBuffPtr);
 	_i2c_dma_rw_mode_set(hi2c, I2C_DMA_READ_MODE);
 	_i2c_dma_int_en_set(hi2c, I2C_DMA_EN_DMA_DONE_INT);
 	_i2c_dma_go_set(hi2c);
@@ -785,9 +761,8 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef * hi2c,
 
 	_i2c_reset(hi2c);	// reset
 
-	int0 =
-	    (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
-	     I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
+	int0 = (I2C_EN0_SCL_HOLD_TOO_LONG_INT | I2C_EN0_EMPTY_INT |
+	     	I2C_EN0_DATA_NACK_INT | I2C_EN0_ADDRESS_NACK_INT | I2C_EN0_DONE_INT);
 
 	int1 = I2C_BURST_RDATA_FLAG;
 	int2 = I2C_BURST_RDATA_ALL_FLAG;
@@ -997,7 +972,8 @@ static void _i2c_clock_freq_set(I2C_HandleTypeDef * hi2c, uint32_t freq)
 		div = I2C_CTL2_FREQ_CUSTOM_MASK;
 	}
 
-	hi2c->Instance->control0 &= ~(I2C_CTL0_FREQ(I2C_CTL0_FREQ_MASK));//G140.0 bit[26:24] set 0x0:custom
+	/* G140.0 bit[26:24] set 0x0:custom */
+	hi2c->Instance->control0 &= ~(I2C_CTL0_FREQ(I2C_CTL0_FREQ_MASK));
 
 	hi2c->Instance->control2 &= ~(I2C_CTL2_FREQ_CUSTOM(I2C_CTL2_FREQ_CUSTOM_MASK));
 	hi2c->Instance->control2 |= I2C_CTL2_FREQ_CUSTOM(div);
@@ -1008,7 +984,8 @@ __STATIC_INLINE void _i2c_slave_addr_set(I2C_HandleTypeDef * hi2c, uint16_t slav
 {
 	uint16_t temp_addr = slave_addr & I2C_CTL0_SLAVE_ADDR_MASK;
 
-	hi2c->Instance->control0 &= ~(I2C_CTL0_SLAVE_ADDR(I2C_CTL0_SLAVE_ADDR_MASK));	//clear previous slave addr
+	/* clear previous slave addr */
+	hi2c->Instance->control0 &= ~(I2C_CTL0_SLAVE_ADDR(I2C_CTL0_SLAVE_ADDR_MASK));
 	hi2c->Instance->control0 |= I2C_CTL0_SLAVE_ADDR(temp_addr);
 }
 
@@ -1122,8 +1099,8 @@ static void _i2c_rw_mode_set(I2C_HandleTypeDef * hi2c, I2C_RW_Mode_e rw_mode)
 		break;
 
 	case I2C_RESTART_MODE:
-		hi2c->Instance->control0 |=
-		    (I2C_CTL0_PREFETCH | I2C_CTL0_RESTART_EN | I2C_CTL0_SUBADDR_EN);
+		hi2c->Instance->control0 |= (I2C_CTL0_PREFETCH | I2C_CTL0_RESTART_EN |
+					     I2C_CTL0_SUBADDR_EN);
 		break;
 	}
 }
@@ -1180,7 +1157,7 @@ __STATIC_INLINE void _i2c_dma_addr_set(I2C_HandleTypeDef * hi2c, uint32_t addr)
 
 __STATIC_INLINE void _i2c_dma_length_set(I2C_HandleTypeDef * hi2c, uint32_t len)
 {
-	/* only support 16 bit */
+	/* Only support 16 bit */
 	len &= (0xFFFF);
 	hi2c->gdma->dma_length = len;
 }
@@ -1209,17 +1186,14 @@ __STATIC_INLINE void _i2c_dma_go_set(I2C_HandleTypeDef * hi2c)
 	hi2c->gdma->dma_config |= I2C_DMA_CFG_DMA_GO;
 }
 
-uint32_t debug_count = 0;
 void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 {
-	unsigned int i, j, k;
+	unsigned int i, j, loop;
 	unsigned int status3, bit_index, flag;
 	unsigned char w_data[32] = { 0 };
-	debug_count ++;
 
 	if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_ADDRESS_NACK_FLAG) == SET) {
 		printf("I2C slave address NACK !!\n");
-		//printf("!!!!! cnt %d\n", debug_count);
 		hi2c->ErrorCode |= HAL_I2C_ERR_ADDRESS_NACK;
 		i2c_reset(hi2c);
 		hi2c->State = HAL_I2C_STATE_READY;
@@ -1243,50 +1217,39 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 		if (hi2c->BurstCount) {
 			_i2c_rdata_flag_get(hi2c, (uint32_t *)&status3);
 
-			for (i = 0; i < (32 / I2C_BURST_RDATA_BYTES); i++) {
-				bit_index =
-				    (I2C_BURST_RDATA_BYTES - 1) + (I2C_BURST_RDATA_BYTES * i);
+			for (i = 0; i < (I2C_DATA_REG_TOTAL_SIZE / I2C_BURST_RDATA_BYTES); i++) {
+				bit_index = (I2C_BURST_RDATA_BYTES - 1) + (I2C_BURST_RDATA_BYTES * i);
 
 				/* Check the data buffer status flag */
 				if (status3 & (1 << bit_index))
 					continue;
 
-				for (j = 0; j < (I2C_BURST_RDATA_BYTES / 4); j++) {
-					k = hi2c->BurstRemainder + j;
-					if (k >= 8) {
-						k -= 8;
-					}
-					_i2c_data_get(hi2c, k, (uint32_t *) (&hi2c->pBuffPtr[hi2c->XferCount]));
-					hi2c->XferCount += 4;
+				for (j = 0; j < (I2C_BURST_RDATA_BYTES / I2C_DATA_REG_SIZE); j++) {
+					_i2c_data_get(hi2c, hi2c->RegDataIndex,
+						      (uint32_t *)(&hi2c->pBuffPtr[hi2c->XferCount]));
+					hi2c->RegDataIndex = (hi2c->RegDataIndex + 1) % I2C_DATA_REG_NUMS;
+					hi2c->XferCount += I2C_DATA_REG_SIZE;
 				}
 
 				flag = ((1 << I2C_BURST_RDATA_BYTES) - 1) << (I2C_BURST_RDATA_BYTES * i);
 				_i2c_rdata_flag_clear(hi2c, flag);
 
-				hi2c->RegDataIndex += (I2C_BURST_RDATA_BYTES / 4);
-				if (hi2c->RegDataIndex >= 8) {
-					hi2c->RegDataIndex -= 8;
-				}
 				hi2c->BurstCount--;
-
 			}
 		}
 
 		if (__HAL_I2C_GET_FLAG(hi2c, I2C_INT_DONE_FLAG) == SET) {
-			//printf("I2C_INT_DONE_FLAG00 ");
 			if ((hi2c->BurstRemainder) && (hi2c->State == HAL_I2C_STATE_BUSY_RX)) {
-				j = 0;
-				for (i = 0; i < (I2C_BURST_RDATA_BYTES / 4); i++) {
-					k = hi2c->RegDataIndex + i;
-					if (k >= 8) {
-						k -= 8;
-					}
-					_i2c_data_get(hi2c, k, (uint32_t *) (&rx_buffer[hi2c->Index][j]));
-					j += 4;
-				}
+				loop = hi2c->BurstRemainder / I2C_DATA_REG_SIZE;
+				if (hi2c->BurstRemainder % I2C_DATA_REG_SIZE)
+					loop ++;
 
-				for (i = 0; i < hi2c->BurstRemainder; i++) {
-					hi2c->pBuffPtr[hi2c->XferCount + i] = rx_buffer[hi2c->Index][i];
+				for (j = 0; j < loop; j++) {
+					_i2c_data_get(hi2c, hi2c->RegDataIndex,
+						      (uint32_t *)(&hi2c->pBuffPtr[hi2c->XferCount]));
+					hi2c->RegDataIndex = (hi2c->RegDataIndex + 1) % I2C_DATA_REG_NUMS;
+					/* Dont care the last XferCount. Not use. */
+					hi2c->XferCount += I2C_DATA_REG_SIZE;
 				}
 			}
 			i2c_reset(hi2c);	// reset
@@ -1307,7 +1270,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef * hi2c)
 					hi2c->XferCount++;
 				}
 				/* unsigned char *->unsigned int *, 4 bytes, so using data00_03 is enough */
-				_i2c_data0_set(hi2c, (uint32_t *) w_data);
+				_i2c_data0_set(hi2c, (uint32_t *)w_data);
 				hi2c->BurstCount--;
 
 				if (hi2c->BurstCount == 0) {
