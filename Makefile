@@ -5,6 +5,7 @@ CHIPDIRS ?= sp645
 FREERTOS ?= 0
 OPENAMP  ?= 0
 LVGL     ?= 0
+CMSISDSP ?= 0
 
 #for cunit test
 CUNIT ?= 0
@@ -86,6 +87,7 @@ endif
 sinclude makefile.freertos
 sinclude makefile.openamp
 sinclude makefile.lvgl
+sinclude makefile.cmsisdsp
 
 # example
 ifeq ($(FREERTOS),1)
