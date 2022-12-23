@@ -9,7 +9,7 @@ CCFLAGS += \
  -mfloat-abi=hard
 
 # Path to CMSIS_DSP
-CMSIS_DSP := $(TOP)/libraries/CMSIS-DSP
+CMSIS_DSP := $(TOP)/system/drivers/CMSIS/CMSIS/DSP
 
 # Sources
 CSOURCES += $(CMSIS_DSP)/Source/BasicMathFunctions/BasicMathFunctions.c \
