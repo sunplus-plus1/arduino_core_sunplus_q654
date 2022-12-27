@@ -6,6 +6,7 @@ FREERTOS ?= 0
 OPENAMP  ?= 0
 LVGL     ?= 0
 CMSISDSP ?= 0
+CM_BACKTRACE ?= 1
 
 #for cunit test
 CUNIT ?= 0
@@ -18,8 +19,9 @@ include ./make.cfg
 #for test.
 ifeq ($(CHIP),SP7350)
 FREERTOS = 1
-else #ifeq ($(CHIP),Q628)
+else ifeq ($(CHIP),Q628)
 OPENAMP  = 1
+CM_BACKTRACE = 0
 endif
 
 LD_SRC = $(VARIANTS_PATH)/ldscript.ldi
@@ -82,6 +84,12 @@ DIRS += $(TOP)/CUnit/Cunit/Sources
 DIRS += $(TOP)/CUnit/Cunit/Sources/Basic
 DIRS += $(TOP)/CUnit/Cunit/Sources/Framework
 DIRS += $(TOP)/CUnit
+endif
+
+# cm_backtrace
+ifeq ($(CM_BACKTRACE),1)
+DIRS += $(TOP)/libraries/CmBacktrace/cm_backtrace
+CCFLAGS += -I$(TOP)/libraries/CmBacktrace/cm_backtrace
 endif
 
 sinclude makefile.freertos

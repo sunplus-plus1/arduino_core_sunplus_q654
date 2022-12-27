@@ -31,6 +31,10 @@
 #include "sp64xx.h"
 #include "system_sp645.h"
 
+#include "cm_backtrace.h"
+#define APPNAME                        "cmbacktrace_test"
+#define HARDWARE_VERSION               "V1.0.0"
+#define SOFTWARE_VERSION               "V0.1.0"
 extern int main();
 
 extern uint32_t _estack, _sbss, _ebss;
@@ -100,7 +104,7 @@ void Default_Handler(void)
 static void HardFault_Handler( void ) __attribute__( ( naked ) );
 void Default_Handler2(void)
 {
-
+#if 0
     __asm volatile
     (
         " tst lr, #4                                                \n"
@@ -112,6 +116,14 @@ void Default_Handler2(void)
         " bx r2                                                     \n"
         " handler2_address_const: .word prvGetRegistersFromStack    \n"
     );
+#else
+    __asm volatile
+    (
+        " mov     r0, lr                                                \n"
+        " mov     r1, sp                                                    \n"
+        " bl      cm_backtrace_fault                                             \n"
+    );
+#endif
 }
 
 void Default_Handler3(void)
@@ -186,6 +198,7 @@ void _start(void)
 	printf("_estack    : %p\n\n", &_estack);
 	SystemInit();
 	__libc_init_array();
+	cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFTWARE_VERSION);
 	main(0, 0);
 	exit(0);
 }
