@@ -180,7 +180,7 @@ spi_status_e spi_transfer(spi_t *obj, uint8_t *tx_buffer, uint8_t *rx_buffer,
       return Timeout > 0U ? SPI_ERROR : SPI_TIMEOUT;
     }
 
-    return HAL_SPI_TransmitReceive(&obj->handle,tx_buffer,rx_buffer,len,1,Timeout);
+    return HAL_SPI_TransmitReceive(&obj->handle,tx_buffer,rx_buffer,len,len,Timeout);
 
 #if 0
     tickstart = HAL_GetTick();

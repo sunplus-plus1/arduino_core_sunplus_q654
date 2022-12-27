@@ -391,7 +391,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
         _spi_transmit_data(hspi);
 	}
 
-	hspi->Instance->spi_clk_inv = TOTAL_LENGTH(RxSize+TxSize) | TX_LENGTH(TxSize);
+	hspi->Instance->spi_clk_inv = TOTAL_LENGTH(RxSize) | TX_LENGTH(TxSize);
 	hspi->Instance->spi_status = SPI_START_FD;
 	while((hspi->Instance->spi_status & SPI_BUSY) == SPI_BUSY)
 	{
