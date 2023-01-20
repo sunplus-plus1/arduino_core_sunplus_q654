@@ -37,6 +37,12 @@ typedef struct
   uint32_t FirstBit;
 } SPI_InitTypeDef;
 
+typedef enum {
+  SPI_POLLING_MODE 	= 0x00,
+  SPI_IT_MODE 		= 0x01,
+  SPI_DMA_MODE 		= 0x02,
+} spi_workmode; 
+
 typedef struct __SPI_HandleTypeDef
 {
   /* user set */
@@ -44,25 +50,19 @@ typedef struct __SPI_HandleTypeDef
 
   SPI_InitTypeDef            Init;           /*!< SPI communication parameters             */
 
-
   /* driver used */
+  spi_workmode				 Workmode;
   uint8_t                    *pTxBuffPtr;    /*!< Pointer to SPI Tx transfer Buffer        */
-
-  uint16_t                   TxXferSize;     /*!< SPI Tx Transfer size                     */
-
+  __IO uint32_t              TxXferSize;     /*!< SPI Tx Transfer size                     */
   __IO uint16_t              TxXferCount;    /*!< SPI Tx Transfer Counter                  */
 
   uint8_t                    *pRxBuffPtr;    /*!< Pointer to SPI Rx transfer Buffer        */
-
-  uint16_t                   RxXferSize;     /*!< SPI Rx Transfer size                     */
-
+  __IO uint32_t              RxXferSize;     /*!< SPI Rx Transfer size                     */
   __IO uint16_t              RxXferCount;    /*!< SPI Rx Transfer Counter                  */
-
 
   HAL_LockTypeDef            Lock;           /*!< Locking object                           */
 
   __IO HAL_SPI_StateTypeDef  State;          /*!< SPI communication state                  */
-
   __IO uint32_t              ErrorCode;      /*!< SPI Error code                           */
 
   void (* TxCpltCallback)(struct __SPI_HandleTypeDef *hspi);             /*!< SPI Tx Completed callback          */
@@ -100,10 +100,11 @@ typedef struct __SPI_HandleTypeDef
 /* full duplex, fifo length is config 64 byte */
 #define SPI_FIFO_MAX_LENGTH     (64)
 
+#define SPI_DMA_MAX_LENGTH     (65534)
 /* SPI MST STATUS */
 
 
-#define CLEAN_FLUG_MASK (~0xF800)
+#define CLEAN_FLUG_MASK 		(~0xF800)
 
 #define CLEAR_IRQ_MASK         (~0xF800)
 #define CLEAN_RW_BYTE          (~0x780)
@@ -135,7 +136,10 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef *hspi, uint8_t *p
 HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef *hspi);
 HAL_SPI_StateTypeDef HAL_SPI_GetState(SPI_HandleTypeDef *hs);
 
+HAL_StatusTypeDef HAL_SPI_Transmit_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint32_t Size);
+
 void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg);
+void HAL_SPI_DMA_IRQHandler(SPI_HandleTypeDef *arg);
 
 #ifdef __cplusplus
 }

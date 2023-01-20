@@ -49,10 +49,10 @@ void delay_us(uint32_t us)
 {
 
 if (us != 0) {
-  uint32_t start = getCurrentMillis();
+  uint32_t start = getCurrentMicros();
   do {
 	yield();
-  } while (getCurrentMillis() - start < us);
+  } while (getCurrentMicros() - start < us);
 }
 }
 

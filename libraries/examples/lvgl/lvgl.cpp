@@ -8,24 +8,27 @@ extern "C" {
 #endif
 #include "demos/widgets/lv_demo_widgets.h"
 
-#define HOR_RES 480
-#define VER_RES 320
+#include <TFT_eSPI.h>
+#define HOR_RES 320
+#define VER_RES 240
 
-#if 0
-lv_indev_t * lv_test_mouse_indev;
-lv_indev_t * lv_test_keypad_indev;
-lv_indev_t * lv_test_encoder_indev;
-#endif
+
 lv_color_t test_fb[HOR_RES * VER_RES]; /* TODO: FIXME */
-static lv_color_t disp_buf1[HOR_RES * VER_RES];
+static lv_color_t disp_buf[HOR_RES * VER_RES];
 
+TFT_eSPI tft = TFT_eSPI(HOR_RES, VER_RES); /* TFT instance */
 /* TODO: FIXME */
 static void disp_flush_cb(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p)
 {
-	LV_UNUSED(area);
-	LV_UNUSED(color_p);
 
-	memcpy(test_fb, color_p, lv_area_get_size(area) * sizeof(lv_color_t));
+    uint32_t w = ( area->x2 - area->x1 + 1 );
+    uint32_t h = ( area->y2 - area->y1 + 1 );
+
+	tft.startWrite();
+    tft.setAddrWindow( area->x1, area->y1, w, h );
+	//tft.pushPixelsDMA( ( uint16_t * )&color_p->full, w * h);
+	tft.pushColors( ( uint16_t * )&color_p->full, w * h,true);
+    tft.endWrite();
 
 	lv_disp_flush_ready(disp_drv);
 }
@@ -34,7 +37,7 @@ static void hal_init(void)
 {
 	static lv_disp_draw_buf_t draw_buf;
 
-	lv_disp_draw_buf_init(&draw_buf, disp_buf1, NULL, HOR_RES * VER_RES);
+	lv_disp_draw_buf_init(&draw_buf, disp_buf, NULL, HOR_RES * VER_RES);
 
 	static lv_disp_drv_t disp_drv;
 	lv_disp_drv_init(&disp_drv);
@@ -43,33 +46,23 @@ static void hal_init(void)
 	disp_drv.hor_res = HOR_RES;
 	disp_drv.ver_res = VER_RES;
 	lv_disp_drv_register(&disp_drv);
-#if 0
-	static lv_indev_drv_t indev_mouse_drv;
-	lv_indev_drv_init(&indev_mouse_drv);
-	indev_mouse_drv.type = LV_INDEV_TYPE_POINTER;
-	indev_mouse_drv.read_cb = lv_test_mouse_read_cb;
-	lv_test_mouse_indev = lv_indev_drv_register(&indev_mouse_drv);
 
-	static lv_indev_drv_t indev_keypad_drv;
-	lv_indev_drv_init(&indev_keypad_drv);
-	indev_keypad_drv.type = LV_INDEV_TYPE_KEYPAD;
-	indev_keypad_drv.read_cb = lv_test_keypad_read_cb;
-	lv_test_keypad_indev = lv_indev_drv_register(&indev_keypad_drv);
 
-	static lv_indev_drv_t indev_encoder_drv;
-	lv_indev_drv_init(&indev_encoder_drv);
-	indev_encoder_drv.type = LV_INDEV_TYPE_ENCODER;
-	indev_encoder_drv.read_cb = lv_test_encoder_read_cb;
-	lv_test_encoder_indev = lv_indev_drv_register(&indev_encoder_drv);
-#endif
 }
 
 void setup()
 {
+	tft.begin();          /* TFT init */
+    tft.setRotation( 1 ); /* Landscape orientation, flipped */
+	
 	lv_init();
 	hal_init();
 
-	lv_demo_widgets();
+    lv_obj_t *label = lv_label_create( lv_scr_act() );
+    lv_label_set_text( label, "Hello ,Arduino !!!!" );
+    lv_obj_align( label, LV_ALIGN_CENTER, 0, 0 );
+	
+//	lv_demo_widgets();
 }
 
 void loop()

@@ -8,4 +8,7 @@ DIRS += $(shell find $(TOP)/libraries/lvgl/src -type d)
 # lvgl demo
 DIRS += $(shell find $(TOP)/libraries/lvgl/demos -type d)
 
+#TFT_eSPI
+CCFLAGS += -I$(TOP)/libraries/TFT_eSPI
+DIRS += libraries/TFT_eSPI
 endif
