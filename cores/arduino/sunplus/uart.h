@@ -59,11 +59,27 @@ int uart_get_tx_fifo_space(serial_t *obj);
 //size_t uart_debug_write(uint8_t *data, uint32_t size);
 extern size_t uart_debug_write(uint8_t *data, uint32_t size);
 
+#if defined(UART0_BASE)
 void UART0_IRQHandler(void);
+#endif
+#if defined(UART1_BASE)
 void UART1_IRQHandler(void);
+#endif
+#if defined(UART2_BASE)
 void UART2_IRQHandler(void);
+#endif
+#if defined(UART3_BASE)
 void UART3_IRQHandler(void);
+#endif
+#if defined(UART4_BASE)
 void UART4_IRQHandler(void);
+#endif
+#if defined(UART6_BASE)
+void UART6_IRQHandler(void);
+#endif
+#if defined(UART7_BASE)
+void UART7_IRQHandler(void);
+#endif
 
 #ifdef __cplusplus
 }

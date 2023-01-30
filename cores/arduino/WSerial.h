@@ -66,6 +66,18 @@
         #define Serial Serial4
         #define serialEvent serialEvent4
       #endif
+	#elif SERIAL_UART_INSTANCE == 6
+      #define ENABLE_HWSERIAL6
+      #if !defined(Serial)
+        #define Serial Serial6
+        #define serialEvent serialEvent6
+      #endif
+	#elif SERIAL_UART_INSTANCE == 7
+      #define ENABLE_HWSERIAL7
+      #if !defined(Serial)
+        #define Serial Serial7
+        #define serialEvent serialEvent7
+      #endif
     #else
       #if !defined(Serial)
         #warning "No generic 'Serial' defined!"
@@ -93,6 +105,16 @@
       #define HAVE_HWSERIAL4
     #endif
   #endif
+  #if defined(ENABLE_HWSERIAL6)
+    #if defined(UART6_BASE)
+	  #define HAVE_HWSERIAL6
+    #endif
+  #endif
+  #if defined(ENABLE_HWSERIAL7)
+    #if defined(UART7_BASE)
+	  #define HAVE_HWSERIAL7
+    #endif
+  #endif
 
 
   #if defined(HAVE_HWSERIAL1)
@@ -107,7 +129,12 @@
   #if defined(HAVE_HWSERIAL4)
     extern void serialEvent4(void) __attribute__((weak));
   #endif
-  
+  #if defined(HAVE_HWSERIAL6)
+    extern void serialEvent6(void) __attribute__((weak));
+  #endif
+  #if defined(HAVE_HWSERIAL7)
+    extern void serialEvent7(void) __attribute__((weak));
+  #endif
 
 extern void serialEventRun(void);
 

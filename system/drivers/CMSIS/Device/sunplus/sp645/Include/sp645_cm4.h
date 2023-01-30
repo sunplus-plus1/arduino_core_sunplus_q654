@@ -852,18 +852,15 @@ typedef struct {
 #define UART1_BASE      RF_GRP(19, 0)
 #define UART2_BASE      RF_GRP(16, 0)
 #define UART3_BASE      RF_GRP(135, 0)
-#define UART4_BASE      RF_GRP(17, 0)
-#define UART5_BASE      RF_GRP(261, 0)
-#define UART6_BASE      RF_GRP(262, 0)
-#define UART7_BASE      RF_GRP(263, 0)
+#define UART6_BASE      RF_GRP(261, 0)
+#define UART7_BASE      RF_GRP(262, 0)
 
 
 #define SP_UART0        ((UART_CTRL_Type *)UART0_BASE)
 #define SP_UART1        ((UART_CTRL_Type *)UART1_BASE)
 #define SP_UART2        ((UART_CTRL_Type *)UART2_BASE)
 #define SP_UART3        ((UART_CTRL_Type *)UART3_BASE)
-#define SP_UART4        ((UART_CTRL_Type *)UART4_BASE)
-#define SP_UART5        ((UART_CTRL_Type *)UART5_BASE)
+#define SP_UART4        ((UART_CTRL_Type *)0)/* define it for compile error, not used */
 #define SP_UART6        ((UART_CTRL_Type *)UART6_BASE)
 #define SP_UART7        ((UART_CTRL_Type *)UART7_BASE)
 
@@ -946,8 +943,6 @@ UART LCR register BIT
                                     ((__INSTANCE__) == SP_UART1) || \
                                     ((__INSTANCE__) == SP_UART2) || \
                                     ((__INSTANCE__) == SP_UART3) || \
-                                    ((__INSTANCE__) == SP_UART4) || \
-                                    ((__INSTANCE__) == SP_UART5) || \
                                     ((__INSTANCE__) == SP_UART6)  || \
                                     ((__INSTANCE__) == SP_UART7))
 

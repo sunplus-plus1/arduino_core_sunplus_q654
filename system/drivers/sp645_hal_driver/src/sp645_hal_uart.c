@@ -862,12 +862,6 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 		case (uint32_t)SP_UART3:
 			huart->uart_idx = 3;
 			break;
-		case (uint32_t)SP_UART4:
-			huart->uart_idx = 4;
-			break;
-		case (uint32_t)SP_UART5:
-			huart->uart_idx = 6;
-			break;
 		case (uint32_t)SP_UART6:
 			huart->uart_idx = 7;
 			break;

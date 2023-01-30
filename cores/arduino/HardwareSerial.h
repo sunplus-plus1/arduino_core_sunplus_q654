@@ -87,6 +87,12 @@ class HardwareSerial : public Stream {
 #if defined(UART4_BASE)
   extern HardwareSerial Serial4;
 #endif
+#if defined(UART6_BASE)
+  extern HardwareSerial Serial6;
+#endif
+#if defined(UART7_BASE)
+  extern HardwareSerial Serial7;
+#endif
 
 #endif
 

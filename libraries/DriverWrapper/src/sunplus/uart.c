@@ -15,6 +15,9 @@ typedef enum {
 	UART2_INDEX,
 	UART3_INDEX,
 	UART4_INDEX,
+	UART5_INDEX,
+	UART6_INDEX,
+	UART7_INDEX,
 	UART_NUM
 } uart_index_t;
 
@@ -47,7 +50,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 
 	UART_HandleTypeDef *huart = &(obj->handle);
 
-	if (obj->uart == NULL)
+	if (obj->uart == NULL || !IS_UART_INSTANCE(obj->uart))
 	{
 		core_debug("ERROR: uart register set error!\n");
 		return;
@@ -89,7 +92,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 #ifdef SP7021
 		HAL_PINMUX_Cfg(PINMUX_UA1_TX,uart_tx);
 		HAL_PINMUX_Cfg(PINMUX_UA1_RX,uart_rx);
-#elif defined(SP645)
+#else
 		HAL_PINMUX_Cfg(PINMUX_UART1,1);
 #endif
 		/*interrupt set */
@@ -104,7 +107,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 #ifdef SP7021
 		HAL_PINMUX_Cfg(PINMUX_UA2_TX,uart_tx);
 		HAL_PINMUX_Cfg(PINMUX_UA2_RX,uart_rx);
-#elif defined(SP645)
+#else
 		HAL_PINMUX_Cfg(PINMUX_UART2,1);
 #endif
 		/*interrupt set */
@@ -119,7 +122,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 #ifdef SP7021
 		HAL_PINMUX_Cfg(PINMUX_UA3_TX,uart_tx);
 		HAL_PINMUX_Cfg(PINMUX_UA3_RX,uart_rx);
-#elif defined(SP645)
+#else
 		HAL_PINMUX_Cfg(PINMUX_UART3,1);
 #endif
 		/*interrupt set */
@@ -128,22 +131,43 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 		IRQ_SetHandler(obj->irq, UART3_IRQHandler);
 		IRQ_Enable(obj->irq);
 	}
+#ifdef SP7021
 	else if(obj->uart == SP_UART4)
 	{
 		/* pinmux set */
-#ifdef SP7021
+
 		HAL_PINMUX_Cfg(PINMUX_UA4_TX,uart_tx);
 		HAL_PINMUX_Cfg(PINMUX_UA4_RX,uart_rx);
-#elif defined(SP645)
-	//#error "regster file not found pinmux_uart4"
-	//	HAL_PINMUX_Cfg(PINMUX_UART4,1);
-#endif
 		/*interrupt set */
 		obj->index = UART4_INDEX;
 		obj->irq = UART4_IRQn;
 		IRQ_SetHandler(obj->irq, UART4_IRQHandler);
 		IRQ_Enable(obj->irq);
 	}
+#else
+	else if(obj->uart == SP_UART6)
+	{
+		/* pinmux set */
+		HAL_PINMUX_Cfg(PINMUX_UART6,1);
+
+		/*interrupt set */
+		obj->index = UART6_INDEX;
+		obj->irq = UART6_IRQn;
+		IRQ_SetHandler(obj->irq, UART6_IRQHandler);
+		IRQ_Enable(obj->irq);
+	}
+	else if(obj->uart == SP_UART7)
+	{
+		/* pinmux set */
+		HAL_PINMUX_Cfg(PINMUX_UART7,1);
+
+		/*interrupt set */
+		obj->index = UART7_INDEX;
+		obj->irq = UART7_IRQn;
+		IRQ_SetHandler(obj->irq, UART7_IRQHandler);
+		IRQ_Enable(obj->irq);
+	}
+#endif
 	else
 	{
 		return;
@@ -462,6 +486,21 @@ void UART4_IRQHandler(void)
 	HAL_UART_IRQHandler(uart_handlers[UART4_INDEX]);
 }
 #endif
+
+#if defined(UART6_BASE)
+void UART6_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(uart_handlers[UART6_INDEX]);
+}
+#endif
+
+#if defined(UART7_BASE)
+void UART7_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(uart_handlers[UART7_INDEX]);
+}
+#endif
+
 
 #if 0
 #if defined(UART_RXDMA0_BASE)

@@ -857,13 +857,16 @@ typedef struct {
 #define UART1_BASE      RF_GRP_AO(51, 0)
 #define UART2_BASE      RF_GRP_AO(55, 0)
 #define UART3_BASE      RF_GRP_AO(59, 0)
-#define UART4_BASE      RF_GRP_AO(60, 0)
+#define UART6_BASE      RF_GRP_AO(63, 0)
+#define UART7_BASE      RF_GRP_AO(67, 0)
 
 #define SP_UART0        ((UART_CTRL_Type *)UART0_BASE)
 #define SP_UART1        ((UART_CTRL_Type *)UART1_BASE)
 #define SP_UART2        ((UART_CTRL_Type *)UART2_BASE)
 #define SP_UART3        ((UART_CTRL_Type *)UART3_BASE)
-#define SP_UART4        ((UART_CTRL_Type *)UART4_BASE)
+#define SP_UART4        ((UART_CTRL_Type *)0)/* define it for compile error, not used */
+#define SP_UART6        ((UART_CTRL_Type *)UART6_BASE)
+#define SP_UART7        ((UART_CTRL_Type *)UART7_BASE)
 
 /*
 UART LCR register BIT
@@ -923,6 +926,43 @@ UART LCR register BIT
 #define UART_LSR_RECEIVE_FIFO_STATUS         (1 << 1)
 
 
+#define UART_TXDMA1        ((UART_Txdma *)RF_GRP(54, 0))
+#define UART_TXDMA2        ((UART_Txdma *)RF_GRP(58, 0))
+#define UART_TXDMA3        ((UART_Txdma *)RF_GRP(62, 0))
+#define UART_TXDMA6        ((UART_Txdma *)RF_GRP(66, 0))
+#define UART_TXDMA7        ((UART_Txdma *)RF_GRP(70, 0))
+
+#define UART_TXGDMA1        ((UART_TxGdma *)RF_GRP(52, 0))
+#define UART_TXGDMA2        ((UART_TxGdma *)RF_GRP(56, 0))
+#define UART_TXGDMA3        ((UART_TxGdma *)RF_GRP(60, 0))
+#define UART_TXGDMA6        ((UART_TxGdma *)RF_GRP(64, 0))
+#define UART_TXGDMA7        ((UART_TxGdma *)RF_GRP(68, 0))
+
+#define UART_RXDMA1        ((UART_Rxdma *)RF_GRP(53, 0))
+#define UART_RXDMA2        ((UART_Rxdma *)RF_GRP(57, 0))
+#define UART_RXDMA3        ((UART_Rxdma *)RF_GRP(61, 0))
+#define UART_RXDMA6        ((UART_Rxdma *)RF_GRP(65, 0))
+#define UART_RXDMA7        ((UART_Rxdma *)RF_GRP(69, 0))
+#define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART1) || \
+                                    ((__INSTANCE__) == SP_UART2) || \
+                                    ((__INSTANCE__) == SP_UART3) || \
+                                    ((__INSTANCE__) == SP_UART6)  || \
+                                    ((__INSTANCE__) == SP_UART7))
+#define IS_UART_TXDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_TXDMA1) || \
+                                    ((__INSTANCE__) == UART_TXDMA2) || \
+                                    ((__INSTANCE__) == UART_TXDMA3) || \
+                                    ((__INSTANCE__) == UART_TXDMA6) || \
+                                    ((__INSTANCE__) == UART_TXDMA7))
+#define IS_UART_TXGDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_TXGDMA1) || \
+                                    ((__INSTANCE__) == UART_TXGDMA2) || \
+                                    ((__INSTANCE__) == UART_TXGDMA3) || \
+                                    ((__INSTANCE__) == UART_TXGDMA6) || \
+                                    ((__INSTANCE__) == UART_TXGDMA7))
+#define IS_UART_RXDMA_INSTANCE(__INSTANCE__) (((__INSTANCE__) == UART_RXDMA1) || \
+                                    ((__INSTANCE__) == UART_RXDMA2) || \
+                                    ((__INSTANCE__) == UART_RXDMA3) || \
+                                    ((__INSTANCE__) == UART_RXDMA6) || \
+                                    ((__INSTANCE__) == UART_RXDMA7))
 /******************************************************************************/
 /*                        SPI module                                          */
 /******************************************************************************/

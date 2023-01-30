@@ -22,6 +22,16 @@
     HardwareSerial Serial4(SP_UART4);
     void serialEvent4() __attribute__((weak));
   #endif
+
+  #if defined(HAVE_HWSERIAL6)
+    HardwareSerial Serial6(SP_UART6);
+    void serialEvent6() __attribute__((weak));
+  #endif
+
+  #if defined(HAVE_HWSERIAL7)
+    HardwareSerial Serial7(SP_UART7);
+    void serialEvent7() __attribute__((weak));
+  #endif
 #endif 
 
 HardwareSerial::HardwareSerial(void* peripheral)
@@ -44,6 +54,10 @@ HardwareSerial::HardwareSerial(void)
     _serial.uart = SP_UART3;
     #elif defined(HAVE_HWSERIAL4)
     _serial.uart = SP_UART4;
+	#elif defined(HAVE_HWSERIAL6)
+    _serial.uart = SP_UART6;
+    #elif defined(HAVE_HWSERIAL7)
+    _serial.uart = SP_UART7;
     #endif
 
     #if defined(PIN_SERIAL_TX)
@@ -62,7 +76,11 @@ HardwareSerial::HardwareSerial(uint32_t _rx, uint32_t _tx)
 	_serial.uart = SP_UART3;
 #elif defined(HAVE_HWSERIAL4)  
 	_serial.uart = SP_UART4;  
-#endif
+#elif defined(HAVE_HWSERIAL6)
+	_serial.uart = SP_UART6;
+#elif defined(HAVE_HWSERIAL7)
+	_serial.uart = SP_UART7;
+ #endif
 
   init(_rx,_tx);
 }

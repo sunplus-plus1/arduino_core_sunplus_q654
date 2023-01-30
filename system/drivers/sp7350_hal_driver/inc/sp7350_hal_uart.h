@@ -293,7 +293,7 @@ HAL_StatusTypeDef HAL_UART_Config_DMA_Buf(uint32_t* dma_start_addr);
 uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart);
 int HAL_UART_Get_TX_FIFO_Space(UART_HandleTypeDef *huart);
 void HAL_UART_IRQHandler(void *arg);
-
+void HAL_UART_Rxdma_IRQ_Handler(void *arg);
 #ifdef __cplusplus
 }
 #endif

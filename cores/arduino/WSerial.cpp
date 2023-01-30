@@ -22,5 +22,15 @@ WEAK void serialEventRun(void)
     serialEvent4();
   }
 #endif
+#if defined(HAVE_HWSERIAL6)
+  if (serialEvent6 && Serial6.available()) {
+    serialEvent6();
+  }
+#endif
+#if defined(HAVE_HWSERIAL7)
+  if (serialEvent7 && Serial7.available()) {
+    serialEvent7();
+  }
+#endif
 }
 
