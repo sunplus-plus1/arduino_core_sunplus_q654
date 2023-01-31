@@ -342,82 +342,109 @@ typedef enum {
 
 #define PINMUX_DFMP_2BIT            (0x10000)
 #define PINMUX_DFMP_3BIT            (0x20000)
+#define PINMUX_DFMP_4BIT            (0x40000)
 
 typedef enum{
-   /*G1.1*/
+  /*G1.1*/
   PINMUX_SPI_FLASH=16,
-  PINMUX_UART_IOP,
-  PINMUX_DISP_PWM,
   PINMUX_EMMC1,
-  PINMUX_SPI_NAND=20|PINMUX_DFMP_2BIT,
-  PINMUX_SDCARD=22,
+  PINMUX_SPI_NAND=18|PINMUX_DFMP_2BIT,
+  PINMUX_SDCARD=20,
   PINMUX_SDIO,
-  PINMUX_UART0,
-  PINMUX_UART1,
-  PINMUX_UART2,
-  PINMUX_UART3,
-  PINMUX_UA2AXI,
-  PINMUX_UART6,
-  PINMUX_UART7,
-  PINMUX_UART8,
-  /*G1.2*/
-  PINMUX_SPI_COM0_MST,
-  PINMUX_SPI_COM0_SLV,
+  PINMUX_P_NAND,
+  PINMUX_USB0_OTG,
   PINMUX_CA55_JTAG,
-  PINMUX_CM4_JTAG,
-  PINMUX_HSM_JTAG,
-  PINMUX_EVDN_JTAG,
-  PINMUX_SPI_COM1_MST,
-  PINMUX_SPI_COM1_SLV,
-  PINMUX_SPI_COM2_MST,
-  PINMUX_SPI_COM2_SLV,
-  PINMUX_SPI_COM3_MST,
-  PINMUX_SPI_COM3_SLV,
-  PINMUX_SPI_COM4_MST,
-  PINMUX_SPI_COM4_SLV,
-  PINMUX_SPI_COM5_MST,
-  PINMUX_SPI_COM5_SLV,
+  PINMUX_GMAC,
+  PINMUX_PWM_CH0=26|PINMUX_DFMP_2BIT,
+  PINMUX_PWM_CH1=28|PINMUX_DFMP_2BIT,
+  PINMUX_PWM_CH2=30|PINMUX_DFMP_2BIT,
+
+  /*G1.2*/
+  PINMUX_PWM_CH3=32|PINMUX_DFMP_2BIT,
+  PINMUX_UART0=34|PINMUX_DFMP_2BIT,
+  PINMUX_UART1=36|PINMUX_DFMP_2BIT,
+  PINMUX_UART1_FC=38|PINMUX_DFMP_2BIT,
+  PINMUX_UART2=40|PINMUX_DFMP_2BIT,
+  PINMUX_UART2_FC=42|PINMUX_DFMP_2BIT,
+  PINMUX_UART3=44|PINMUX_DFMP_2BIT,
+  PINMUX_UA2AXI=46,
+  PINMUX_RESERVE_1,
+
   /*G1.3*/
-  PINMUX_I2C_0,
-  PINMUX_I2C_1,
-  PINMUX_I2C_2,
-  PINMUX_I2C_3,
+  PINMUX_UART6=48|PINMUX_DFMP_2BIT,
+  PINMUX_UART7=50,
+  PINMUX_I2C_0=51|PINMUX_DFMP_2BIT,
+  PINMUX_I2C_1=53,
+  PINMUX_I2C_2=54|PINMUX_DFMP_2BIT,
+  PINMUX_I2C_3=56,
   PINMUX_I2C_4,
   PINMUX_I2C_5,
-  PINMUX_AUD_TDMTX_XCK,
-  PINMUX_AUD_DAC_CLK,
+  PINMUX_I2C_6=59|PINMUX_DFMP_2BIT,
+  PINMUX_I2C_7=61|PINMUX_DFMP_2BIT,
+  PINMUX_RESERVE_2,
+
+  /*G1.4*/
+  PINMUX_I2C_8=64|PINMUX_DFMP_2BIT,
+  PINMUX_I2C_9=66|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_MCU=68|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_WIFI=70|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_RTC=72|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_PHY=74|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_GNCMA=76|PINMUX_DFMP_2BIT,
+  PINMUX_CLKGEN_DGO_MST=78|PINMUX_DFMP_2BIT,
+
+  /*G1.5*/
+  PINMUX_CM4_JTAG=80,
+  PINMUX_SPI_COM1_MST=81|PINMUX_DFMP_2BIT,
+  PINMUX_SPI_COM2_MST=83,
+  PINMUX_SPI_COM3_MST=84|PINMUX_DFMP_2BIT,
+  PINMUX_SPI_COM4_MST=86,
+  PINMUX_SPI_COM5_SLV=87|PINMUX_DFMP_2BIT,
+  PINMUX_AUD_TDMTX_XCK=89,
+  PINMUX_AUD_DAC_CLK_XCK1,
+  PINMUX_AUD_DAC_CLK_XCK,
   PINMUX_AUD_AU2_DATA0,
   PINMUX_AUD_AU1_DATA0,
   PINMUX_AUD_AU2_CK,
   PINMUX_AUD_AU1_CK,
-  PINMUX_AUD_AU_ADC_DATA0,
-  PINMUX_AUD_ADC2_DATA0,
+
+  /*G1.6*/
+  PINMUX_AUD_AU_ADC_DATA0=96|PINMUX_DFMP_2BIT,
+  PINMUX_AUD_ADC2_DATA0=98,
   PINMUX_AUD_ADC1_DATA0,
   PINMUX_AUD_TDM,
-  /*G1.4*/
-  PINMUX_SPDIF_IN=65|PINMUX_DFMP_3BIT,
-  PINMUX_SPDIF_OUT=68|PINMUX_DFMP_3BIT,
-  PINMUX_VCL=71,
-  PINMUX_UAHSM,
-  PINMUX_UAHSM_EXT,
-  PINMUX_CPIOL_I2C,
-  PINMUX_CPIOR_I2C,
-  PINMUX_GPIO_INT0=75|PINMUX_DFMP_3BIT,
-   /*G1.5*/
-  PINMUX_GPIO_INT1=80|PINMUX_DFMP_3BIT,
-  PINMUX_GPIO_INT2=83|PINMUX_DFMP_3BIT,
-  PINMUX_GPIO_INT3=86|PINMUX_DFMP_3BIT,
-  PINMUX_GPIO_INT4=89|PINMUX_DFMP_3BIT,
-  PINMUX_GPIO_INT5=92|PINMUX_DFMP_3BIT,
-   /*G1.6*/
-  PINMUX_GPIO_INT6=96|PINMUX_DFMP_3BIT,
-  PINMUX_GPIO_INT7=99|PINMUX_DFMP_3BIT,
-  PINMUX_MO1_CLK27=102,
+  PINMUX_SPDIF_IN=101|PINMUX_DFMP_3BIT,
+  PINMUX_SPDIF_OUT=104|PINMUX_DFMP_3BIT,
+  PINMUX_SAR_ADC_PROBE=107,
+  PINMUX_VCL_EXT_INTR0=108|PINMUX_DFMP_2BIT,
+  PINMUX_VCL_EXT_INTR1=110|PINMUX_DFMP_2BIT,
+  /*G1.7*/
+  PINMUX_VCL_EXT_INTR2=112|PINMUX_DFMP_2BIT,
+  PINMUX_VCL_EXT_INTR3=114|PINMUX_DFMP_2BIT,
+  PINMUX_CPIOR_I2C=116,
+  PINMUX_GPIO_INT0=117|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_INT1=121|PINMUX_DFMP_4BIT,
+  PINMUX_RESERVE_3=125|PINMUX_DFMP_3BIT,
+  /*G1.8*/
+  PINMUX_GPIO_INT2=128|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_INT3=132|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_INT4=136|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_INT5=140|PINMUX_DFMP_4BIT,
+  /*G1.9*/
+  PINMUX_GPIO_INT6=144|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_INT7=148|PINMUX_DFMP_4BIT,
+  PINMUX_GPIO_AO_INT0=152|PINMUX_DFMP_2BIT,
+  PINMUX_GPIO_AO_INT1=154|PINMUX_DFMP_2BIT,
+  PINMUX_GPIO_AO_INT2=156|PINMUX_DFMP_2BIT,
+  PINMUX_GPIO_AO_INT3=158|PINMUX_DFMP_2BIT,
+  /*G1.10*/
+  PINMUX_MO1_CLK27=160,
   PINMUX_U2PHY0_DEBUG,
   PINMUX_UPHY0_IF,
   PINMUX_U3PHY0_DEBUG,
-  PINMUX_U3PHY1_DEBUG,
-  PINMUX_PROBE_PORT
+  PINMUX_PROBE_PORT,
+  PINMUX_RESERVE_4=165,
+
 }PINMUX_Type;
 
 
@@ -516,11 +543,11 @@ typedef struct {
 }UART_TxGdma;
 
 typedef struct{
-	__IOM uint32_t stc_15_0;				 /*!< \brief  standard time clock counter, 0~15 bit */
-	__IOM uint32_t stc_31_16;				 /*!< \brief  standard time clock counter, 16~31 bit */
+	__IOM uint32_t stc_15_0;			/*!< \brief  standard time clock counter, 0~15 bit */
+	__IOM uint32_t stc_31_16;			/*!< \brief  standard time clock counter, 16~31 bit */
 	__IOM uint32_t stc_47_32;
 	__IOM uint32_t stc_63_48;
-	__IOM uint32_t stc_64;					 /*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
+	__IOM uint32_t stc_64;				/*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
 	__IOM uint32_t stc_prescale_val;
 	__IOM uint32_t stc_config;
 	RESERVED(0[19], uint32_t)
@@ -636,7 +663,7 @@ typedef struct
     __IOM uint32_t control;           /*!< \brief timer control register for >*/
     __IOM uint32_t counter_val;       /*!< \brief 16-bit counter , it down to 0, the timer will generate the interrupt*/
     __IOM uint32_t reload_val;        /*!< \brief when count reaches to 0, the value will reload to the count >*/
-    __IOM uint32_t prescale_val;	  /*!< \brief 16-bit prescale for timer>*/
+    __IOM uint32_t prescale_val;      /*!< \brief 16-bit prescale for timer>*/
 }TIM_TypeDef;
 
 typedef struct
@@ -723,17 +750,17 @@ typedef struct {
 #define RF_MASK_V_CLR(_mask)         (((_mask) << 16) | 0)
 
 /* MOON REG */
-#define MOON0_REG                    ((volatile MOON_REG_Type *)RF_GRP(0, 0))
-#define MOON1_REG                    ((volatile MOON_REG_Type *)RF_GRP(1, 0))
-#define MOON2_REG                    ((volatile MOON_REG_Type *)RF_GRP(2, 0))
-#define MOON3_REG                    ((volatile MOON_REG_Type *)RF_GRP(3, 0))
-#define MOON4_REG                    ((volatile MOON_REG_Type *)RF_GRP(4, 0))
+#define MOON0_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(0, 0))
+#define MOON1_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(1, 0))
+#define MOON2_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(2, 0))
+#define MOON3_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(3, 0))
+#define MOON4_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(4, 0))
 
 /* IRQ */
 #define SP_IRQ_CTRL                  ((volatile IRQ_Ctrl_Type*) RF_GRP(9, 0))
 
 /* IPCC Mailbox */
-#define IPC_MAILBOX	                 ((volatile IPCC_Typedef *)RF_GRP(255, 0))
+#define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(255, 0))
 
 /*SP645 module clock enable bit*/
 #define CLK_EN                       ((Module_Clock_En_type*)RF_GRP(0, 1))
@@ -1062,7 +1089,7 @@ UART LCR register BIT
 
 /******************************************************************************/
 /*                                                                            */
-/*                       IPC Mailbox  		                                  */
+/*                       IPC Mailbox  	                                      */
 /*                                                                            */
 /******************************************************************************/
 /********************  Bit definition for IPC Mailbox register  ***************/

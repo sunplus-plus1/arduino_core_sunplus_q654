@@ -863,10 +863,10 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 			huart->uart_idx = 3;
 			break;
 		case (uint32_t)SP_UART6:
-			huart->uart_idx = 7;
+			huart->uart_idx = 6;
 			break;
 		case (uint32_t)SP_UART7:
-			huart->uart_idx = 8;
+			huart->uart_idx = 7;
 			break;
 		default:
 			return HAL_ERROR;

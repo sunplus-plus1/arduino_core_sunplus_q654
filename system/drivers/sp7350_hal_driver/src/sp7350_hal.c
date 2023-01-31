@@ -100,6 +100,11 @@ void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin)
 		id = id & 0xFFFF;
 		MOON1_REG->sft_cfg[id/16] = RF_MASK_V(0x7 << (id%16),pin << (id%16));
 	}
+	else if(id & PINMUX_DFMP_4BIT)
+	{
+		id = id & 0xFFFF;
+		MOON1_REG->sft_cfg[id/16] = RF_MASK_V(0xf << (id%16),pin << (id%16));
+	}
 	else
 	{
 		MOON1_REG->sft_cfg[id/16] = RF_MASK_V_SET(1 << (id%16));
