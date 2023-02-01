@@ -53,10 +53,10 @@ HAL_StatusTypeDef HAL_STC_Init(STC_HandleTypeDef *Hstc)
 		MODIFY_REG(Hstc->Instance->stc_prescale_val, STC_TRIG_SRC, 1<<STC_TRIG_SRC_Pos);
 	}
  	MODIFY_REG(Hstc->Instance->stc_prescale_val, STC_PRESCALER, Hstc->Prescaler<<STC_PRESCALER_Pos);
- 	Hstc->Instance->stc_63_48 = 0;
-	Hstc->Instance->stc_47_32 = 0;
-	Hstc->Instance->stc_31_16 = 0;
-	Hstc->Instance->stc_15_0 = 0;
+ 	Hstc->Instance->stc_64 = 0;
+	Hstc->Instance->stc_63_32 = 0;
+	Hstc->Instance->stc_31_0 = 0;
+
 	return HAL_OK;
 
 }
@@ -76,9 +76,8 @@ HAL_StatusTypeDef HAL_STC_SetPrescaler(STC_HandleTypeDef *Hstc, uint32_t u32Pres
 HAL_StatusTypeDef HAL_STC_SetExtDiv(STC_HandleTypeDef *Hstc, uint32_t u32div)
 {
 
-	if (Hstc == NULL)
+	if (Hstc == NULL || !IS_STC_INSTANCE(Hstc->Instance))
 		return HAL_ERROR;
-	assert_param(IS_STC_INSTANCE(Hstc->Instance));
 	
 	MODIFY_REG(Hstc->Instance->stc_config, STC_EXT_DIV, Hstc->Instance->stc_config << STC_EXT_DIV_Pos);
 	Hstc->ExtDiv = u32div;
@@ -88,15 +87,12 @@ HAL_StatusTypeDef HAL_STC_SetExtDiv(STC_HandleTypeDef *Hstc, uint32_t u32div)
 
 uint64_t HAL_STC_GetCounter(STC_HandleTypeDef *Hstc)
 {
-	uint64_t ret = 0;
-	if (Hstc == NULL)
+	if (Hstc == NULL || !IS_STC_INSTANCE(Hstc->Instance))
 		return 0;
-	assert_param(IS_STC_INSTANCE(Hstc->Instance));
-	WRITE_REG(Hstc->Instance->stcl_32, 0x1234);
-	ret = (READ_REG(Hstc->Instance->stcl_31_16)<<16)|READ_REG(Hstc->Instance->stcl_15_0);
-	if (READ_REG(Hstc->Instance->stcl_32)&1)
-		ret |= 0x100000000;
-	return ret;
+
+	READ_REG(Hstc->Instance->stc_31_0); /* latch stc value */
+
+	return READ_REG(Hstc->Instance->stc_31_0);
 }
 
 uint32_t HAL_STC_GetPrescaler(STC_HandleTypeDef *Hstc)

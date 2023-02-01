@@ -478,15 +478,15 @@ typedef struct {
 }MOON_REG_Type;
 
 typedef struct{
-    __IOM uint32_t clock_enable[10];   /*!< \brief devices clock enable bit*/
+    __IOM uint32_t clock_enable[12];   /*!< \brief devices clock enable bit*/
 }Module_Clock_En_type;
 
 typedef struct{
-    __IOM uint32_t clock_gate_enable[10]; /*!< \brief devices clock gate enable bit*/
+    __IOM uint32_t clock_gate_enable[12]; /*!< \brief devices clock gate enable bit*/
 }Module_Clock_Gate_Type;
 
 typedef struct{
-    __IOM uint32_t reset[10];         /*!< \brief devices clock gate enable bit*/
+    __IOM uint32_t reset[15];         /*!< \brief devices clock gate enable bit*/
 }Module_Reset_Type;
 
 typedef struct{
@@ -543,20 +543,14 @@ typedef struct {
 }UART_TxGdma;
 
 typedef struct{
-	__IOM uint32_t stc_15_0;			/*!< \brief  standard time clock counter, 0~15 bit */
-	__IOM uint32_t stc_31_16;			/*!< \brief  standard time clock counter, 16~31 bit */
-	__IOM uint32_t stc_47_32;
-	__IOM uint32_t stc_63_48;
+	__IOM uint32_t stc_31_0;			/*!< \brief  standard time clock counter, 0~15 bit */
+	__IOM uint32_t stc_63_32;			/*!< \brief  standard time clock counter, 16~31 bit */
 	__IOM uint32_t stc_64;				/*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
 	__IOM uint32_t stc_prescale_val;
 	__IOM uint32_t stc_config;
 	RESERVED(0[19], uint32_t)
-	__IOM uint32_t stcl_15_0;
-	__IOM uint32_t stcl_31_16;
+	__IOM uint32_t stcl_31_0;
 	__IOM uint32_t stcl_32;
-	__IOM uint32_t atc_15_0;
-	__IOM uint32_t atc_31_16;
-	__IOM uint32_t atc_33_32;
 }STC_TypeDef;
 
 
@@ -762,22 +756,22 @@ typedef struct {
 /* IPCC Mailbox */
 #define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(255, 0))
 
-/*SP645 module clock enable bit*/
-#define CLK_EN                       ((Module_Clock_En_type*)RF_GRP(0, 1))
+/*SP654 module clock enable bit*/
+#define CLK_EN                       ((Module_Clock_En_type*)RF_GRP_AO(2, 1))
 
-/*SP645 module clock enable bit*/
-#define CLK_GATE                     ((Module_Clock_Gate_Type*)RF_GRP(0, 11))
+/*SP654 module clock enable bit*/
+#define CLK_GATE                     ((Module_Clock_Gate_Type*)RF_GRP_AO(2, 15))
 
-/*SP645 module rest bit*/
-#define MODULE_REST                  ((Module_Reset_Type*)RF_GRP(0, 21))
+/*SP654 module rest bit*/
+#define MODULE_REST                  ((Module_Reset_Type*)RF_GRP_AO(0, 1))
 
 
 /********************  Bit definition for STC register  ********************/
 /*  STC register */
-#define _STC_BASE                    RF_GRP(12, 0)
-#define _STC0_BASE                   RF_GRP(96, 0)
-#define _STC1_BASE                   RF_GRP(97, 0)
-#define _STC2_BASE                   RF_GRP(99, 0)
+#define _STC_BASE                    RF_GRP_AO(23, 0)
+#define _STC0_BASE                   RF_GRP_AO(24, 0)
+#define _STC1_BASE                   RF_GRP_AO(25, 0)
+#define _STC2_BASE                   RF_GRP_AO(26, 0)
 
 #define STC0                         ((STC_TypeDef *)_STC_BASE)
 #define STC1                         ((STC_TypeDef *)_STC0_BASE)
@@ -953,23 +947,23 @@ UART LCR register BIT
 #define UART_LSR_RECEIVE_FIFO_STATUS         (1 << 1)
 
 
-#define UART_TXDMA1        ((UART_Txdma *)RF_GRP(54, 0))
-#define UART_TXDMA2        ((UART_Txdma *)RF_GRP(58, 0))
-#define UART_TXDMA3        ((UART_Txdma *)RF_GRP(62, 0))
-#define UART_TXDMA6        ((UART_Txdma *)RF_GRP(66, 0))
-#define UART_TXDMA7        ((UART_Txdma *)RF_GRP(70, 0))
+#define UART_TXDMA1        ((UART_Txdma *)RF_GRP_AO(54, 0))
+#define UART_TXDMA2        ((UART_Txdma *)RF_GRP_AO(58, 0))
+#define UART_TXDMA3        ((UART_Txdma *)RF_GRP_AO(62, 0))
+#define UART_TXDMA6        ((UART_Txdma *)RF_GRP_AO(66, 0))
+#define UART_TXDMA7        ((UART_Txdma *)RF_GRP_AO(70, 0))
 
-#define UART_TXGDMA1        ((UART_TxGdma *)RF_GRP(52, 0))
-#define UART_TXGDMA2        ((UART_TxGdma *)RF_GRP(56, 0))
-#define UART_TXGDMA3        ((UART_TxGdma *)RF_GRP(60, 0))
-#define UART_TXGDMA6        ((UART_TxGdma *)RF_GRP(64, 0))
-#define UART_TXGDMA7        ((UART_TxGdma *)RF_GRP(68, 0))
+#define UART_TXGDMA1       ((UART_TxGdma *)RF_GRP_AO(52, 0))
+#define UART_TXGDMA2       ((UART_TxGdma *)RF_GRP_AO(56, 0))
+#define UART_TXGDMA3       ((UART_TxGdma *)RF_GRP_AO(60, 0))
+#define UART_TXGDMA6       ((UART_TxGdma *)RF_GRP_AO(64, 0))
+#define UART_TXGDMA7       ((UART_TxGdma *)RF_GRP_AO(68, 0))
 
-#define UART_RXDMA1        ((UART_Rxdma *)RF_GRP(53, 0))
-#define UART_RXDMA2        ((UART_Rxdma *)RF_GRP(57, 0))
-#define UART_RXDMA3        ((UART_Rxdma *)RF_GRP(61, 0))
-#define UART_RXDMA6        ((UART_Rxdma *)RF_GRP(65, 0))
-#define UART_RXDMA7        ((UART_Rxdma *)RF_GRP(69, 0))
+#define UART_RXDMA1        ((UART_Rxdma *)RF_GRP_AO(53, 0))
+#define UART_RXDMA2        ((UART_Rxdma *)RF_GRP_AO(57, 0))
+#define UART_RXDMA3        ((UART_Rxdma *)RF_GRP_AO(61, 0))
+#define UART_RXDMA6        ((UART_Rxdma *)RF_GRP_AO(65, 0))
+#define UART_RXDMA7        ((UART_Rxdma *)RF_GRP_AO(69, 0))
 #define IS_UART_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SP_UART1) || \
                                     ((__INSTANCE__) == SP_UART2) || \
                                     ((__INSTANCE__) == SP_UART3) || \
