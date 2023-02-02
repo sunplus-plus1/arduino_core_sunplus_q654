@@ -31,8 +31,14 @@ static inline int pwm_init(int pwm_num, int period,int duty,int param)
 	}
 	/* set pwm pinmux */
 	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM0 + pwm_num),param);
-#else
+#elif defined(SP645)
 	HAL_PINMUX_Cfg(PINMUX_DISP_PWM,1);
+#elif defined(SP7350)
+	if(param > 3) /* value 1/2 is vaild, value 0/3 is disable */
+	{
+		return HAL_ERROR;
+	}
+	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM_CH0 + 2*pwm_num),param);
 #endif
 
 	return HAL_PWM_INIT(&PWM_Init);
