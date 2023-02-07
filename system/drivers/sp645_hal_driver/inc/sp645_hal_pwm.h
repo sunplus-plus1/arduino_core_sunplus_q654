@@ -50,7 +50,7 @@ typedef struct
 #define IS_PWM_NUM_VALID(num)               (((num) >= PWM0) && ((num) <= PWM3))
 #define IS_PWM_RESOLUTION_SEL_VALID(res)    (((res) == PWM_RESOLUTION_0_4096) || ((res) <= PWM_RESOLUTION_1_256))
 
-int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init);
+int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init);
 void HAL_PWM_Start(int pwm_num);
 void HAL_PWM_Stop(int pwm_num);
 void HAL_PWM_Period_Set(int pwm_num,uint32_t freq,uint32_t duty_cycle);

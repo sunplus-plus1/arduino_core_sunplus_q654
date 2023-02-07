@@ -45,7 +45,7 @@ static int _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 	return HAL_OK;
 }
 
-int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init)
+int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	int pwm_num;
 

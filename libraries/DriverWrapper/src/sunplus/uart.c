@@ -408,6 +408,7 @@ void uart_attach_tx_callback(serial_t *obj, int (*callback)(serial_t *))
 	IRQ_Enable(obj->irq);
 }
 
+#ifndef CUNIT_TEST
 /**
 	* @brief	Rx Transfer completed callback
 	* @param	UartHandle pointer on the uart reference
@@ -451,6 +452,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 		HAL_UART_Receive_IT(huart, &(obj->recv), 1);
 	}
 }
+#endif
 
 #if defined(UART0_BASE)
 void UART0_IRQHandler(void)

@@ -133,7 +133,7 @@ static int __PWM_Set_by_period(int pwm_num,uint32_t period_ns,uint32_t duty_ns)
 	return 0;
 }
 
-int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init)
+int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	pwm_assert_param(PWM_Init);
 	if(!PWM_Init || !IS_PWM_NUM_VALID(PWM_Init->pwm_num))

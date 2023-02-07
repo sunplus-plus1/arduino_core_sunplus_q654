@@ -8,7 +8,7 @@ extern "C" {
 void setup()
 {
 	printf("pwm test start \n");
-	pwm_init(PWM0,11235955,6235955,0);
+	pwm_init(PWM0,20000000,10000000,0,0);
 	pwm_start(PWM0);
 	delay(10000);
 	pwm_stop(PWM0);

@@ -10,9 +10,14 @@ extern "C" {
 /*
 param:
 sp645/sp7350:   resolution 0:4096  1:256
-sp7021:         Pin num
+sp7021:         not used
+
+pin:
+sp645:          not used
+sp7021:         pin num
+sp7350:         value 1/2 is vaild, value 0/3 is disable
 */
-static inline int pwm_init(int pwm_num, int period,int duty,int param)
+static inline int pwm_init(int pwm_num, int period_ns,int duty_ns,int pin,int param)
 {
 	PWM_InitTypeDef PWM_Init;
 
@@ -20,25 +25,25 @@ static inline int pwm_init(int pwm_num, int period,int duty,int param)
 #ifndef SP7021
 	PWM_Init.resolution_sel = (PWM_ResTypeDef)param;
 #endif
-	PWM_Init.period_ns = period;
-	PWM_Init.duty_ns = duty;
+	PWM_Init.period_ns = period_ns;
+	PWM_Init.duty_ns = duty_ns;
 
 #ifdef SP7021
-	param = GPIO_TO_PINMUX(param);
-	if(IS_VALID_PINMUX(param) == 0)
+	param = GPIO_TO_PINMUX(pin);
+	if(IS_VALID_PINMUX(pin) == 0)
 	{
 		return HAL_ERROR;
 	}
 	/* set pwm pinmux */
-	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM0 + pwm_num),param);
+	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM0 + pwm_num),pin);
 #elif defined(SP645)
 	HAL_PINMUX_Cfg(PINMUX_DISP_PWM,1);
 #elif defined(SP7350)
-	if(param > 3) /* value 1/2 is vaild, value 0/3 is disable */
+	if(pin != 1 && pin != 2) /* value 1/2 is vaild, value 0/3 is disable */
 	{
 		return HAL_ERROR;
 	}
-	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM_CH0 + 2*pwm_num),param);
+	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM_CH0 + 2*pwm_num),pin);
 #endif
 
 	return HAL_PWM_INIT(&PWM_Init);
@@ -47,17 +52,17 @@ static inline int pwm_init(int pwm_num, int period,int duty,int param)
 
 static inline void pwm_start(int pwm_num)
 {
-  	HAL_PWM_Start(pwm_num);
+	HAL_PWM_Start(pwm_num);
 }
 
 static inline void pwm_stop(int pwm_num)
 {
- 	HAL_PWM_Stop(pwm_num);
+	HAL_PWM_Stop(pwm_num);
 }
 
 static inline void pwm_set_period(int pwm_num,int period,int duty)
 {
- 	HAL_PWM_Period_Set(pwm_num,period,duty);
+	HAL_PWM_Period_Set(pwm_num,period,duty);
 }
 
 

@@ -868,7 +868,7 @@ typedef struct {
 /*                                                                            */
 /******************************************************************************/
 
-#define PWM_BASE                      RF_GRP(287, 0)
+#define PWM_BASE                      RF_GRP_AO(27, 0)
 #define PWM_REG                       ((PWM_TypeDef *)PWM_BASE)
 
 /******************************************************************************/
@@ -1063,14 +1063,19 @@ UART LCR register BIT
 /******************************************************************************/
 /* gpio register */
 
-#define GPIO_FIRST(X)                (RF_GRP(101, (25+X)))
-#define GPIO_MASTER(X)               (RF_GRP(5, (0+X)))
-#define GPIO_OE(X)                   (RF_GRP(5, (13+X)))
-#define GPIO_OUT(X)                  (RF_GRP(5, (26+X)))
-#define GPIO_IN(X)                   (RF_GRP(6, (7+X)))
-#define GPIO_I_INV(X)                (RF_GRP(6, (15+X)))
-#define GPIO_O_INV(X)                (RF_GRP(6, (22+X)))
-#define GPIO_OD(X)                   (RF_GRP(7, (9+X)))
+#define GPIO_I_PD(X)                 (RF_GRP_AO(101, (0+X)))
+#define GPIO_I_PU(X)                 (RF_GRP_AO(102, (24+X)))
+#define GPIO_O_DS(DS,X)              (RF_GRP_AO(101, (4+DS*4+X)))
+
+
+#define GPIO_FIRST(X)                (RF_GRP_AO(101, (25+X)))
+#define GPIO_MASTER(X)               (RF_GRP_AO(103, (0+X)))
+#define GPIO_OE(X)                   (RF_GRP_AO(103, (13+X)))
+#define GPIO_OUT(X)                  (RF_GRP_AO(103, (26+X)))
+#define GPIO_IN(X)                   (RF_GRP_AO(104, (7+X)))
+#define GPIO_I_INV(X)                (RF_GRP_AO(104, (15+X)))
+#define GPIO_O_INV(X)                (RF_GRP_AO(104, (22+X)))
+#define GPIO_OD(X)                   (RF_GRP_AO(105, (9+X)))
 
 #define GPIO_MIN                    0
 #define GPIO_MAX                   107

@@ -49,7 +49,7 @@ typedef struct
 #define pwm_assert_param(expr)   ((expr) ? (void)0 : (printf("[ERROR]: file %s on line %d\r\n",__FUNCTION__, __LINE__)))
 
 
-int HAL_PWM_INIT(PWM_InitTypeDef *PWM_Init);
+int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init);
 void HAL_PWM_Start(int pwm_num);
 void HAL_PWM_Stop(int pwm_num);
 
