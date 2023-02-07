@@ -46,7 +46,7 @@ static inline int pwm_init(int pwm_num, int period_ns,int duty_ns,int pin,int pa
 	HAL_PINMUX_Cfg((PINMUX_Type)(PINMUX_PWM_CH0 + 2*pwm_num),pin);
 #endif
 
-	return HAL_PWM_INIT(&PWM_Init);
+	return HAL_PWM_Init(&PWM_Init);
 }
 
 

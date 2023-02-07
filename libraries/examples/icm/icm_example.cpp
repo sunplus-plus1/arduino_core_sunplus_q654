@@ -10,8 +10,8 @@ void setup()
 	PWM_Init.pwm_num = PWM0;
 	PWM_Init.pwm_freq = 8000;
 	PWM_Init.duty_cycle = 50;
-	HAL_PWM_INIT(&PWM_Init);
-	HAL_PWM_ENABLE(PWM0);
+	HAL_PWM_Init(&PWM_Init);
+	HAL_PWM_Start(PWM0);
 	
 	ICM_Initialization();
 }
