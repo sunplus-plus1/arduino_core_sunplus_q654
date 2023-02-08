@@ -1074,7 +1074,7 @@ UART LCR register BIT
 #define GPIO_OUT(X)                  (RF_GRP_AO(103, (26+X)))
 #define GPIO_IN(X)                   (RF_GRP_AO(104, (7+X)))
 #define GPIO_I_INV(X)                (RF_GRP_AO(104, (15+X)))
-#define GPIO_O_INV(X)                (RF_GRP_AO(104, (22+X)))
+#define GPIO_O_INV(X)                (RF_GRP_AO(104, (28+X)))
 #define GPIO_OD(X)                   (RF_GRP_AO(105, (9+X)))
 
 #define GPIO_MIN                    0

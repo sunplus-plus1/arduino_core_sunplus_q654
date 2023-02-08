@@ -50,7 +50,7 @@ int main(void)
 
 	Add_Timer_Tests();
 	Add_Watchdog_Tests();
-
+	Add_Uart_Tests();
 	#endif
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);

@@ -162,8 +162,8 @@ void CU_basic_show_failures(CU_pFailureRecord pFailure)
 static CU_ErrorCode basic_initialize(void)
 {
   /* Unbuffered output so everything reaches the screen */
-  setvbuf(stdout, NULL, _IONBF, 0);
-  setvbuf(stderr, NULL, _IONBF, 0);
+//  setvbuf(stdout, NULL, _IONBF, 0);
+ // setvbuf(stderr, NULL, _IONBF, 0);
 
   CU_set_error(CUE_SUCCESS);
 

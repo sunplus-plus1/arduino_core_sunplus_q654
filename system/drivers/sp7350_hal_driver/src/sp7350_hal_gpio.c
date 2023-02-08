@@ -277,9 +277,6 @@ uint32_t gpio_in_val_get(uint32_t bit)
 	return ((reg_val & value) ? 1 : 0);
 }
 
-#define GPIO_I_PD(X)      (RF_GRP(101, (0+X)))
-#define GPIO_I_PU(X)      (RF_GRP(102, (24+X)))
-#define GPIO_O_DS(DS,X)    (RF_GRP(101, (4+DS*4+X)))
 
 
 int gpio_default_input_val_set(uint32_t bit, uint32_t pull)

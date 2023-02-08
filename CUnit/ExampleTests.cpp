@@ -27,10 +27,11 @@
 #include "Arduino.h"
 #include "sunplus_ll.h"
 #include "sunplus_def.h"
+#ifdef SP645
 #include "sp645_hal.h"
-
-
-
+#elif defined(SP7350)
+#include "sp7350_hal.h"
+#endif
 
 
 static void test_case_repeat(void) 

@@ -1,5 +1,6 @@
 #include "sp7350_hal_pwm.h"
-#define PWM_SRC_CLK         (25*1000*1000)
+
+#define PWM_SRC_CLK         HAL_Get_PWM_SrcClk()
 
 static uint32_t g_resolution_sel[PWM_MAX]={0}; // for freq set
 

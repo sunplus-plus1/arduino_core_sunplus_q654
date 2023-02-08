@@ -78,6 +78,7 @@ DIRS += $(TOP)/cores/arduino/avr
 DIRS += $(TOP)/cores/arduino/sunplus
 
 ifeq ($(CUNIT),1)
+CCFLAGS += -DCUNIT_TEST
 CCFLAGS += -I$(TOP)/CUnit/Cunit/Headers
 CCFLAGS += -I$(TOP)/CUnit
 DIRS += $(TOP)/CUnit/Cunit/Sources

@@ -1,9 +1,19 @@
 #include "sp645_hal_uart.h"
 #include <stdlib.h>
 
-#define UART_FREE(Handle)			do { if(Handle) { free(Handle);Handle=NULL;} }while(0)
-#define UART_MALLOC(Handle,size)     do { Handle = (uint8_t*)malloc(size); if(Handle == NULL) { return HAL_ERROR; }; } while(0)
+#define UART_FREE(Handle)			 do { \
+											if(Handle) { \
+												free(Handle); \
+												Handle=NULL; \
+											} \
+										}while(0)
 
+#define UART_MALLOC(Handle,size)     do { \
+											Handle = (uint8_t*)malloc(size); \
+											if(Handle == NULL) { \
+												return HAL_ERROR; \
+											}; \
+										} while(0)
 __weak void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
   /* Prevent unused argument(s) compilation warning */
@@ -116,10 +126,10 @@ static void _uart_mcr_config(UART_HandleTypeDef *huart)
 
 static inline uint32_t __get_txdma_buf_space(UART_HandleTypeDef *huart)
 {
-	UART_Txdma *txdma_reg = huart->txdma;
 	uint32_t addr_sw, addr_hw;
-	UART_TxGdma *txgdma_reg = huart->txgdma;
-	if (READ_REG((txdma_reg->txdma_status)) & 0x01) {
+	UART_Txdma *txdma_reg = huart->txdma;
+	if (READ_REG((txdma_reg->txdma_status)) & 0x01)
+	{
 		return 0;
 	}
 	addr_sw = READ_REG((txdma_reg->txdma_wr_adr));
@@ -162,7 +172,7 @@ static inline void _stop_rx_irq(UART_HandleTypeDef *huart)
 static inline void _start_rx_irq(UART_HandleTypeDef *huart)
 {
 	volatile unsigned int isc = 0;
-	isc = SP_UART_ISC_RXM;
+	isc = READ_REG(huart->Instance->isc) | SP_UART_ISC_RXM;
 	WRITE_REG(huart->Instance->isc, isc);
 }
 
@@ -174,7 +184,7 @@ static void _uart_tx_irq_handler(UART_HandleTypeDef *huart)
 	uint8_t *byte_ptr;
 
 	UART_Txdma *txdma_reg;
-	UART_TxGdma *txgdma_reg;
+	
 	if(huart->gState != HAL_UART_STATE_BUSY_TX)
 		return;
 	/*  transmit data by uart register */
@@ -198,7 +208,6 @@ static void _uart_tx_irq_handler(UART_HandleTypeDef *huart)
 	/*  transmit data by dma register */
 
 	txdma_reg = huart->txdma;
-	txgdma_reg = huart->txgdma;
 
 	if (uart_circ_empty(huart->xmit))
 	{
@@ -292,7 +301,6 @@ static void _uart_rx_irq_handler(UART_HandleTypeDef *huart)
 static int _uart_txdma_config(UART_HandleTypeDef *huart)
 {
 	UART_Txdma *txdma_reg = huart->txdma;
-	UART_TxGdma *txgdma_reg = huart->txgdma;
 
 	if(huart->txdma_buf == NULL && huart->xmit.buf == NULL)
 	{
@@ -312,7 +320,6 @@ static int _uart_txdma_config(UART_HandleTypeDef *huart)
 		/* bind uartx to dma */
 		WRITE_REG(txdma_reg->txdma_sel,			(uint32_t) huart->uart_idx);
 
-		WRITE_REG(txgdma_reg->gdma_int_en,		0x41);
 		/* Use ring buffer for UART's Tx */
 		WRITE_REG(txdma_reg->txdma_enable,		0x5);
 	}
@@ -476,11 +483,11 @@ HAL_StatusTypeDef HAL_UART_Transmit_DMA(UART_HandleTypeDef *huart, uint8_t *pDat
 	int c = 0,ret = HAL_OK;
 	uint8_t *data = pData;
 
-	if(!huart || !huart->Instance || !huart->txdma || !huart->txgdma)
+	if(!huart || !huart->Instance || !huart->txdma )
 	{
 		return	HAL_ERROR;
 	}
-	if(!IS_UART_TXDMA_INSTANCE(huart->txdma) || !IS_UART_TXGDMA_INSTANCE(huart->txgdma) || !IS_UART_INSTANCE(huart->Instance))
+	if(!IS_UART_TXDMA_INSTANCE(huart->txdma)  || !IS_UART_INSTANCE(huart->Instance))
 	{
 		return	HAL_ERROR;
 	}
@@ -756,7 +763,6 @@ HAL_StatusTypeDef HAL_UART_Receive(UART_HandleTypeDef *huart, uint8_t *pData, ui
 
 HAL_StatusTypeDef HAL_UART_AbortReceive(UART_HandleTypeDef *huart)
 {
-	uint8_t ch;
 
 	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
 	{
@@ -906,7 +912,7 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 
   if(huart->txdma_buf && IS_UART_TXDMA_INSTANCE(huart->txdma))
   {
-	  WRITE_REG(huart->txdma->txdma_sel,0xf); //unbind uartx
+	  WRITE_REG(huart->txdma->txdma_sel,0xf000f); //unbind uart tx
 	  UART_FREE(huart->txdma_buf);
 	  UART_FREE(huart->xmit.buf);
   }
@@ -914,7 +920,12 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
   {
 	  WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_INT);
 	  WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_GO);
+		WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel))| (0xf << DMA_SEL_UARTX_SHIFT)); //unbind uart rx
 	  UART_FREE(huart->rxdma_buf);
+	}
+	while(READ_BIT(huart->Instance->lsr, UART_LSR_RECEIVE_FIFO_STATUS) == UART_LSR_RECEIVE_FIFO_NOT_EMPTY)
+	{
+		char data = huart->Instance->dr;
   }
 
   _stop_rx_irq(huart);

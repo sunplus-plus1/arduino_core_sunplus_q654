@@ -83,6 +83,17 @@ uint32_t HAL_GetSysClk(void)
 	return freq_Hz;
 }
 
+uint32_t HAL_Get_PWM_SrcClk(void)
+{
+	uint32_t temp, freq_Hz;
+	temp = READ_BIT(MOON3_REG->sft_cfg[27], (0x1<<5));
+	if (temp == (0x1<<5)) {
+		freq_Hz = 200000000;
+	} else {
+		freq_Hz = HSE_VALUE;
+	}
+	return freq_Hz;
+}
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq)
 {
 

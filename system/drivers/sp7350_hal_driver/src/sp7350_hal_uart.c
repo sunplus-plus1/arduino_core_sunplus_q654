@@ -1,9 +1,19 @@
 #include "sp7350_hal_uart.h"
 #include <stdlib.h>
 
-#define UART_FREE(Handle)			do { if(Handle) { free(Handle);Handle=NULL;} }while(0)
-#define UART_MALLOC(Handle,size)	do { Handle = (uint8_t*)malloc(size); if(Handle == NULL) { return HAL_ERROR; }; } while(0)
+#define UART_FREE(Handle)			 do { \
+											if(Handle) { \
+												free(Handle); \
+												Handle=NULL; \
+											} \
+										}while(0)
 
+#define UART_MALLOC(Handle,size)     do { \
+											Handle = (uint8_t*)malloc(size); \
+											if(Handle == NULL) { \
+												return HAL_ERROR; \
+											}; \
+										} while(0)
 __weak void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	/* Prevent unused argument(s) compilation warning */
@@ -894,7 +904,7 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 
 	if(huart->txdma_buf && IS_UART_TXDMA_INSTANCE(huart->txdma))
 	{
-		WRITE_REG(huart->txdma->txdma_sel,0xf); //unbind uartx
+	  WRITE_REG(huart->txdma->txdma_sel,0xf000f); //unbind uart tx
 		UART_FREE(huart->txdma_buf);
 		UART_FREE(huart->xmit.buf);
 	}
@@ -902,6 +912,7 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 	{
 		WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_INT);
 		WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel)) & ~DMA_GO);
+		WRITE_REG(huart->rxdma->rxdma_enable_sel, READ_REG((huart->rxdma->rxdma_enable_sel))| (0xf << DMA_SEL_UARTX_SHIFT)); //unbind uart rx
 		UART_FREE(huart->rxdma_buf);
 	}
 

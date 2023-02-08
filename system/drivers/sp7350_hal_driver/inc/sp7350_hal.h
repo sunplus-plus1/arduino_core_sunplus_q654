@@ -32,6 +32,7 @@ void HAL_IncTick(void);
 void HAL_Delay(uint32_t Delay);
 uint32_t HAL_GetTick(void);
 uint32_t HAL_GetSysClk(void);
+uint32_t HAL_Get_PWM_SrcClk(void);
 
 HAL_StatusTypeDef HAL_SetTickFreq(HAL_TickFreqTypeDef Freq);
 HAL_TickFreqTypeDef HAL_GetTickFreq(void);

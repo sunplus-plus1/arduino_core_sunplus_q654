@@ -4,7 +4,11 @@
 #include <assert.h>
 
 #include "CUnit.h"
+#ifdef SP645
 #include "sp645_hal_conf.h"
+#elif defined(SP7350)
+#include "sp7350_hal_conf.h"
+#endif
 
 typedef enum {
 	WDG0_INDEX,
