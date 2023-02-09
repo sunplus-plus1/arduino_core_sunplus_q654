@@ -53,7 +53,6 @@ static void uart_rxdma_callback(void)
 	HAL_UART_Rxdma_IRQ_Handler(&huart_test);
 }
 
-
 static UART_CTRL_Type *uart_base;
 static UART_Txdma *txdma_base;
 static UART_Rxdma *rxdma_base;
@@ -134,12 +133,10 @@ static void uart_test_Transmit_DMA(void)
 	CU_ASSERT_EQUAL(rw_ret, 1); 
 }
 
+static void uart_test_Receive_Polling(void); 
 static void uart_test_Receive_DMA(void) 
 { 
-#ifdef SP7350
-	static void uart_test_Receive_Polling(void); 
-	return uart_test_Receive_Polling();
-#endif
+#ifdef SP645
 
 	HAL_UART_DeInit(&huart_test);
 	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
@@ -167,6 +164,12 @@ static void uart_test_Receive_DMA(void)
 	
 	CU_ASSERT_EQUAL(rw_ret, 1); 
 	CU_ASSERT_STRING_EQUAL(buf, "abcdef");
+	
+#elif defined(SP7350)
+    /* SP7350 no rxdma mode, use polling to replace */
+	return uart_test_Receive_Polling();
+#endif
+
 }
 
 static void uart_test_Transmit_IT(void) 

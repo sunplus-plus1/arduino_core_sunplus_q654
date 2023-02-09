@@ -17,7 +17,7 @@ sp645:          not used
 sp7021:         pin num
 sp7350:         value 1/2 is vaild, value 0/3 is disable
 */
-static inline int pwm_init(int pwm_num, int period_ns,int duty_ns,int pin,int param)
+static inline HAL_StatusTypeDef pwm_init(int pwm_num, int period_ns,int duty_ns,int pin,int param)
 {
 	PWM_InitTypeDef PWM_Init;
 
@@ -60,9 +60,9 @@ static inline void pwm_stop(int pwm_num)
 	HAL_PWM_Stop(pwm_num);
 }
 
-static inline void pwm_set_period(int pwm_num,int period,int duty)
+static inline HAL_StatusTypeDef pwm_set_period(int pwm_num,int period,int duty)
 {
-	HAL_PWM_Period_Set(pwm_num,period,duty);
+	return HAL_PWM_Period_Set(pwm_num,period,duty);
 }
 
 

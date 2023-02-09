@@ -18,13 +18,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef CUNIT_UART_TEST_H_
-#define CUNIT_UART_TEST_H_
+#ifndef CUNIT_MAIN_H_SEEN
+#define CUNIT_MAIN_H_SEEN
 
-
+int Add_Timer_Tests(void);
+int Add_Watchdog_Tests(void);
 int Add_Uart_Tests(void);
+int Add_Pwm_Tests(void);
 
-
-
-#endif  /* CUNIT_UART_TEST_H_ */
+#endif  /* CUNIT_MAIN_H_SEEN*/
 

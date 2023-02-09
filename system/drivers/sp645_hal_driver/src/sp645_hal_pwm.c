@@ -3,12 +3,7 @@
 
 static uint32_t g_resolution_sel[PWM_MAX]={0}; // for freq set
 
-
-/*
-256: 3 ~ 781k
-4096: 0.2 ~ 49k
-*/
-static int _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
+static HAL_StatusTypeDef _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
 	uint64_t duty_temp;
 	uint32_t pwm_dd,pwm_resolution;
@@ -45,7 +40,7 @@ static int _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 	return HAL_OK;
 }
 
-int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
+HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	int pwm_num;
 
@@ -69,20 +64,22 @@ int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 
 void HAL_PWM_Start(int pwm_num)
 {
-	assert_param(IS_PWM_NUM_VALID(pwm_num));
-
-	PWM_REG->pwm_en |=  (1 << pwm_num);     // set pwm enable
+	if((IS_PWM_NUM_VALID(pwm_num)))
+	{
+		PWM_REG->pwm_en |=  (1 << pwm_num);     // set pwm enable
+	}
 }
 
 void HAL_PWM_Stop(int pwm_num)
 {
-	assert_param(IS_PWM_NUM_VALID(pwm_num));
-
-	PWM_REG->pwm_en &= ~(1 << pwm_num);     // set pwm disable
+	if((IS_PWM_NUM_VALID(pwm_num)))
+	{
+		PWM_REG->pwm_en &= ~(1 << pwm_num);     // set pwm disable
+	}
 }
 
-void HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
+HAL_StatusTypeDef HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
-	_PWM_Set(pwm_num,period,duty);
+	return _PWM_Set(pwm_num,period,duty);
 }
 

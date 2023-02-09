@@ -87,7 +87,7 @@ static int __Get_available_new_dd(int pwm_num,uint32_t dd_freq)
 }
 
 /*frequency = (1 / sys clk * PWM DD0(16bit)) * 256    freq = 12Hz~791Khz*/
-static int __PWM_Set_by_period(int pwm_num,uint32_t period_ns,uint32_t duty_ns)
+static HAL_StatusTypeDef __PWM_Set_by_period(int pwm_num,uint32_t period_ns,uint32_t duty_ns)
 {
 	uint32_t dd_sel_new = ePWM_DD_MAX;
 	uint32_t duty = 0, dd_freq = 0;
@@ -133,7 +133,7 @@ static int __PWM_Set_by_period(int pwm_num,uint32_t period_ns,uint32_t duty_ns)
 	return 0;
 }
 
-int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
+HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	pwm_assert_param(PWM_Init);
 	if(!PWM_Init || !IS_PWM_NUM_VALID(PWM_Init->pwm_num))
@@ -170,8 +170,8 @@ void HAL_PWM_Stop(int pwm_num)
 	PWM_CTRL_REG->pwm_en &= ~(1<<pwm_num); 		//  pwm  disable
 }
 
-void HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
+HAL_StatusTypeDef HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
-	__PWM_Set_by_period(pwm_num,period,duty);
+	return __PWM_Set_by_period(pwm_num,period,duty);
 }
 

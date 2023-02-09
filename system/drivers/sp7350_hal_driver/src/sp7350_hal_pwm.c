@@ -4,7 +4,7 @@
 
 static uint32_t g_resolution_sel[PWM_MAX]={0}; // for freq set
 
-static int _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
+static HAL_StatusTypeDef _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
 	uint64_t duty_temp;
 	uint32_t pwm_dd,pwm_resolution;
@@ -40,7 +40,7 @@ static int _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 	return HAL_OK;
 }
 
-int HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
+HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	int pwm_num;
 	
@@ -78,8 +78,8 @@ void HAL_PWM_Stop(int pwm_num)
 	}
 }
 
-void HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
+HAL_StatusTypeDef HAL_PWM_Period_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
-	_PWM_Set(pwm_num,period,duty);
+	return _PWM_Set(pwm_num,period,duty);
 }
 

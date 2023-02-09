@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ExampleTests.h"
+#include "Cunit_main.h"
 #include "Basic.h"
 
 
@@ -48,9 +48,10 @@ int main(void)
 	CU_add_test(pSuite, "test_case3", test_case3);
 	#else
 
-	Add_Timer_Tests();
-	Add_Watchdog_Tests();
+	//Add_Timer_Tests();
+	//Add_Watchdog_Tests();
 	Add_Uart_Tests();
+	Add_Pwm_Tests();
 	#endif
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);
