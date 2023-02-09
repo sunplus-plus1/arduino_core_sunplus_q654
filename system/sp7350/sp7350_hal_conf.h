@@ -15,6 +15,7 @@
 #include "sp7350_hal_cortex.h"
 #include "sp7350_hal_wdg.h"
 #include "sp7350_hal_pll.h"
+#include "sp7350_hal_dma.h"
 
 #endif
 

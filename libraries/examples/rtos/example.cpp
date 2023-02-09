@@ -8,7 +8,6 @@ uint32_t start = 0;
 
 void tim0_callback(void)
 {
-	
 	printf("@@@@@@@[freertos]timer0 callback @@@@@@@, tick= %lu\n", HAL_GetTick());
 	start = HAL_GetTick();
 	//printf("start:%lu\n", start);
@@ -22,7 +21,6 @@ void vTask1(void const * argument)
 		printf("task1 run \n");
 		vTaskDelay(1000);
 	}
-
 }
 
 void vTask2(void const * argument)
@@ -32,7 +30,6 @@ void vTask2(void const * argument)
 		printf("task2 run \n");
 		vTaskDelay(1000);
 	}
-
 }
 
 #ifdef SP645
@@ -53,7 +50,7 @@ int freertos_main (void)
 	printf("freq = %d\n", timer0->getTimerClkFreq());
 	timer0->resume();
 	printf("%s, %d\n", __FUNCTION__, __LINE__);
-	
+
 	HardwareSerial uart;
 	uart.begin(115200);
 
@@ -69,31 +66,7 @@ int freertos_main (void)
 int freertos_main (void)
 {
 	printf("cm4 freertos + arduino system start!!! \n");
+	HAL_DMA_Test();
 	for(;;);
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
