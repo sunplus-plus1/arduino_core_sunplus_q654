@@ -8,16 +8,14 @@ int gpio_input_invert_val_set(uint32_t bit,int invert_set)
 	if (idx > 8) {
 		return -1;
 	}
-	
 	if(invert_set)
-		*((volatile unsigned int *) (GPIO_O_INV(idx))) = RF_MASK_V_SET(1 << (bit & 0x0f));
+		*((volatile unsigned int *) (GPIO_I_INV(idx))) = RF_MASK_V_SET(1 << (bit & 0x0f));
 	else
-		*((volatile unsigned int *) (GPIO_O_INV(idx))) = RF_MASK_V_CLR(1 << (bit & 0x0f));
-
+		*((volatile unsigned int *) (GPIO_I_INV(idx))) = RF_MASK_V_CLR(1 << (bit & 0x0f));
 	return 0;
 }
 
-uint32_t gpio_input_invert_val_get(uint32_t bit)
+int gpio_input_invert_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -51,7 +49,7 @@ int gpio_output_invert_val_set(uint32_t bit,int invert_set)
 	return 0;
 }
 
-uint32_t gpio_output_invert_val_get(uint32_t bit)
+int gpio_output_invert_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -83,7 +81,7 @@ int gpio_open_drain_val_set(uint32_t bit,int od_set)
 	return 0;
 }
 
-uint32_t gpio_open_drain_val_get(uint32_t bit)
+int gpio_open_drain_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -91,7 +89,7 @@ uint32_t gpio_open_drain_val_get(uint32_t bit)
 	if (idx > 8) {
 		return -1;
 	}
-	
+
 	value = 1 << (bit & 0x0f);
 	
 	reg_val = *((volatile unsigned int *)(GPIO_OD(idx)));
@@ -169,7 +167,7 @@ int gpio_master_val_set(uint32_t bit,int master_set)
    1: GPIO Group control mode 
    0: IOP control mode
 */
-uint32_t gpio_master_val_get(uint32_t bit)
+int gpio_master_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 
@@ -209,7 +207,7 @@ int gpio_oe_val_set(uint32_t bit,int oe_set)
    1: output mode
    0: input mode
 */
-uint32_t gpio_oe_val_get(uint32_t bit)
+int gpio_oe_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -244,7 +242,7 @@ int gpio_out_val_set(uint32_t bit, uint32_t gpio_out_value)
 }
 
 /****** gpio output mode, get output value ****/
-uint32_t gpio_out_val_get(uint32_t bit)
+int gpio_out_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -261,7 +259,7 @@ uint32_t gpio_out_val_get(uint32_t bit)
 }
 
 /****** gpio input mode, get input value ****/
-uint32_t gpio_in_val_get(uint32_t bit)
+int gpio_in_val_get(uint32_t bit)
 {
 	uint32_t idx, value, reg_val;
 	
@@ -277,22 +275,16 @@ uint32_t gpio_in_val_get(uint32_t bit)
 	return ((reg_val & value) ? 1 : 0);
 }
 
-#define GPIO_I_PD(X)      (RF_GRP(101, (0+X)))
-#define GPIO_I_PU(X)      (RF_GRP(102, (24+X)))
-#define GPIO_O_DS(DS,X)    (RF_GRP(101, (4+DS*4+X)))
-
-
 int gpio_default_input_val_set(uint32_t bit, uint32_t pull)
 {
 	uint32_t idx;
-
-	if(pull == GPIO_PULL_DISABLE)
-		return 0;
 
 	idx = bit >> 5;
 	if (idx > 4) {
 		return -1;
 	}
+	*((volatile unsigned int *)(GPIO_I_PD(idx))) &= ~(1 << (bit & 0x1f));
+	*((volatile unsigned int *)(GPIO_I_PU(idx))) &= ~(1 << (bit & 0x1f));
 
 	if(pull == GPIO_PULL_DOWN)
 	{
@@ -300,7 +292,7 @@ int gpio_default_input_val_set(uint32_t bit, uint32_t pull)
 	}
 	else if(pull == GPIO_PULL_UP)
 	{
-		*((volatile unsigned int *)(GPIO_I_PU(idx))) |=  1 << (bit & 0x1f);
+		*((volatile unsigned int *)(GPIO_I_PU(idx))) |= 1 << (bit & 0x1f);
 	}
 	return 0;
 }
@@ -316,11 +308,12 @@ int gpio_out_driver_current_set(uint32_t bit, uint32_t ds)
 	if (idx > 4) {
 		return -1;
 	}
-	
+
 	*((volatile unsigned int *)(GPIO_O_DS(ds,idx))) |=  1 << (bit & 0x1f);
-	
+
 	return 0;
 }
+
 uint8_t gpio_is_output(uint32_t GPIO_Pin)
 {
 	if(gpio_open_drain_val_get(GPIO_Pin) || gpio_oe_val_get(GPIO_Pin))
@@ -330,11 +323,11 @@ uint8_t gpio_is_output(uint32_t GPIO_Pin)
 }
 
 /*****************  HAL interface ************************/
-void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
+HAL_StatusTypeDef HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 { 
 
-	assert_param(GPIO_Init);
-	assert_param(IS_GPIO_PIN(GPIO_Init->Pin));
+	if(!GPIO_Init || !IS_GPIO_PIN(GPIO_Init->Pin))
+		return HAL_ERROR;
 
 	/* set pin to gpio mode */
 	gpio_first_val_set(GPIO_Init->Pin,1);
@@ -346,28 +339,29 @@ void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 		case GPIO_OD_OUTPUT_MODE:
 			/*	pin in opendrain mode */
 			gpio_open_drain_val_set(GPIO_Init->Pin,1);
-			/* need to invert output in opendrain mode */
-			gpio_output_invert_val_set(GPIO_Init->Pin,1);
 			gpio_out_val_set(GPIO_Init->Pin,GPIO_Init->out_value);
-			gpio_out_driver_current_set(GPIO_Init->Pin,GPIO_Init->ds);
 		break;
 		case GPIO_PP_OUTPUT_MODE:
 			gpio_oe_val_set(GPIO_Init->Pin,1);
+			gpio_output_invert_val_set(GPIO_Init->Pin,GPIO_Init->invert);
 			gpio_out_val_set(GPIO_Init->Pin,GPIO_Init->out_value);
-		    gpio_out_driver_current_set(GPIO_Init->Pin,GPIO_Init->ds);
 		break;
 		case GPIO_INPUT_MODE:
-			gpio_oe_val_set(GPIO_Init->Pin,0);
 			gpio_default_input_val_set(GPIO_Init->Pin,GPIO_Init->pull);
+			gpio_input_invert_val_set(GPIO_Init->Pin,GPIO_Init->invert);
+			gpio_oe_val_set(GPIO_Init->Pin,0);
 		break;
 		default:
 			break;
 	}
+
+	return HAL_OK;
 }
 
-void HAL_GPIO_DeInit(uint16_t GPIO_Pin)
+HAL_StatusTypeDef HAL_GPIO_DeInit(uint16_t GPIO_Pin)
 {
-	assert_param(IS_GPIO_PIN(GPIO_Pin));
+	if(!IS_GPIO_PIN(GPIO_Pin) || !IS_GPIO_PIN_ACTION(GPIO_Pin))
+		return HAL_ERROR;
 
 	gpio_first_val_set(GPIO_Pin,0);
 
@@ -383,6 +377,7 @@ void HAL_GPIO_DeInit(uint16_t GPIO_Pin)
 
 	gpio_out_val_set(GPIO_Pin,0);
 
+	return HAL_OK;
 }
 
 GPIO_PinState  HAL_GPIO_ReadPin(uint16_t GPIO_Pin)
@@ -390,7 +385,8 @@ GPIO_PinState  HAL_GPIO_ReadPin(uint16_t GPIO_Pin)
 
 	GPIO_PinState bitstatus;
 
-	assert_param(IS_GPIO_PIN(GPIO_Pin));
+	if(!IS_GPIO_PIN(GPIO_Pin) || !IS_GPIO_PIN_ACTION(GPIO_Pin))
+		return HAL_ERROR;
 
 	if(gpio_is_output(GPIO_Pin))
 	{
@@ -403,11 +399,10 @@ GPIO_PinState  HAL_GPIO_ReadPin(uint16_t GPIO_Pin)
 	return bitstatus;
 }
 
-void HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState)
+HAL_StatusTypeDef HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState)
 {
-
-	assert_param(IS_GPIO_PIN(GPIO_Pin));
-	assert_param(IS_GPIO_PIN_ACTION(GPIO_Pin));
+	if(!IS_GPIO_PIN(GPIO_Pin) || !IS_GPIO_PIN_ACTION(GPIO_Pin))
+		return HAL_ERROR;
 
 	/* get input/output mode. write data in output mode only 
 		1:output mode  0:input mode 
@@ -416,11 +411,13 @@ void HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState)
 	{
 		gpio_out_val_set(GPIO_Pin,PinState);
 	}
+	return HAL_OK;
 }
 
-void HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
+HAL_StatusTypeDef HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
 {
-	assert_param(IS_GPIO_PIN(GPIO_Pin));
+	if(!IS_GPIO_PIN(GPIO_Pin) || !IS_GPIO_PIN_ACTION(GPIO_Pin))
+		return HAL_ERROR;
 	/* get input/output mode. write data in output mode only 
 	   1:output mode  0:input mode 
 	*/
@@ -428,13 +425,16 @@ void HAL_GPIO_TogglePin(uint16_t GPIO_Pin)
 	{
 		gpio_out_val_set(GPIO_Pin,!(gpio_out_val_get(GPIO_Pin)));
 	}
+	return HAL_OK;
 }
 
 int HAL_GPIO_Get_Mode(uint16_t GPIO_Pin)
 {
-	assert_param(IS_GPIO_PIN(GPIO_Pin));
+	if(!IS_GPIO_PIN(GPIO_Pin) || !IS_GPIO_PIN_ACTION(GPIO_Pin))
+		return HAL_ERROR;
 	/* get input/output mode. write data in output mode only 
 	   1:output mode  0:input mode 
 	*/
-	return gpio_out_val_get(GPIO_Pin);
+	return gpio_oe_val_get(GPIO_Pin);
 }
+

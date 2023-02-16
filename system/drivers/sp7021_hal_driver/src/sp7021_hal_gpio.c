@@ -359,7 +359,7 @@ void HAL_GPIO_Init(GPIO_InitTypeDef *GPIO_Init)
 	/* set pin out default value */
 	if((GPIO_Init->Mode == GPIO_OUTPUT_MODE) || (GPIO_Init->opendrain == GPIO_OD_ENABLE))
 	{
-		gpio_out_val_set(GPIO_Init->Pin,GPIO_Init->default_value);
+		gpio_out_val_set(GPIO_Init->Pin,GPIO_Init->out_value);
 	}
 }
 

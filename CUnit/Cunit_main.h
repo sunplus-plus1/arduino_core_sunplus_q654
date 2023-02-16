@@ -25,6 +25,8 @@ int Add_Timer_Tests(void);
 int Add_Watchdog_Tests(void);
 int Add_Uart_Tests(void);
 int Add_Pwm_Tests(void);
+int Add_GPIO_Tests(void);
+
 
 #endif  /* CUNIT_MAIN_H_SEEN*/
 

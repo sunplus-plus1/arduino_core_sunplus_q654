@@ -1319,7 +1319,7 @@ UART LCR register BIT
 #define PINMUX_MIN    			1
 #define PINMUX_MAX   			64
 
-#define GPIO_(X)			(X)
+#define GPIO(X)				(X)
 
 #define IS_GPIO_PIN(pin)		(((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
 

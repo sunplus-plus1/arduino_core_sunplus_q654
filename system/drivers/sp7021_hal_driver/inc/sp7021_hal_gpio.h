@@ -16,7 +16,7 @@ typedef struct
   /* set OD status. enable OD,the Mode is unused.  GPIO_OD_DISABLE:disable        GPIO_OD_ENABLE:enable     */
   uint8_t opendrain;
   /* set default value.for output mode/enable OD,  GPIO_OUT_LOW:low               GPIO_OUT_HIGH:high        */ 
-  uint8_t default_value;
+  uint8_t out_value;
   /* set pin number: one of GPIO_P0_00--GPIO_P8_07  */
   uint32_t Pin;
 }GPIO_InitTypeDef;

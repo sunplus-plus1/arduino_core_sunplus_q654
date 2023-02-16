@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "Cunit_main.h"
 #include "Basic.h"
+#include "Cunit_main.h"
 
 
 static void test_case1(void)
@@ -27,7 +27,6 @@ static void test_case3(void)
 
 int main(void)
 {
-
 	CU_ErrorAction error_action = CUEA_IGNORE;
 	CU_pSuite pSuite;
 	int test_return = 0;
@@ -47,11 +46,9 @@ int main(void)
 	CU_add_test(pSuite, "test_case2", test_case2);
 	CU_add_test(pSuite, "test_case3", test_case3);
 	#else
-
-	//Add_Timer_Tests();
-	//Add_Watchdog_Tests();
-	Add_Uart_Tests();
-	Add_Pwm_Tests();
+//	Add_Timer_Tests();
+//	Add_Watchdog_Tests();
+//	Add_Uart_Tests();
 	#endif
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);

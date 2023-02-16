@@ -113,12 +113,12 @@ void pwm_Set_test()
 	ret = pwm_set_period(PWM0,0,40000);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 
-	
+
 	ret = pwm_set_period(PWM0,40000,80000);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 }
 
-static CU_TestInfo   uart_testcases[] =
+static CU_TestInfo   pwm_testcases[] =
 {
 	{"PWM0 test：",     pwm0_test},
 	{"PWM1 test：",     pwm1_test},
@@ -142,15 +142,15 @@ static int  suite_success_clean(void)
 	return  0;
 }
  
-static CU_SuiteInfo suites[] = 
+static CU_SuiteInfo suites[] =
 {
-	{"Testing the PWM：", suite_success_init, suite_success_clean, NULL,NULL,uart_testcases},
+	{"Testing the PWM：", suite_success_init, suite_success_clean, NULL,NULL,pwm_testcases},
 	CU_SUITE_INFO_NULL
 };
 
 int Add_Pwm_Tests(void)
 {
-	
+
 	assert(NULL != CU_get_registry());
 	assert(!CU_is_test_running());
 	if(CUE_SUCCESS  != CU_register_suites(suites))

@@ -16,7 +16,7 @@
 GPIO_InitTypeDef gpio;
 static int trigger;
 
-#define INPUT_PIN	 GPIO_(26)
+#define INPUT_PIN	 GPIO(26)
 void gpio_int_irq_callback()
 {
 /*

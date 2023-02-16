@@ -1040,19 +1040,23 @@ UART LCR register BIT
 /******************************************************************************/
 /* gpio register */
 
+#define GPIO_I_PD(X)                 (RF_GRP(101, (0+X)))
+#define GPIO_I_PU(X)                 (RF_GRP(102, (24+X)))
+#define GPIO_O_DS(DS,X)              (RF_GRP(101, (4+DS*4+X)))
+
 #define GPIO_FIRST(X)                (RF_GRP(101, (25+X)))
 #define GPIO_MASTER(X)               (RF_GRP(5, (0+X)))
 #define GPIO_OE(X)                   (RF_GRP(5, (13+X)))
 #define GPIO_OUT(X)                  (RF_GRP(5, (26+X)))
 #define GPIO_IN(X)                   (RF_GRP(6, (7+X)))
 #define GPIO_I_INV(X)                (RF_GRP(6, (15+X)))
-#define GPIO_O_INV(X)                (RF_GRP(6, (22+X)))
+#define GPIO_O_INV(X)                (RF_GRP(6, (28+X)))
 #define GPIO_OD(X)                   (RF_GRP(7, (9+X)))
 
-#define GPIO_MIN                    0
-#define GPIO_MAX                   107
+#define GPIO_MIN                     0
+#define GPIO_MAX                     107
 
-#define GPIO_(X)					(X)
+#define GPIO(X)                      (X)
 
 #define IS_GPIO_PIN(pin)             (((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
 #define IS_PINMUX_PIN(pin)           (((pin) >= GPIO_MIN) && ((pin) <= GPIO_MAX))
