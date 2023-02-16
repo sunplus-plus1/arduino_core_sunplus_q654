@@ -63,13 +63,6 @@ void loop() {
   // automatic text wrapping onto the next line
   tft.println("Or I will rend thee in the gobberwarts with my blurglecruncheon, see if I don't!");
   
-  // Test some print formatting functions
-  float fnumber = 123.45;
-   // Set the font colour to be blue with no background, set to font 4
-  tft.setTextColor(TFT_BLUE);    tft.setTextFont(4);
-  tft.print("Float = "); tft.println(fnumber);           // Print floating point number
-  tft.print("Binary = "); tft.println((int)fnumber, BIN); // Print as integer value in binary
-  tft.print("Hexadecimal = "); tft.println((int)fnumber, HEX); // Print as integer number in Hexadecimal
   delay(10000);
 }
 
