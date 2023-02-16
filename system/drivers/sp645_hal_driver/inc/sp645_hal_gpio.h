@@ -35,7 +35,7 @@ typedef enum
 
 typedef enum
 {
-  GPIO_DS_DISABLE         // driver selector disable
+  GPIO_DS_DISABLE,         // driver selector disable
   GPIO_DS_0 = 0,          // driver selector level 0
   GPIO_DS_1,              // driver selector level 1
   GPIO_DS_2,              // driver selector level 2
