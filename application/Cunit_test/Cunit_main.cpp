@@ -46,7 +46,7 @@ int main(void)
 	CU_add_test(pSuite, "test_case2", test_case2);
 	CU_add_test(pSuite, "test_case3", test_case3);
 	#else
-//	Add_Timer_Tests();
+	Add_Timer_Tests();
 //	Add_Watchdog_Tests();
 //	Add_Uart_Tests();
 	#endif

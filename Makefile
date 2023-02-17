@@ -79,18 +79,20 @@ DIRS += $(TOP)/cores/arduino/sunplus
 
 ifeq ($(CUNIT),1)
 CCFLAGS += -DCUNIT_TEST
-CCFLAGS += -I$(TOP)/CUnit/Cunit/Headers
-CCFLAGS += -I$(TOP)/CUnit
-DIRS += $(TOP)/CUnit/Cunit/Sources
-DIRS += $(TOP)/CUnit/Cunit/Sources/Basic
-DIRS += $(TOP)/CUnit/Cunit/Sources/Framework
-DIRS += $(TOP)/CUnit
+CCFLAGS += -I$(TOP)/libraries/thirdparty/CUnit/Headers
+CCFLAGS += -I$(TOP)/libraries/thirdparty/CUnit
+DIRS += $(TOP)/libraries/thirdparty/CUnit/Sources
+DIRS += $(TOP)/libraries/thirdparty/CUnit/Sources/Basic
+DIRS += $(TOP)/libraries/thirdparty/CUnit/Sources/Framework
+# Cunit test files
+DIRS += $(TOP)/application/Cunit_test
+CCFLAGS += -I$(TOP)/application/Cunit_test
 endif
 
 # cm_backtrace
 ifeq ($(CM_BACKTRACE),1)
-DIRS += $(TOP)/libraries/CmBacktrace/cm_backtrace
-CCFLAGS += -I$(TOP)/libraries/CmBacktrace/cm_backtrace
+DIRS += $(TOP)/libraries/thirdparty/CmBacktrace/cm_backtrace
+CCFLAGS += -I$(TOP)/libraries/thirdparty/CmBacktrace/cm_backtrace
 endif
 
 sinclude makefile.freertos

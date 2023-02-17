@@ -1,14 +1,14 @@
 ifeq ($(LVGL),1)
 
-CCFLAGS += -I$(TOP)/libraries/lvgl
+CCFLAGS += -I$(TOP)/libraries/thirdparty/lvgl
 
 # lvgl
-DIRS += $(shell find $(TOP)/libraries/lvgl/src -type d)
+DIRS += $(shell find $(TOP)/libraries/thirdparty/lvgl/src -type d)
 
 # lvgl demo
-DIRS += $(shell find $(TOP)/libraries/lvgl/demos -type d)
+DIRS += $(shell find $(TOP)/libraries/thirdparty/lvgl/demos -type d)
 
 #TFT_eSPI
-CCFLAGS += -I$(TOP)/libraries/TFT_eSPI
-DIRS += libraries/TFT_eSPI
+CCFLAGS += -I$(TOP)/libraries/thirdparty/TFT_eSPI
+DIRS += libraries/thirdparty/TFT_eSPI
 endif
