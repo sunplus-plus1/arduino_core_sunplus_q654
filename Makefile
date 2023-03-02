@@ -114,6 +114,7 @@ DIRS += $(TOP)/libraries/examples/VirtIOSerial
 else
 DIRS += $(TOP)/libraries/examples/timer
 endif
+#DIRS += $(TOP)/libraries/examples/i2s
 #DIRS += $(TOP)/libraries/examples/uart
 #DIRS += $(TOP)/libraries/examples/spi
 #DIRS += $(TOP)/libraries/examples/i2c
