@@ -5,7 +5,7 @@
 #include "Arduino.h"
 #include "sp645_hal_i2s.h"
 
-#define PCM_ADDRESS 		((uint32_t *)0x24000000)
+#define PCM_ADDRESS 	((uint32_t *)0x24000000)
 #define TEST_BUF_SIZE	(4 * 1024)
 
 extern uint32_t single_swap_4bytes(uint32_t single);
@@ -62,7 +62,7 @@ uint32_t single_swap_4bytes(uint32_t single)
 	(single&0x00ff0000)>>8|\
 	(single&0xff000000)>>24);
 }
-#if 0
+
 void init_pcmdata(void)
 {
    //1.5k 0db tone, 64 samples (stereo)
@@ -167,112 +167,6 @@ void init_pcmdata(void)
 		pcmdata[i] = single_swap_4bytes(pcmdata[i]);
 
 }
-#else
-static void init_pcmdata(void)
-{
-   //1.5k 0db tone, 64 samples (stereo)
-	pcmdata[0]=0x55550055;
-   	pcmdata[1]=0x55005555;
-   	pcmdata[2]=0x00555500;
-   	pcmdata[3]=0x55550055;
-   	pcmdata[4]=0x55005555;
-   	pcmdata[5]=0x00555500;
-   	pcmdata[6]=0x55550055;
-   	pcmdata[7]=0x55005555;
-   	pcmdata[8]=0x00555500;
-   	pcmdata[9]=0x55550055;
-   	pcmdata[10]=0x55005555;
-  	pcmdata[11]=0x00555500;
-   	pcmdata[12]=0x55550055;
-   	pcmdata[13]=0x55005555;
-   	pcmdata[14]=0x00555500;
-   	pcmdata[15]=0x55550055;
-   	pcmdata[16]=0x55005555;
-   	pcmdata[17]=0x00555500;
-   	pcmdata[18]=0x55550055;
-   	pcmdata[19]=0x55005555;
-   	pcmdata[20]=0x00555500;
-   	pcmdata[21]=0x55550055;
-   	pcmdata[22]=0x55005555;
-   	pcmdata[23]=0x00555500;
-   	pcmdata[24]=0x55550055;
-   	pcmdata[25]=0x55005555;
-   	pcmdata[26]=0x00555500;
-   	pcmdata[27]=0x55550055;
-   	pcmdata[28]=0x55005555;
-   	pcmdata[29]=0x00555500;
-   	pcmdata[30]=0x55550055;
-   	pcmdata[31]=0x55005555;
-   	pcmdata[32]=0x00555500;
-   	pcmdata[33]=0x55550055;
-   	pcmdata[34]=0x55005555;
-   	pcmdata[35]=0x00555500;
-   	pcmdata[36]=0x55550055;
-   	pcmdata[37]=0x55005555;
-   	pcmdata[38]=0x00555500;
-   	pcmdata[39]=0x55550055;
-   	pcmdata[40]=0x55005555;
-   	pcmdata[41]=0x00555500;
-   	pcmdata[42]=0x55550055;
-  	pcmdata[43]=0x55005555;
-   	pcmdata[44]=0x00555500;
-   	pcmdata[45]=0x55550055;
-   	pcmdata[46]=0x55005555;
-   	pcmdata[47]=0x00555500;
-   	pcmdata[48]=0x55550055;
-   	pcmdata[49]=0x55005555;
-   	pcmdata[50]=0x00555500;
-   	pcmdata[51]=0x55550055;
-   	pcmdata[52]=0x55005555;
-   	pcmdata[53]=0x00555500;
-   	pcmdata[54]=0x55550055;
-   	pcmdata[55]=0x55005555;
-   	pcmdata[56]=0x00555500;
-   	pcmdata[57]=0x55550055;
-   	pcmdata[58]=0x55005555;
-   	pcmdata[59]=0x00555500;
-   	pcmdata[60]=0x55550055;
-   	pcmdata[61]=0x55005555;
-   	pcmdata[62]=0x00555500;
-   	pcmdata[63]=0x55550055;
-   	pcmdata[64]=0x55005555;
-   	pcmdata[65]=0x00555500;
-   	pcmdata[66]=0x55550055;
-   	pcmdata[67]=0x55005555;
-   	pcmdata[68]=0x00555500;
-   	pcmdata[69]=0x55550055;
-   	pcmdata[70]=0x55005555;
-   	pcmdata[71]=0x00555500;
-   	pcmdata[72]=0x55550055;
-   	pcmdata[73]=0x55005555;
-   	pcmdata[74]=0x00555500;
-   	pcmdata[75]=0x55550055;
-   	pcmdata[76]=0x55005555;
-   	pcmdata[77]=0x00555500;
-   	pcmdata[78]=0x55550055;
-   	pcmdata[79]=0x55005555;
-   	pcmdata[80]=0x00555500;
-   	pcmdata[81]=0x55550055;
-   	pcmdata[82]=0x55005555;
-   	pcmdata[83]=0x00555500;
-   	pcmdata[84]=0x55550055;
-   	pcmdata[85]=0x55005555;
-   	pcmdata[86]=0x00555500;
-   	pcmdata[87]=0x55550055;
-   	pcmdata[88]=0x55005555;
-   	pcmdata[89]=0x00555500;
-   	pcmdata[90]=0x55550055;
-   	pcmdata[91]=0x55005555;
-   	pcmdata[92]=0x00555500;
-   	pcmdata[93]=0x55550055;
-   	pcmdata[94]=0x55005555;
-   	pcmdata[95]=0x00555500;
-
-	for(int i = 0; i < 96; i++)
-		pcmdata[i] = single_swap_4bytes(pcmdata[i]);
-
-}
-#endif
 
 /* TEST1:INTERNAL DEBUG, I2S2 output signal(1k 0db sine) */
 void i2s_test_debug_signal(void)

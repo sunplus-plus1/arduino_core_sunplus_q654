@@ -233,7 +233,7 @@ static void _i2s_reset_all_fifo(void)
 static void _i2s_config_pcm_buffer(I2S_HandleTypeDef *hi2s) //FIXME  RX/TX same buffer
 {
 	uint32_t base_addr, fifo_addr;
-#if 0
+#if 1
 	base_addr = ROUNDUP((uint32_t)&_heap_bottom, 128);
 	WRITE_REG(AUD_REG->aud_audhwya, base_addr);
 
