@@ -102,9 +102,13 @@
 //i2c master status2
 #define I2C_SW_RESET_DONE                 (1<<0)
 
-#define I2C_BURST_RDATA_BYTES        16
-#define I2C_BURST_RDATA_FLAG         0x80008000
-#define I2C_BURST_RDATA_ALL_FLAG     0xFFFFFFFF
+#define I2C_DATA_REG_NUMS		8
+#define I2C_DATA_REG_SIZE		4
+#define I2C_DATA_REG_TOTAL_SIZE		32 /* The maximum size of data buffer we can access */
+
+#define I2C_BURST_RDATA_BYTES		16 /* Generate the burst interrupt after receive this BYTES */
+#define I2C_BURST_RDATA_FLAG		0x80008000
+#define I2C_BURST_RDATA_ALL_FLAG	0xFFFFFFFF
 
 //burst write use
 #define I2C_EMPTY_THRESHOLD_VALUE    4
@@ -145,8 +149,6 @@
 
 #define I2C_CLK_SOURCE_FREQ		27000	// KHz(27MHz)
 
-//#define SET   1
-//#define RESET         0
 #define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->Instance->interrupt) & \
                                                     (__FLAG__)) == (__FLAG__)) ? SET : RESET)
 #define __HAL_DMA_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->gdma->int_flag) & \
@@ -289,22 +291,23 @@ typedef struct {
   * @{
   */
 typedef struct __I2C_HandleTypeDef {
-	__IO I2C_TypeDef *Instance;	/*!< I2C registers base address     */
-	I2C_InitTypeDef Init;	/*!< I2C communication parameters   */
+	__IO I2C_TypeDef *Instance;	/*!< I2C registers base address */
+	I2C_InitTypeDef Init;	/*!< I2C communication parameters */
 	uint8_t *pBuffPtr;	/*!< Pointer to I2C transfer buffer */
-	uint32_t XferSize;	/*!< I2C transfer size              */
-	__IO uint32_t XferCount;	/*!< I2C transfer counter   */
-	__IO uint32_t XferOptions;	/*!< I2C sequantial transfer options */
-	HAL_LockTypeDef Lock;	/*!< I2C locking object             */
-	__IO HAL_I2C_StateTypeDef State;	/*!< I2C communication state  */
-	__IO uint32_t ErrorCode;	/*!< I2C Error code                   */
-	__IO uint32_t AddrEventCount;	/*!< I2C Address Event counter        */
+	uint32_t XferSize;	/*!< I2C transfer size */
+	__IO uint32_t XferCount;	/*!< I2C transfer counter */
+	__IO uint32_t XferOptions;	/*!< I2C sequantial transfer options, this parameter can
+					   be a value of @ref I2C_XFEROPTIONS */
+	__IO HAL_LockTypeDef Lock;	/*!< I2C locking object */
+	__IO HAL_I2C_StateTypeDef State;	/*!< I2C communication state */
+	__IO uint32_t ErrorCode;	/*!< I2C Error code */
+	__IO uint32_t AddrEventCount;	/*!< I2C Address Event counter */
 
-	GDMA_TypeDef *gdma;
-	uint8_t Index;
+	__IO GDMA_TypeDef *gdma;
+	__IO uint8_t Index;
 	__IO uint16_t RegDataIndex;
-	uint32_t BurstCount;
-	uint32_t BurstRemainder;
+	__IO uint32_t BurstCount;
+	__IO uint32_t BurstRemainder;
 
 } I2C_HandleTypeDef;
 
@@ -314,15 +317,24 @@ void HAL_I2C_PinMux(I2C_HandleTypeDef * hi2c, int sda_pinmux, int scl_pinmux);
 
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef * hi2c);
 
-HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size, uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size, uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint16_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress, uint8_t * pData, uint16_t Size);
+HAL_StatusTypeDef HAL_I2C_DeInit(I2C_HandleTypeDef * hi2c);
 
+HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					  uint8_t * pData, uint32_t Size, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					 uint8_t * pData, uint32_t Size, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					      uint8_t * pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					     uint8_t * pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					     uint8_t * pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+					    uint8_t * pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+						 uint8_t * pData, uint16_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef * hi2c, uint16_t DevAddress,
+						uint8_t * pData, uint16_t Size);
 HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
 void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
 uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
