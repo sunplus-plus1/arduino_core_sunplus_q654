@@ -320,12 +320,12 @@ typedef enum {
   SPIND                            = 83,        /*!< SPIND moudle ID */
   UADMA01                          = 84,        /*!< UADMA01 moudle ID */
   UADMA23                          = 85,        /*!< UADMA23 moudle ID */
-  UA0                              = 86,        /*!< UA0 moudle ID */
-  UA1                              = 87,        /*!< UA1 moudle ID */
-  UA2                              = 88,        /*!< UA2 moudle ID */
-  UA3                              = 89,        /*!< UA3 moudle ID */
+  UART0                            = 86,        /*!< UA0 moudle ID */
+  UART1                            = 87,        /*!< UA1 moudle ID */
+  UART2                            = 88,        /*!< UA2 moudle ID */
+  UART3                            = 89,        /*!< UA3 moudle ID */
   UADGB                            = 90,        /*!< UADGB moudle ID */
-  RESERVED                         = 91,        /*!< moudle ID */
+  RESERVED_0                       = 91,        /*!< moudle ID */
   UPHY0                            = 92,        /*!< UPHY0 moudle ID */
   USB30C0                          = 93,        /*!< USB30C0 moudle ID */
   U3PHY0                           = 94,        /*!< U3PHY0 moudle ID */
@@ -338,7 +338,7 @@ typedef enum {
   AXI_DMA                          = 100,       /*!< AXI_DMA moudle ID */
   PNAND                            = 101,       /*!< PNAND moudle ID */
   SEC                              = 102,       /*!< SEC moudle ID */
-  RESERVED                         = 103,       /*!< moudle ID */
+  RESERVED_1                       = 103,       /*!< moudle ID */
   STC_AV3                          = 104,       /*!< STC_AV3 moudle ID */
   STC_TIMESTAMP                    = 105,       /*!< STC_TIMESTAMP moudle ID */
   STC_AV4                          = 106,       /*!< STC_AV4 moudle ID */
@@ -362,10 +362,10 @@ typedef enum {
   INTERRUPT_AO                     = 123,       /*!< INTERRUPT_AO moudle ID */
   UA6                              = 124,       /*!< UA6 moudle ID */
   UA7                              = 125,       /*!< UA7 moudle ID */
-  SECGRP_PAII                      = 126,       /*!< SECGRP_PAII moudle ID */
+  GDMAUA                           = 126,       /*!< GDMAUA moudle ID */
   CM4                              = 127,       /*!< CM4 moudle ID */
 /*G2.9*/
-  STC_0                             = 128,       /*!< STC0 moudle ID */
+  STC_0                            = 128,       /*!< STC0 moudle ID */
   STC_AV0                          = 129,       /*!< STC_AV0 moudle ID */
   STC_AV1                          = 130,       /*!< STC_AV1 moudle ID */
   STC_AV2                          = 131,       /*!< STC_AV2 moudle ID */
@@ -374,13 +374,13 @@ typedef enum {
   DISP                             = 134,       /*!< DISP moudle ID */
   NICPAIII                         = 135,       /*!< NICPAIII moudle ID */
   GPIO_AO_INT                      = 136,       /*!< GPIO_AO_INT moudle ID */
-  I2C0                             = 137,       /*!< I2C0 moudle ID */
-  I2C1                             = 138,       /*!< I2C1 moudle ID */
-  I2C2                             = 139,       /*!< I2C2 moudle ID */
-  I2C3                             = 140,       /*!< I2C3 moudle ID */
-  I2C4                             = 141,       /*!< I2C4 moudle ID */
-  I2C5                             = 142,       /*!< I2C5 moudle ID */
-  I2C6                             = 143,       /*!< I2C6 moudle ID */
+  I2CM0                            = 137,       /*!< I2C0 moudle ID */
+  I2CM1                            = 138,       /*!< I2C1 moudle ID */
+  I2CM2                            = 139,       /*!< I2C2 moudle ID */
+  I2CM3                            = 140,       /*!< I2C3 moudle ID */
+  I2CM4                            = 141,       /*!< I2C4 moudle ID */
+  I2CM5                            = 142,       /*!< I2C5 moudle ID */
+  I2CM6                            = 143,       /*!< I2C6 moudle ID */
 /*G2.10*/
   I2C7                             = 144,       /*!< I2C7 moudle ID */
   I2C8                             = 145,       /*!< I2C8 moudle ID */
@@ -868,12 +868,14 @@ typedef struct {
 #define _STC_BASE                    RF_GRP_AO(23, 0)
 #define _STC_AV0_BASE                RF_GRP_AO(24, 0)
 #define _STC_AV1_BASE                RF_GRP_AO(25, 0)
+#define _STC_AV2_BASE                RF_GRP_AO(26, 0)
 #define _STC_AV4_BASE                RF_GRP_AO(38, 0)
 
 #define STC0                         ((STC_TypeDef *)_STC_BASE)
 #define STC1                         ((STC_TypeDef *)_STC_AV0_BASE)
 #define STC2                         ((STC_TypeDef *)_STC_AV1_BASE)
-#define STC3                         ((STC_TypeDef *)_STC_AV4_BASE)
+#define STC3                         ((STC_TypeDef *)_STC_AV2_BASE)
+#define STC4                         ((STC_TypeDef *)_STC_AV4_BASE)
 
 #define STC_PRESCALER_Pos            (0U)
 #define STC_PRESCALER_Msk            (0x7FFFU << STC_PRESCALER_Pos)    /*0x000007FF*/
@@ -896,7 +898,8 @@ typedef struct {
 #define IS_STC_INSTANCE(INSTANCE)    (((INSTANCE) == STC0)   || \
                                       ((INSTANCE) == STC1)   || \
                                       ((INSTANCE) == STC2)   || \
-                                      ((INSTANCE) == STC3))
+                                      ((INSTANCE) == STC3)   || \
+                                      ((INSTANCE) == STC4))
 
 /******************************************************************************/
 /*                                                                            */
