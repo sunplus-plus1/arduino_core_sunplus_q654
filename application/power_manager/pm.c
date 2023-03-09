@@ -51,6 +51,8 @@ void pm_main()
 		xTaskCreate( vDoPowerupTask, "powerup", PM_TASK_STACK_SIZE, NULL, 1, NULL );
 	}
 
+//	CM4_TO_CA55_MAILBOX->direct_transation[7]=0xaabb1234;  // mailbox to ca55 to in suspend mode, test for replace wakeupkey
+
 }
 
 void pm_set_power_down_bit(void)

@@ -83,6 +83,11 @@ void _rt5759_set_0d8_vol(void)
 	_pmic_i2c_write(tx_buf);
 }
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
 int pmic_do_cmd(uint32_t cmd)
 {
 	int ret = 0;
@@ -116,3 +121,7 @@ int pmic_init(void)
 #endif
 	return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif

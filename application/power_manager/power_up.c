@@ -170,7 +170,7 @@ void Main_Domain_PowerUP(void)
 void Main_Domain_PowerUP_REQ_Handler()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
-	printf("UP ISR ! \n");
+	printf("Power Up ISR ! \n");
 	Main_Domain_PowerUP();
 
 	/*semap will hang until ca55 restart.*/
@@ -178,7 +178,6 @@ void Main_Domain_PowerUP_REQ_Handler()
 	{
 		printf("Semaphore Send ISR Fail! \n");
 	}
-	printf("Semaphore Send ISR OK! \n");
 	portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 

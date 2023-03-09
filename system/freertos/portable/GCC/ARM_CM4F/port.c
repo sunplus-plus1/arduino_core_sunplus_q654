@@ -381,9 +381,7 @@ BaseType_t xPortStartScheduler( void )
     *( portFPCCR ) |= portASPEN_AND_LSPEN_BITS;
 
     /* Start the first task. */
-	printf("%s, %d\n", __FUNCTION__, __LINE__);	
     prvPortStartFirstTask();
-	printf("%s, %d\n", __FUNCTION__, __LINE__); 
 
     /* Should never get here as the tasks will now be executing!  Call the task
      * exit error function to prevent compiler warnings about a static function
