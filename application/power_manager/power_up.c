@@ -1,46 +1,43 @@
-#include "upf_private.h"
-
+#include "pm_common.h"
 
 SemaphoreHandle_t xPowerUp_Semaphore;
 
 void wait_loop();
 void _power_up_main_domain(void)
 {
-    Send_Cmd_To_PMIC(0x81);
-	 MOON0_REG->m0_sft_cfg[1] = 0x007E007E ;  ///maindomain powerup will reset CA55
+	Send_Cmd_To_PMIC(MAIN_POWER_ON);
+	MOON0_REG->sft_cfg[1] = RF_MASK_V_SET(0x7E);;//0x007E007E ;  ///maindomain powerup will reset CA55
 	/*  power up finish */
 	//wait_loop(10000); 
-	*(volatile unsigned int*)0xf8801900 = 'Q';
-	*(volatile unsigned int*)0xf8801900 = 'Q';
-    PMC_REGS->pmc_main_pwr_ctrl = 0x1;
+	PMC_REGS->pmc_main_pwr_ctrl = 0x1;
 }
 
 void _power_up_CA55_domain(void)
 {
 
-	Send_Cmd_To_PMIC(0xb2);
-/// core0	
+	Send_Cmd_To_PMIC(CA55_0D8V_POWER);
+/// core0
 	PMC_REGS->pmc_corepsw_en   &= 0xFFFFFFFE ;
     PMC_REGS->pmc_coremem_sden &= 0xFFFFFFFE ;
     PMC_REGS->pmc_iso_en       &= 0xFFFFFFFE ;
-/// core1                       
+/// core1
     PMC_REGS->pmc_corepsw_en   &= 0xFFFFFFFD ;
     PMC_REGS->pmc_coremem_sden &= 0xFFFFFFFD ;
     PMC_REGS->pmc_iso_en       &= 0xFFFFFFFD ;
-/// core2                       
+/// core2
     PMC_REGS->pmc_corepsw_en   &= 0xFFFFFFFB ;
     PMC_REGS->pmc_coremem_sden &= 0xFFFFFFFB ;
     PMC_REGS->pmc_iso_en       &= 0xFFFFFFFB ;
-/// core3                       
+/// core3
     PMC_REGS->pmc_corepsw_en   &= 0xFFFFFFF7 ;
     PMC_REGS->pmc_coremem_sden &= 0xFFFFFFF7 ;
     PMC_REGS->pmc_iso_en       &= 0xFFFFFFF7 ;
-	
+
 	PMC_REGS->pmc_pctl_reg     |= 0x000003FF ; 
 
     PMC_REGS->pmc_lvs_pwd = 0x00AA55FF ;  /// LVS password
     PMC_REGS->pmc_lvs_disable = 0x0 ;     /// LVS disable
-    MOON0_REG->m0_sft_cfg[1] = 0x007E0000 ;  ///de-assert CA55 reset
+    MOON0_REG->sft_cfg[1] = RF_MASK_V_CLR(0x7E);//0x007E0000 ;  ///de-assert CA55 reset
 }
 
 #if 0
@@ -59,7 +56,7 @@ int _power_up_CA55_cluster()
 	TickType_t xLastWakeTime;
 	
 	/* power up CA55, default is 0.8V. no need to set */
-	Send_Cmd_To_PMIC(0xb2);
+	Send_Cmd_To_PMIC(CA55_0D8V_POWER);
 	
 	wait_loop1(10000);
 	/* p-channel cores request powerdown*/
@@ -89,7 +86,7 @@ int _power_up_CA55_cluster()
 	PMC_REGS->pmc_pctl_reg &= (0x1<<9);
 	
 	PMC_REGS->pmc_lvs_pwd = 0x00AA55FF ;  /// LVS password
-    PMC_REGS->pmc_lvs_disable = 0x0 ;     /// LVS disable
+	PMC_REGS->pmc_lvs_disable = 0x0 ;     /// LVS disable
 
 	/* assert CA55 reset */
 //	MOON0_REG->m0_sft_cfg[1] 	= 0x00600000 ;
@@ -106,13 +103,13 @@ int _power_up_CA55_core()
 	PMC_REGS->pmc_pctl_reg &= 0x3F0;
 	PMC_REGS->pmc_pctl_reg |= 0x1EF;
 
-	/*config SD/PSW */	
+	/*config SD/PSW */
 	PMC_REGS->pmc_coremem_sdpwd = 0x5500FFAA;
 	PMC_REGS->pmc_coremem_sden	&= ~0xF;
-	
+
 	PMC_REGS->pmc_corepsw_pwd   = 0x55FF00AA;
 	PMC_REGS->pmc_corepsw_en    &= ~0xF;
-	
+
 	/* polling statue = accept*/
 	xLastWakeTime = xTaskGetTickCount();
 	do{
@@ -126,7 +123,7 @@ int _power_up_CA55_core()
 			return -1;
 		}
 	}while((xTaskGetTickCount() - xLastWakeTime) < xTimeout);
-	*(volatile unsigned int*)0xf8801900 = 'W';
+
 	if((xTaskGetTickCount() - xLastWakeTime) >= xTimeout)
 	{	
 		printf("power down cores timeout G36.29 = %x  !!\n",PMC_REGS->pmc_pctl_reg);
@@ -134,19 +131,19 @@ int _power_up_CA55_core()
 	}
 	/* disable request */
 	PMC_REGS->pmc_pctl_reg &= (0xF<<5);
-	
+
 	/*config ISO */	
 	PMC_REGS->pmc_iso_pwd       = 0xFFAA5500;
 	PMC_REGS->pmc_iso_en	    &= ~0xF;
-	
-	MOON0_REG->m0_sft_cfg[1] = 0x007E0000 ;  ///de-assert CA55 reset
+
+	MOON0_REG->sft_cfg[1] = 0x007E0000 ;  ///de-assert CA55 reset
 	return 0;
 }
 #endif
 
 void Main_Domain_PowerUP(void)
 {
-    _power_up_main_domain();
+	_power_up_main_domain();
 
 #if 0
 	if(_power_up_CA55_cluster() != 0)
@@ -161,19 +158,21 @@ void Main_Domain_PowerUP(void)
 #endif
 
 	_power_up_CA55_domain();
- 
- 	ddr_retention_load();
 
-	upf_set_retention_done_bit();
+	ddr_retention_load();
+
+	pm_restore_data_after_ddr_retention();
+	pm_set_retention_done_bit();
+	in_suspend = 0;
 }
 
-/* tirgger by send 0x82 cmd to PMIC */
+/* trigger by send 0x82 cmd to PMIC */
 void Main_Domain_PowerUP_REQ_Handler()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
 	printf("UP ISR ! \n");
 	Main_Domain_PowerUP();
-	
+
 	/*semap will hang until ca55 restart.*/
 	if(xSemaphoreGiveFromISR( xPowerUp_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE)
 	{
@@ -189,24 +188,26 @@ void power_up_maindomain(void)
 	xPowerUp_Semaphore = xSemaphoreCreateBinary( );
 	if(xPowerUp_Semaphore != NULL)
 	{
-		NVIC_SetVector(MAIN_DOMAIN_PU_ACK_IRQ, (u32)Main_Domain_PowerUP_REQ_Handler);
-		NVIC_EnableIRQ(MAIN_DOMAIN_PU_ACK_IRQ);
-		NVIC_SetPriority(MAIN_DOMAIN_PU_ACK_IRQ, 0xE0); 
+		NVIC_SetVector(MAIN_PWR_UP_REQ_IRQn, (uint32_t)Main_Domain_PowerUP_REQ_Handler);
+		NVIC_EnableIRQ(MAIN_PWR_UP_REQ_IRQn);
+		NVIC_SetPriority(MAIN_PWR_UP_REQ_IRQn, 0xE0); 
 	}
 }
 
 void vDoPowerupTask( void *pvParameters )
 {
-    /* Remove compiler warning about unused parameter. */
-    ( void ) pvParameters;
+	/* Remove compiler warning about unused parameter. */
+	( void ) pvParameters;
 
 	power_up_maindomain();
-	
-    for( ;; )
-    {
+
+	for( ;; )
+	{
 		if( xPowerUp_Semaphore != NULL )
-		{  
+		{
 			printf("power up wait!\r\n");
+
+
 			if(xSemaphoreTake( xPowerUp_Semaphore, portMAX_DELAY) == pdTRUE)
 			{
 				printf("power up start!\r\n");

@@ -236,202 +236,115 @@ typedef enum {
   CA55CORE3                        = 4,        /*!< CA55 CORE 3 moudle ID */
   CA55SCUL3                        = 5,        /*!< CA55 SCUL 3 moudle ID */
   CA55                             = 6,        /*!< CA55 moudle ID */
-  GMAC                             = 7,        /*!< GMAC moudle ID */
-  RBUS                             = 8,        /*!< RBUS moudle ID */
-  RBUS_BLOCKB                      = 9,        /*!< RBUS_BLOCKB moudle ID */
-  SYSTOP                           = 10,       /*!< SYSTOP moudle ID */
-  THERMAL                          = 11,       /*!< THERMAL moudle ID */
+  IOP                              = 7,        /*!< IOP moudle ID */
+  PBUS0                            = 8,        /*!< PBUS0 moudle ID */
+  PBUS1                            = 9,        /*!< PBUS1 moudle ID */
+  PBUS2                            = 10,       /*!< PBUS2 moudle ID */
+  PBUS3                            = 11,       /*!< PBUS3 moudle ID */
   BR0                              = 12,       /*!< Bootrom 0 moudle ID */
   CARD_CTL0                        = 13,       /*!< Emmc moudle ID */
   CARD_CTL1                        = 14,       /*!< SDCARD 0 moudle ID */
   CARD_CTL2                        = 15,       /*!< SDCARD 2 moudle ID */
 /*G2.2*/
   CBDMA0                           = 16,       /*!< CBDMA moudle ID */
-  CPIOR                            = 17,       /*!< CPIO R moudle ID */
-  DDR_PHY0                         = 18,       /*!< DDR_PHY0 moudle ID */
-  TZC                              = 19,       /*!< TZC moudle ID */
-  DDR_CTL                          = 20,       /*!< DDR_CTL moudle ID */
-  DRAM                             = 21,       /*!< DRAM moudle ID */
-  VCL                              = 22,       /*!< VCL moudle ID */
-  VCL0                             = 23,       /*!< VCL0 moudle ID */
-  VCL1                             = 24,       /*!< VCL1 moudle ID */
-  VCL2                             = 25,       /*!< VCL2 moudle ID */
-  VCL3                             = 26,       /*!< VCL3 moudle ID */
-  VCL4                             = 27,       /*!< VCL4 moudle ID */
-  VCL5                             = 28,       /*!< VCL5 moudle ID */
-  DUMMY_MASTER0                    = 29,       /*!< DUMMY_MASTER0 moudle ID */
-  DUMMY_MASTER1                    = 30,       /*!< DUMMY_MASTER1 moudle ID */
-  DUMMY_MASTER2                    = 31,       /*!< DUMMY_MASTER2 moudle ID */
+  CPIOL                            = 17,       /*!< CPIO L moudle ID */
+  CPIOR                            = 18,       /*!< CPIO R moudle ID */
+  DDR_PHY0                         = 19,       /*!< SDCTRL0 moudle ID */
+  SDCTRL0                          = 20,       /*!< SDCTRL0 moudle ID */
+  DUMMY_MASTER0                    = 21,       /*!< DUMMY_MASTER0 moudle ID */
+  DUMMY_MASTER1                    = 22,       /*!< DUMMY_MASTER1 moudle ID */
+  DUMMY_MASTER2                    = 23,       /*!< DUMMY_MASTER2 moudle ID */
+  EVDN                             = 24,       /*!< EVDN moudle ID */
+  SDPOART0                         = 25,       /*!< SDPOART0 moudle ID */
+  UMCTL2                           = 26,       /*!< UMCTL2 moudle ID */
+  GPU                              = 27,       /*!< GPU moudle ID */
+  HSM                              = 28,       /*!< HSM moudle ID */
+  RESERVE1                         = 29,       /*!< moudle ID */
+  SPACC                            = 30,       /*!< SPACC moudle ID */
+  INTERRUPT                        = 31,       /*!< INTERRUPT moudle ID */
 /*G2.3*/
-  DISPSYS                          = 32,       /*!< DISPSYS moudle ID */
-  DMIX                             = 33,       /*!< DMIX moudle ID */
-  GPOST0                           = 34,       /*!< GPOST0 moudle ID */
-  GPOST1                           = 35,       /*!< GPOST1 moudle ID */
-  GPOST2                           = 36,       /*!< GPOST2 moudle ID */
-  GPOST3                           = 37,       /*!< GPOST3 moudle ID */
-  IMGREAD0                         = 38,       /*!< IMGREAD0 moudle ID */
-  MIPITX                           = 39,       /*!< MIPITX moudle ID */
-  OSD0                             = 40,       /*!< OSD0 moudle ID */
-  OSD1                             = 41,       /*!< OSD1 moudle ID */
-  OSD2                             = 42,       /*!< OSD2 moudle ID */
-  OSD3                             = 43,       /*!< OSD3 moudle ID */
-  TCON                             = 44,       /*!< TCON moudle ID */
-  TGEN                             = 45,       /*!< TGEN moudle ID */
-  VPOST0                           = 46,       /*!< VPOST0 moudle ID */
-  VSCL0                            = 47,       /*!< VSCL0 moudle ID */
+  N78                              = 32,       /*!< N78 moudle ID */
+  SYSTOP                           = 33,       /*!< SYSTOP moudle ID */
+  OTPRX                            = 34,       /*!< OTPRX moudle ID */
+  PMC                              = 35,       /*!< PMC moudle ID */
+  RBUS_BLOCKA                      = 36,       /*!< RBUS_BLOCKA moudle ID */
+  RBUS_BLOCKB                      = 37,       /*!< RBUS_BLOCKB moudle ID */
+  RESERVE2                         = 38,       /*!< moudle ID */
+  RESERVE3                         = 39,       /*!< moudle ID */
+  RTC                              = 40,       /*!< RTC moudle ID */
 /*G2.4*/
-  MIPICSI0                         = 48,        /*!< MIPICSI0 moudle ID */
-  MIPICSI1                         = 49,        /*!< MIPICSI1 moudle ID */
-  MIPICSI2                         = 50,        /*!< MIPICSI2 moudle ID */
-  MIPICSI3                         = 51,        /*!< MIPICSI3 moudle ID */
-  MIPICSI4                         = 52,        /*!< MIPICSI4 moudle ID */
-  MIPICSI5                         = 53,        /*!< MIPICSI5 moudle ID */
-  VI0_CSIIW0                       = 54,        /*!< VI0_CSIIW0 moudle ID */
-  VI0_CSIIW1                       = 55,        /*!< VI0_CSIIW1 moudle ID */
-  VI1_CSIIW0                       = 56,        /*!< VI1_CSIIW0 moudle ID */
-  VI1_CSIIW1                       = 57,        /*!< VI1_CSIIW1 moudle ID */
-  VI2_CSIIW0                       = 58,        /*!< VI2_CSIIW0 moudle ID */
-  VI2_CSIIW1                       = 59,        /*!< VI2_CSIIW1 moudle ID */
-  VI3_CSIIW0                       = 60,        /*!< VI3_CSIIW0 moudle ID */
-  VI3_CSIIW1                       = 61,        /*!< VI3_CSIIW1 moudle ID */
-  VI3_CSIIW2                       = 62,        /*!< VI3_CSIIW2 moudle ID */
-  VI3_CSIIW3                       = 63,        /*!< VI3_CSIIW3 moudle ID */
+  MIPZ                             = 41,       /*!< MIPZ moudle ID */
 /*G2.5*/
-  VI4_CSIIW0                       = 64,        /*!< VI4_CSIIW0 moudle ID */
-  VI4_CSIIW1                       = 65,        /*!< VI4_CSIIW1 moudle ID */
-  VI4_CSIIW2                       = 66,        /*!< VI4_CSIIW2 moudle ID */
-  VI4_CSIIW3                       = 67,        /*!< VI4_CSIIW3 moudle ID */
-  VI5_CSIIW0                       = 68,        /*!< VI5_CSIIW0 moudle ID */
-  VI5_CSIIW1                       = 69,        /*!< VI5_CSIIW1 moudle ID */
-  VI5_CSIIW2                       = 70,        /*!< VI5_CSIIW2 moudle ID */
-  VI5_CSIIW3                       = 71,        /*!< VI5_CSIIW3 moudle ID */
-  MIPICSI23_SEL                    = 72,        /*!< MIPICSI23_SEL moudle ID */
-  VI23_CSIIW1                      = 73,        /*!< VI23_CSIIW1 moudle ID */
-  VI23_CSIIW2                      = 74,        /*!< VI23_CSIIW2 moudle ID */
-  VI23_CSIIW3                      = 75,        /*!< VI23_CSIIW3 moudle ID */
-  VI23_CSIIW0                      = 76,        /*!< VI23_CSIIW0 moudle ID */
-  OTPRX                            = 77,        /*!< OTPRX moudle ID */
-  PRNG                             = 78,        /*!< PRNG moudle ID */
-  SEMAPHORE                        = 79,        /*!< SEMAPHORE moudle ID */
 /*G2.6*/
-  INTERRUPT                        = 80,        /*!< INTERRUPT moudle ID */
-  SPIFL                            = 81,        /*!< SPIFL moudle ID */
-  BCH                              = 82,        /*!< BCH moudle ID */
-  SPIND                            = 83,        /*!< SPIND moudle ID */
-  UADMA01                          = 84,        /*!< UADMA01 moudle ID */
-  UADMA23                          = 85,        /*!< UADMA23 moudle ID */
-  UART0                            = 86,        /*!< UA0 moudle ID */
-  UART1                            = 87,        /*!< UA1 moudle ID */
-  UART2                            = 88,        /*!< UA2 moudle ID */
-  UART3                            = 89,        /*!< UA3 moudle ID */
-  UADGB                            = 90,        /*!< UADGB moudle ID */
-  RESERVED_0                       = 91,        /*!< moudle ID */
-  UPHY0                            = 92,        /*!< UPHY0 moudle ID */
-  USB30C0                          = 93,        /*!< USB30C0 moudle ID */
-  U3PHY0                           = 94,        /*!< U3PHY0 moudle ID */
-  USBC0                            = 95,        /*!< USBC0 moudle ID */
+  SPIFL                            = 42,       /*!< SPIFL moudle ID */
+  BCH                              = 43,       /*!< BCH moudle ID */
+  SPIND                            = 44,       /*!< SPIND moudle ID */
+  UADMA01                          = 45,       /*!< UADMA01 moudle ID */
+  UADMA23                          = 46,       /*!< UADMA23 moudle ID */
+  UART0                            = 47,       /*!< UART0 moudle ID */
+  UART1                            = 48,        /*!< UART1 moudle ID */
+  UART2                            = 49,        /*!< UART2 moudle ID */
+  UART3                            = 50,        /*!< UART3 moudle ID */
+  UART4                            = 51,        /*!< UART4 moudle ID */
+  UART5                            = 52,        /*!< UART5 moudle ID */
+  UART_DBG                         = 53,        /*!< UART_DBG moudle ID */
+  UART2AXI                         = 54,        /*!< UART2AXI moudle ID */
+  GDMAUA                           = 55,        /*!< GDMAUA moudle ID */
+  UPHY0                            = 56,        /*!< UPHY0 moudle ID */
+  USB30C0                          = 57,        /*!< USB30C0 moudle ID */
+  USB30C1                          = 58,        /*!< USB30C1 moudle ID */
+  U3PHY0                           = 59,        /*!< U3PHY0 moudle ID */
+  U3PHY1                           = 60,        /*!< U3PHY1 moudle ID */
+  USBC0                            = 61,        /*!< USBC0 moudle ID */
 /*G2.7*/
-  VCD                              = 96,        /*!< VCD moudle ID */
-  VCE                              = 97,        /*!< VCE moudle ID */
-  VIDEO_CODEC                      = 98,        /*!< VIDEO_CODEC moudle ID */
-  MAILBOX                          = 99,        /*!< MAILBOX moudle ID */
-  AXI_DMA                          = 100,       /*!< AXI_DMA moudle ID */
-  PNAND                            = 101,       /*!< PNAND moudle ID */
-  SEC                              = 102,       /*!< SEC moudle ID */
-  RESERVED_1                       = 103,       /*!< moudle ID */
-  STC_AV3                          = 104,       /*!< STC_AV3 moudle ID */
-  STC_TIMESTAMP                    = 105,       /*!< STC_TIMESTAMP moudle ID */
-  STC_AV4                          = 106,       /*!< STC_AV4 moudle ID */
-  NICTOP                           = 107,       /*!< NICTOP moudle ID */
-  NICPAII                          = 108,       /*!< NICPAII moudle ID */
-  NICPAI                           = 109,       /*!< NICPAI moudle ID */
-  NPU                              = 110,       /*!< NPU moudle ID */
-  SECGRP                           = 111,       /*!< SECGRP moudle ID */
+  VCD                              = 62,        /*!< VCD moudle ID */
+  VCE                              = 63,        /*!< VCE moudle ID */
+/*G0.25*/
+  CM4                              = 64,        /*!< CM4 moudle ID */
+  STC_0                            = 65,        /*!< STC0 moudle ID */
+  STC_AV0                          = 66,        /*!< STC_AV0 moudle ID */
+  STC_AV1                          = 67,        /*!< STC_AV1 moudle ID */
+  STC_AV2                          = 68,        /*!< STC_AV2 SEL moudle ID */
+  MAILBOX                          = 69,        /*!< MAILBOX moudle ID */
+  PAI                              = 70,        /*!< PAI moudle ID */
+  PAII                             = 71,        /*!< PAII moudle ID */
+  DDRPHY                           = 72,        /*!< DDRPHY moudle ID */
+  DDRCTL                           = 73,        /*!< DDRCTL moudle ID */
+  I2CM0                            = 74,        /*!< I2CM0 moudle ID */
 /*G2.8*/
-  SECGRP_PAII                      = 112,       /*!< SECGRP_PAII moudle ID */
-  SECGRP_MAIN                      = 113,       /*!< SECGRP_MAIN moudle ID */
-  DPLL                             = 114,       /*!< DPLL moudle ID */
-  HBUS                             = 115,       /*!< HBUS moudle ID */
-  AUD                              = 116,       /*!< AUD moudle ID */
-  AXIM_TOP                         = 117,       /*!< AXIM_TOP moudle ID */
-  AXIX_PAI                         = 118,       /*!< AXIX_PAI moudle ID */
-  AXIX_PAII                        = 119,       /*!< AXIX_PAII moudle ID */
-  SYSAO                            = 120,       /*!< SYSAO moudle ID */
-  PMC                              = 121,       /*!< PMC moudle ID */
-  RTC                              = 122,       /*!< RTC moudle ID */
-  INTERRUPT_AO                     = 123,       /*!< INTERRUPT_AO moudle ID */
-  UA6                              = 124,       /*!< UA6 moudle ID */
-  UA7                              = 125,       /*!< UA7 moudle ID */
-  GDMAUA                           = 126,       /*!< GDMAUA moudle ID */
-  CM4                              = 127,       /*!< CM4 moudle ID */
+  SPICOMBO0                        = 75,        /*!< SPICOMBO0 moudle ID */
+  SPICOMBO1                        = 76,        /*!< SPICOMBO1 moudle ID */
+  SPICOMBO2                        = 77,        /*!< SPICOMBO2 moudle ID */
+  SPICOMBO3                        = 78,        /*!< SPICOMBO3 moudle ID */
+  SPICOMBO4                        = 79,        /*!< SPICOMBO4 moudle ID */
 /*G2.9*/
-  STC_0                            = 128,       /*!< STC0 moudle ID */
-  STC_AV0                          = 129,       /*!< STC_AV0 moudle ID */
-  STC_AV1                          = 130,       /*!< STC_AV1 moudle ID */
-  STC_AV2                          = 131,       /*!< STC_AV2 moudle ID */
-  AHB_DMA                          = 132,       /*!< AHB_DMA moudle ID */
-  SAR12B                           = 133,       /*!< SAR12B moudle ID */
-  DISP                             = 134,       /*!< DISP moudle ID */
-  NICPAIII                         = 135,       /*!< NICPAIII moudle ID */
-  GPIO_AO_INT                      = 136,       /*!< GPIO_AO_INT moudle ID */
-  I2CM0                            = 137,       /*!< I2C0 moudle ID */
-  I2CM1                            = 138,       /*!< I2C1 moudle ID */
-  I2CM2                            = 139,       /*!< I2C2 moudle ID */
-  I2CM3                            = 140,       /*!< I2C3 moudle ID */
-  I2CM4                            = 141,       /*!< I2C4 moudle ID */
-  I2CM5                            = 142,       /*!< I2C5 moudle ID */
-  I2CM6                            = 143,       /*!< I2C6 moudle ID */
+  SPICOMBO5                        = 80,        /*!< SPICOMBO5 moudle ID */
+  CSIIW0                           = 81,        /*!< CSIIW0 moudle ID */
+  MIPICSI0                         = 82,        /*!< MIPICSI0 moudle ID */
+  CSIIW1                           = 83,        /*!< CSIIW1 moudle ID */
+  MIPICSI1                         = 84,        /*!< MIPICSI1 moudle ID */
+  CSIIW2                           = 85,        /*!< CSIIW2 moudle ID */
+  MIPICSI2                         = 86,        /*!< MIPICSI2 moudle ID */
+  CSIIW3                           = 87,        /*!< CSIIW3 moudle ID */
+  MIPICSI3                         = 88,        /*!< MIPICSI3 moudle ID */
+  VCL                              = 89,        /*!< VCL moudle ID */
+  DISP_PWM                         = 90,        /*!< DISP_PWM moudle ID */
+  I2CM1                            = 91,        /*!< I2CM1 moudle ID */
+  I2CM2                            = 92,        /*!< I2CM2 moudle ID */
+  I2CM3                            = 93,        /*!< I2CM3 moudle ID */
 /*G2.10*/
-  I2C7                             = 144,       /*!< I2C7 moudle ID */
-  I2C8                             = 145,       /*!< I2C8 moudle ID */
-  I2C9                             = 146,       /*!< I2C9 moudle ID */
-  SPICB0                           = 147,       /*!< SPICB0 moudle ID */
-  SPICB1                           = 148,       /*!< SPICB1 moudle ID */
-  SPICB2                           = 149,       /*!< SPICB2 moudle ID */
-  SPICB3                           = 150,       /*!< SPICB3 moudle ID */
-  SPICB4                           = 151,       /*!< SPICB4 moudle ID */
-  SPICB5                           = 152,       /*!< SPICB5 moudle ID */
-  PD_AXI_DMA                       = 153,       /*!< PD_AXI_DMA moudle ID */
-  PD_CA55                          = 154,       /*!< PD_CA55 moudle ID */
-  PD_CARD0                         = 155,       /*!< PD_CARD0 moudle ID */
-  PD_CARD1                         = 156,       /*!< PD_CARD1 moudle ID */
-  PD_CARD2                         = 157,       /*!< PD_CARD2 moudle ID */
-  PD_CBDMA0                        = 158,       /*!< PD_CBDMA0 moudle ID */
-  PD_CPIOR0                        = 159,       /*!< PD_CPIOR0 moudle ID */
+  I2CM4                            = 94,        /*!< I2CM4 moudle ID */
+  I2CM5                            = 95,        /*!< I2CM5 moudle ID */
 /*G2.11*/
-  PD_CPIOR1                        = 160,       /*!< PD_CPIOR1 moudle ID */
-  PD_CSDBG                         = 161,       /*!< PD_CSDBG moudle ID */
-  PD_CSETR                         = 162,       /*!< PD_CSETR moudle ID */
-  PD_DUMMY0                        = 163,       /*!< PD_DUMMY0 moudle ID */
-  PD_DUMMY1                        = 164,       /*!< PD_DUMMY1 moudle ID */
-  PD_GMAC                          = 165,       /*!< PD_GMAC moudle ID */
-  PD_IMGREAD0                      = 166,       /*!< PD_IMGREAD0 moudle ID */
-  PD_NBS                           = 167,       /*!< PD_NBS moudle ID */
-  PD_NPU                           = 168,       /*!< PD_NPU moudle ID */
-  PD_OSD0                          = 169,       /*!< PD_OSD0 moudle ID */
-  PD_OSD1                          = 170,       /*!< PD_OSD1 moudle ID */
-  PD_OSD2                          = 171,       /*!< PD_OSD2 moudle ID */
-  PD_OSD3                          = 172,       /*!< PD_OSD3 moudle ID */
-  PD_SEC                           = 173,       /*!< PD_SEC moudle ID */
-  PD_SPI_ND                        = 174,       /*!< PD_SPI_ND moudle ID */
-  PD_SPI_NOR                       = 175,       /*!< PD_SPI_NOR moudle ID */
+  UART6                            = 96,        /*!< UART6 moudle ID */
 /*G2.12*/
-  PD_UART2_AXI                     = 176,       /*!< PD_UART2_AXI moudle ID */
-  PD_USB30C0                       = 177,       /*!< PD_USB30C0 moudle ID */
-  PD_USBC                          = 178,       /*!< PD_USBC moudle ID */
-  PD_VCD                           = 179,       /*!< PD_VCD moudle ID */
-  PD_VCE                           = 180,       /*!< PD_VCE moudle ID */
-  PD_VCL                           = 181,       /*!< PD_VCL moudle ID */
-  PD_VI0_CSII                      = 182,       /*!< PD_VI0_CSII moudle ID */
-  PD_VI1_CSII                      = 183,       /*!< PD_VI1_CSII moudle ID */
-  PD_VI23_CSII                     = 184,       /*!< PD_VI23_CSII moudle ID */
-  PD_VI4_CSII                      = 185,       /*!< PD_VI4_CSII moudle ID */
-  PD_VI5_CSII                      = 186,       /*!< PD_VI5_CSII moudle ID */
-  PD_AHB_DMA                       = 187,       /*!< PD_AHB_DMA moudle ID */
-  PD_AUD                           = 188,       /*!< PD_AUD moudle ID */
-  PD_CM4                           = 189,       /*!< PD_CM4 moudle ID */
-  PD_HWUA_TX_GDMA                  = 190,       /*!< PD_HWUA_TX_GDMA moudle ID */
-  QCTRL                            = 191,       /*!< QCTRL moudle ID */
+  UART7                            = 97,        /*!< UART7 moudle ID */
+  UART8                            = 98,        /*!< UART8 moudle ID */
+  AUD                              = 99,        /*!< AUD moudle ID */
+  VIDEO_CODEC                      = 100,       /*!< VIDEO_CODEC moudle ID */
+  AXIM_PAI                         = 101,       /*!< AXIM_PAI moudle ID */
+  AXIM_PAII                        = 102,       /*!< STC AXIM_PAII moudle ID */
+  AXIM_TOP                         = 103,       /*!< AXIM_TOP AV3 moudle ID */
 }MODULE_ID_Type;
 
 #define PINMUX_DFMP_2BIT            (0x10000)
@@ -863,6 +776,77 @@ typedef struct {
 #define MODULE_REST                  ((Module_Reset_Type*)RF_GRP_AO(0, 1))
 
 
+typedef struct{
+	__IOM uint32_t cpu_to_cpu_int_trigger;
+	__IOM uint32_t cpu_to_cpu_writelock_flag;
+	__IOM uint32_t cpu_to_cpu_overwrite_flag;
+	RESERVED(0[1], uint32_t)
+	__IOM uint32_t normal_transation[20];
+	__IOM uint32_t direct_transation[8];
+}Cpu_Mailbox_TypeDef;
+#define CA55_TO_CM4_MAILBOX          ((Cpu_Mailbox_TypeDef *)RF_GRP(258, 0))
+#define CM4_TO_CA55_MAILBOX          ((Cpu_Mailbox_TypeDef *)RF_GRP(259, 0))
+typedef struct{
+	__IOM uint32_t pmc_ctrl;
+	__IOM uint32_t pmc_timer;
+	__IOM uint32_t pmc_timer2;
+	__IOM uint32_t pmc_main_dowmain_pwd_1;
+	__IOM uint32_t pmc_main_dowmain_pwd_11;
+	__IOM uint32_t pmc_reserve5;
+	__IOM uint32_t pmc_reserve6;
+	__IOM uint32_t pmc_xtal27m_pwd_h;
+	__IOM uint32_t pmc_xtal27m_pwd_l;
+	__IOM uint32_t pmc_wakeup_latch;
+	__IOM uint32_t pmc_ivmx_reg;
+	__IOM uint32_t pmc_reserve11;
+	__IOM uint32_t pmc_reserve12;
+	__IOM uint32_t pmc_reserve13;
+	__IOM uint32_t pmc_reserve14;
+	__IOM uint32_t pmc_main_pwr_ctrl;
+	__IOM uint32_t pmc_corepsw_pwd ;
+	__IOM uint32_t pmc_corepsw_en;
+	__IOM uint32_t pmc_coremem_sdpwd;
+	__IOM uint32_t pmc_coremem_sden;
+	__IOM uint32_t pmc_lvs_pwd;
+	__IOM uint32_t pmc_lvs_disable;
+	__IOM uint32_t pmc_iso_pwd;
+	__IOM uint32_t pmc_iso_en;
+	__IOM uint32_t pmc_reserve24;
+	__IOM uint32_t pmc_reserve25;
+	__IOM uint32_t pmc_reserve26;
+	__IOM uint32_t pmc_reset_vector;
+	__IOM uint32_t pmc_ca55_reset_state;
+	__IOM uint32_t pmc_pctl_reg;
+	__IOM uint32_t pmc_pctl_int_clr;
+	__IOM uint32_t pmc_reserve31;
+}Pmc_TypeDef;
+#define PMC_REGS                    ((Pmc_TypeDef *)RF_GRP_AO(36, 0))
+typedef struct{
+	RESERVED(0[1], uint32_t);
+	__IOM uint32_t rtc_ctrl;
+	__IOM uint32_t rtc_timer;
+	__IOM uint32_t rtc_ontime_set;
+	__IOM uint32_t rtc_clock_set;
+	__IOM uint32_t rtc_macro_ctrl;
+	__IOM uint32_t rtc_periodic_set;
+	__IOM uint32_t rtc_int_status;
+	RESERVED(1[2], uint32_t); ;
+	__IOM uint32_t rtc_system_cnt_31_0;
+	__IOM uint32_t rtc_system_cnt_63_32;
+	__IOM uint32_t rtc_tml_sd_disable_bypass;
+	__IOM uint32_t rtc_stall_cnt;
+	__IOM uint32_t rtc_stall;
+	__IOM uint32_t rtc_pwr_chk_cnt;
+	__IOM uint32_t rtc_pwr_chk_dbg_sel;
+	RESERVED(2[1], uint32_t);
+	__IOM uint32_t rtc_pwr_chk_dbg;
+	__IOM uint32_t rtc_pwr_ctl_dbg_sel;
+	__IOM uint32_t rtc_pwr_ctl_dbg;
+	__IOM uint32_t rtc_ao_power_off_req;
+	__IOM uint32_t rtc_wakeupkey_int_status;
+	RESERVED(3[9], uint32_t);
+}RTC_TypeDef;
+#define RTC_REGS                    ((RTC_TypeDef *)RF_GRP_AO(35, 0))
 /********************  Bit definition for STC register  ********************/
 /*  STC register */
 #define _STC_BASE                    RF_GRP_AO(23, 0)

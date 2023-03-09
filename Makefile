@@ -7,6 +7,7 @@ OPENAMP  ?= 0
 LVGL     ?= 0
 CMSISDSP ?= 0
 CM_BACKTRACE ?= 1
+USER_APPLICATION ?= 1
 
 #for cunit test
 CUNIT ?= 0
@@ -100,29 +101,38 @@ sinclude makefile.openamp
 sinclude makefile.lvgl
 sinclude makefile.cmsisdsp
 
+ifeq ($(USER_APPLICATION),1)
+ifeq ($(FREERTOS),1)
+CCFLAGS += -DFREERTOS
+ifeq ($(CHIP),SP7350)
+DIRS += $(TOP)/application/power_manager
+CCFLAGS += -I$(TOP)/application/power_manager
+endif
+endif
+DIRS += $(TOP)/application
+else
 # example
 ifeq ($(FREERTOS),1)
 CCFLAGS += -DFREERTOS
 #freertos C++ example
-CXXSOURCES += $(TOP)/libraries/examples/rtos/example.cpp
+CXXSOURCES += $(TOP)/application/examples/rtos/example.cpp
 else
 #arduino C++ example
 ifeq ($(LVGL),1)
-DIRS += $(TOP)/libraries/examples/lvgl
+DIRS += $(TOP)/application/examples/lvgl
 else ifeq ($(OPENAMP),1)
-DIRS += $(TOP)/libraries/examples/VirtIOSerial
+DIRS += $(TOP)/application/examples/VirtIOSerial
 else
-DIRS += $(TOP)/libraries/examples/timer
+DIRS += $(TOP)/application/examples/timer
 endif
-#DIRS += $(TOP)/libraries/examples/i2s
-#DIRS += $(TOP)/libraries/examples/uart
-#DIRS += $(TOP)/libraries/examples/spi
-#DIRS += $(TOP)/libraries/examples/i2c
-#DIRS += $(TOP)/libraries/examples/gpio
-#DIRS += $(TOP)/libraries/examples/pwm
-#DIRS += $(TOP)/libraries/examples/exti
-#DIRS = $(TOP)/cores/arduino/sunplus
-#DIRS += $(TOP)/libraries/DriverWrapper/src
+#DIRS += $(TOP)/application/examples/i2s
+#DIRS += $(TOP)/application/examples/uart
+#DIRS += $(TOP)/application/examples/spi
+#DIRS += $(TOP)/application/examples/i2c
+#DIRS += $(TOP)/application/examples/gpio
+#DIRS += $(TOP)/application/examples/pwm
+#DIRS += $(TOP)/application/examples/exti
+endif
 endif
 
 CSOURCES += $(wildcard $(patsubst %,%/*.c, $(DIRS) ))
