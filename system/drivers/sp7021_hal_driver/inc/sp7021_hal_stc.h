@@ -24,7 +24,7 @@ uint64_t HAL_STC_GetCounter(STC_HandleTypeDef *Hstc);
 uint32_t HAL_STC_GetPrescaler(STC_HandleTypeDef *Hstc);
 uint32_t HAL_STC_GetExtDiv(STC_HandleTypeDef *Hstc);
 uint32_t HAL_STC_GetFreq(STC_HandleTypeDef *Hstc);
-
+uint32_t HAL_STC_GetClk(STC_TypeDef *STC_Instance);
 
 #ifdef __cplusplus
 }

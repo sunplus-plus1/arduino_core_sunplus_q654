@@ -9,7 +9,8 @@
 #include "sp645_cm4.h"
 #include "sp64xx.h"
 
-#define MAX_TICKS 0xFFFFFUL
+#define WDG_MAX_TICKS 		0xFFFF0UL
+#define IS_WDG_TICKS(X)		((X) <= WDG_MAX_TICKS)
 
 /**
   * @brief  IWDG Handle Structure definition
@@ -17,11 +18,9 @@
 typedef struct
 {
 	WDG_TypeDef		*Instance;	/*!< Register base address       */
-	uint32_t		StcFreq;	/*!< Corresponding STC frequency */
 	uint8_t			BitShift;	/*!< Enable the RBUS/WDG Reset   */
 	uint8_t			IrqMode;	/*!< count to 0 entry irq handle */
 	IRQHandler_t		IrqHandle;
-	STC_HandleTypeDef 	Stc;		/*!< Corresponding STC           */
 } WDG_HandleTypeDef;
 
 typedef void (*WdgCallbackFunc)(void);

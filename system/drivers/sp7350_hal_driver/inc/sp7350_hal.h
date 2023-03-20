@@ -28,6 +28,8 @@ extern HAL_TickFreqTypeDef uwTickFreq;
 HAL_StatusTypeDef HAL_Init(void);
 HAL_StatusTypeDef HAL_DeInit(void);
 HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx);
+HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq);
+
 void HAL_IncTick(void);
 void HAL_Delay(uint32_t Delay);
 uint32_t HAL_GetTick(void);
@@ -44,6 +46,7 @@ void HAL_PINMUX_Cfg(PINMUX_Type id, uint32_t pin);
 void HAL_Module_Clock_enable(MODULE_ID_Type id, uint32_t enable);
 void HAL_Module_Clock_gate(MODULE_ID_Type id, uint32_t enable);
 void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable);
+
 
 
 #ifdef __cplusplus

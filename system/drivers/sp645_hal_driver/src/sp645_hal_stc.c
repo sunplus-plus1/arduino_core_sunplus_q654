@@ -43,6 +43,7 @@ HAL_StatusTypeDef HAL_STC_Init(STC_HandleTypeDef *Hstc)
 		return HAL_ERROR;
 
 	assert_param(IS_STC_INSTANCE(Hstc->Instance));
+	assert_param(IS_STC_PRESCALE_VAL(Hstc->Prescaler));
 
 	HAL_STC_EnableSTCClock(Hstc);
 	memset(Hstc->Instance, 0, sizeof(STC_TypeDef));
@@ -67,6 +68,7 @@ HAL_StatusTypeDef HAL_STC_SetPrescaler(STC_HandleTypeDef *Hstc, uint32_t u32Pres
 	if (Hstc == NULL)
 		return HAL_ERROR;
 	assert_param(IS_STC_INSTANCE(Hstc->Instance));
+	assert_param(IS_STC_PRESCALE_VAL(Hstc->Prescaler));
 
 	MODIFY_REG(Hstc->Instance->stc_prescale_val, STC_PRESCALER, Hstc->Prescaler<<STC_PRESCALER_Pos);
 	Hstc->Prescaler = u32Prescaler;
@@ -121,13 +123,14 @@ uint32_t HAL_STC_GetClk(STC_TypeDef *STC_Instance)
 	if (!IS_STC_INSTANCE(STC_Instance))
 		return 0;
 
-	if ((STC_Instance->stc_prescale_val&STC_TRIG_SRC_Msk)>>STC_TRIG_SRC_Pos == 0){
-		uFreq = HSI_VALUE/(STC_Instance->stc_prescale_val&STC_PRESCALER_Msk+1);
-	}	
+	if ((STC_Instance->stc_prescale_val & STC_TRIG_SRC_Msk) >> STC_TRIG_SRC_Pos == 0){
+		uFreq = HSI_VALUE / ((STC_Instance->stc_prescale_val & STC_PRESCALER_Msk) + 1);
+	}
 	else{
-		uFreq = HSI_VALUE/(STC_Instance->stc_config&STC_EXT_DIV_Msk +1);
-		uFreq = uFreq/(STC_Instance->stc_prescale_val&STC_PRESCALER_Msk+1);
-	}	
+
+		uFreq = HSE_VALUE / (((STC_Instance->stc_config & STC_EXT_DIV_Msk) + 1) * 2);
+		uFreq = uFreq / ((STC_Instance->stc_prescale_val & STC_PRESCALER_Msk) + 1);
+	}
 
 	return uFreq;
 }
@@ -144,22 +147,6 @@ uint32_t HAL_STC_GetExtDiv(STC_HandleTypeDef *Hstc)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
-
-
-
-
-

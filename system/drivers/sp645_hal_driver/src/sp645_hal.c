@@ -1,4 +1,3 @@
-
 #include "irq_ctrl.h"
 #include "sp645_cm4.h"
 #include "sp645_hal_def.h"
@@ -6,6 +5,24 @@
 #include "cmsis_compiler.h"
 #include "sp645_hal_stc.h"
 
+/*
+ * NOTE to develop:
+ * 1.STC Group of Q645 CM4:
+ *	 -----------------------------------------------------------------------
+ *	|	|STC	 	|STC_AV0	|STC_AV1	|STC_AV2	|
+ *	|-------|---------------|---------------|---------------|---------------|
+ *	|STC	|STC0		|STC1	  	|STC2	   	|STC3		|
+ *	|-------|---------------|---------------|---------------|---------------|
+ *	|TIM	|TIM0/1		|TIM2/3		|TIM4/5		|TIM6/7		|
+ *	|-------|---------------|---------------|---------------|---------------|
+ *	|WDG	|WDG0		|WDG1		|WDG2		|	-	|
+ *	 -----------------------------------------------------------------------
+ * 2.only use timer2 and timer3 of every STC
+ *	e.x. TIM0 is timer2 of STC
+ *	TIM1 is timer3 of STC
+ *	TIM2 is timer2 of STC_AV0
+ *	TIM3 is timer3 of STC_AV0 and so on....
+ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +35,44 @@ HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;//1MHz
 
 
 STC_HandleTypeDef SysStandardTimeClk;
+
+#ifdef  USE_FULL_ASSERT
+void assert_failed(unsigned char *file, unsigned int line)
+{
+	printf("Wrong parameters value file %s on line %d\n", file, line);
+	while(1);
+}
+#endif
+
+HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq)
+{
+	STC_HandleTypeDef stc;
+	MODULE_ID_Type id;
+	uint32_t u32Sysclk = HAL_PLL_GetSystemFreq();
+
+	if (STCx == STC0) {
+		id = STC_0;
+	}
+	else if (STCx == STC1) {
+		id = STC_AV0;
+	}
+	else if (STCx == STC2) {
+		id = STC_AV1;
+	}
+	else if (STCx == STC3) {
+		id = STC_AV2;
+	}
+
+	HAL_Module_Clock_enable(id , 1);
+	HAL_Module_Clock_gate(id , 1);
+	HAL_Module_Reset(id , 0);
+
+	stc.Instance = STCx;
+	stc.ClockSource = 0; //sel system clk
+	stc.Prescaler = u32Sysclk / u32Freq - 1;
+
+	HAL_STC_Init(&stc);
+}
 
 HAL_StatusTypeDef HAL_Init(void)
 {

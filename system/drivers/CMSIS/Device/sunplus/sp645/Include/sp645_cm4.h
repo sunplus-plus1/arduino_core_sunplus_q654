@@ -833,7 +833,7 @@ typedef struct {
 /****************** WDG Instances : All supported instances *******************/
 #define IS_WDG_INSTANCE(INSTANCE)    (((INSTANCE) == WDG0)   || \
                                       ((INSTANCE) == WDG1)   || \
-                                      ((INSTANCE) == WDG2)
+                                      ((INSTANCE) == WDG2))
 
 /******************************************************************************/
 /*                                                                            */

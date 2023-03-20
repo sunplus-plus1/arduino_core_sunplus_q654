@@ -45,46 +45,6 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
   return (obj);
 }
 
-void _HAL_TIM_Set_TimerClk(TIM_HandleTypeDef *htim,uint32_t enable)
-{
-	MODULE_ID_Type mode_id = STC_0;
-	switch((uint32_t)htim->Instance)
-	{
-		case (uint32_t)TIM0 ... (uint32_t)TIM1:
-			mode_id = STC_0;
-			break;
-		case (uint32_t)TIM2 ... (uint32_t)TIM3:
-			mode_id = STC_AV0;
-			break;
-		case (uint32_t)TIM4 ... (uint32_t)TIM5:
-			mode_id = STC_AV1;
-			break;
-		case (uint32_t)TIM6 ... (uint32_t)TIM7:
-			mode_id = STC_AV2;
-			break;
-		default:
-			break;
-	}
-	HAL_Module_Clock_enable(mode_id, enable);
-	HAL_Module_Clock_gate(mode_id, enable);
-	HAL_Module_Reset(mode_id, !enable);
-}
-
-void HAL_TIM_EnableTimerClock(TIM_HandleTypeDef *htim)
-{
-	assert_param(htim);
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	_HAL_TIM_Set_TimerClk(htim,1);
-}
-
-/*The STC include the 2 timers, so you disable the timer to diable the STC moudle*/
-void HAL_TIM_DisableTimerClock(TIM_HandleTypeDef *htim)
-{
-	assert_param(htim);
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	_HAL_TIM_Set_TimerClk(htim,0);
-}
-
 void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 {
 	MODIFY_REG(TIMx->control, TIMER_TRIG_SRC, Structure->ClockSource<<TIMER_TRIG_SRC_Pos);
@@ -142,7 +102,7 @@ HAL_StatusTypeDef HAL_TIM_DeInit(TIM_HandleTypeDef *htim)
 		return HAL_ERROR;
 
 	htim->State = HAL_TIM_STATE_BUSY;
-	
+
   	/* Disable the TIM Peripheral Clock */
   	MODIFY_REG(htim->Instance->control, TIMER_GO, 0<<TIMER_GO_Pos);
 
@@ -220,7 +180,7 @@ HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Pres
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
 	htim->Instance->prescale_val = u32Prescaler;
 	htim->Init.Prescaler = u32Prescaler;
 	return HAL_OK;
@@ -236,7 +196,7 @@ uint32_t HAL_TIM_GetPrescaler(TIM_HandleTypeDef *htim)
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
  	return htim->Instance->prescale_val;
 }
 
@@ -250,7 +210,7 @@ HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count)
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
 	htim->Instance->counter_val = u32Count;
 	htim->Instance->reload_val = u32Count;
 	return HAL_OK;
@@ -266,7 +226,7 @@ uint32_t HAL_TIM_GetCount(TIM_HandleTypeDef *htim)
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
 	return htim->Instance->counter_val;
 }
 
@@ -281,13 +241,13 @@ uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim)
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
 	return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
 }
 
 uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 {
-	TIM_TypeDef *hMtim = 0;
+	TIM_TypeDef *hMtim = htim->Instance;
 	uint32_t u32Feq = 0;
 	uint32_t u32Src = 0;
 	uint32_t u32Prescaler = 0;
@@ -301,7 +261,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	if(!IS_TIM_INSTANCE(htim->Instance))
 		return HAL_ERROR;
-	
+
 	if(HAL_TIM_GetCLKSrc(htim) == CLK_SLAVE_WRAP_SRC) /* time0 used timer1 clk src,get timer1's freq */
 	{
 		switch ((uint32_t)htim->Instance)
@@ -323,7 +283,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 		}
 	}
 
-	u32Src = READ_BIT(hMtim->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos;
+	u32Src = READ_BIT(hMtim->control, TIMER_TRIG_SRC) >> TIMER_TRIG_SRC_Pos;
 	u32Prescaler = hMtim->prescale_val;
 	u32Counter = hMtim->counter_val;
 
@@ -332,20 +292,21 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			u32Feq = SystemCoreClock;
 			break;
 		case CLK_STC_SRC:
-		   u32Feq = HAL_STC_GetClk((STC_TypeDef *)((uint32_t)hMtim/0x80*0x80));/*get stc base address by timer address */
+		  	/*get stc base address by timer address */
+		  	u32Feq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)hMtim / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));
 			break;
 		case CLK_RTC_SRC:
 			break;
 		case CLK_EXT_SRC:
-			u32Feq = SystemCoreClock/2;
+			u32Feq = HSE_VALUE/2;
 			break;
 		default:
 			u32Feq = SystemCoreClock;
 			break;
 	}
 
-	u32Feq = u32Feq/(u32Prescaler+1);
-	if ((READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos) == CLK_SLAVE_WRAP_SRC)
+	u32Feq = u32Feq / (u32Prescaler + 1);
+	if (HAL_TIM_GetCLKSrc(htim) == CLK_SLAVE_WRAP_SRC)
 	{
 		if(u32Counter != 0)
 			u32Feq /= u32Counter;

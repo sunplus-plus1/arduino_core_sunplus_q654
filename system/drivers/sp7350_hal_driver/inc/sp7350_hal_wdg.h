@@ -8,7 +8,15 @@
 #include "sp7350_cm4.h"
 #include "sp7350xx.h"
 
-#define STC_FREQ 90000
+#define WDG_MAX_TICKS 		0xFFFFFFFFUL
+#define IS_WDG_TICKS(X)		((X) <= WDG_MAX_TICKS)
+
+typedef enum
+{
+	WDG_INTR	= 0x0U,
+	WDG_RST		= 0x2U,
+	WDG_INTR_RST	= 0x3U
+} HAL_WDG_ModeTypeDef;
 
 /**
   * @brief  IWDG Handle Structure definition
@@ -16,11 +24,10 @@
 typedef struct
 {
 	WDG_TypeDef		*Instance;	/*!< Register base address	 */
-	uint32_t		StcFreq;	/*!< Corresponding STC frequency */
 	uint8_t 		BitShift;	/*!< Enable the RBUS/WDG Reset	 */
-	uint8_t 		IrqMode;	/*!< count to 0 entry irq handle */
+	HAL_WDG_ModeTypeDef 	IrqMode;	/*!<  */
 	IRQHandler_t		IrqHandle;
-	STC_HandleTypeDef	Stc;		/*!< Corresponding STC		 */
+	uint32_t		IrqTicks;
 } WDG_HandleTypeDef;
 
 typedef void (*WdgCallbackFunc)(void);

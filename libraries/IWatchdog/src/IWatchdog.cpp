@@ -14,6 +14,10 @@ static void WDG1_IRQHandler(void);
 static void WDG2_IRQHandler(void);
 #endif
 
+#if defined(WDG3_BASE)
+static void WDG3_IRQHandler(void);
+#endif
+
 static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance);
 
 // Initialize static variable
@@ -30,8 +34,15 @@ IWatchdogClass::IWatchdogClass(WDG_TypeDef *instance)
 
 	IWatchdog_Handle[index] = &_watchdogObj;
 	_watchdogObj.handle.Instance = instance;
+
+#ifdef SP7350
+	//_watchdogObj.handle.IrqMode = WDG_RST;
+	_watchdogObj.handle.IrqMode = WDG_INTR_RST;
+
+	_watchdogObj.handle.IrqTicks = 1500;//us
+#else
 	_watchdogObj.handle.IrqMode = 0;
-	_watchdogObj.handle.StcFreq = 100000;
+#endif
 	_watchdogObj.__this = (void *)this;
 
 	switch(index)
@@ -54,79 +65,112 @@ IWatchdogClass::IWatchdogClass(WDG_TypeDef *instance)
 			break;
 #endif
 
+#if defined(WDG3_BASE)
+		case WDG3_INDEX:
+			_watchdogObj.handle.IrqHandle = &WDG3_IRQHandler;
+			break;
+#endif
+
 	}
 
 	_watchdogObj.pfcallback = NULL;
-	HAL_WDG_Init(&_watchdogObj.handle);
 
+	HAL_WDG_Init(&_watchdogObj.handle);
 }
 
 
 /**
   * @brief  Enable IWDG, must be called once
   * @param  timeout: value in microseconds
-  * @param  window: optional value in microseconds
-  *         Default: IWDG_TIMEOUT_MAX
+  * @param  format: The unit of the timeout value
   * @retval None
   */
-void IWatchdogClass::begin(uint32_t timeout, uint32_t window)
+void IWatchdogClass::begin(uint32_t timeout, WatchdogFormat_t format)
 {
 	watchdog_index_t index = get_watchdog_index(_watchdogObj.handle.Instance);
-
-	UNUSED(window);
 
 	if (!IS_IWDG_TIMEOUT(timeout)) {
 		return;
 	}
 
 	_watchdogObj.reload = timeout;
-
-	//HAL_WDG_Init(&_watchdogObj.handle);
-
+	_watchdogObj.format = format;
 	_enabled = true;
 
-	set(timeout, 0);
-
+	set(timeout, format);
 	HAL_WDG_Start(&_watchdogObj.handle);
 }
 
 /**
   * @brief  Set the timeout and window values
   * @param  timeout: value in microseconds
-  * @param  window: optional value in microseconds
-  *         Default: IWDG_TIMEOUT_MAX
+  * @param  format: the unit of timeout
   * @retval None
   */
-void IWatchdogClass::set(uint32_t timeout, uint32_t window)
+void IWatchdogClass::set(uint32_t timeout, WatchdogFormat_t format)
 {
-	UNUSED(window);
+	uint32_t u32Count_val = 0;
+	uint32_t u32Freq = 0;
 
 	if ((isEnabled()) && (!IS_IWDG_TIMEOUT(timeout))) {
 		return;
 	}
 
-	HAL_WDG_SetTimeout(&_watchdogObj.handle, timeout);
+	u32Freq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)_watchdogObj.handle.Instance / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));
 
-	/* test set timeout PASS */
-	timeout = HAL_WDG_GetTimeout(&_watchdogObj.handle);
+	switch(format){
+		case WDG_MICROSEC_FMT:
+			u32Count_val = timeout * (u32Freq / 1000000);
+			break;
+		case WDG_MILLISEC_FMT:
+			u32Count_val = timeout * (u32Freq / 1000);
+			break;
+		case WDG_SEC_FMT:
+			u32Count_val = timeout * u32Freq;
+			break;
+		case WDG_TICK_FMT:
+		default:
+			u32Count_val = timeout;
+			break;
+	}
+
+	HAL_WDG_SetTimeout(&_watchdogObj.handle, u32Count_val);
 }
 
 /**
   * @brief  Get the current timeout and window values
   * @param  timeout: pointer to the get the value in microseconds
-  * @param  window: optional pointer to the get the value in microseconds
   * @retval None
   */
-void IWatchdogClass::get(uint32_t *timeout, uint32_t *window)
+void IWatchdogClass::get(uint32_t *timeout, WatchdogFormat_t format)
 {
-	UNUSED(window);
+	uint32_t u32Count_val = 0;
+	uint32_t u32Freq = 0;
 
 	if (timeout == NULL) {
 		return;
 	}
 
-	// Timeout given in millisecond
-	*timeout = HAL_WDG_GetTimeout(&_watchdogObj.handle);
+	u32Freq = HAL_STC_GetClk((STC_TypeDef *)(((uint32_t)_watchdogObj.handle.Instance / _REG_GROUP_SIZE) * _REG_GROUP_SIZE));
+
+	u32Count_val = HAL_WDG_GetTimeout(&_watchdogObj.handle);
+
+	switch(format){
+		case WDG_MICROSEC_FMT:
+			*timeout = u32Count_val / (u32Freq / 1000000);
+			break;
+		case WDG_MILLISEC_FMT:
+			*timeout = u32Count_val / (u32Freq / 1000);
+			break;
+		case WDG_SEC_FMT:
+			*timeout = u32Count_val / u32Freq;
+			break;
+		case WDG_TICK_FMT:
+		default:
+			*timeout = u32Count_val;
+			break;
+	}
+
 }
 
 /**
@@ -136,7 +180,7 @@ void IWatchdogClass::get(uint32_t *timeout, uint32_t *window)
 void IWatchdogClass::reload(void)
 {
 	if (isEnabled()) {
-		HAL_WDG_SetTimeout(&_watchdogObj.handle, _watchdogObj.reload);
+		set(_watchdogObj.reload, _watchdogObj.format);
 		HAL_WDG_Start(&_watchdogObj.handle);
 	}
 }
@@ -177,7 +221,6 @@ void IWatchdogClass:: detachInterrupt()
 
 	HAL_WDG_Stop(&_watchdogObj.handle);
 	_watchdogObj.pfcallback = NULL;
-
 }
 
 #if defined(WDG0_BASE)
@@ -216,6 +259,18 @@ static void WDG2_IRQHandler(void)
 }
 #endif
 
+#if defined(WDG3_BASE)
+static void WDG3_IRQHandler(void)
+{
+	if ((IWatchdog_Handle[WDG3_INDEX] != NULL)
+		&& (IWatchdog_Handle[WDG3_INDEX]->pfcallback))
+	{
+		IWatchdog_Handle[WDG3_INDEX]->pfcallback();
+		HAL_WDG_IRQHandler(&IWatchdog_Handle[WDG3_INDEX]->handle);
+	}
+}
+#endif
+
 static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance)
 {
 	watchdog_index_t index = UNKNOWN_WDG;
@@ -237,5 +292,12 @@ static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance)
 		index = WDG2_INDEX;
 	}
 #endif
+
+#if defined(WDG3_BASE)
+	if (instance == WDG3) {
+		index = WDG3_INDEX;
+	}
+#endif
+
 	return index;
 }

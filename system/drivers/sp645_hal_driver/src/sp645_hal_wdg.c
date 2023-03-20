@@ -69,62 +69,20 @@ static uint32_t _wdg_OverTimeOutBoundary(WDG_HandleTypeDef *hwdg, uint32_t timeo
 {
 	uint32_t boundary;
 
-	assert_param(hwdg->StcFreq);
+	//assert_param(hwdg->StcFreq);
 
-	boundary = MAX_TICKS * 1000 / hwdg->StcFreq;
+	boundary = 0xffff0;
 
 	return (timeout < boundary) ? 1UL : 0UL;
 }
 
-static int _wdg_StcInit(WDG_HandleTypeDef *hwdg, STC_TypeDef *stcx)
-{
-	assert_param(hwdg);
-	assert_param(stcx);
-
-	HAL_StatusTypeDef ret = HAL_OK;
-	uint32_t freq;
-
-	//printf("\n[DEBUG] STC freq %d before init\n", _wdg_GetStcFreq(stcx));
-
-	/* TODO: Temporary use EXT_CLK(27M)
-	 * Method of cal STC freq:
-	 * TEMP = ext_clk / (2 * (ext_div + 1))
-	 * STC_FREQ = TEMP / (prescaler + 1)
-	 * or
-	 * STC_FREQ = sys_clk / (prescaler + 1).
-	 */
-	hwdg->Stc.Instance = stcx;
-	hwdg->Stc.ClockSource = 1;
-	hwdg->Stc.ExtDiv = 0;
-
-	if (hwdg->Stc.ClockSource == 1)
-	{
-		freq = HSE_VALUE / ((hwdg->Stc.ExtDiv + 1) * 2);
-	}
-	else
-	{
-		freq = HAL_PLL_GetSystemFreq();
-	}
-
-	if(hwdg->StcFreq == 0)
-		return 1;
-
-	hwdg->Stc.Prescaler = freq / hwdg->StcFreq - 1;
-
-	ret = HAL_STC_Init(&hwdg->Stc);
-	if(ret != HAL_OK)
-		return 1;
-
-	return 0;
-}
-
 void HAL_WDG_IRQHandler(void *arg)
 {
-	assert_param(arg);
+	//assert_param(arg);
 
 	WDG_HandleTypeDef *hwdg = (WDG_HandleTypeDef *)arg;
 
-	assert_param(IS_STC_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
 	_wdg_clearflag(hwdg->Instance);
 
@@ -138,40 +96,31 @@ void HAL_WDG_IRQHandler(void *arg)
 
 }
 
-void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t val_ms)
+void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t val)
 {
-	assert_param(IS_STC_INSTANCE(hwdg->Instance));
-	assert_param(_wdg_OverTimeOutBoundary(hwdg, val_ms));
-
-	uint32_t temp;
-
-	temp = val_ms * hwdg->StcFreq / 1000;
-	temp = temp >> 4;
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_TICKS(val));
 
 	_wdg_stop(hwdg->Instance);
 	_wdg_unlock(hwdg->Instance);
-	_wdg_setcnt(hwdg->Instance, temp);
+	_wdg_setcnt(hwdg->Instance, val >> 4);
 	_wdg_lock(hwdg->Instance);
-
 }
 
 uint32_t HAL_WDG_GetTimeout(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(IS_STC_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
 	uint32_t temp = 0;
 
-	temp = _wdg_getcnt(hwdg->Instance);
-
-	temp = temp << 4;
-	temp = temp * 1000 / hwdg->StcFreq ;
+	temp = _wdg_getcnt(hwdg->Instance) << 4;
 
 	return temp;
 }
 
 void HAL_WDG_Stop(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(IS_STC_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
 	_wdg_stop(hwdg->Instance);
 	_wdg_cntmax(hwdg->Instance);
@@ -180,11 +129,10 @@ void HAL_WDG_Stop(WDG_HandleTypeDef *hwdg)
 
 void HAL_WDG_Start(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(IS_STC_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
 	_wdg_start(hwdg->Instance);
 }
-
 
 HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 {
@@ -198,44 +146,27 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 
 	if (hwdg->Instance == WDG0)
 	{
-		id = STC_0;
 		irq = STC_TIMER_W_IRQn;
-		stcx = STC0;
 		hwdg->BitShift = 10;
 	}
 	else if (hwdg->Instance == WDG1)
 	{
-		id = STC_AV0;
 		irq = STC_AV0_TIMER_W_IRQn;
-		stcx = STC1;
 		hwdg->BitShift = 12;
 	}
 	else if (hwdg->Instance == WDG2)
 	{
-		id = STC_AV1;
 		irq = STC_AV1_TIMER_W_IRQn;
-		stcx = STC2;
 		hwdg->BitShift = 13;
 	}
-
-	/* Enable clock */
-	HAL_Module_Clock_enable(id , 1);
-	HAL_Module_Clock_gate(id , 1);
-	HAL_Module_Reset(id , 0);
-
-	ret = _wdg_StcInit(hwdg, stcx);
-	if(ret)
-		return HAL_ERROR;
-
-	//printf("\n[DEBUG] STC freq %d after init\n", _wdg_GetStcFreq(stcx));
 
 	_wdg_stop(hwdg->Instance);
 	_wdg_cntmax(hwdg->Instance);
 	_wdg_clearflag(hwdg->Instance);
 
 	/* Config irq */
-	IRQ_SetHandler(irq, hwdg->IrqHandle);
-	IRQ_Enable(irq);
+	//IRQ_SetHandler(irq, hwdg->IrqHandle);
+	//IRQ_Enable(irq);
 
 	/* Enable the RBUS/WDG to respond the system reset when watchdog timeout */
 	if (hwdg->IrqMode == 1)

@@ -13,16 +13,16 @@ extern "C" {
 #include "sp645_hal_conf.h"
 typedef enum {
 	CLK_SYS_SRC = 0,				 /* !< System clock is tiger source */
-	CLK_STC_SRC,					 /* !< Stand time clock is triger source */	
+	CLK_STC_SRC,					 /* !< Stand time clock is triger source */
 	CLK_RTC_SRC,					 /* !< Real time clock is triger source */
-	CLK_EXT_SRC,					 /* !< External clock is triger source */	
-	CLK_SLAVE_TRIG_SRC,				 /* !< The pairs clock is scaled  for triger source */	
+	CLK_EXT_SRC,					 /* !< External clock is triger source */
+	CLK_SLAVE_TRIG_SRC,				 /* !< The pairs clock is scaled  for triger source */
 	CLK_SLAVE_WRAP_SRC				 /* !< The pairs clock is triger source */
 }CLK_SRC;
 
 typedef enum {
 	ONE_SHOT_MODE = 0, 				/* !< The counter reaches 0, the timer is stop*/
-	REPEAT_MODE 					/* !< The counter reaches 0, the counter will be auto reload the counters */	
+	REPEAT_MODE 					/* !< The counter reaches 0, the counter will be auto reload the counters */
 
 }TIM_COUNTER_MODE;
 
@@ -100,20 +100,8 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim);
 
-
-
-
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-

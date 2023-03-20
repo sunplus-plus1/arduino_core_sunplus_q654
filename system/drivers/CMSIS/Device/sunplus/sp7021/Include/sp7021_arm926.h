@@ -971,6 +971,9 @@ typedef struct {
 #define WDG0_BASE RF_GRP(12, 12)
 #define WDG1_BASE RF_GRP(96, 12)
 
+#define _REG_GROUP_SIZE              (0x80)
+#define _OFFSET_BETWEEN_TIMERS       (4*4)
+
 /*TIMER0 & TIMER1 is a group*/
 #define TIM0_BASE RF_GRP(12, 16)
 #define TIM1_BASE RF_GRP(12, 20)

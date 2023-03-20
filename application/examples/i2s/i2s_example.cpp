@@ -286,10 +286,10 @@ void i2s_test_rx_sine(void)
 	I2S_HandleTypeDef hi2s2;
 
 	//HAL_I2S_Default_Init();
-	HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
+	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
 
 	hi2s0.Index = INDEX_I2S0;
-	hi2s0.Init.Mode = I2S_MODE_SLAVE_RX;
+	hi2s0.Init.Mode = I2S_MODE_MASTER_RX;
 	hi2s0.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s0.Init.AudioFreq = I2S_AUDIOFREQ_48K;
 

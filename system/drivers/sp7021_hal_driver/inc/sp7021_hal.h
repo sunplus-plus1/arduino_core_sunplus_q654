@@ -28,6 +28,8 @@ extern HAL_TickFreqTypeDef uwTickFreq;
 HAL_StatusTypeDef HAL_Init(void);
 HAL_StatusTypeDef HAL_DeInit(void);
 HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx);
+HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq);
+
 void HAL_IncTick(void);
 void HAL_Delay(uint32_t Delay);
 uint32_t HAL_GetTick(void);

@@ -729,9 +729,6 @@ HAL_StatusTypeDef HAL_I2S_DeInit(I2S_HandleTypeDef *hi2s)
 		return HAL_ERROR;
 	}
 
-	/* Check the parameters */
-	assert_param(IS_I2S_ALL_INSTANCE(hi2s->Instance));
-
 	hi2s->State = HAL_I2S_STATE_BUSY;
 
 	/* Disable the I2S Peripheral Clock */

@@ -15,11 +15,45 @@ extern "C" {
 __IO uint32_t uwTick = 0;
 HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;//1MHz
 
-
-
 STC_HandleTypeDef SysStandardTimeClk;
 
+#ifdef  USE_FULL_ASSERT
+void assert_failed(unsigned char *file, unsigned int line)
+{
+	printf("Wrong parameters value file %s on line %d\n", file, line);
+	while(1);
+}
+#endif
 
+HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq)
+{
+	STC_HandleTypeDef stc;
+	MODULE_ID_Type id;
+	uint32_t u32Sysclk = HAL_PLL_GetSystemFreq();
+
+	if (STCx == STC0) {
+		id = STC_0;
+	}
+	else if (STCx == STC1) {
+		id = STC_AV0;
+	}
+	else if (STCx == STC2) {
+		id = STC_AV1;
+	}
+	else if (STCx == STC3) {
+		id = STC_AV2;
+	}
+
+	HAL_Module_Clock_enable(id , 1);
+	HAL_Module_Clock_gate(id , 1);
+	HAL_Module_Reset(id , 0);
+
+	stc.Instance = STCx;
+	stc.ClockSource = 0; //sel system clk
+	stc.Prescaler = u32Sysclk / u32Freq - 1;
+
+	HAL_STC_Init(&stc);
+}
 
 HAL_StatusTypeDef HAL_Init(void)
 {

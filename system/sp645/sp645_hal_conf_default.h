@@ -1,11 +1,9 @@
-
 #ifndef __SP645_HAL_CONF_DEFAULT_H
 #define __SP645_HAL_CONF_DEFAULT_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif
-
 
 #define HAL_ETH_MODULE_DISABLED /* ETH module is also not intended to be used */
 #define HAL_GPIO_MODULE_ENABLED
@@ -75,6 +73,7 @@
 
 
 /* Exported macro ------------------------------------------------------------*/
+//#define USE_FULL_ASSERT
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  The assert_param macro is used for function's parameters check.
@@ -86,7 +85,7 @@
   */
   #define assert_param(expr) ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
 /* Exported functions ------------------------------------------------------- */
-  void assert_failed(uint8_t* file, uint32_t line);
+  void assert_failed(unsigned char *file, unsigned int line);
 #else
   #define assert_param(expr) ((void)0U)
 #endif /* USE_FULL_ASSERT */
@@ -96,14 +95,3 @@
 #endif
 
 #endif /* __SP645_HAL_CONF_DEFAULT_H */
-
-
-
-
-
-
-
-
-
-
-

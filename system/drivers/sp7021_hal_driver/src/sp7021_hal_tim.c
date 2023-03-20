@@ -19,13 +19,13 @@ static IRQn_Type HAL_TIM_GetIRQ(TIM_TypeDef *tim)
 		case  (uint32_t)TIM0_BASE:
 			IRQn = STC_TIMER2_IRQn;
 			break;
-		#endif	
+		#endif
 
 		#ifdef TIM1_BASE
 		case  (uint32_t)TIM1_BASE:
 			IRQn = STC_TIMER3_IRQn;
 			break;
-		#endif	
+		#endif
 
 		#ifdef TIM2_BASE
 		case  (uint32_t)TIM2_BASE:
@@ -77,103 +77,10 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
   return (obj);
 }
 
-void HAL_TIM_EnableTimerClock(TIM_HandleTypeDef *htim)
-{
-
-#ifdef TIM0_BASE || TIM1_BASE
-	if((htim->Instance == TIM0) || (htim->Instance == TIM1))
-	{
-		HAL_Module_Clock_enable(STC0, 1);
-		HAL_Module_Clock_gate(STC0, 1);
-		HAL_Module_Reset(STC0, 1);
-			
-	}
-#endif
-
-#ifdef TIM2_BASE || TIM3_BASE
-	if((htim->Instance == TIM2) || (htim->Instance == TIM3))
-	{
-		HAL_Module_Clock_enable(STC_AV0, 1);
-		HAL_Module_Clock_gate(STC_AV0, 1);
-		HAL_Module_Reset(STC_AV0, 1);
-			
-	}
-#endif
-
-#ifdef TIM4_BASE || TIM5_BASE
-	if((htim->Instance == TIM4) || (htim->Instance == TIM5))
-	{
-		HAL_Module_Clock_enable(STC_AV1, 1);
-		HAL_Module_Clock_gate(STC_AV1, 1);
-		HAL_Module_Reset(STC_AV1, 1);
-			
-	}
-#endif
-
-#ifdef TIM6_BASE || TIM7_BASE
-	if((htim->Instance == TIM6) || (htim->Instance == TIM7))
-	{
-		HAL_Module_Clock_enable(STC_AV2, 1);
-		HAL_Module_Clock_gate(STC_AV2, 1);
-		HAL_Module_Reset(STC_AV2, 1);
-			
-	}
-#endif
-
-}
-
-
-void HAL_TIM_DisableTimerClock(TIM_HandleTypeDef *htim)
-{
-
-#ifdef TIM0_BASE || TIM1_BASE
-	if((htim->Instance == TIM0) || (htim->Instance == TIM1))
-	{
-		HAL_Module_Clock_enable(STC0, 0);
-		HAL_Module_Clock_gate(STC0, 0);
-		HAL_Module_Reset(STC0, 0);
-			
-	}
-#endif
-
-#ifdef TIM2_BASE || TIM3_BASE
-	if((htim->Instance == TIM2) || (htim->Instance == TIM3))
-	{
-		HAL_Module_Clock_enable(STC_AV0, 0);
-		HAL_Module_Clock_gate(STC_AV0, 0);
-		HAL_Module_Reset(STC_AV0, 0);
-			
-	}
-#endif
-
-#ifdef TIM4_BASE || TIM5_BASE
-	if((htim->Instance == TIM4) || (htim->Instance == TIM5))
-	{
-		HAL_Module_Clock_enable(STC_AV1, 0);
-		HAL_Module_Clock_gate(STC_AV1, 0);
-		HAL_Module_Reset(STC_AV1, 0);
-			
-	}
-#endif
-
-#ifdef TIM6_BASE || TIM7_BASE
-	if((htim->Instance == TIM6) || (htim->Instance == TIM7))
-	{
-		HAL_Module_Clock_enable(STC_AV2, 0);
-		HAL_Module_Clock_gate(STC_AV2, 0);
-		HAL_Module_Reset(STC_AV2, 0);
-			
-	}
-#endif
-
-}
-
-
-
 HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
-		
+
 	if (htim == NULL)
   	{
     	return HAL_ERROR;
@@ -194,10 +101,10 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 	htim->Instance->reload_val = 0;
 	htim->Instance->counter_val = 0;
 	TIM_SetConfig(htim->Instance, &htim->Init);
-	
+
 	/* Initialize the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
-	
+
 	return HAL_OK;
 }
 
@@ -228,7 +135,7 @@ void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload<<TIMER_RPT_pos);
 	TIMx->counter_val = Structure->Counter;
 	TIMx->reload_val = Structure->ReloadCounter;
-	
+
 }
 
 
@@ -262,7 +169,7 @@ HAL_StatusTypeDef HAL_TIM_Stop(TIM_HandleTypeDef *htim)
 
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
-	
+
 
 	MODIFY_REG(htim->Instance->control, TIMER_GO, 0<<TIMER_GO_Pos);
 
@@ -279,7 +186,7 @@ HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Pres
 	htim->Instance->prescale_val = u32Prescaler;
 	htim->Init.Prescaler = u32Prescaler;
 	return HAL_OK;
-	
+
 }
 
 uint32_t HAL_TIM_GetPrescaler(TIM_HandleTypeDef *htim)
@@ -311,7 +218,7 @@ uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim)
 	uint32_t u32Src = 0;
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
-	
+
 }
 
 uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
@@ -321,10 +228,10 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 	uint32_t u32Src = 0;
 	uint32_t u32Prescaler = 0;
 	uint32_t u32Counter = 0;
-		
+
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	switch((uint32_t)htim->Instance){
-#ifdef TIM0_BASE || TIM1_BASE	
+#ifdef TIM0_BASE || TIM1_BASE
 		case TIM0_BASE:
 			hMtim = TIM1;
 			break;
@@ -363,7 +270,7 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			break;
 	}
 
-	
+
 	u32Src = READ_BIT(hMtim->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos;
 	u32Prescaler = hMtim->prescale_val;
 	u32Counter = hMtim->counter_val;
@@ -384,20 +291,20 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)
 			break;
 
 	}
-	
+
 	u32Feq = u32Feq/(u32Prescaler+1);
 	if ((READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos)
 		==CLK_SLAVE_WRAP_SRC){
 		if(u32Counter != 0)
 			u32Feq /= u32Counter;
-	}	
+	}
 	return u32Feq;
 }
 
 HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
-		
+
 	if (htim == NULL)
   	{
     	return HAL_ERROR;
@@ -415,7 +322,7 @@ HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim)
 HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
-		
+
 	if (htim == NULL)
 	{
 		return HAL_ERROR;
@@ -434,4 +341,3 @@ HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim)
 #ifdef __cplusplus
 }
 #endif
-

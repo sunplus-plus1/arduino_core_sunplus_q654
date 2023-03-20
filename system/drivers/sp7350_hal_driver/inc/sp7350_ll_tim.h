@@ -80,12 +80,12 @@ __STATIC_INLINE uint32_t LL_TIM_GetClockSource(TIM_TypeDef *TIMx)
 
 __STATIC_INLINE void LL_TIM_SetPrescaler(TIM_TypeDef *TIMx, uint32_t Prescaler)
 {
-   	WRITE_REG(TIMx->prescale_val, Prescaler);
+   	/* Nothing to do */
 }
 
 __STATIC_INLINE uint32_t LL_TIM_GetPrescaler(TIM_TypeDef *TIMx)
 {
-  	return (uint32_t)(READ_REG(TIMx->prescale_val));
+  	return 0;
 }
 
 __STATIC_INLINE void LL_TIM_SetAutoReload(TIM_TypeDef *TIMx, uint32_t AutoReload)

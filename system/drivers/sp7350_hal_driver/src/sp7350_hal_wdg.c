@@ -1,7 +1,5 @@
 #include "sp7350_hal_wdg.h"
 
-#define TODO_TEST 0
-
 __STATIC_INLINE void _wdg_unlock(WDG_TypeDef *Instance)
 {
 	WRITE_REG(Instance->control, WDG_CMD_UNLOCK);
@@ -42,119 +40,125 @@ __STATIC_INLINE uint16_t _wdg_getcnt(WDG_TypeDef *Instance)
 	return READ_REG(Instance->counter_val);
 }
 
-void HAL_WDG_IRQHandler(void *arg)
+__STATIC_INLINE void _wdg_setmode(WDG_TypeDef *Instance, HAL_WDG_ModeTypeDef mode)
 {
-	assert_param(arg);
-#if TODO_TEST
-
-	WDG_HandleTypeDef *hwdg = (WDG_HandleTypeDef *)arg;
-
-	assert_param(hwdg->Instance);
-
-	_wdg_clearflag(hwdg->Instance);
-#endif
+	WRITE_REG(Instance->mode, mode);
 }
 
-void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t val_ms)
+__STATIC_INLINE void _wdg_set_intrcnt(WDG_TypeDef *Instance, uint32_t value)
 {
-	assert_param(hwdg->Instance);
-	assert_param(val_ms);
-#if TODO_TEST
+	WRITE_REG(Instance->intr_counter_val, value);
+}
 
-	uint32_t temp;
+__STATIC_INLINE uint32_t _wdg_get_intrcnt(WDG_TypeDef *Instance)
+{
+	return READ_REG(Instance->intr_counter_val);
+}
 
-	temp = val_ms * STC_FREQ / 1000;
-	temp = temp >> 4;
+void HAL_WDG_IRQHandler(void *arg)
+{
+	WDG_HandleTypeDef *hwdg = (WDG_HandleTypeDef *)arg;
+
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
+
+	_wdg_clearflag(hwdg->Instance);
+}
+
+/* STC_FREQ = 1000000 */
+void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t u32Ticks)
+{
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
+	assert_param(IS_WDG_TICKS(u32Ticks));
+
+	if(hwdg->IrqMode == WDG_INTR_RST) {
+		u32Ticks -= hwdg->IrqTicks;
+	}
 
 	_wdg_stop(hwdg->Instance);
 	_wdg_unlock(hwdg->Instance);
-	_wdg_setcnt(hwdg->Instance, temp);
+	_wdg_setcnt(hwdg->Instance, u32Ticks);
+	if(hwdg->IrqMode == WDG_INTR_RST) {
+		_wdg_set_intrcnt(hwdg->Instance, hwdg->IrqTicks);
+	}
 	_wdg_lock(hwdg->Instance);
-#endif
 }
 
 uint32_t HAL_WDG_GetTimeout(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(hwdg->Instance);
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
-	uint32_t temp = 0;
-#if TODO_TEST
+	uint32_t temp = 0, debug = 0;
+
 	temp = _wdg_getcnt(hwdg->Instance);
-	printf("temp ticks 0x%x \n", temp);
+	debug = temp;
+	if(hwdg->IrqMode == WDG_INTR_RST) {
+		temp += _wdg_get_intrcnt(hwdg->Instance);
+	}
 
-	temp = temp << 4;
-	temp = temp * 1000 / STC_FREQ ;
-#endif
+	//printf("debug. 0x%x temp ticks 0x%x \n", debug, temp);
 	return temp;
 }
 
 void HAL_WDG_Stop(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(hwdg->Instance);
-#if TODO_TEST
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
+
 	_wdg_stop(hwdg->Instance);
 	_wdg_cntmax(hwdg->Instance);
 	_wdg_clearflag(hwdg->Instance);
-#endif
 }
 
 void HAL_WDG_Start(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(hwdg->Instance);
-#if TODO_TEST
+	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
+
 	_wdg_start(hwdg->Instance);
-#endif
 }
 
 
 HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 {
-	assert_param(hwdg->Instance);
-#if TODO_TEST
-	MODULE_ID_Type id;
+	if(hwdg == NULL)
+		return HAL_ERROR;
+
 	IRQn_Type irq;
-
-	/* Enable clock */
-	HAL_Module_Clock_enable(id , 1);
-	HAL_Module_Clock_gate(id , 1);
-	HAL_Module_Reset(id , 0);
-
-	_wdg_stop(hwdg->Instance);
-	_wdg_cntmax(hwdg->Instance);
-	//test cnt max
-	int cnt = _wdg_getcnt(hwdg->Instance);
-	printf("CNTMAX 0x%x\n", cnt);
-	_wdg_clearflag(hwdg->Instance);
-
-	//while(1);
-	/* 4.18 bit[9] MO1_RI_WATCHDOG_RST_EN */
-	MOON4_REG->sft_cfg[18] = 0x02000200;
+	int ret;
 
 	if (hwdg->Instance == WDG0)
 	{
-		//printf("%d %s\n", __LINE__, __FUNCTION__);
-		id = STC_0;
 		irq = STC_TIMER_W_IRQn;
-		MOON4_REG->sft_cfg[18] = 0x04000400;
-
+		hwdg->BitShift = 1;
 	}
 	else if (hwdg->Instance == WDG1)
 	{
-		id = STC_AV1;
 		irq = STC_AV0_TIMER_W_IRQn;
-		MOON4_REG->sft_cfg[18] = 0x10001000;
+		hwdg->BitShift = 2;
 	}
 	else if (hwdg->Instance == WDG2)
 	{
-		id = STC_AV2;
 		irq = STC_AV1_TIMER_W_IRQn;
-		MOON4_REG->sft_cfg[18] = 0x20002000;
+		hwdg->BitShift = 3;
+	}
+	else if (hwdg->Instance == WDG3)
+	{
+		irq = STC_AV4_TIMERW_IRQn;
+		hwdg->BitShift = 5;
 	}
 
+	_wdg_setmode(hwdg->Instance, hwdg->IrqMode);
+	_wdg_stop(hwdg->Instance);
+	_wdg_cntmax(hwdg->Instance);
+	_wdg_clearflag(hwdg->Instance);
+
 	/* Config irq */
-	IRQ_SetHandler(irq, hwdg->IrqHandle);
-	IRQ_Enable(irq);
-#endif
+	if(hwdg->IrqMode != WDG_RST) {
+		IRQ_SetHandler(irq, hwdg->IrqHandle);
+		IRQ_Enable(irq);
+	}
+
+	/* Enable the WDG to respond the system reset when watchdog timeout */
+	MOON4_REG->sft_cfg[22] =  (0x10001 << hwdg->BitShift);
+
 	/* Return function status */
 	return HAL_OK;
 }

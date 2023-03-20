@@ -1,5 +1,5 @@
 #include "sp7350_hal_spi.h"
-
+#if 1
 void __Spi_receive_data(SPI_HandleTypeDef *hspi,uint8_t vaild_data)
 {
 	uint8_t rxdata;
@@ -29,7 +29,7 @@ void __Spi_transmit_data(SPI_HandleTypeDef *hspi)
 		memcpy((uint8_t *)&hspi->Instance->fifo_data,(uint8_t *)hspi->pTxBuffPtr,sizeof(uint8_t));
 		hspi->pTxBuffPtr++;
 		hspi->TxXferCount++;
-	}	
+	}
 }
 
 void __SPI_Config_Set(SPI_HandleTypeDef *hspi,uint32_t flag)
@@ -46,7 +46,7 @@ void __SPI_Config_Set(SPI_HandleTypeDef *hspi,uint32_t flag)
 	/* set fifo to 16byte mode */
 	temp_reg &= CLEAN_RW_BYTE;
 	temp_reg |= WRITE_BYTE(0) | READ_BYTE(0);
-	temp_reg &= CLEAN_SPI_MODE;	
+	temp_reg &= CLEAN_SPI_MODE;
 	/* lsb select  0:msb  1:lsb*/
 	temp_reg |= hspi->Init.FirstBit;
 
@@ -61,11 +61,11 @@ void __SPI_Config_Set(SPI_HandleTypeDef *hspi,uint32_t flag)
 			break;
 		case SPI_MODE2:
 			temp_reg |= CPHA_W;
-			temp_reg |= CPOL;  
+			temp_reg |= CPOL;
 			break;
 		case SPI_MODE3:
 			temp_reg |= CPHA_R;
-			temp_reg |= CPOL;  
+			temp_reg |= CPOL;
 			break;
 		default:
 			break;
@@ -100,7 +100,7 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 	  return HAL_ERROR;
 	}
 
-	assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
+	//assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
 
     assert_param(IS_SPI_MODE(hspi->Init.spi_mode));
 	assert_param(IS_SPI_FIRST_BIT(hspi->Init.FirstBit));
@@ -123,7 +123,7 @@ HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
     return HAL_ERROR;
   }
 
-  assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
+  //assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
 
   hspi->Instance->spi_config &= CLEAN_FLUG_MASK;
   /* reset regist ,clear fifo data */
@@ -192,46 +192,46 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, uint8_t *pData, uint
           errorcode = HAL_TIMEOUT;
 		  goto error;
         }
-     
+
 	    if((hspi->TxXferCount < Size) || ((hspi->Instance->spi_status & TX_EMP_FLAG) == TX_EMP_FLAG))
 	    {
    	        if((hspi->Instance->spi_status & RX_FULL_FLAG)==RX_FULL_FLAG)
    	        {
 		        for(i=0;i<SPI_FIFO_MAX_LENGTH;i++)
 		        {
-		           /* drop the rx fifo data */	
-			       __Spi_receive_data(hspi,false);  
+		           /* drop the rx fifo data */
+			       __Spi_receive_data(hspi,false);
 		        }
 	        }
 
 	        while((hspi->Instance->spi_status & RX_CNT ))
-	        {	
-		         __Spi_receive_data(hspi,false);  
+	        {
+		         __Spi_receive_data(hspi,false);
 			   if((hspi->TxXferCount < Size) && ((hspi->Instance->spi_status & TX_FULL_FLAG) != TX_FULL_FLAG))
 			   {
 				  __Spi_transmit_data(hspi);
-			   }   
+			   }
 	       }
  		    while(hspi->TxXferCount < Size)
  		    {
 				if((hspi->Instance->spi_status & TX_FULL_FLAG) == TX_FULL_FLAG)
 			    	break;
 				__Spi_transmit_data(hspi);
-        	}  
+        	}
 		}
 		else if((hspi->Instance->spi_status & RX_FULL_FLAG)==RX_FULL_FLAG)
 		{
 		    for(i=0;i<SPI_FIFO_MAX_LENGTH;i++)
 		    {
-	           /* drop the rx fifo data */	
-		        __Spi_receive_data(hspi,false);  
+	           /* drop the rx fifo data */
+		        __Spi_receive_data(hspi,false);
 	        }
 		}
-		else 
+		else
 		{
 			while((hspi->Instance->spi_status & RX_CNT ))
-			{	
-			   __Spi_receive_data(hspi,false); 
+			{
+			   __Spi_receive_data(hspi,false);
 			}
 		}
 	}
@@ -253,7 +253,7 @@ error:
 
 HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
-	unsigned int i;	
+	unsigned int i;
     uint32_t tickstart;
     HAL_StatusTypeDef errorcode = HAL_OK;
 
@@ -290,10 +290,10 @@ HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint1
     hspi->Instance->fifo_data = 0x00;
 
     __SPI_Config_Set(hspi, FINISH_FLAG_MASK|RX_FULL_FLAG_MASK);
-	
+
 	hspi->Instance->spi_status = TOTAL_LENGTH(Size) | TX_LENGTH(0);
 	hspi->Instance->spi_status |= SPI_START_FD;
-	
+
 	while((hspi->Instance->spi_status & SPI_BUSY) == SPI_BUSY)
 	{
 		if ((((HAL_GetTick() - tickstart) >=  Timeout) && (Timeout != HAL_MAX_DELAY)) || (Timeout == 0U))
@@ -309,9 +309,9 @@ HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint1
 		    	__Spi_receive_data(hspi,true);
 		 	}
 		}
-	
+
 		while((hspi->Instance->spi_status & RX_CNT ))
-		{	
+		{
 	    	__Spi_receive_data(hspi,true);
 		}
 	};
@@ -327,7 +327,7 @@ HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint1
 	    }
 
 	    while((hspi->Instance->spi_status & RX_CNT ))
-	    {	
+	    {
 		    __Spi_receive_data(hspi,true);
 	    }
 
@@ -353,7 +353,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 	uint32_t tickstart;
 
 	HAL_StatusTypeDef errorcode = HAL_OK;
-	
+
 	if (hspi->State != HAL_SPI_STATE_READY)
 	{
 		errorcode = HAL_BUSY;
@@ -384,7 +384,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 	hspi->pRxBuffPtr  = (uint8_t *)pRxData;
 	hspi->RxXferCount = 0;
 	hspi->RxXferSize  = RxSize;
-	
+
 	__SPI_Config_Set(hspi, FINISH_FLAG_MASK|RX_FULL_FLAG_MASK|TX_EMP_FLAG_MASK);
 
 	tx_cnt  = (TxSize >= SPI_FIFO_MAX_LENGTH)? SPI_FIFO_MAX_LENGTH:TxSize;
@@ -415,12 +415,12 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 				}
 			}
 			while((hspi->Instance->spi_status & RX_CNT ))
-			{	
+			{
 				__Spi_receive_data(hspi,true);
 				if((hspi->TxXferCount < TxSize) && ((hspi->Instance->spi_status & TX_FULL_FLAG) != TX_FULL_FLAG))
 				{
-					__Spi_transmit_data(hspi);	   
-				}   
+					__Spi_transmit_data(hspi);
+				}
 		    }
 			while(hspi->TxXferCount < TxSize)
 			{
@@ -429,7 +429,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 			        break;
 			    }
 			    __Spi_transmit_data(hspi);
-			}  
+			}
         }
         else if((hspi->Instance->spi_status & RX_FULL_FLAG)==RX_FULL_FLAG)
         {
@@ -438,10 +438,10 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 		       __Spi_receive_data(hspi,true);
 		    }
 	    }
-	    else 
+	    else
 	    {
 	       while((hspi->Instance->spi_status & RX_CNT ))
-	       {	
+	       {
 		      __Spi_receive_data(hspi,true);
 		   }
 	   }
@@ -458,7 +458,7 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 	    }
 
 	    while((hspi->Instance->spi_status & RX_CNT ))
-	    {	
+	    {
 		    __Spi_receive_data(hspi,true);
 	    }
 
@@ -486,7 +486,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg)
 
 	tx_cnt = GET_TX_CNT( fd_status);
 	tx_len = GET_TX_LEN( fd_status);
-	
+
 	if ( (fd_status & TX_EMP_FLAG) && ( fd_status & RX_EMP_FLAG) || (GET_LEN(fd_status) == 0)) {
 		goto fin_irq;
 	}
@@ -499,7 +499,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg)
 
 	/* receive data if rx fifo is not empty */
 	for ( i = 0; i < rx_cnt; i++)
-	{ 
+	{
 		__Spi_receive_data(hspi,true);
 	}
 
@@ -523,10 +523,10 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg)
 		    else
 		    {
 				rx_cnt = GET_RX_CNT(fd_status);
-		    }	
+		    }
 		    /* receive data */
 		    for (i = 0; i < rx_cnt; i++)
-	    	{ 
+	    	{
 				__Spi_receive_data(hspi,true);
 			}
 		}
@@ -729,3 +729,4 @@ error:
 	__HAL_UNLOCK(hspi);
 	return errorcode;
 }
+#endif

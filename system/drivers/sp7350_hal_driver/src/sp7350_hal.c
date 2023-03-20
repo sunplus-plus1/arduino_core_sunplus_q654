@@ -1,9 +1,27 @@
-
 #include "sp7350_cm4.h"
 #include "sp7350_hal_def.h"
 #include "sp7350xx.h"
 #include "sp7350_hal_stc.h"
 #include "irq_ctrl.h"
+
+/*
+ * NOTE to develop:
+ * 1.STC Group of SP7350 CM4:
+ *	 ---------------------------------------------------------------------------------------
+ *	|	|STC	 	|STC_AV0	|STC_AV1	|STC_AV2	|STC_AV4	|
+ *	|-------|---------------|---------------|---------------|---------------|---------------|
+ *	|STC	|STC0		|STC1	  	|STC2	   	|STC3		|STC4		|
+ *	|-------|---------------|---------------|---------------|---------------|---------------|
+ *	|TIM	|TIM0/1/2	|TIM3/4/5	|TIM6/7/8	|TIM9/10/11	|TIM12/13/14	|
+ *	|-------|---------------|---------------|---------------|---------------|---------------|
+ *	|WDG	|WDG0		|WDG1		|WDG2		|	-	|WDG3		|
+ *	 ---------------------------------------------------------------------------------------
+ * 2.only use timer 0/1/2 of every STC
+ *	e.x. TIM0 is timer0 of STC
+ *	TIM1 is timer1 of STC
+ *	TIM2 is timer2 of STC
+ *	TIM3 is timer0 of STC_AV0 and so on....
+ */
 
 
 #ifdef __cplusplus
@@ -15,8 +33,48 @@ extern "C" {
 __IO uint32_t uwTick = 0;
 HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;//1MHz
 
-
 STC_HandleTypeDef SysStandardTimeClk;
+
+#ifdef  USE_FULL_ASSERT
+void assert_failed(unsigned char *file, unsigned int line)
+{
+	printf("Wrong parameters value file %s on line %d\n", file, line);
+	while(1);
+}
+#endif
+
+HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq)
+{
+	STC_HandleTypeDef stc;
+	MODULE_ID_Type id;
+	uint32_t u32Sysclk = HAL_PLL_GetSystemFreq();
+
+	if (STCx == STC0) {
+		id = STC_0;
+	}
+	else if (STCx == STC1) {
+		id = STC_AV0;
+	}
+	else if (STCx == STC2) {
+		id = STC_AV1;
+	}
+	else if (STCx == STC3) {
+		id = STC_AV2;
+	}
+	else if (STCx == STC4) {
+		id = STC_AV4;
+	}
+
+	HAL_Module_Clock_enable(id , 1);
+	HAL_Module_Clock_gate(id , 1);
+	HAL_Module_Reset(id , 0);
+
+	stc.Instance = STCx;
+	stc.ClockSource = 0; //sel system clk
+	stc.Prescaler = u32Sysclk / u32Freq - 1;
+
+	HAL_STC_Init(&stc);
+}
 
 HAL_StatusTypeDef HAL_Init(void)
 {
@@ -33,7 +91,13 @@ __weak HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx)
 		SysStandardTimeClk.ClockSource = 0;
 		SysStandardTimeClk.ExtDiv = 0;
 		/*the 1tick = 1us, 1MHz */
-		SysStandardTimeClk.Prescaler = (HSE_VALUE/DEFAULT_SYS_STC_CLK);
+		SysStandardTimeClk.Prescaler = (HAL_PLL_GetSystemFreq() / DEFAULT_SYS_STC_CLK);
+
+#if 0
+		SysStandardTimeClk.ClockSource = 1;
+		SysStandardTimeClk.ExtDiv = (HSE_VALUE/DEFAULT_SYS_STC_CLK)/2 - 1;
+		SysStandardTimeClk.Prescaler = 0;
+#endif
 		HAL_STC_Init(&SysStandardTimeClk);
 }
 

@@ -13,24 +13,18 @@ extern "C" {
 #include "sp7350_hal_conf.h"
 typedef enum {
 	CLK_SYS_SRC = 0,				 /* !< System clock is tiger source */
-	CLK_STC_SRC,					 /* !< Stand time clock is triger source */	
+	CLK_STC_SRC,					 /* !< Stand time clock is triger source */
 	CLK_RTC_SRC,					 /* !< Real time clock is triger source */
-	CLK_EXT_SRC,					 /* !< External clock is triger source */	
-	CLK_SLAVE_TRIG_SRC,				 /* !< The pairs clock is scaled  for triger source */	
 	CLK_SLAVE_WRAP_SRC				 /* !< The pairs clock is triger source */
 }CLK_SRC;
 
 typedef enum {
 	ONE_SHOT_MODE = 0, 				/* !< The counter reaches 0, the timer is stop*/
-	REPEAT_MODE 					/* !< The counter reaches 0, the counter will be auto reload the counters */	
+	REPEAT_MODE 					/* !< The counter reaches 0, the counter will be auto reload the counters */
 
 }TIM_COUNTER_MODE;
 
-
 typedef void (*TimCallbackFunc)(void);
-
-
-
 
 /**
   * @brief  TIM Time base Configuration Structure definition
@@ -51,7 +45,6 @@ typedef struct
                                    This parameter can be a value of @ref TIM_AutoReloadPreload */
 } TIM_InitTypeDef;
 
-
 /**
   * @brief  HAL State structures definition
   */
@@ -64,17 +57,15 @@ typedef enum
 	HAL_TIM_STATE_ERROR             = 0x04U     /*!< Reception process is ongoing                */
 } HAL_TIM_StateTypeDef;
 
-
 typedef struct
 {
-	TIM_TypeDef                 *Instance;     /*!< Register base address             */
-	TIM_InitTypeDef        Init;          /*!< TIM Time Base required parameters */
-	HAL_LockTypeDef             Lock;          /*!< Locking object                    */
-	__IO HAL_TIM_StateTypeDef   State;         /*!< TIM operation state               */
+	TIM_TypeDef			*Instance;     /*!< Register base address             */
+	TIM_InitTypeDef        		Init;          /*!< TIM Time Base required parameters */
+	HAL_LockTypeDef			Lock;          /*!< Locking object                    */
+	__IO HAL_TIM_StateTypeDef	State;         /*!< TIM operation state               */
 	IRQn_Type Irqn;
 	IRQHandler_t IrqHandle;
 } TIM_HandleTypeDef;
-
 
 typedef struct  {
   // Those 2 first fields must remain in this order at the beginning of the structure
@@ -82,7 +73,6 @@ typedef struct  {
   TIM_HandleTypeDef handle;
   TimCallbackFunc pfcallback;
 } timerObj_t;
-
 
 HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim);
 HAL_TIM_StateTypeDef HAL_TIM_GetState(TIM_HandleTypeDef *htim);
@@ -100,20 +90,8 @@ uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim);
 HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim);
 
-
-
-
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
-
-
