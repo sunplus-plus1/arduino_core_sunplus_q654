@@ -57,7 +57,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 #ifdef SP7021
 	if(obj->uart != SP_UART0)
-	{ 
+	{
 		uart_tx = GPIO_TO_PINMUX(obj->pin_rx);
 		uart_rx = GPIO_TO_PINMUX(obj->pin_tx);
 
@@ -77,7 +77,7 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 
 	/* Enable USART clock */
 	if(obj->uart == SP_UART0)
-	{ 
+	{
 		/* pinmux set */
 		HAL_PINMUX_Cfg(PINMUX_UART0,1);
 		/*interrupt set */
@@ -181,14 +181,14 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	uart_handlers[obj->index] = huart;
 	huart->Instance			= (UART_CTRL_Type *)(obj->uart);
 	huart->Init.BaudRate	 = baudrate;
-	
+
 	huart->Init.LcrInit.LCR_Init = UART_INIT_USE_DEFAULT_VALUE;
 	huart->Init.McrInit.MCR_Init = UART_INIT_USE_DEFAULT_VALUE;
 	huart->txdma = NULL;
 	huart->txgdma = NULL;
 	huart->rxdma = NULL;
-	
-	if (HAL_UART_Init(huart) != HAL_OK) 
+
+	if (HAL_UART_Init(huart) != HAL_OK)
 	{
 		return;
 	}
@@ -207,7 +207,7 @@ void uart_deinit(serial_t *obj)
 	case UART0_INDEX:
 		HAL_Module_Clock_enable(UART0, 0);
 		HAL_Module_Clock_gate(UART0, 0);
-		break;	
+		break;
 	case UART1_INDEX:
 		HAL_Module_Clock_enable(UART1, 0);
 		HAL_Module_Clock_gate(UART1, 0);
@@ -222,16 +222,17 @@ void uart_deinit(serial_t *obj)
 		HAL_Module_Clock_enable(UART3, 0);
 		HAL_Module_Clock_gate(UART3, 0);
 		break;
-
+#ifdef SP7021
 	case UART4_INDEX:
 		HAL_Module_Clock_enable(UART4, 0);
 		HAL_Module_Clock_gate(UART4, 0);
 		break;
+#endif
 	}
 
 	HAL_UART_DeInit(uart_handlers[obj->index]);
 	/* Release uart debug to ensure init */
-	if (serial_debug.index == obj->index) 
+	if (serial_debug.index == obj->index)
 	{
 		serial_debug.index = UART_NUM;
 	}
@@ -247,11 +248,11 @@ void uart_deinit(serial_t *obj)
 	*/
 size_t uart_write(serial_t *obj, uint8_t data, uint16_t size)
 {
-	if (HAL_UART_Transmit(uart_handlers[obj->index], &data, size, TX_TIMEOUT) == HAL_OK) 
+	if (HAL_UART_Transmit(uart_handlers[obj->index], &data, size, TX_TIMEOUT) == HAL_OK)
 	{
 		return size;
-	} 
-	else 
+	}
+	else
 	{
 		return 0;
 	}
@@ -325,19 +326,19 @@ size_t uart_debug_write(uint8_t *data, uint32_t size)
 {
 	uint32_t tickstart = HAL_GetTick();
 
-	if (serial_debug.index >= UART_NUM) 
+	if (serial_debug.index >= UART_NUM)
 	{
 		/* DEBUG_UART not initialized */
 		uart_debug_init();
-		if (serial_debug.index >= UART_NUM) 
+		if (serial_debug.index >= UART_NUM)
 		{
 		return 0;
 		}
-	} 
-	else 
+	}
+	else
 	{
 		serial_t *obj = get_serial_obj(uart_handlers[serial_debug.index]);
-		if (obj) 
+		if (obj)
 		{
 		serial_debug.irq = obj->irq;
 		}
@@ -431,9 +432,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 
 	serial_t *obj = get_serial_obj(huart);
-	
+
 	if (obj && obj->tx_callback(obj) != -1) {
-	if (HAL_UART_Transmit_IT(huart, &obj->tx_buff[obj->tx_tail], 1) != HAL_OK) 
+	if (HAL_UART_Transmit_IT(huart, &obj->tx_buff[obj->tx_tail], 1) != HAL_OK)
 	{
 		return;
 	}
