@@ -27,12 +27,24 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 #elif I2C_SEL_INSTANCE == 3
 	_i2c.handle.Instance = SP_I2CM3;
 
-#ifdef SP645
-#elif SPI_SEL_INSTANCE == 4
+#if defined (SP645) || defined (SP7350)
+#elif I2C_SEL_INSTANCE == 4
 	_i2c.handle.Instance = SP_I2CM4;
-#elif SPI_SEL_INSTANCE == 5
+#elif I2C_SEL_INSTANCE == 5
 	_i2c.handle.Instance = SP_I2CM5;
 #endif
+
+#ifdef SP7350
+#elif I2C_SEL_INSTANCE == 6
+	_i2c.handle.Instance = SP_I2CM6;
+#elif I2C_SEL_INSTANCE == 7
+	_i2c.handle.Instance = SP_I2CM7;
+#elif I2C_SEL_INSTANCE == 8
+	_i2c.handle.Instance = SP_I2CM8;
+#elif I2C_SEL_INSTANCE == 9
+	_i2c.handle.Instance = SP_I2CM9;
+#endif
+
 #endif
 }
 
@@ -189,6 +201,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 	int8_t ret = 4;
 	// check transfer options and store it in the I2C handle
 	// transmit buffer (blocking)
+	#if 0
 	switch (i2c_master_write(&_i2c, txAddress, txBuffer, txBufferLength)) {
 	case I2C_OK:
 		ret = 0;	// Success
@@ -202,13 +215,16 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop)
 	case I2C_NACK_DATA:
 		ret = 3;
 		break;
+	case I2C_ERROR:
 	case I2C_TIMEOUT:
 	case I2C_BUSY:
-	case I2C_ERROR:
 	default:
 		ret = 4;
 		break;
 	}
+	#else
+	ret = i2c_master_write(&_i2c, txAddress, txBuffer, txBufferLength);
+	#endif
 	// reset Tx buffer
 	resetTxBuffer();
 

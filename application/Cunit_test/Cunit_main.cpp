@@ -47,6 +47,7 @@ int main(void)
 	CU_add_test(pSuite, "test_case3", test_case3);
 	#else
 	Add_Timer_Tests();
+//	Add_I2C_Tests();
 //	Add_Watchdog_Tests();
 //	Add_Uart_Tests();
 	#endif
@@ -59,6 +60,8 @@ int main(void)
 	printf("\nTests completed with return value %d.\n", test_return);
 
 	CU_cleanup_registry();
+
+	while(1);
 
 	return 0;
 }

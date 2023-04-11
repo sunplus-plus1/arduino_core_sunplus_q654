@@ -5,6 +5,8 @@
 #include "sp7021_hal_conf.h"
 #elif defined(SP645)
 #include "sp645_hal_conf.h"
+#elif defined(SP7350)
+#include "sp7350_hal_conf.h"
 #endif
 
 #include "twi.h"
@@ -13,32 +15,133 @@
 extern "C" {
 #endif
 
+#ifdef SP7021
+#define PINMUX_I2C_0 PINMUX_I2CM0_SCL
+#define PINMUX_I2C_1 PINMUX_I2CM1_SCL
+#define PINMUX_I2C_2 PINMUX_I2CM2_SCL
+#define PINMUX_I2C_3 PINMUX_I2CM3_SCL
+#endif
+
 /* Private Defines */
 /// @brief I2C timout in tick unit
 #ifndef I2C_TIMEOUT_TICK
-#define I2C_TIMEOUT_TICK        1000 /* 1ms */
+#define I2C_TIMEOUT_TICK	0xffffffff
 #endif
 
-#define I2C_MAX_FREQ			400
-#define I2C_INIT_FREQ			100
+#ifdef SP7350
+#define	I2C_MAX_FREQ		(I2C_MAX_FAST_MODE_PLUS_FREQ / 1000)
+#else
+#define I2C_MAX_FREQ		400
+#endif
+#define I2C_INIT_FREQ		100
+
+#define I2C_INFO(inst, idx, clk, pin, irqn, cb) \
+	{ .instance = (inst), .index = (idx), \
+	  .clk_id = (clk), .pinmux = (pin), \
+	  .irq_num = (irqn), .irq_callback = (cb) }
 
 /*  Family specific description for I2C */
 typedef enum {
-	I2C0_INDEX,
+	I2C0_INDEX = 0UL,
 	I2C1_INDEX,
 	I2C2_INDEX,
 	I2C3_INDEX,
+#if defined (SP645) || defined (SP7350)
 	I2C4_INDEX,
 	I2C5_INDEX,
+#endif
+#ifdef SP7350
+	I2C6_INDEX,
+	I2C7_INDEX,
+	I2C8_INDEX,
+	I2C9_INDEX,
+#endif
 	I2C_NUM
 } i2c_index_e;
 
-/* Private Variables */
-static I2C_HandleTypeDef *i2c_handles[I2C_NUM];
+struct i2c_info {
+	volatile I2C_TypeDef *instance;
+	i2c_index_e index;
+	MODULE_ID_Type clk_id;
+	PINMUX_Type pinmux;
+	IRQn_Type irq_num;
+	IRQHandler_t irq_callback;
+};
 
-void func_print(uint8_t data)
+/* Private Variables */
+const static struct i2c_info sp_i2c_info[] = {
+	I2C_INFO(SP_I2CM0, I2C0_INDEX, I2CM0, PINMUX_I2C_0, I2C_MASTER0_IRQ, &I2C0_IRQHandler),
+	I2C_INFO(SP_I2CM1, I2C1_INDEX, I2CM1, PINMUX_I2C_1, I2C_MASTER1_IRQ, &I2C1_IRQHandler),
+	I2C_INFO(SP_I2CM2, I2C2_INDEX, I2CM2, PINMUX_I2C_2, I2C_MASTER2_IRQ, &I2C2_IRQHandler),
+	I2C_INFO(SP_I2CM3, I2C3_INDEX, I2CM3, PINMUX_I2C_3, I2C_MASTER3_IRQ, &I2C3_IRQHandler),
+#if defined (SP645) || defined (SP7350)
+	I2C_INFO(SP_I2CM4, I2C4_INDEX, I2CM4, PINMUX_I2C_4, I2C_MASTER4_IRQ, &I2C4_IRQHandler),
+	I2C_INFO(SP_I2CM5, I2C5_INDEX, I2CM5, PINMUX_I2C_5, I2C_MASTER5_IRQ, &I2C5_IRQHandler),
+#endif
+#ifdef SP7350
+	I2C_INFO(SP_I2CM6, I2C6_INDEX, I2CM6, PINMUX_I2C_6, I2C_MASTER6_IRQ, &I2C6_IRQHandler),
+	I2C_INFO(SP_I2CM7, I2C7_INDEX, I2CM7, PINMUX_I2C_7, I2C_MASTER7_IRQ, &I2C7_IRQHandler),
+	I2C_INFO(SP_I2CM8, I2C8_INDEX, I2CM8, PINMUX_I2C_8, I2C_MASTER8_IRQ, &I2C8_IRQHandler),
+	I2C_INFO(SP_I2CM9, I2C9_INDEX, I2CM9, PINMUX_I2C_9, I2C_MASTER9_IRQ, &I2C9_IRQHandler),
+#endif
+};
+
+/* Just for IRQHandler() */
+I2C_HandleTypeDef *gpHandle[I2C_NUM];
+
+static void i2c_detect(I2C_HandleTypeDef *handle)
 {
-	printf("0x%x\n", data);
+	int i;
+
+	for(i = 0; i < I2C_NUM; i++) {
+		if(handle->Instance == sp_i2c_info[i].instance) {
+			handle->Index = sp_i2c_info[i].index;
+			break;
+		}
+	}
+}
+
+static void i2c_irq_config(IRQn_Type irqn, IRQHandler_t callback)
+{
+	//IRQ_Disable(irqn);
+	IRQ_SetMode(irqn, IRQ_MODE_TRIG_LEVEL_HIGH);
+	IRQ_SetHandler(irqn, callback);
+#if defined (SP7350) && defined (INTR_MODE)
+	IRQ_Enable(irqn);
+#endif
+}
+
+static void i2c_clken_config(MODULE_ID_Type clk_id)
+{
+	HAL_Module_Clock_enable(clk_id, 1);
+	HAL_Module_Clock_gate(clk_id, 0);
+	HAL_Module_Reset(clk_id, 0);
+}
+
+/* TODO: refine the code of pinmux config */
+static void i2c_pinmux_config(PINMUX_Type pinmux, i2c_t *obj)
+{
+#ifdef SP7021
+	uint32_t i2c_sda, i2c_scl;
+
+	i2c_sda = GPIO_TO_PINMUX(obj->pin_sda);
+	if (!IS_VALID_PINMUX(i2c_sda)) {
+		core_debug("ERROR: [I2C] SDA pin error!\n");
+		return;
+	}
+
+	i2c_scl = GPIO_TO_PINMUX(obj->pin_scl);
+	if (!IS_VALID_PINMUX(i2c_scl)) {
+		core_debug("ERROR: [I2C] SCL pin error!\n");
+		return;
+	}
+
+	HAL_PINMUX_Cfg(pinmux + 1, i2c_sda);
+	HAL_PINMUX_Cfg(pinmux, i2c_scl);
+#else
+	UNUSED(obj);
+	HAL_PINMUX_Cfg(pinmux, 1);
+#endif
 }
 
 /**
@@ -50,12 +153,11 @@ void func_print(uint8_t data)
 */
 static uint32_t i2c_getTiming(i2c_t * obj, uint32_t frequency)
 {
+	UNUSED(obj);
 
 	if (frequency > I2C_MAX_FREQ) {
 		frequency = I2C_MAX_FREQ;
 	}
-
-	UNUSED(obj);
 
 	return frequency;
 }
@@ -65,7 +167,7 @@ static uint32_t i2c_getTiming(i2c_t * obj, uint32_t frequency)
   * @param  obj : pointer to i2c_t structure
   * @retval none
   */
-void i2c_init(i2c_t * obj)
+void i2c_init(i2c_t *obj)
 {
 	//printf("%d   %d\n", temptest.pin_sda, temptest.pin_scl);
 	i2c_custom_init(obj, 100, 0, 0x33);
@@ -81,7 +183,7 @@ void i2c_init(i2c_t * obj)
   */
 void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint32_t ownAddress)
 {
-	uint32_t i2c_sda, i2c_scl;
+	uint32_t index;
 
 	UNUSED(addressingMode);
 	UNUSED(ownAddress);
@@ -89,90 +191,19 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		return;
 
 	I2C_HandleTypeDef *handle = &(obj->handle);
-#ifdef SP7021
-	i2c_sda = GPIO_TO_PINMUX(obj->pin_sda);
-	if (!IS_VALID_PINMUX(i2c_sda)) {
-		core_debug("ERROR: [I2C] SDA pin error!\n");
-		return;
-	}
 
-	i2c_scl = GPIO_TO_PINMUX(obj->pin_scl);
-	if (!IS_VALID_PINMUX(i2c_scl)) {
-		core_debug("ERROR: [I2C] SCL pin error!\n");
-		return;
-	}
-#endif
-	if (handle->Instance == SP_I2CM0) {
-		IRQ_SetMode(I2C_MASTER0_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER0_IRQ, I2C0_IRQHandler);
-
-		obj->irq = I2C_MASTER0_IRQ;
-		i2c_handles[I2C0_INDEX] = handle;
-		i2c_handles[I2C0_INDEX]->Index = I2C0_INDEX;
-		i2c_handles[I2C0_INDEX]->gdma = SP_GDMA0;
-	}
-	/* Enable I2C1 clock if not done */
-	else if (handle->Instance == SP_I2CM1) {
-		IRQ_SetMode(I2C_MASTER1_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER1_IRQ, I2C1_IRQHandler);
-
-		obj->irq = I2C_MASTER1_IRQ;
-		i2c_handles[I2C1_INDEX] = handle;
-		i2c_handles[I2C1_INDEX]->Index = I2C1_INDEX;
-		i2c_handles[I2C1_INDEX]->gdma = SP_GDMA1;
-	}
-	/* Enable I2C2 clock if not done */
-	else if (handle->Instance == SP_I2CM2) {
-		IRQ_SetMode(I2C_MASTER2_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER2_IRQ, I2C2_IRQHandler);
-
-		obj->irq = I2C_MASTER2_IRQ;
-		i2c_handles[I2C2_INDEX] = handle;
-		i2c_handles[I2C2_INDEX]->Index = I2C2_INDEX;
-		i2c_handles[I2C2_INDEX]->gdma = SP_GDMA2;
-	}
-	/* Enable I2C3 clock if not done */
-	else if (handle->Instance == SP_I2CM3) {
-		IRQ_SetMode(I2C_MASTER3_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER3_IRQ, I2C3_IRQHandler);
-
-		obj->irq = I2C_MASTER3_IRQ;
-		i2c_handles[I2C3_INDEX] = handle;
-		i2c_handles[I2C3_INDEX]->Index = I2C3_INDEX;
-		i2c_handles[I2C3_INDEX]->gdma = SP_GDMA3;
-	}
-#ifdef SP645			/* Enable I2C2 clock if not done */
-	else if (handle->Instance == SP_I2CM4) {
-		IRQ_SetMode(I2C_MASTER4_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER4_IRQ, I2C4_IRQHandler);
-
-		obj->irq = I2C_MASTER4_IRQ;
-		i2c_handles[I2C4_INDEX] = handle;
-		i2c_handles[I2C4_INDEX]->Index = I2C4_INDEX;
-		i2c_handles[I2C4_INDEX]->gdma = SP_GDMA4;
-
-	}
-	/* Enable I2C3 clock if not done */
-	else if (handle->Instance == SP_I2CM5) {
-		IRQ_SetMode(I2C_MASTER5_IRQ, IRQ_MODE_TRIG_LEVEL_HIGH);
-		IRQ_SetHandler(I2C_MASTER5_IRQ, I2C5_IRQHandler);
-
-		obj->irq = I2C_MASTER5_IRQ;
-		i2c_handles[I2C5_INDEX] = handle;
-		i2c_handles[I2C5_INDEX]->Index = I2C5_INDEX;
-		i2c_handles[I2C5_INDEX]->gdma = SP_GDMA5;
-	}
-#endif
-	//FIXME:enable config error,
-	HAL_Module_Clock_enable(I2CM0 + handle->Index, 1);
-	HAL_Module_Clock_gate(I2CM0 + handle->Index, 1);
-	HAL_Module_Reset(I2CM0 + handle->Index, 0);
-#ifdef SP7021
-	HAL_PINMUX_Cfg(PINMUX_I2CM0_SDA + handle->Index * 2, i2c_sda);
-	HAL_PINMUX_Cfg(PINMUX_I2CM0_SCL + handle->Index * 2, i2c_scl);
-#elif defined(SP645)
-	HAL_PINMUX_Cfg(PINMUX_I2C_0 + handle->Index, 1);
-#endif
+	/* Match the i2c information */
+	i2c_detect(handle);
+	/* Set irq trigger mode and irq callback */
+	i2c_irq_config(sp_i2c_info[handle->Index].irq_num, sp_i2c_info[handle->Index].irq_callback);
+	/* Enable clock */
+	i2c_clken_config(sp_i2c_info[handle->Index].clk_id);
+	/* Config pinmux */
+	i2c_pinmux_config(sp_i2c_info[handle->Index].pinmux, obj);
+	/* Just for i2c_deinit() */
+	obj->irq = sp_i2c_info[handle->Index].irq_num;
+	/* Just for IRQHandler() */
+	gpHandle[handle->Index] = handle;
 
 	handle->Init.Timing = i2c_getTiming(obj, timing);
 	handle->State = HAL_I2C_STATE_RESET;
@@ -224,7 +255,7 @@ i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, 
 
 #if defined(BURST_MODE)
 	if (HAL_I2C_Master_Transmit(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
-#elif defined (IT_MODE)
+#elif defined (INTR_MODE)
 	if (HAL_I2C_Master_Transmit_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
 #elif defined(DMA_MODE)
 	if (HAL_I2C_Master_Transmit_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
@@ -235,26 +266,25 @@ i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, 
 		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
 		       && (delta < I2C_TIMEOUT_TICK)) {
 			delta = (HAL_GetTick() - tickstart);
-			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE) {
+			if (HAL_I2C_GetError(&(obj->handle)) != HAL_I2C_ERR_NONE)
 				break;
-			}
 		}
 	}
 
 	err = HAL_I2C_GetError(&(obj->handle));
-	if ((delta >= I2C_TIMEOUT_TICK)
-	    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
+
+	if ((delta >= I2C_TIMEOUT_TICK) || (err & HAL_I2C_ERR_TIMEOUT)) {
 		ret = I2C_TIMEOUT;
 	} else {
-		if ((err & HAL_I2C_ERR_ADDRESS_NACK) == HAL_I2C_ERR_ADDRESS_NACK) {
+		if (err & HAL_I2C_ERR_ADDRESS_NACK) {
 			ret = I2C_NACK_ADDR;
-		}
-		if ((err & HAL_I2C_ERR_RECEIVE_NACK) == HAL_I2C_ERR_RECEIVE_NACK) {
+		} else if (err & HAL_I2C_ERR_RECEIVE_NACK) {
 			ret = I2C_NACK_DATA;
 		} else if (err != HAL_I2C_ERR_NONE) {
 			ret = I2C_ERROR;
 		}
 	}
+
 	HAL_I2C_ClearError(&(obj->handle));
 
 	return ret;
@@ -277,7 +307,7 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 
 #if defined(BURST_MODE)
 	if (HAL_I2C_Master_Receive(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
-#elif defined(IT_MODE)
+#elif defined(INTR_MODE)
 	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
 #elif defined(DMA_MODE)
 	if (HAL_I2C_Master_Receive_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
@@ -296,6 +326,7 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 	}
 
 	err = HAL_I2C_GetError(&(obj->handle));
+
 	if ((delta >= I2C_TIMEOUT_TICK)
 	    || ((err & HAL_I2C_ERR_TIMEOUT) == HAL_I2C_ERR_TIMEOUT)) {
 		ret = I2C_TIMEOUT;
@@ -309,6 +340,7 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 			ret = I2C_ERROR;
 		}
 	}
+
 	HAL_I2C_ClearError(&(obj->handle));
 
 	return ret;
@@ -330,34 +362,55 @@ i2c_t *get_i2c_obj(I2C_HandleTypeDef * hi2c)
 
 void I2C0_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C0_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C0_INDEX]);
 }
 
 void I2C1_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C1_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C1_INDEX]);
 }
 
 void I2C2_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C2_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C2_INDEX]);
 }
 
 void I2C3_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C3_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C3_INDEX]);
 }
-
+#if defined(SP645) || defined(SP7350)
 void I2C4_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C4_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C4_INDEX]);
 }
 
 void I2C5_IRQHandler()
 {
-	HAL_I2C_IRQHandler(i2c_handles[I2C5_INDEX]);
+	HAL_I2C_IRQHandler(gpHandle[I2C5_INDEX]);
+}
+#endif
+#ifdef SP7350
+void I2C6_IRQHandler()
+{
+	HAL_I2C_IRQHandler(gpHandle[I2C6_INDEX]);
 }
 
+void I2C7_IRQHandler()
+{
+	HAL_I2C_IRQHandler(gpHandle[I2C7_INDEX]);
+}
+
+void I2C8_IRQHandler()
+{
+	HAL_I2C_IRQHandler(gpHandle[I2C8_INDEX]);
+}
+
+void I2C9_IRQHandler()
+{
+	HAL_I2C_IRQHandler(gpHandle[I2C9_INDEX]);
+}
+#endif
 #ifdef __cplusplus
 }
 #endif

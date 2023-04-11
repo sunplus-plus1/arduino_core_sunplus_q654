@@ -11,8 +11,8 @@ extern "C" {
 #define OFFSETOF(type, member) ((uint32_t) (&(((type *)(0))->member)))
 
 /* select transmit/receive mode */
-#define BURST_MODE
-//#define IT_MODE
+//#define BURST_MODE
+#define INTR_MODE
 //#define DMA_MODE
 //#define DMA_IT_MODE
 
@@ -56,14 +56,21 @@ i2c_status_e i2c_IsDeviceReady(i2c_t * obj, uint8_t devAddr, uint32_t trials);
 
 void i2c_attachSlaveRxEvent(i2c_t * obj, void (*function) (i2c_t *));
 void i2c_attachSlaveTxEvent(i2c_t * obj, void (*function) (i2c_t *));
+i2c_t *get_i2c_obj(I2C_HandleTypeDef * hi2c);
 
 void I2C0_IRQHandler(void);
 void I2C1_IRQHandler(void);
 void I2C2_IRQHandler(void);
 void I2C3_IRQHandler(void);
-#ifdef SP645
+#if defined (SP645) || defined(SP7350)
 void I2C4_IRQHandler(void);
 void I2C5_IRQHandler(void);
+#endif
+#ifdef SP7350
+void I2C6_IRQHandler(void);
+void I2C7_IRQHandler(void);
+void I2C8_IRQHandler(void);
+void I2C9_IRQHandler(void);
 #endif
 #ifdef __cplusplus
 }

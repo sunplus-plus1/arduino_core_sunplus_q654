@@ -23,7 +23,7 @@ typedef enum
   DebugMonitor_IRQn                = -4,     /*!< 12 Cortex-M4 Debug Monitor Interrupt          */
   PendSV_IRQn                      = -2,     /*!< 14 Cortex-M4 Pend SV Interrupt                */
   SysTick_IRQn                     = -1,     /*!< 15 Cortex-M4 System Tick Interrupt            */
-/******  SP645 specific Interrupt Numbers ***************************************************/
+/******  SP7350 specific Interrupt Numbers ***************************************************/
   MAIN_PWR_UP_REQ_IRQn             = 0,      /*!< MAIN POWER UP REQUESET Interrupt               */
   MAIN_PWR_DOWN_IRQn               = 1,      /*!< MAIN POWER DOWN Interrupt                      */
   RTC_WAKEUPKEY_IRQn               = 2,      /*!< WAKYUP BY RTC  Interrupt                       */
@@ -382,9 +382,9 @@ typedef enum {
   I2CM5                            = 142,       /*!< I2C5 moudle ID */
   I2CM6                            = 143,       /*!< I2C6 moudle ID */
 /*G2.10*/
-  I2C7                             = 144,       /*!< I2C7 moudle ID */
-  I2C8                             = 145,       /*!< I2C8 moudle ID */
-  I2C9                             = 146,       /*!< I2C9 moudle ID */
+  I2CM7                            = 144,       /*!< I2C7 moudle ID */
+  I2CM8                            = 145,       /*!< I2C8 moudle ID */
+  I2CM9                            = 146,       /*!< I2C9 moudle ID */
   SPICB0                           = 147,       /*!< SPICB0 moudle ID */
   SPICB1                           = 148,       /*!< SPICB1 moudle ID */
   SPICB2                           = 149,       /*!< SPICB2 moudle ID */
@@ -681,70 +681,54 @@ typedef struct{
    __IOM uint32_t spi_dma_data_rdy;
 }SPI_TypeDef;
 
-typedef struct
-{
-	__IOM uint32_t control0;      /* 00 */
-	__IOM uint32_t control1;      /* 01 */
-	__IOM uint32_t control2;      /* 02 */
-	__IOM uint32_t control3;      /* 03 */
-	__IOM uint32_t control4;      /* 04 */
-	__IOM uint32_t control5;      /* 05 */
-	__IOM uint32_t i2cm_status0;  /* 06 */
-	__IOM uint32_t interrupt;     /* 07 */
-	__IOM uint32_t int_en0;       /* 08 */
-	__IOM uint32_t i2cm_mode;     /* 09 */
-	__IOM uint32_t i2cm_status1;  /* 10 */
-	__IOM uint32_t i2cm_status2;  /* 11 */
-	__IOM uint32_t control6;      /* 12 */
-	__IOM uint32_t int_en1;       /* 13 */
-	__IOM uint32_t i2cm_status3;  /* 14 */
-	__IOM uint32_t i2cm_status4;  /* 15 */
-	__IOM uint32_t int_en2;       /* 16 */
-	__IOM uint32_t control7;      /* 17 */
-	__IOM uint32_t control8;      /* 18 */
-	__IOM uint32_t control9;      /* 19 */
-	RESERVED(0[3], uint32_t)      /* 20~22 */
-	__IOM uint32_t version;       /* 23 */
-	__IOM uint32_t data00_03;     /* 24 */
-	__IOM uint32_t data04_07;     /* 25 */
-	__IOM uint32_t data08_11;     /* 26 */
-	__IOM uint32_t data12_15;     /* 27 */
-	__IOM uint32_t data16_19;     /* 28 */
-	__IOM uint32_t data20_23;     /* 29 */
-	__IOM uint32_t data24_27;     /* 30 */
-	__IOM uint32_t data28_31;     /* 31 */
-} I2C_TypeDef;
+typedef struct {
+	__IOM uint32_t ic_con;              /* 00 */
+	__IOM uint32_t ic_tar;              /* 01 */
+	__IOM uint32_t ic_sar;              /* 02 */
+	__IOM uint32_t hs_maddr;            /* 03 */
+	__IOM uint32_t ic_data_cmd;         /* 04 */
+	__IOM uint32_t ic_ss_scl_hcnt;      /* 05 */
+	__IOM uint32_t ic_ss_scl_lcnt;      /* 06 */
+	__IOM uint32_t ic_fs_scl_hcnt;      /* 07 */
+	__IOM uint32_t ic_fs_scl_lcnt;      /* 08 */
+	__IOM uint32_t ic_hs_scl_hcnt;      /* 09 */
+	__IOM uint32_t ic_hs_scl_lcnt;      /* 10 */
+	__IOM uint32_t ic_intr_stat;        /* 11 */
+	__IOM uint32_t ic_intr_mask;        /* 12 0x30 */
+	__IOM uint32_t ic_raw_intr_stat;    /* 13 */
+	__IOM uint32_t ic_rx_tl;            /* 14 */
+	__IOM uint32_t ic_tx_tl;            /* 15 */
+	__IOM uint32_t ic_clr_intr;         /* 16 0x40 */
+	__IOM uint32_t ic_clr_rx_under;     /* 17 */
+	__IOM uint32_t ic_clr_rx_over;      /* 18 */
+	__IOM uint32_t ic_clr_tx_over;      /* 19 */
+	__IOM uint32_t ic_clr_rd_req;       /* 20 0x50 */
+	__IOM uint32_t ic_clr_tx_abrt;      /* 21 */
+	__IOM uint32_t ic_clr_rx_done;      /* 22 */
+	__IOM uint32_t ic_clr_tx_activity;  /* 23 */
+	__IOM uint32_t ic_clr_stop_det;     /* 24 0x60 */
+	__IOM uint32_t ic_clr_start_dft;    /* 25 */
+	__IOM uint32_t ic_clr_gen_call;     /* 26 */
+	__IOM uint32_t ic_enable;           /* 27 */
+	__IOM uint32_t ic_status;           /* 28 0x70 */
+	__IOM uint32_t ic_txflr;            /* 29 */
+	__IOM uint32_t ic_rxflr;            /* 30 */
+	__IOM uint32_t ic_sda_hold;         /* 31*/
+	__IOM uint32_t ic_tx_abrt_source;   /* 32 0x80 */
+	__IOM uint32_t g40_reserved_0[6];   /* 38 */
+	__IOM uint32_t ic_enable_status;    /* 39 0x9c */
+	__IOM uint32_t g40_reserved_1[2];   /* 40 */
+	__IOM uint32_t ic_clr_restart_det;  /* 42 0xa8 */
+	__IOM uint32_t g40_reserved_2[18];  /* 43 */
+	__IOM uint32_t ic_comp_param_1;     /* 61 0xf4 */
+	__IOM uint32_t ic_comp_version;     /* 62 0xf8 */
+	__IOM uint32_t ic_comp_type;        /* 63 0xfc */
+}I2C_TypeDef;
 
 typedef struct
 {
-	__IOM uint32_t hw_version;                /* 00 */
-	__IOM uint32_t dma_config;                /* 01 */
-	__IOM uint32_t dma_length;                /* 02 */
-	__IOM uint32_t dma_addr;                  /* 03 */
-	__IOM uint32_t port_mux;                  /* 04 */
-	__IOM uint32_t int_flag;                  /* 05 */
-	__IOM uint32_t int_en;                    /* 06 */
-	__IOM uint32_t sw_reset_state;            /* 07 */
-	RESERVED(0[2], uint32_t)                  /* 08~09 */
-	__IOM uint32_t sg_dma_index;              /* 10 */
-	__IOM uint32_t sg_dma_config;             /* 11 */
-	__IOM uint32_t sg_dma_length;             /* 12 */
-	__IOM uint32_t sg_dma_addr;               /* 13 */
-	RESERVED(1, uint32_t)                     /* 14 */
-	__IOM uint32_t sg_setting;                /* 15 */
-	__IOM uint32_t threshold;                 /* 16 */
-	RESERVED(2, uint32_t)                     /* 17 */
-	__IOM uint32_t gdma_read_timeout;         /* 18 */
-	__IOM uint32_t gdma_write_timeout;        /* 19 */
-	__IOM uint32_t ip_read_timeout;           /* 20 */
-	__IOM uint32_t ip_write_timeout;          /* 21 */
-	__IOM uint32_t write_cnt_debug;           /* 22 */
-	__IOM uint32_t w_byte_en_debug;           /* 23 */
-	__IOM uint32_t sw_reset_write_cnt_debug;  /* 24 */
-	__IOM uint32_t sw_reset_read_cnt_debug;   /* 25 */
-	RESERVED(3[6], uint32_t)                  /* 26~31 */
+
 } GDMA_TypeDef;
-
 
 typedef struct
 {
@@ -1028,8 +1012,8 @@ typedef struct{
 #define TIMER_GO_Pos                 (11U)
 #define TIMER_GO_Msk                 (1U << TIMER_GO_Pos)	/*0x00000800*/
 #define TIMER_GO                     TIMER_GO_Msk		/*timer go. 1:start;0:stop*/
-#define TIMER_RPT_pos                (13U)
-#define TIMER_RPT_Msk                (1U << TIMER_RPT_pos)	/*0x00002000*/
+#define TIMER_RPT_Pos                (13U)
+#define TIMER_RPT_Msk                (1U << TIMER_RPT_Pos)	/*0x00002000*/
 #define TIMER_RPT                    TIMER_RPT_Msk		/*timer repeat operation. 0:one shot;1: repeation*/
 #define TIMER_TRIG_SRC_Pos           (14U)
 #define TIMER_TRIG_SRC_Msk           (0x3 << TIMER_TRIG_SRC_Pos)/*0x0000C000*/
@@ -1245,19 +1229,23 @@ UART LCR register BIT
 /******************************************************************************/
 /*                        I2C module                                          */
 /******************************************************************************/
-#define SP_I2CM0 	((volatile I2C_TypeDef *)RF_GRP(140, 0))
-#define SP_I2CM1 	((volatile I2C_TypeDef *)RF_GRP(142, 0))
-#define SP_I2CM2 	((volatile I2C_TypeDef *)RF_GRP(144, 0))
-#define SP_I2CM3 	((volatile I2C_TypeDef *)RF_GRP(146, 0))
-#define SP_I2CM4 	((volatile I2C_TypeDef *)RF_GRP(508, 0))
-#define SP_I2CM5 	((volatile I2C_TypeDef *)RF_GRP(510, 0))
+#define SP_I2CM0	((volatile I2C_TypeDef *)RF_AMBA_AO(40, 0))
+#define SP_I2CM1	((volatile I2C_TypeDef *)RF_AMBA_AO(41, 0))
+#define SP_I2CM2	((volatile I2C_TypeDef *)RF_AMBA_AO(42, 0))
+#define SP_I2CM3 	((volatile I2C_TypeDef *)RF_AMBA_AO(43, 0))
+#define SP_I2CM4 	((volatile I2C_TypeDef *)RF_AMBA_AO(44, 0))
+#define SP_I2CM5	((volatile I2C_TypeDef *)RF_AMBA_AO(45, 0))
+#define SP_I2CM6	((volatile I2C_TypeDef *)RF_AMBA_AO(46, 0))
+#define SP_I2CM7	((volatile I2C_TypeDef *)RF_AMBA_AO(47, 0))
+#define SP_I2CM8	((volatile I2C_TypeDef *)RF_AMBA_AO(48, 0))
+#define SP_I2CM9	((volatile I2C_TypeDef *)RF_AMBA_AO(49, 0))
 
-#define SP_GDMA0 	((volatile GDMA_TypeDef *)RF_GRP(141, 0))
-#define SP_GDMA1 	((volatile GDMA_TypeDef *)RF_GRP(143, 0))
-#define SP_GDMA2 	((volatile GDMA_TypeDef *)RF_GRP(145, 0))
-#define SP_GDMA3 	((volatile GDMA_TypeDef *)RF_GRP(147, 0))
-#define SP_GDMA4 	((volatile GDMA_TypeDef *)RF_GRP(509, 0))
-#define SP_GDMA5 	((volatile GDMA_TypeDef *)RF_GRP(511, 0))
+#define SP_GDMA0 	((volatile GDMA_TypeDef *)0)
+#define SP_GDMA1 	((volatile GDMA_TypeDef *)0)
+#define SP_GDMA2 	((volatile GDMA_TypeDef *)0)
+#define SP_GDMA3 	((volatile GDMA_TypeDef *)0)
+#define SP_GDMA4 	((volatile GDMA_TypeDef *)0)
+#define SP_GDMA5 	((volatile GDMA_TypeDef *)0)
 /******************************************************************************/
 /*                                                                            */
 /*                        gpio/pinmux define                                  */

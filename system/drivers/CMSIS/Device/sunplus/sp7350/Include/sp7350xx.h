@@ -54,8 +54,11 @@ typedef enum
 
 #define POSITION_VAL(VAL)     (__CLZ(__RBIT(VAL)))
 
-#define BITS_PER_LONG 32
-#define GENMASK(h, l) (((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
+#define BITS_PER_LONG         32
+
+#define GENMASK(h, l)         (((~0UL) - (1 << (l)) + 1) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
+
+#define BIT(nr)                (1UL << (nr))
 
 #include "sp7350_hal.h"
 

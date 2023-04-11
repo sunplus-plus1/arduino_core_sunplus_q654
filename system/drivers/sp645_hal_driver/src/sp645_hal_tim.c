@@ -48,7 +48,7 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
 void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 {
 	MODIFY_REG(TIMx->control, TIMER_TRIG_SRC, Structure->ClockSource<<TIMER_TRIG_SRC_Pos);
-	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload<<TIMER_RPT_pos);
+	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload<<TIMER_RPT_Pos);
 	TIMx->counter_val = Structure->Counter;
 	TIMx->reload_val = Structure->ReloadCounter;
 }

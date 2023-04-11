@@ -50,7 +50,7 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
 void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
 {
 	MODIFY_REG(TIMx->control, TIMER_TRIG_SRC, Structure->ClockSource << TIMER_TRIG_SRC_Pos);
-	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload << TIMER_RPT_pos);
+	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload << TIMER_RPT_Pos);
 	TIMx->counter_val = Structure->Counter;
 	TIMx->reload_val = Structure->ReloadCounter;
 }
@@ -164,6 +164,15 @@ uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim)
 {
 	assert_param(IS_TIM_INSTANCE(htim->Instance));
 	return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
+}
+
+HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Prescaler)
+{
+	return HAL_OK;
+}
+uint32_t HAL_TIM_GetPrescaler(TIM_HandleTypeDef *htim)
+{
+	return 0;
 }
 
 uint32_t HAL_TIM_GetMasterCLKFreq(TIM_HandleTypeDef *htim)

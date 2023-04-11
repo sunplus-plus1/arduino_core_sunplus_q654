@@ -14,6 +14,7 @@
 #include "sp645_hal_cortex.h"
 #include "sp645_hal_wdg.h"
 #include "sp645_hal_pll.h"
+#include "sp645_hal_i2s.h"
 
 #endif
 

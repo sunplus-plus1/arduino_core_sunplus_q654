@@ -47,12 +47,11 @@ typedef void (*IRQHandler_t) (void);
 typedef int32_t IRQn_ID_t;
 #endif
 
-
 #define IRQ_MODE_TRIG_EDGE_RISING   (0x01UL) ///< Trigger: edge triggered interrupt,Q628 only support rasing edge
 #define IRQ_MODE_TRIG_EDGE_FALLING  (0x02UL)
 #define IRQ_MODE_TRIG_LEVEL_HIGH    (0x04UL) ///< Trigger: high level triggered interrupt
 #define IRQ_MODE_TRIG_LEVEL_LOW     (0x08UL) ///< Trigger: low level triggered interrupt
-#define IRQ_INVALID					(0x00UL)
+#define IRQ_INVALID                 (0x00UL)
 
 #define IRQ_TYPE_IRQ	0x1
 #define IRQ_TYPE_FIQ	0x0

@@ -803,14 +803,14 @@ typedef struct {
 
 /********************  Bit definition for timer register  ********************/
 #define TIMER_GO_Pos                 (0)
-#define TIMER_GO_Msk                 (1U << TIMER_GO_Pos)			/*0x00000001*/
-#define TIMER_GO                     TIMER_GO_Msk					/*timer go. 1:start;0:stop*/
-#define TIMER_RPT_pos                (1U)
-#define TIMER_RPT_Msk                (1U << TIMER_RPT_pos)			/*0x00000002*/
-#define TIMER_RPT                    TIMER_RPT_Msk					/*timer repeat operation. 0:one shot;1: repeation*/
+#define TIMER_GO_Msk                 (1U << TIMER_GO_Pos)               /*0x00000001*/
+#define TIMER_GO                     TIMER_GO_Msk                       /*timer go. 1:start;0:stop*/
+#define TIMER_RPT_Pos                (1U)
+#define TIMER_RPT_Msk                (1U << TIMER_RPT_Pos)              /*0x00000002*/
+#define TIMER_RPT                    TIMER_RPT_Msk                      /*timer repeat operation. 0:one shot;1: repeation*/
 #define TIMER_TRIG_SRC_Pos           (2U)
-#define TIMER_TRIG_SRC_Msk           (0x7U << TIMER_TRIG_SRC_Pos)     /*0x00003000*/
-#define TIMER_TRIG_SRC               TIMER_TRIG_SRC_Msk              /*timer triger source selection. 0:systemclock triger;1:stc triger;2:rtc_triger;3:external clk triger;*/
+#define TIMER_TRIG_SRC_Msk           (0x7U << TIMER_TRIG_SRC_Pos)       /*0x00003000*/
+#define TIMER_TRIG_SRC               TIMER_TRIG_SRC_Msk                 /*timer triger source selection. 0:systemclock triger;1:stc triger;2:rtc_triger;3:external clk triger;*/
 
 
 /****************** TIM Instances : All supported instances *******************/

@@ -3,8 +3,7 @@
  */
 
 #include "Arduino.h"
-#include "sp645_hal_i2s.h"
-
+#ifdef SP645
 #define PCM_ADDRESS 	((uint32_t *)0x24000000)
 #define TEST_BUF_SIZE	(4 * 1024)
 
@@ -342,4 +341,14 @@ void loop()
 {
 
 }
+#else
+void setup()
+{
 
+}
+
+void loop()
+{
+
+}
+#endif

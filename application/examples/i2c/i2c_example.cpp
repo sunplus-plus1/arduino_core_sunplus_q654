@@ -19,6 +19,7 @@ static uint8_t rx_buff[32];
 
 TwoWire *i2cm_test;
 
+#ifndef SP7350
 void setup()
 {
 	printf("i2c example %s\n", __TIME__);
@@ -67,3 +68,58 @@ void loop()
 
 	delay(2000);
 }
+#else
+#define SLAVE_ADDR_ZEBU		0x02
+
+void setup()
+{
+	printf("i2c example %s\n", __TIME__);
+
+	uint32_t i;
+	uint8_t ret;
+
+	memset(&tx_buff, 0x0, 32);
+	memset(&rx_buff, 0x0, 32);
+
+	i2cm_test = new TwoWire(SP_I2CM0);
+	i2cm_test->begin();//init the hardware
+
+	tx_buff[0] = 0x11;
+
+	/* Init buffer(Wire.cpp) point and save slave address */
+	i2cm_test->beginTransmission(SLAVE_ADDR_ZEBU);
+
+	/* Put the data in buffer(Wire.cpp) */
+	i2cm_test->write(tx_buff, 1);
+
+	/* Hardware run, write */
+	ret = i2cm_test->endTransmission();
+	if (ret)
+		printf("Transmit error code %d\n", ret);
+
+	/* Hardware run, read */
+	i2cm_test->requestFrom(SLAVE_ADDR_ZEBU, 1);
+
+	/* Check if there is data in buffer(Wire.cpp) */
+	while(i2cm_test->available()) {
+
+		/* get the data from buffer(Wire.cpp) */
+		rx_buff[i++] = i2cm_test->read();
+	}
+
+	if(rx_buff[0] == 0x82) {
+		tx_buff[0] = 0x22;
+		tx_buff[1] = 0x33;
+		i2cm_test->beginTransmission(SLAVE_ADDR_ZEBU);
+		i2cm_test->write(tx_buff, 2);
+		ret = i2cm_test->endTransmission();
+		if (ret)
+		printf("Transmit error code %d\n", ret);
+	}
+}
+
+void loop()
+{
+
+}
+#endif
