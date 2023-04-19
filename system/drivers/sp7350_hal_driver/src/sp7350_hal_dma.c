@@ -302,7 +302,7 @@ HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callba
 
 	/* select dma & channel */
 	if (tt) {
-		dma = (src > PER_I2C7 || dst > PER_I2C7);
+		dma = !(src < PER_I2C8 || dst < PER_I2C8);
 		ch = select_ch(dma);
 	} else {
 		dma = 0;
