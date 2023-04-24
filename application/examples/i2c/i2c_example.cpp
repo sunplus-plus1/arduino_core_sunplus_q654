@@ -74,23 +74,26 @@ void loop()
 void setup()
 {
 	printf("i2c example %s\n", __TIME__);
-
+#if 0
+	HAL_I2C_SLAVE_TEST();
+#else
 	uint32_t i;
 	uint8_t ret;
 
-	memset(&tx_buff, 0x0, 32);
+	memset(&tx_buff, 0x55, 32);
 	memset(&rx_buff, 0x0, 32);
 
 	i2cm_test = new TwoWire(SP_I2CM0);
 	i2cm_test->begin();//init the hardware
 
 	tx_buff[0] = 0x11;
+	tx_buff[1] = 0x22;
 
 	/* Init buffer(Wire.cpp) point and save slave address */
 	i2cm_test->beginTransmission(SLAVE_ADDR_ZEBU);
 
 	/* Put the data in buffer(Wire.cpp) */
-	i2cm_test->write(tx_buff, 1);
+	i2cm_test->write(tx_buff, 4);
 
 	/* Hardware run, write */
 	ret = i2cm_test->endTransmission();
@@ -108,14 +111,15 @@ void setup()
 	}
 
 	if(rx_buff[0] == 0x82) {
-		tx_buff[0] = 0x22;
-		tx_buff[1] = 0x33;
+		tx_buff[0] = 0x33;
+		tx_buff[1] = 0x44;
 		i2cm_test->beginTransmission(SLAVE_ADDR_ZEBU);
-		i2cm_test->write(tx_buff, 2);
+		i2cm_test->write(tx_buff, 4);
 		ret = i2cm_test->endTransmission();
 		if (ret)
-		printf("Transmit error code %d\n", ret);
+			printf("Transmit error code %d\n", ret);
 	}
+#endif
 }
 
 void loop()

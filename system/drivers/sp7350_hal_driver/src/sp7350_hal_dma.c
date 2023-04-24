@@ -25,7 +25,7 @@
 
 /* Reg base of PER data register */
 #define REG_SPI_DR	0xf8822060UL
-#define REG_I2C_DR	0xf8828104UL
+#define REG_I2C_DR	0xf8828010UL
 
 /* CTLx bit fields */
 #define SMS		25
@@ -264,7 +264,7 @@ static u32 per_dr(u32 per, u32 offset)
 	u32 r;
 
 	if (per <= PER_I2C9) {	// I2C
-		r = REG_I2C_DR + (0x1000 * per) + offset;
+		r = REG_I2C_DR + (0x1000 * per);
 	} else {		// SPI_CB
 		r = REG_SPI_DR + (0x1000 * (per - PER_SPI_CB0));
 	}

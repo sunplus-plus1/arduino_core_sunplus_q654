@@ -36,7 +36,14 @@ CYG_MACRO_END
 // Write dirty cache lines to memory for the given address range.
 #define HAL_DCACHE_STORE( _base_ , _size_ )
 
-#define I2C_FIFO_DEPTH	8	//Confirm the value by reading reg 0xf4(RX[15:8] TX[23:16])
+/* Confirm the value by reading reg 0xf4(RX[15:8] TX[23:16]) */
+#define I2C_FIFO_DEPTH	8
+/* DMA transfer rate far more than I2C transfer rate, Therefore RX thresold > TX thresold */
+/* For TX, FIFO data length less than or equal to watermark level (= TDRL), DMA request trigger */
+#define I2C_TDRL	0//2
+/* For RX, FIFO data length more than or equal to watermark level (= RDRL + 1), DMA request trigger */
+#define I2C_RDRL	0//5
+
 #define I2C_READ_DATA	0x100
 
 /* I2C Transmit Modes */
@@ -48,7 +55,6 @@ CYG_MACRO_END
 #define I2C_MAX_STANDARD_MODE_FREQ	100000
 #define I2C_MAX_FAST_MODE_FREQ		400000
 #define I2C_MAX_FAST_MODE_PLUS_FREQ	3400000
-
 
 #define SP_IC_CON_MASTER		0x1
 #define SP_IC_CON_SPEED_STD		0x2
@@ -76,6 +82,9 @@ CYG_MACRO_END
 #define SP_IC_INTR_START_DET	0x400
 #define SP_IC_INTR_GEN_CALL	0x800
 #define SP_IC_INTR_RESTART_DET	0x1000
+
+#define SP_IC_RDMAE 		0x01
+#define SP_IC_TDMAE 		0x02
 
 #define SP_IC_STATUS_TFE	0x004
 #define SP_IC_STATUS_RFNE	0x008
@@ -204,6 +213,7 @@ typedef struct __I2C_HandleTypeDef
 	uint8_t                    XferAction;
 	uint8_t                    XferWaitTxEnd;
 	uint8_t                    *Buffer;
+	uint32_t                   DMAIndex;
 } I2C_HandleTypeDef;
 
 void I2C_HAL_TEST_IRQHandler(void);
@@ -238,6 +248,7 @@ void HAL_I2C_IRQHandler(I2C_HandleTypeDef *hi2c);
 
 void sp_i2c_en(I2C_HandleTypeDef *hi2c);
 void HAL_I2C_TEST(void);
+void HAL_I2C_SLAVE_TEST(void);
 
 #ifdef __cplusplus
 }

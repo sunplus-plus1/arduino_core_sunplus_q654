@@ -715,7 +715,11 @@ typedef struct {
 	__IOM uint32_t ic_rxflr;            /* 30 */
 	__IOM uint32_t ic_sda_hold;         /* 31*/
 	__IOM uint32_t ic_tx_abrt_source;   /* 32 0x80 */
-	__IOM uint32_t g40_reserved_0[6];   /* 38 */
+	__IOM uint32_t ic_slv_data_nack_only;/* 33 */
+	__IOM uint32_t ic_dma_cr;           /* 34 */
+	__IOM uint32_t ic_dma_tdlr;         /* 35 */
+	__IOM uint32_t ic_dma_rdlr;         /* 36 0x90 */
+	__IOM uint32_t g40_reserved_0[2];   /* 38 */
 	__IOM uint32_t ic_enable_status;    /* 39 0x9c */
 	__IOM uint32_t g40_reserved_1[2];   /* 40 */
 	__IOM uint32_t ic_clr_restart_det;  /* 42 0xa8 */

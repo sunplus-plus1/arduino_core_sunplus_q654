@@ -59,8 +59,8 @@ static UART_Rxdma *rxdma_base;
 static PINMUX_Type pinmux_idx;
 static IRQn_Type irq_no,rxdma_irq_no;
 
-static void _get_Uart_param(int uart_idx) 
-{ 
+static void _get_Uart_param(int uart_idx)
+{
 	switch(uart_idx)
 	{
 		case 1:
@@ -108,8 +108,8 @@ static void _get_Uart_param(int uart_idx)
 
 }
 
-static void uart_test_Transmit_DMA(void) 
-{ 
+static void uart_test_Transmit_DMA(void)
+{
 	HAL_UART_DeInit(&huart_test);
 
 	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
@@ -130,12 +130,12 @@ static void uart_test_Transmit_DMA(void)
 
 	/* wait for send data to complete*/
 	delay(200);
-	CU_ASSERT_EQUAL(rw_ret, 1); 
+	CU_ASSERT_EQUAL(rw_ret, 1);
 }
 
-static void uart_test_Receive_Polling(void); 
-static void uart_test_Receive_DMA(void) 
-{ 
+static void uart_test_Receive_Polling(void);
+static void uart_test_Receive_DMA(void)
+{
 #ifdef SP645
 
 	HAL_UART_DeInit(&huart_test);
@@ -161,10 +161,10 @@ static void uart_test_Receive_DMA(void)
 
 	/* wait to receive data */
 	delay(500);
-	
-	CU_ASSERT_EQUAL(rw_ret, 1); 
+
+	CU_ASSERT_EQUAL(rw_ret, 1);
 	CU_ASSERT_STRING_EQUAL(buf, "abcdef");
-	
+
 #elif defined(SP7350)
     /* SP7350 no rxdma mode, use polling to replace */
 	return uart_test_Receive_Polling();
@@ -172,15 +172,15 @@ static void uart_test_Receive_DMA(void)
 
 }
 
-static void uart_test_Transmit_IT(void) 
-{ 
+static void uart_test_Transmit_IT(void)
+{
 	HAL_UART_DeInit(&huart_test);
-	
+
 	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
 	huart_test.Instance = uart_base;
 	huart_test.Init.BaudRate = 115200;
 	HAL_UART_Init(&huart_test);
-	
+
 	/* set interrupt */
 	HAL_PINMUX_Cfg(pinmux_idx,1);
 
@@ -196,11 +196,11 @@ static void uart_test_Transmit_IT(void)
 	delay(10);
 
 	CU_ASSERT_EQUAL(rw_ret, 1);
-	
+
 }
 
-static void uart_test_Receive_IT(void) 
-{ 
+static void uart_test_Receive_IT(void)
+{
 	/* clear data */
 	memset(buf,0,sizeof(buf));
 	rw_ret = 0;
@@ -215,10 +215,10 @@ static void uart_test_Receive_IT(void)
 }
 
 /*  uart polling: uart3'TX connect to uart3's RX */
-static void uart_test_Transmit_Polling(void) 
-{ 
+static void uart_test_Transmit_Polling(void)
+{
 	HAL_UART_DeInit(&huart_test);
-	
+
 	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
 	huart_test.Instance = uart_base;
 	huart_test.Init.BaudRate = 115200;
@@ -231,8 +231,8 @@ static void uart_test_Transmit_Polling(void)
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 }
 
-static void uart_test_Receive_Polling(void) 
-{ 
+static void uart_test_Receive_Polling(void)
+{
 	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
 	huart_test.Instance = uart_base;
 	huart_test.Init.BaudRate = 115200;
@@ -241,7 +241,7 @@ static void uart_test_Receive_Polling(void)
 	HAL_PINMUX_Cfg(pinmux_idx,1);
 
 	memset(buf,0,sizeof(buf));
-	
+
 	ret = HAL_UART_Receive(&huart_test, (uint8_t*)buf, 6,0xFFFF);
 
 	CU_ASSERT_EQUAL(ret, HAL_OK);
@@ -332,8 +332,8 @@ static int  suite_success_clean(void)
 {
 	return  0;
 }
- 
-static CU_SuiteInfo suites[] = 
+
+static CU_SuiteInfo suites[] =
 {
 	{"Testing the Uart：", suite_success_init, suite_success_clean, NULL,NULL,uart_testcases},
 	CU_SUITE_INFO_NULL
@@ -341,7 +341,7 @@ static CU_SuiteInfo suites[] =
 
 int Add_Uart_Tests(void)
 {
-	
+
 	assert(NULL != CU_get_registry());
 	assert(!CU_is_test_running());
 	if(CUE_SUCCESS  != CU_register_suites(suites))
@@ -357,17 +357,17 @@ int Add_Uart_Tests(void)
 
 extern "C" {
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+static void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	rw_ret = 1;
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+static void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	rw_ret = 1;
 }
 
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+static void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
 
 }

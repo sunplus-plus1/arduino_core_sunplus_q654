@@ -21,7 +21,20 @@ extern "C" {
 #define PINMUX_I2C_2 PINMUX_I2CM2_SCL
 #define PINMUX_I2C_3 PINMUX_I2CM3_SCL
 #endif
-
+#ifndef SP7350
+enum {
+        PER_I2C0,
+        PER_I2C1,
+        PER_I2C2,
+        PER_I2C3,
+        PER_I2C4,
+        PER_I2C5,
+        PER_I2C6,
+        PER_I2C7,
+        PER_I2C8,
+        PER_I2C9,
+};
+#endif
 /* Private Defines */
 /// @brief I2C timout in tick unit
 #ifndef I2C_TIMEOUT_TICK
@@ -35,10 +48,11 @@ extern "C" {
 #endif
 #define I2C_INIT_FREQ		100
 
-#define I2C_INFO(inst, idx, clk, pin, irqn, cb) \
+#define I2C_INFO(inst, idx, clk, pin, irqn, cb, dma) \
 	{ .instance = (inst), .index = (idx), \
 	  .clk_id = (clk), .pinmux = (pin), \
-	  .irq_num = (irqn), .irq_callback = (cb) }
+	  .irq_num = (irqn), .irq_callback = (cb), \
+	  .dma_idx = (dma) }
 
 /*  Family specific description for I2C */
 typedef enum {
@@ -66,23 +80,24 @@ struct i2c_info {
 	PINMUX_Type pinmux;
 	IRQn_Type irq_num;
 	IRQHandler_t irq_callback;
+	uint32_t dma_idx; /* DMA mode use */
 };
 
 /* Private Variables */
 const static struct i2c_info sp_i2c_info[] = {
-	I2C_INFO(SP_I2CM0, I2C0_INDEX, I2CM0, PINMUX_I2C_0, I2C_MASTER0_IRQ, &I2C0_IRQHandler),
-	I2C_INFO(SP_I2CM1, I2C1_INDEX, I2CM1, PINMUX_I2C_1, I2C_MASTER1_IRQ, &I2C1_IRQHandler),
-	I2C_INFO(SP_I2CM2, I2C2_INDEX, I2CM2, PINMUX_I2C_2, I2C_MASTER2_IRQ, &I2C2_IRQHandler),
-	I2C_INFO(SP_I2CM3, I2C3_INDEX, I2CM3, PINMUX_I2C_3, I2C_MASTER3_IRQ, &I2C3_IRQHandler),
+	I2C_INFO(SP_I2CM0, I2C0_INDEX, I2CM0, PINMUX_I2C_0, I2C_MASTER0_IRQ, &I2C0_IRQHandler, PER_I2C0),
+	I2C_INFO(SP_I2CM1, I2C1_INDEX, I2CM1, PINMUX_I2C_1, I2C_MASTER1_IRQ, &I2C1_IRQHandler, PER_I2C1),
+	I2C_INFO(SP_I2CM2, I2C2_INDEX, I2CM2, PINMUX_I2C_2, I2C_MASTER2_IRQ, &I2C2_IRQHandler, PER_I2C2),
+	I2C_INFO(SP_I2CM3, I2C3_INDEX, I2CM3, PINMUX_I2C_3, I2C_MASTER3_IRQ, &I2C3_IRQHandler, PER_I2C3),
 #if defined (SP645) || defined (SP7350)
-	I2C_INFO(SP_I2CM4, I2C4_INDEX, I2CM4, PINMUX_I2C_4, I2C_MASTER4_IRQ, &I2C4_IRQHandler),
-	I2C_INFO(SP_I2CM5, I2C5_INDEX, I2CM5, PINMUX_I2C_5, I2C_MASTER5_IRQ, &I2C5_IRQHandler),
+	I2C_INFO(SP_I2CM4, I2C4_INDEX, I2CM4, PINMUX_I2C_4, I2C_MASTER4_IRQ, &I2C4_IRQHandler, PER_I2C4),
+	I2C_INFO(SP_I2CM5, I2C5_INDEX, I2CM5, PINMUX_I2C_5, I2C_MASTER5_IRQ, &I2C5_IRQHandler, PER_I2C5),
 #endif
 #ifdef SP7350
-	I2C_INFO(SP_I2CM6, I2C6_INDEX, I2CM6, PINMUX_I2C_6, I2C_MASTER6_IRQ, &I2C6_IRQHandler),
-	I2C_INFO(SP_I2CM7, I2C7_INDEX, I2CM7, PINMUX_I2C_7, I2C_MASTER7_IRQ, &I2C7_IRQHandler),
-	I2C_INFO(SP_I2CM8, I2C8_INDEX, I2CM8, PINMUX_I2C_8, I2C_MASTER8_IRQ, &I2C8_IRQHandler),
-	I2C_INFO(SP_I2CM9, I2C9_INDEX, I2CM9, PINMUX_I2C_9, I2C_MASTER9_IRQ, &I2C9_IRQHandler),
+	I2C_INFO(SP_I2CM6, I2C6_INDEX, I2CM6, PINMUX_I2C_6, I2C_MASTER6_IRQ, &I2C6_IRQHandler, PER_I2C6),
+	I2C_INFO(SP_I2CM7, I2C7_INDEX, I2CM7, PINMUX_I2C_7, I2C_MASTER7_IRQ, &I2C7_IRQHandler, PER_I2C7),
+	I2C_INFO(SP_I2CM8, I2C8_INDEX, I2CM8, PINMUX_I2C_8, I2C_MASTER8_IRQ, &I2C8_IRQHandler, PER_I2C8),
+	I2C_INFO(SP_I2CM9, I2C9_INDEX, I2CM9, PINMUX_I2C_9, I2C_MASTER9_IRQ, &I2C9_IRQHandler, PER_I2C9),
 #endif
 };
 
@@ -96,6 +111,9 @@ static void i2c_detect(I2C_HandleTypeDef *handle)
 	for(i = 0; i < I2C_NUM; i++) {
 		if(handle->Instance == sp_i2c_info[i].instance) {
 			handle->Index = sp_i2c_info[i].index;
+#ifdef SP7350
+			handle->DMAIndex = sp_i2c_info[i].dma_idx;
+#endif
 			break;
 		}
 	}
