@@ -28,6 +28,7 @@ typedef struct
 	HAL_WDG_ModeTypeDef 	IrqMode;	/*!<  */
 	IRQHandler_t		IrqHandle;
 	uint32_t		IrqTicks;
+	IRQn_Type		IrqNum;
 } WDG_HandleTypeDef;
 
 typedef void (*WdgCallbackFunc)(void);

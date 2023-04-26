@@ -58,10 +58,14 @@ __STATIC_INLINE uint32_t _wdg_get_intrcnt(WDG_TypeDef *Instance)
 void HAL_WDG_IRQHandler(void *arg)
 {
 	WDG_HandleTypeDef *hwdg = (WDG_HandleTypeDef *)arg;
+	uint32_t irqn;
 
 	assert_param(IS_WDG_INSTANCE(hwdg->Instance));
 
-	_wdg_clearflag(hwdg->Instance);
+	/* Add the operation you want */
+
+	IRQ_Disable(hwdg->IrqNum);
+	//_wdg_clearflag(hwdg->Instance);
 }
 
 /* STC_FREQ = 1000000 */
@@ -74,6 +78,8 @@ void HAL_WDG_SetTimeout(WDG_HandleTypeDef *hwdg, uint32_t u32Ticks)
 		u32Ticks -= hwdg->IrqTicks;
 	}
 
+	_wdg_clearflag(hwdg->Instance);
+	IRQ_Enable(hwdg->IrqNum);
 	_wdg_stop(hwdg->Instance);
 	_wdg_unlock(hwdg->Instance);
 	_wdg_setcnt(hwdg->Instance, u32Ticks);
@@ -121,27 +127,26 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 	if(hwdg == NULL)
 		return HAL_ERROR;
 
-	IRQn_Type irq;
 	int ret;
 
 	if (hwdg->Instance == WDG0)
 	{
-		irq = STC_TIMER_W_IRQn;
+		hwdg->IrqNum = STC_TIMER_W_IRQn;
 		hwdg->BitShift = 1;
 	}
 	else if (hwdg->Instance == WDG1)
 	{
-		irq = STC_AV0_TIMER_W_IRQn;
+		hwdg->IrqNum = STC_AV0_TIMER_W_IRQn;
 		hwdg->BitShift = 2;
 	}
 	else if (hwdg->Instance == WDG2)
 	{
-		irq = STC_AV1_TIMER_W_IRQn;
+		hwdg->IrqNum = STC_AV1_TIMER_W_IRQn;
 		hwdg->BitShift = 3;
 	}
 	else if (hwdg->Instance == WDG3)
 	{
-		irq = STC_AV4_TIMERW_IRQn;
+		hwdg->IrqNum = STC_AV4_TIMERW_IRQn;
 		hwdg->BitShift = 5;
 	}
 
@@ -152,8 +157,8 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 
 	/* Config irq */
 	if(hwdg->IrqMode != WDG_RST) {
-		IRQ_SetHandler(irq, hwdg->IrqHandle);
-		IRQ_Enable(irq);
+		IRQ_SetHandler(hwdg->IrqNum, hwdg->IrqHandle);
+		IRQ_Enable(hwdg->IrqNum);
 	}
 
 	/* Enable the WDG to respond the system reset when watchdog timeout */
