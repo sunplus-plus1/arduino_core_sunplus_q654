@@ -12,6 +12,13 @@
 #define WDG_MAX_TICKS 		0xFFFF0UL
 #define IS_WDG_TICKS(X)		((X) <= WDG_MAX_TICKS)
 
+typedef enum
+{
+	WDG_INTR	= 0x0U,
+	WDG_RST		= 0x2U,
+	WDG_INTR_RST	= 0x3U
+} HAL_WDG_ModeTypeDef;
+
 /**
   * @brief  IWDG Handle Structure definition
   */

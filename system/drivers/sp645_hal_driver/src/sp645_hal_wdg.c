@@ -169,7 +169,7 @@ HAL_StatusTypeDef HAL_WDG_Init(WDG_HandleTypeDef *hwdg)
 	//IRQ_Enable(irq);
 
 	/* Enable the RBUS/WDG to respond the system reset when watchdog timeout */
-	if (hwdg->IrqMode == 1)
+	if (hwdg->IrqMode == WDG_INTR_RST)
 		MOON4_REG->sft_cfg[18] = 0x02000000 | (0x10000 << hwdg->BitShift);
 	else
 		MOON4_REG->sft_cfg[18] = 0x02000200 | (0x10001 << hwdg->BitShift);
