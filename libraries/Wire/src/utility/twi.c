@@ -15,6 +15,17 @@
 extern "C" {
 #endif
 
+#ifdef SP7350//////////////
+#define	I2C_MAX_FREQ		(I2C_MAX_FAST_MODE_PLUS_FREQ / 1000)
+
+#ifndef I2C_TIMEOUT_TICK
+#define I2C_TIMEOUT_TICK	0xffffffff
+#endif
+
+
+#else//////////////////
+
+
 #ifdef SP7021
 #define PINMUX_I2C_0 PINMUX_I2CM0_SCL
 #define PINMUX_I2C_1 PINMUX_I2CM1_SCL
@@ -161,7 +172,7 @@ static void i2c_pinmux_config(PINMUX_Type pinmux, i2c_t *obj)
 	HAL_PINMUX_Cfg(pinmux, 1);
 #endif
 }
-
+#endif
 /**
 * @brief Compute I2C timing according current I2C clock source and
 * required I2C clock.
@@ -209,7 +220,7 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		return;
 
 	I2C_HandleTypeDef *handle = &(obj->handle);
-
+#ifndef SP7350
 	/* Match the i2c information */
 	i2c_detect(handle);
 	/* Set irq trigger mode and irq callback */
@@ -222,7 +233,7 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 	obj->irq = sp_i2c_info[handle->Index].irq_num;
 	/* Just for IRQHandler() */
 	gpHandle[handle->Index] = handle;
-
+#endif
 	handle->Init.Timing = i2c_getTiming(obj, timing);
 	handle->State = HAL_I2C_STATE_RESET;
 
@@ -377,7 +388,7 @@ i2c_t *get_i2c_obj(I2C_HandleTypeDef * hi2c)
 
 	return (obj);
 }
-
+#ifndef SP7350
 void I2C0_IRQHandler()
 {
 	HAL_I2C_IRQHandler(gpHandle[I2C0_INDEX]);
@@ -428,6 +439,7 @@ void I2C9_IRQHandler()
 {
 	HAL_I2C_IRQHandler(gpHandle[I2C9_INDEX]);
 }
+#endif
 #endif
 #ifdef __cplusplus
 }

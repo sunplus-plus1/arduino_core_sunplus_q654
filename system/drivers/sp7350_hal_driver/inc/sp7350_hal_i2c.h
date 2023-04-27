@@ -10,32 +10,6 @@ extern "C" {
 #include "irq_ctrl.h"
 #include "sp7350xx.h"
 
-#if 0
-#define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->Instance->interrupt) & \
-                                                    (__FLAG__)) == (__FLAG__)) ? SET : RESET)
-#define __HAL_DMA_GET_FLAG(__HANDLE__, __FLAG__) (((((__HANDLE__)->gdma->int_flag) & \
-                                                    (__FLAG__)) == (__FLAG__)) ? SET : RESET)
-#endif
-#define __HAL_I2C_GET_FLAG(__HANDLE__, __FLAG__) 0
-#define __HAL_DMA_GET_FLAG(__HANDLE__, __FLAG__) 0
-
-
-#define HAL_DCACHE_LINE_SIZE            32
-#define CYG_MACRO_START			do{
-#define CYG_MACRO_END			}while(0)
-
-#define HAL_DCACHE_FLUSH( _base_ , _size_ )     \
-CYG_MACRO_START                                 \
-    HAL_DCACHE_STORE( _base_ , _size_ );        \
-    HAL_DCACHE_INVALIDATE( _base_ , _size_ );   \
-CYG_MACRO_END
-
-// Invalidate cache lines in the given range without writing to memory.
-#define HAL_DCACHE_INVALIDATE( _base_ , _size_ )
-
-// Write dirty cache lines to memory for the given address range.
-#define HAL_DCACHE_STORE( _base_ , _size_ )
-
 /* Confirm the value by reading reg 0xf4(RX[15:8] TX[23:16]) */
 #define I2C_FIFO_DEPTH	8
 /* DMA transfer rate far more than I2C transfer rate, Therefore RX thresold > TX thresold */
@@ -118,37 +92,36 @@ CYG_MACRO_END
 					 SP_IC_TX_ABRT_10ADDR2_NOACK | \
 					 SP_IC_TX_ABRT_TXDATA_NOACK | \
 					 SP_IC_TX_ABRT_GCALL_NOACK)
-/**
-  * @}
-  */
 
-/** @defgroup HAL_state_structure_definition HAL state structure definition
-  * @brief  HAL State structure definition
-  * @note  HAL I2C State value coding follow below described bitmap :\n
-  *          b7-b6  Error information\n
-  *             00 : No Error\n
-  *             01 : Abort (Abort user request on going)\n
-  *             10 : Timeout\n
-  *             11 : Error\n
-  *          b5     Peripheral initialization status\n
-  *             0  : Reset (peripheral not initialized)\n
-  *             1  : Init done (peripheral initialized and ready to use. HAL I2C Init function called)\n
-  *          b4     (not used)\n
-  *             x  : Should be set to 0\n
-  *          b3\n
-  *             0  : Ready or Busy (No Listen mode ongoing)\n
-  *             1  : Listen (peripheral in Address Listen Mode)\n
-  *          b2     Intrinsic process state\n
-  *             0  : Ready\n
-  *             1  : Busy (peripheral busy with some configuration or internal operations)\n
-  *          b1     Rx state\n
-  *             0  : Ready (no Rx operation ongoing)\n
-  *             1  : Busy (Rx operation ongoing)\n
-  *          b0     Tx state\n
-  *             0  : Ready (no Tx operation ongoing)\n
-  *             1  : Busy (Tx operation ongoing)
-  * @{
-  */
+#define I2C_HAL_INFO(inst, idx, clk, pin, irqn, dma) \
+	{ .instance = (inst), .index = (idx), \
+	  .clk_id = (clk), .pinmux = (pin), \
+	  .irq_num = (irqn), .dma_idx = (dma) }
+
+typedef enum {
+	I2C0_INDEX = 0UL,
+	I2C1_INDEX,
+	I2C2_INDEX,
+	I2C3_INDEX,
+	I2C4_INDEX,
+	I2C5_INDEX,
+	I2C6_INDEX,
+	I2C7_INDEX,
+	I2C8_INDEX,
+	I2C9_INDEX,
+
+	I2C_NUM
+} i2c_index_e;
+
+struct i2c_hal_info {
+	volatile I2C_TypeDef *instance;
+	i2c_index_e index;
+	MODULE_ID_Type clk_id;
+	PINMUX_Type pinmux;
+	IRQn_Type irq_num;
+	uint32_t dma_idx; /* DMA mode use */
+};
+
 typedef enum
 {
 	HAL_I2C_STATE_RESET             = 0x00U,   /*!< Peripheral is not yet Initialized         */
@@ -162,10 +135,6 @@ typedef enum
 	HAL_I2C_STATE_TIMEOUT           = 0xA0U,   /*!< Timeout state                             */
 	HAL_I2C_STATE_ERROR             = 0xE0U    /*!< Error                                     */
 } HAL_I2C_StateTypeDef;
-
-/**
-  * @}
-  */
 
 typedef enum
 {
@@ -185,15 +154,10 @@ typedef enum
 
 typedef struct
 {
-	uint32_t Timing;              /*!< Specifies the I2C_TIMINGR_register value.
-                                  This parameter calculated by referring to I2C initialization
-                                         section in Reference manual */
+	uint32_t Timing;
+	uint32_t AddressingMode;
 } I2C_InitTypeDef;
 
-/** @defgroup I2C_handle_Structure_definition I2C handle Structure definition
-  * @brief  I2C handle Structure definition
-  * @{
-  */
 typedef struct __I2C_HandleTypeDef
 {
 	__IO I2C_TypeDef           *Instance;      /*!< I2C registers base address                */
@@ -214,36 +178,27 @@ typedef struct __I2C_HandleTypeDef
 	uint8_t                    XferWaitTxEnd;
 	uint8_t                    *Buffer;
 	uint32_t                   DMAIndex;
+	uint8_t                    Mode;
+	uint8_t                    Speed;
 } I2C_HandleTypeDef;
 
-void I2C_HAL_TEST_IRQHandler(void);
-
-void HAL_I2C_PinMux(I2C_HandleTypeDef *hi2c, int sda_pinmux, int scl_pinmux);
-
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
-
 HAL_StatusTypeDef HAL_I2C_DeInit(I2C_HandleTypeDef *hi2c);
-
-HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
-                                          uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
-                                         uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-												   uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-												  uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-												 uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-												uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-                                              uint16_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData,
-                                             uint16_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					  uint8_t *pData, uint32_t Size, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					 uint8_t *pData, uint32_t Size, uint32_t Timeout);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					      uint8_t *pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					     uint8_t *pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					     uint8_t *pData, uint32_t Size);
+HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
+					    uint8_t *pData, uint32_t Size);
 HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
 void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
 uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
-
 void HAL_I2C_IRQHandler(I2C_HandleTypeDef *hi2c);
 
 void sp_i2c_en(I2C_HandleTypeDef *hi2c);

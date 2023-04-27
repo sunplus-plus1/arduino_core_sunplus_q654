@@ -32,6 +32,11 @@
  */
 
 
+#define STAMP(v)                                   \
+	do {                                       \
+		*(volatile uint32_t *)0xf8000000UL = v; \
+	} while (0)
+
 typedef enum {
 	WDG0_INDEX,
 	WDG1_INDEX,
