@@ -58,7 +58,7 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
     handle->Instance  = SPI2;
 #elif SPI_SEL_INSTANCE == 3
     handle->Instance  = SPI3;
-#ifdef SP645
+#if  (defined(SP645) || defined(SP7350))
 #elif SPI_SEL_INSTANCE == 4
     handle->Instance  = SPI4;
 #elif SPI_SEL_INSTANCE == 5
@@ -116,16 +116,35 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
         if (obj->pin_ssel != -1)
         HAL_PINMUX_Cfg(PINMUX_SPIM0_EN + 5*SPI_SEL_INSTANCE,spi_ssel);
     }
-#elif defined(SP645)
+#elif  (defined(SP645) || defined(SP7350))
     if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
     {
         HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 1);
         HAL_Module_Clock_gate(SPICOMBO0 + SPI_SEL_INSTANCE, 1);
         HAL_Module_Reset(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
         if(SPI_SEL_INSTANCE == 0)
+        {
             HAL_PINMUX_Cfg(PINMUX_SPI_COM0_MST,1);
+        }
         else
+        {
+        #ifdef SP645
             HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + 2*(SPI_SEL_INSTANCE - 1),1);
+		#else
+			if(SPI_SEL_INSTANCE == 1)
+	        {
+	            HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST,1);
+	        }
+			else if(SPI_SEL_INSTANCE == 2 || SPI_SEL_INSTANCE == 3)
+			{
+				HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + SPI_SEL_INSTANCE,1);
+			}
+			else if(SPI_SEL_INSTANCE == 4 || SPI_SEL_INSTANCE == 5)
+			{
+				HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + SPI_SEL_INSTANCE + 1,1);
+			}
+		#endif
+		}
     }
 #endif
 

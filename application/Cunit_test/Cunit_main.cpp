@@ -50,6 +50,7 @@ int main(void)
 //	Add_I2C_Tests();
 //	Add_Watchdog_Tests();
 //	Add_Uart_Tests();
+//	Add_Spi_Tests();
 	#endif
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);

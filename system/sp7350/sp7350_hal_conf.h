@@ -16,7 +16,8 @@
 #include "sp7350_hal_wdg.h"
 #include "sp7350_hal_pll.h"
 #include "sp7350_hal_dma.h"
-
+#include "sp7350_hal_adc.h"
+#include "sp7350_hal_hsem.h"
 #endif
 
 

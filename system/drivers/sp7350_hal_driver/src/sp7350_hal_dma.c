@@ -9,7 +9,6 @@
 		*(volatile u32 *)0xf8000000UL = v; \
 	} while (0)
 
-#define BIT(x)		(1 << (x))
 #define MIN(x, y)	((x) < (y) ? (x) : (y))
 
 /* AHB_DMA Configure */
@@ -115,9 +114,13 @@ typedef struct {
 } dmac_reg_t;
 
 typedef struct {
+	int IRQ;
+	void *param;
+    dma_callback_t callback;
+}dma_chan_t;
+typedef struct {
 	volatile dmac_reg_t *reg;
-	int IRQ[DMAH_NUM_CHANNELS];
-        dma_callback_t callback[DMAH_NUM_CHANNELS];
+	dma_chan_t channel[DMAH_NUM_CHANNELS];
 	u32 ChEn; // channel bits
 } dmac_t;
 
@@ -125,27 +128,27 @@ static dmac_t dmac[] = {
 	{
 		(void *)REG_AHB_DMA0,
 		{
-			151, // AHB_DMA0_CH0_INT
-			152, // AHB_DMA0_CH1_INT
-			153, // AHB_DMA0_CH2_INT
-			154, // AHB_DMA0_CH3_INT
-			155, // AHB_DMA0_CH4_INT
-			156, // AHB_DMA0_CH5_INT
-			160, // AHB_DMA0_CH6_INT
-			161, // AHB_DMA0_CH7_INT
+			{151}, // AHB_DMA0_CH0_INT
+			{152}, // AHB_DMA0_CH1_INT
+			{153}, // AHB_DMA0_CH2_INT
+			{154}, // AHB_DMA0_CH3_INT
+			{155}, // AHB_DMA0_CH4_INT
+			{156}, // AHB_DMA0_CH5_INT
+			{160}, // AHB_DMA0_CH6_INT
+			{161}, // AHB_DMA0_CH7_INT
 		}
 	},
 	{
 		(void *)REG_AHB_DMA1,
 		{
-			178, // AHB_DMA1_CH0_INT
-			180, // AHB_DMA1_CH1_INT
-			192, // AHB_DMA1_CH2_INT
-			193, // AHB_DMA1_CH3_INT
-			194, // AHB_DMA1_CH4_INT
-			195, // AHB_DMA1_CH5_INT
-			196, // AHB_DMA1_CH6_INT
-			199, // AHB_DMA1_CH7_INT
+			{178}, // AHB_DMA1_CH0_INT
+			{180}, // AHB_DMA1_CH1_INT
+			{192}, // AHB_DMA1_CH2_INT
+			{193}, // AHB_DMA1_CH3_INT
+			{194}, // AHB_DMA1_CH4_INT
+			{195}, // AHB_DMA1_CH5_INT
+			{196}, // AHB_DMA1_CH6_INT
+			{199}, // AHB_DMA1_CH7_INT
 		}
 	},
 };
@@ -213,8 +216,8 @@ static void dmac_irq_handler(u32 dma)
 		u32 ch_mask = BIT(ch);
 
 		if ((tfr & ch_mask) || (err & ch_mask)) {
-			if (dmac[dma].callback[ch])
-				dmac[dma].callback[ch](err & ch_mask);
+			if (dmac[dma].channel[ch].callback)
+				dmac[dma].channel[ch].callback(err & ch_mask,dmac[dma].channel[ch].param);
 			dmac[dma].ChEn &= ~ch_mask; // clear channel bit
 		}
 
@@ -249,7 +252,7 @@ static volatile dmac_reg_t *dmac_init(u32 dma)
 
 		/* Register IRQs */
 		for (int i = 0; i < DMAH_NUM_CHANNELS; i++) {
-			int irqn = dmac[dma].IRQ[i];
+			int irqn = dmac[dma].channel[i].IRQ;
 			IRQ_SetHandler(irqn, dma ? dma1_irq_handler : dma0_irq_handler);
 			IRQ_Enable(irqn);
 		}
@@ -272,14 +275,14 @@ static u32 per_dr(u32 per, u32 offset)
 	return r;
 }
 
-HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callback)
+HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callback,void* param)
 {
 	static u32 m = 0; // master interface
 	volatile dmac_reg_t *reg;
 	volatile dmac_ch_reg_t *ch_reg;
 	u32 dma, ch, ch_mask;
 	u32 tt, sinc, dinc;
-	u32 t;
+	u32 t,s,l=1;
 
 	// src, dst, len must be 4-byte aligned
 
@@ -315,7 +318,8 @@ HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callba
 	if (ch >= DMAH_NUM_CHANNELS)
 		return HAL_BUSY; // No free channel
 
-	dmac[dma].callback[ch] = callback;
+	dmac[dma].channel[ch].callback = callback;
+	dmac[dma].channel[ch].param = param;
 	DBG("dma    : ", dma);
 	DBG("channel: ", ch);
 
@@ -348,10 +352,13 @@ HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callba
 	DBG("CFG0: ", ch_reg->CFG.l);
 	DBG("CFG1: ", ch_reg->CFG.h);
 
+	s = 2; //default is 32bit width
+	if ((src < PER_MAX ) || (dst < PER_MAX))
+		s = 0; //spi/i2c is 8bit width
 	/* CTLx */
 	t = 1 << INT_EN;
-	t |= 2 << SRC_TR_WIDTH;
-	t |= 2 << DST_TR_WIDTH;
+	t |= s << SRC_TR_WIDTH;
+	t |= s << DST_TR_WIDTH;
 	t |= tt << TT_FC;
 	t |= sinc << SINC;
 	t |= dinc << DINC;
@@ -363,8 +370,11 @@ HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callba
 #ifdef HAL_DMA_TIMEOUT
 	t = HAL_GetTick();
 #endif
+	DBG("len : ", len);
 	while (len) {
-		ch_reg->CTL.h = MIN(len, MAX_BLK_BYTES) / 4;
+		while(s--)
+			l *= 2;
+		ch_reg->CTL.h = MIN(len, MAX_BLK_BYTES)/l;
 		DBG("CTL1: ", ch_reg->CTL.h);
 		DBG("SAR : ", ch_reg->SAR.l);
 		DBG("DAR : ", ch_reg->DAR.l);
@@ -397,7 +407,7 @@ static unsigned long src = 0xd2300000;
 static unsigned long dst = 0xd0001000;
 static unsigned long len = 0x100;
 
-static void dma_test_callback(u32 err)
+static void dma_test_callback(u32 err,void* param)
 {
 	DUMP("<<< ", *(volatile u32 *)(dst + len - 4));
 	printf("DMA_Test result: %d\n", err);
@@ -411,7 +421,7 @@ void HAL_DMA_Test(void)
 	memset((void *)dst, 0x00, len);
 
 	DUMP(">>> ", *(volatile u32 *)(dst + len - 4));
-	HAL_DMA_Start(src, dst, len, NULL);
+	HAL_DMA_Start(src, dst, len, NULL,NULL);
 	DUMP("<<< ", *(volatile u32 *)(dst + len - 4));
 	STAMP(0xabcddcba); // RID PASS
 
@@ -420,6 +430,6 @@ void HAL_DMA_Test(void)
 	memset((void *)dst, 0x00, len);
 
 	DUMP(">>> ", *(volatile u32 *)(dst + len - 4));
-	HAL_DMA_Start(src, dst, len, dma_test_callback);
+	HAL_DMA_Start(src, dst, len, dma_test_callback,NULL);
 }
 #endif

@@ -33,7 +33,7 @@ typedef enum {
 typedef struct
 {
   uint32_t spiclk;
-  spi_mode spi_mode;
+  uint32_t spi_mode;
   uint32_t FirstBit;
 } SPI_InitTypeDef;
 
@@ -44,20 +44,14 @@ typedef struct __SPI_HandleTypeDef
 
   SPI_InitTypeDef            Init;           /*!< SPI communication parameters             */
 
-
   /* driver used */
   uint8_t                    *pTxBuffPtr;    /*!< Pointer to SPI Tx transfer Buffer        */
-
-  uint16_t                   TxXferSize;     /*!< SPI Tx Transfer size                     */
 
   __IO uint16_t              TxXferCount;    /*!< SPI Tx Transfer Counter                  */
 
   uint8_t                    *pRxBuffPtr;    /*!< Pointer to SPI Rx transfer Buffer        */
 
-  uint16_t                   RxXferSize;     /*!< SPI Rx Transfer size                     */
-
   __IO uint16_t              RxXferCount;    /*!< SPI Rx Transfer Counter                  */
-
 
   HAL_LockTypeDef            Lock;           /*!< Locking object                           */
 
@@ -68,6 +62,7 @@ typedef struct __SPI_HandleTypeDef
   void (* TxCpltCallback)(struct __SPI_HandleTypeDef *hspi);             /*!< SPI Tx Completed callback          */
   void (* RxCpltCallback)(struct __SPI_HandleTypeDef *hspi);             /*!< SPI Rx Completed callback          */
   void (* TxRxCpltCallback)(struct __SPI_HandleTypeDef *hspi);           /*!< SPI TxRx Completed callback        */
+  void (* ErrorCallback)(struct __SPI_HandleTypeDef *hspi);           	 /*!< SPI error callback        */
 
 } SPI_HandleTypeDef;
 
@@ -89,34 +84,19 @@ typedef struct __SPI_HandleTypeDef
 
 #define SPI_FREQ_MIN                    (40000)     /* spi clk  min is 40k */
 #define SPI_FREQ_MAX                    (50000000)  /* spi clk  max is 50M */
-/* SPI MST DMA_SIZE */
-#define MST_DMA_RSIZE(x)       (x<<16)
-#define MST_DMA_WSIZE(x)       (x<<0)
 
-/* SPI MST DMA config */
-#define MST_DMA_EN             (1<<1)
-#define MST_DMA_START          (1<<0)
+/* full duplex, fifo length is config 128 byte */
+#define SPI_FIFO_MAX_LENGTH     (128)
 
-/* full duplex, fifo length is config 16 byte */
-#define SPI_FIFO_MAX_LENGTH     (16)
+#define SPI_TMOD_TR			    0x0		/* xmit & recv */
+#define SPI_TMOD_TO			    0x1		/* xmit only */
+#define SPI_TMOD_RO			    0x2		/* recv only */
 
-/* SPI MST STATUS */
-
-
-#define CLEAN_FLUG_MASK (~0xF800)
-
-#define CLEAR_IRQ_MASK         (~0xF800)
-#define CLEAN_RW_BYTE          (~0x780)
-#define CLEAN_SPI_MODE         (~0x7)
-
-#define SPI_CLK_RATE           HSI_VALUE
-
+#define SPI_DMA_TX_ENABLE		(0x1<<1)
+#define SPI_DMA_RX_ENABLE		(0x1<<0)
 
 #define IS_SPI_MODE(__MODE__)      (((__MODE__) >= SPI_MODE0) &&\
                                     ((__MODE__) <= SPI_MODE3))
-
-#define IS_SPI_FIRST_BIT(__BIT__)  (((__BIT__) == SPI_FIRSTBIT_MSB) || \
-                                    ((__BIT__) == SPI_FIRSTBIT_LSB))
 
 #define IS_VALID_FREQ(__freq__)  (((__freq__) >= SPI_FREQ_MIN) && \
                                     ((__freq__) <= SPI_FREQ_MAX))
@@ -131,6 +111,11 @@ HAL_StatusTypeDef HAL_SPI_TransmitReceive(SPI_HandleTypeDef *hspi, uint8_t *pTxD
 HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_SPI_Receive_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef HAL_SPI_TransmitReceive_IT(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData,  uint16_t TxSize,uint16_t RxSize);
+
+HAL_StatusTypeDef HAL_SPI_Transmit_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
+HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
+HAL_StatusTypeDef HAL_SPI_TransmitReceive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData,
+                                             uint16_t TxSize,uint16_t RxSize);
 
 HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef *hspi);
 HAL_SPI_StateTypeDef HAL_SPI_GetState(SPI_HandleTypeDef *hs);

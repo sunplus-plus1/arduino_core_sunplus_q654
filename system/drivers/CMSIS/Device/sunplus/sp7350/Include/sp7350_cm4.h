@@ -385,12 +385,12 @@ typedef enum {
   I2CM7                            = 144,       /*!< I2C7 moudle ID */
   I2CM8                            = 145,       /*!< I2C8 moudle ID */
   I2CM9                            = 146,       /*!< I2C9 moudle ID */
-  SPICB0                           = 147,       /*!< SPICB0 moudle ID */
-  SPICB1                           = 148,       /*!< SPICB1 moudle ID */
-  SPICB2                           = 149,       /*!< SPICB2 moudle ID */
-  SPICB3                           = 150,       /*!< SPICB3 moudle ID */
-  SPICB4                           = 151,       /*!< SPICB4 moudle ID */
-  SPICB5                           = 152,       /*!< SPICB5 moudle ID */
+  SPICOMBO0                        = 147,       /*!< SPICB0 moudle ID */
+  SPICOMBO1                        = 148,       /*!< SPICB1 moudle ID */
+  SPICOMBO2                        = 149,       /*!< SPICB2 moudle ID */
+  SPICOMBO3                        = 150,       /*!< SPICB3 moudle ID */
+  SPICOMBO4                        = 151,       /*!< SPICB4 moudle ID */
+  SPICOMBO5                        = 152,       /*!< SPICB5 moudle ID */
   PD_AXI_DMA                       = 153,       /*!< PD_AXI_DMA moudle ID */
   PD_CA55                          = 154,       /*!< PD_CA55 moudle ID */
   PD_CARD0                         = 155,       /*!< PD_CARD0 moudle ID */
@@ -485,7 +485,7 @@ typedef enum{
   PINMUX_CLKGEN_DGO_RTC=72|PINMUX_DFMP_2BIT,
   PINMUX_CLKGEN_DGO_PHY=74|PINMUX_DFMP_2BIT,
   PINMUX_CLKGEN_DGO_GNCMA=76|PINMUX_DFMP_2BIT,
-  PINMUX_CLKGEN_DGO_MST=78|PINMUX_DFMP_2BIT,
+  PINMUX_SPI_COM0_MST=78|PINMUX_DFMP_2BIT,
 
   /*G1.5*/
   PINMUX_CM4_JTAG=80,
@@ -493,7 +493,7 @@ typedef enum{
   PINMUX_SPI_COM2_MST=83,
   PINMUX_SPI_COM3_MST=84|PINMUX_DFMP_2BIT,
   PINMUX_SPI_COM4_MST=86,
-  PINMUX_SPI_COM5_SLV=87|PINMUX_DFMP_2BIT,
+  PINMUX_SPI_COM5_MST=87|PINMUX_DFMP_2BIT,
   PINMUX_AUD_TDMTX_XCK=89,
   PINMUX_AUD_DAC_CLK_XCK1,
   PINMUX_AUD_DAC_CLK_XCK,
@@ -650,35 +650,34 @@ typedef struct{
 
 typedef struct{
    // SPI_MASTER
-   __IOM uint32_t mst_tx_data_addr;
-   __IOM uint32_t mst_tx_data_3_2_1_0;
-   __IOM uint32_t mst_tx_data_7_6_5_4;
-   __IOM uint32_t mst_tx_data_11_10_9_8;
-   __IOM uint32_t mst_tx_data_15_14_13_12;
-   RESERVED(0[4], uint32_t);
-   __IOM uint32_t mst_rx_data_3_2_1_0;
-   __IOM uint32_t mst_rx_data_7_6_5_4;
-   __IOM uint32_t mst_rx_data_11_10_9_8;
-   __IOM uint32_t mst_rx_data_15_14_13_12;
-   __IOM uint32_t fifo_data;
-   __IOM uint32_t spi_status;
-   __IOM uint32_t spi_config;
-  RESERVED(1[1], uint32_t);
-   __IOM uint32_t spi_ctl_clk_sel;
-   __IOM uint32_t spi_byte_no;
-   __IOM uint32_t spi_int_busy;
-   __IOM uint32_t spi_dma_ctrl;
-   __IOM uint32_t spi_dma_length;
-   __IOM uint32_t spi_dma_addr;
-   RESERVED(2[1], uint32_t);
-   __IOM uint32_t spi_dma_status;
-   RESERVED(3[1], uint32_t);
-   __IOM uint32_t uart_dma_ctrl;
-   RESERVED(4[1], uint32_t);
-   __IOM uint32_t spi_mst_debug_sel;
-   __IOM uint32_t spi_combo_debug_sel;
-   __IOM uint32_t spi_extra_cycle;
-   __IOM uint32_t spi_dma_data_rdy;
+   __IOM uint32_t SP_SPI_CTRLR0;
+   __IOM uint32_t SP_SPI_CTRLR1;
+   __IOM uint32_t SP_SPI_SSIENR;
+   __IOM uint32_t SP_SPI_MWCR;
+   __IOM uint32_t SP_SPI_SER;
+   __IOM uint32_t SP_SPI_BAUDR;
+   __IOM uint32_t SP_SPI_TXFTLR;
+   __IOM uint32_t SP_SPI_RXFTLR;
+   __IOM uint32_t SP_SPI_TXFLR;
+   __IOM uint32_t SP_SPI_RXFLR;
+   __IOM uint32_t SP_SPI_SR;
+   __IOM uint32_t SP_SPI_IMR;
+   __IOM uint32_t SP_SPI_ISR;
+   __IOM uint32_t SP_SPI_RISR;
+   __IOM uint32_t SP_SPI_TXOICR;
+   __IOM uint32_t SP_SPI_RXOICR;
+   __IOM uint32_t SP_SPI_RXUICR;
+   __IOM uint32_t SP_SPI_MSTICR;
+   __IOM uint32_t SP_SPI_ICR;
+   __IOM uint32_t SP_SPI_DMACR;
+   __IOM uint32_t SP_SPI_DMATDLR;
+   __IOM uint32_t SP_SPI_DMARDLR;
+   __IOM uint32_t SP_SPI_IDR;
+   __IOM uint32_t SP_SPI_VERSION;
+   __IOM uint32_t SP_SPI_DR;
+   __IOM uint32_t SP_RESERVED_0[35];
+   __IOM uint32_t SP_SPI_RX_SAMPLE_DLY;
+   __IOM uint32_t SP_SPI_CS_OVERRIDE;
 }SPI_TypeDef;
 
 typedef struct {
@@ -1059,7 +1058,7 @@ typedef struct{
 /******************************************************************************/
 
 #define PWM_BASE                      RF_GRP_AO(27, 0)
-#define PWM_REG                       ((PWM_TypeDef *)PWM_BASE)
+#define PWM_REG                       ((volatile PWM_TypeDef *)PWM_BASE)
 
 /******************************************************************************/
 /*                        UART module                                          */
@@ -1181,54 +1180,63 @@ UART LCR register BIT
 /******************************************************************************/
 /*                        SPI module                                          */
 /******************************************************************************/
-#define SPI0_BASE      RF_GRP(91, 0)
-#define SPI1_BASE      RF_GRP(489, 0)
-#define SPI2_BASE      RF_GRP(492, 0)
-#define SPI3_BASE      RF_GRP(495, 0)
+#define SPI0_BASE      RF_AMBA_AO(34, 0)
+#define SPI1_BASE      RF_AMBA_AO(35, 0)
+#define SPI2_BASE      RF_AMBA_AO(36, 0)
+#define SPI3_BASE      RF_AMBA_AO(37, 0)
+#define SPI4_BASE      RF_AMBA_AO(38, 0)
+#define SPI5_BASE      RF_AMBA_AO(39, 0)
 
 #define SPI0        ((volatile SPI_TypeDef *)SPI0_BASE)
 #define SPI1        ((volatile SPI_TypeDef *)SPI1_BASE)
 #define SPI2        ((volatile SPI_TypeDef *)SPI2_BASE)
 #define SPI3        ((volatile SPI_TypeDef *)SPI3_BASE)
+#define SPI4        ((volatile SPI_TypeDef *)SPI4_BASE)
+#define SPI5        ((volatile SPI_TypeDef *)SPI5_BASE)
 
-#define CLK_DIVIDER(x)         (x<<16)
-#define FINISH_FLAG_MASK       (1<<15)
-#define RX_FULL_FLAG_MASK      (1<<14)
-#define RX_EMP_FLAG_MASK       (1<<13)
-#define TX_FULL_FLAG_MASK      (1<<12)
-#define TX_EMP_FLAG_MASK       (1<<11)
-#define WRITE_BYTE(x)          (x<<9)
-#define READ_BYTE(x)           (x<<7)
-#define FD_SEL                 (1<<6)
-#define CS_SEL                 (1<<5)
-#define LSB_SEL                (1<<4)
-#define DELAY_ENABLE           (1<<3)
-#define CPHA_W                 (1<<2)
-#define CPHA_R                 (1<<1)
-#define CPOL                   (1<<0)
+#define SPI_DFS_OFFSET			0
+#define SPI_FRF_OFFSET			4
+#define SPI_SLVOE_OFFSET		10
+#define SPI_SRL_OFFSET			11
+#define SPI_CFS_OFFSET			12
 
-#define CLEAR_MASTER_INT      (1<<6)
+#define SPI_FRF_SPI			    0x0
+#define SPI_FRF_SSP			    0x1
+#define SPI_FRF_MICROWIRE		0x2
+#define SPI_FRF_RESV			0x3
+#define SPI_MODE_OFFSET			6
+#define SPI_SCPH_OFFSET			6
+#define SPI_SCOL_OFFSET			7
+#define SPI_TMOD_OFFSET			8
 
-#define GET_LEN(x)            ((x>>24) & 0xFF)
-#define GET_TX_LEN(x)         ((x>>16) & 0xFF)
-#define GET_RX_CNT(x)         ((x>>12) & 0x0F)
-#define GET_TX_CNT(x)         ((x>>8)  & 0x0F)
+#define CPHA                   (1<<SPI_SCPH_OFFSET)
+#define CPOL                   (1<<SPI_SCOL_OFFSET)
 
-#define TOTAL_LENGTH(x)        (x<<24)
-#define TX_LENGTH(x)           (x<<16)
-#define RX_CNT                 (0x0F<<12)
-#define TX_CNT                 (0x0F<<12)
-#define SPI_BUSY               (1<<7)
-#define FINISH_FLAG            (1<<6)
-#define RX_FULL_FLAG           (1<<5)
-#define RX_EMP_FLAG            (1<<4)
-#define TX_FULL_FLAG           (1<<3)
-#define TX_EMP_FLAG            (1<<2)
-#define SPI_SW_RST             (1<<1)
-#define SPI_START_FD           (1<<0)
+#define SRI_MASK				0x7f		/* cover 7 bits */
+#define SPI_BUSY			(1 << 0)
+#define SRI_TF_NOT_FULL		(1 << 1)
+#define SRI_TF_EMPT			(1 << 2)
+#define SRI_RF_NOT_EMPT		(1 << 3)
+#define SRI_RF_FULL			(1 << 4)
+#define SRI_TX_ERR			(1 << 5)
 
-#define SPI_TOTAL_SIZE         TOTAL_LENGTH(0xFF)
-#define SPI_TX_SIZE            TX_LENGTH(0xFF)
+
+
+#define SPI_INT_TXEI			(1 << 0)
+#define SPI_INT_TXOI			(1 << 1)
+#define SPI_INT_RXUI			(1 << 2)
+#define SPI_INT_RXOI			(1 << 3)
+#define SPI_INT_RXFI			(1 << 4)
+#define SPI_INT_MSTI			(1 << 5)
+
+#define SRI_DCOL				(1 << 6)
+
+#define IS_SPI_ALL_INSTANCE(__INSTANCE__) (((__INSTANCE__) == SPI0) || \
+                                           ((__INSTANCE__) == SPI1) || \
+                                           ((__INSTANCE__) == SPI2) || \
+                                           ((__INSTANCE__) == SPI3) || \
+										   ((__INSTANCE__) == SPI4) || \
+										   ((__INSTANCE__) == SPI5))
 
 /******************************************************************************/
 /*                        I2C module                                          */
@@ -1286,8 +1294,37 @@ UART LCR register BIT
 #define GPIO_TO_PINMUX(x)            IS_PINMUX_PIN(x)?(x):-1
 
 
+struct dw_adc_regs {
+	unsigned int adc_cfg00;			/* 00 */
+	unsigned int adc_cfg01;			/* 01 */
+	unsigned int adc_cfg02;			/* 02 */
+	unsigned int adc_cfg03;			/* 03 */
+	unsigned int adc_cfg04;			/* 04 */
+	unsigned int adc_cfg05;			/* 05 */
+	unsigned int adc_cfg06;			/* 06 */
+	unsigned int adc_cfg07;			/* 07 */
+	unsigned int adc_cfg08;			/* 08 */
+	unsigned int adc_cfg09;			/* 09 */
+	unsigned int adc_cfg0a;			/* 10 */
+	unsigned int adc_cfg0b;			/* 11 */
+	unsigned int adc_cfg0c;			/* 12 0x30*/
+	unsigned int adc_cfg0d;			/* 13 */
+	unsigned int adc_cfg0e;			/* 14 */
+	unsigned int adc_cfg0f;			/* 15 */
+	unsigned int adc_cfg10;			/* 16 0x40*/
+	unsigned int adc_cfg11;			/* 17 */
+	unsigned int adc_cfg12;			/* 18 */
+	unsigned int adc_cfg13;			/* 19 */
+	unsigned int adc_cfg14;			/* 20 0x50*/
+	unsigned int adc_reserved[20];		/*43 */
 
+};
+#define ADC_REG_AO ((volatile struct dw_adc_regs *)RF_GRP(94, 0))
 
+struct dw_hsem_regs {
+	unsigned int lock[16];			/* 0--15 */
+};
+#define HSEM_REG_AO ((volatile struct dw_hsem_regs *)RF_GRP(497, 0))
 /******************************************************************************/
 /*                                                                            */
 /*                       IPC Mailbox  	                                      */

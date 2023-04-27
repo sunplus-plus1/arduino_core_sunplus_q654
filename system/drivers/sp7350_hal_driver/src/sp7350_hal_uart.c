@@ -303,7 +303,7 @@ static int _uart_txdma_config(UART_HandleTypeDef *huart)
 	UART_Txdma *txdma_reg = huart->txdma;
 
 	if(huart->txdma_buf == NULL && huart->xmit.buf == NULL)
-		{
+	{
 		UART_MALLOC(huart->txdma_buf,UARXDMA_BUF_SZ);
 		UART_MALLOC(huart->xmit.buf,UARXDMA_BUF_SZ);
 
@@ -367,6 +367,40 @@ static int _uart_rxdma_config(UART_HandleTypeDef *huart)
 		WRITE_REG(rxdma_reg->rxdma_enable_sel,		(READ_REG(rxdma_reg->rxdma_enable_sel) | (DMA_GO)));
 	}
 	return HAL_OK;
+}
+
+
+static uint32_t _uart_Get_SrcClk(int uart_idx)
+{
+	uint32_t temp, freq_Hz;
+	temp = READ_BIT(MOON3_REG->sft_cfg[27], (0x3<<8));
+	switch(uart_idx)
+	{
+		case 0 ... 2:
+			temp = READ_BIT(MOON3_REG->sft_cfg[27], (0x3<<(10+uart_idx*2)));
+			temp = ((temp>>(10+uart_idx*2)) & 0x3);
+			break;
+		case 3:
+			temp = READ_BIT(MOON3_REG->sft_cfg[28], 0x3);
+			temp = (temp & 0x3);
+			break;
+		case 6:
+		case 7:
+			temp = READ_BIT(MOON3_REG->sft_cfg[28], (0x3<<(2+(uart_idx-6)*2)));
+			temp = ((temp>>(2+(uart_idx-6)*2)) & 0x3);
+			break;
+		default:
+			return 25*1000*1000;
+	}
+	if (temp == 0x3) {
+		freq_Hz = 25*1000*1000;
+	} else if (temp == 0x1) {
+		freq_Hz = 100*1000*1000;
+	} else if (temp == 0x0) {
+		freq_Hz = 200*1000*1000;
+	}
+
+	return freq_Hz;
 }
 
 int HAL_UART_Get_TX_FIFO_Space(UART_HandleTypeDef *huart)
@@ -871,8 +905,8 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 	}
 
 	/* step 3: set uart baudrate */
-	huart->Instance->div_l = UART_BAUD_DIV_L(huart->Init.BaudRate, UART_SRC_CLK);
-	huart->Instance->div_h = UART_BAUD_DIV_H(huart->Init.BaudRate, UART_SRC_CLK);
+	huart->Instance->div_l = UART_BAUD_DIV_L(huart->Init.BaudRate, _uart_Get_SrcClk(huart->uart_idx));
+	huart->Instance->div_h = UART_BAUD_DIV_H(huart->Init.BaudRate, _uart_Get_SrcClk(huart->uart_idx));
 
 	/* config line control register */
 	if(huart->Init.LcrInit.LCR_Init != UART_INIT_USE_DEFAULT_VALUE)

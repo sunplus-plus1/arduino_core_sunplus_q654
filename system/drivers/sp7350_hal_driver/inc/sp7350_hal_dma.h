@@ -34,7 +34,7 @@ enum {
         PER_MAX
 };
 
-typedef void (*dma_callback_t)(uint32_t err);
+typedef void (*dma_callback_t)(uint32_t err,void *param);
 
 /**
   * @brief  Starts the DMA Transfer.
@@ -46,7 +46,7 @@ typedef void (*dma_callback_t)(uint32_t err);
   *			Not NULL - The transfer complete callback function for interrupt mode
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_DMA_Start(uint32_t src, uint32_t dst, uint32_t len, dma_callback_t callback);
+HAL_StatusTypeDef HAL_DMA_Start(uint32_t src, uint32_t dst, uint32_t len, dma_callback_t callback,void *param);
 
 void HAL_DMA_Test(void);
 

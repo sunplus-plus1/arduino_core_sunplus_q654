@@ -1,15 +1,27 @@
 #include "sp7350_hal_pwm.h"
 
-#define PWM_SRC_CLK         HAL_Get_PWM_SrcClk()
-
 static uint32_t g_resolution_sel[PWM_MAX]={0}; // for freq set
+
+static uint32_t _PWM_Get_SrcClk(void)
+{
+	uint32_t temp, freq_Hz;
+	temp = READ_BIT(MOON3_REG->sft_cfg[27], (0x1<<5));
+	if (temp == (0x1<<5)) {
+		freq_Hz = 200000000;
+	} else {
+		freq_Hz = HSE_VALUE;
+	}
+	return freq_Hz;
+}
 
 static HAL_StatusTypeDef _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 {
 	uint64_t duty_temp;
 	uint32_t pwm_dd,pwm_resolution;
 	
-	if(duty == 0 || duty >= period)
+	volatile PWM_TypeDef *pwm_reg = PWM_REG;
+
+	if(duty == 0 || duty >= period || (!IS_PWM_NUM_VALID(pwm_num)))
 		return HAL_ERROR;
 
 	if(g_resolution_sel[pwm_num] == PWM_RESOLUTION_1_256 )
@@ -23,19 +35,19 @@ static HAL_StatusTypeDef _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 	duty_temp = ((uint64_t)duty*pwm_resolution)/period;
 
 	/* pwm_dd = (1 / (sys clk * frequency)) * 4096 */
-	pwm_dd = ((uint64_t)period * PWM_SRC_CLK )/ (1000*1000*1000) / pwm_resolution;
+	pwm_dd = ((uint64_t)period * _PWM_Get_SrcClk() )/ (1000*1000*1000) / pwm_resolution;
 
 	if(pwm_dd == 0)
 	{
-		PWM_REG->pwm_bypass |= (1 << pwm_num);   // bypass enable
+		pwm_reg->pwm_bypass |= (1 << pwm_num);   // bypass enable
 	}
 	else
 	{
-		PWM_REG->pwm_bypass &= ~(1 << pwm_num);   // bypass disable
-		PWM_REG->pwm_dd_ctrl[pwm_num].dd = pwm_dd;
+		pwm_reg->pwm_bypass &= ~(1 << pwm_num);   // bypass disable
+		pwm_reg->pwm_dd_ctrl[pwm_num].dd = pwm_dd;
 	}
 	/* set duty cycle */
-	PWM_REG->pwm_chx_cfg[pwm_num].pwm_duty = duty_temp;
+	pwm_reg->pwm_chx_cfg[pwm_num].pwm_duty = duty_temp;
 
 	return HAL_OK;
 }
@@ -43,7 +55,8 @@ static HAL_StatusTypeDef _PWM_Set(int pwm_num,uint32_t period,uint32_t duty)
 HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 {
 	int pwm_num;
-	
+	volatile  PWM_TypeDef *pwm_reg = PWM_REG;
+
 	if(!PWM_Init || !IS_PWM_NUM_VALID(PWM_Init->pwm_num) || !IS_PWM_RESOLUTION_SEL_VALID(PWM_Init->resolution_sel))
 	{
 		return HAL_ERROR;
@@ -53,10 +66,10 @@ HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 	g_resolution_sel[pwm_num] = PWM_Init->resolution_sel;
 	
 	/* select pwm resolution  256/4095 */
-	MODIFY_REG(PWM_REG->pwm_resolution,1<<(pwm_num),PWM_Init->resolution_sel<<(pwm_num));
+	MODIFY_REG(pwm_reg->pwm_resolution,1<<(pwm_num),PWM_Init->resolution_sel<<(pwm_num));
 
 	/* select PWM_DD, PWM_NUM_X match PWM_DD_X */
-	PWM_REG->pwm_chx_cfg[pwm_num].pwm_du_dd_sel = pwm_num + ePWM_DD0;
+	pwm_reg->pwm_chx_cfg[pwm_num].pwm_du_dd_sel = pwm_num + ePWM_DD0;
 
 	return _PWM_Set(pwm_num,PWM_Init->period_ns,PWM_Init->duty_ns);
 }
@@ -64,17 +77,19 @@ HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 
 void HAL_PWM_Start(int pwm_num)
 {
-	if((IS_PWM_NUM_VALID(pwm_num)))
+	volatile  PWM_TypeDef *pwm_reg = PWM_REG;
+	if(IS_PWM_NUM_VALID(pwm_num))
 	{
-		PWM_REG->pwm_en |=  (1 << pwm_num);     // set pwm enable
+		pwm_reg->pwm_en |=  (1 << pwm_num);     // set pwm enable
 	}
 }
 
 void HAL_PWM_Stop(int pwm_num)
 {
-	if((IS_PWM_NUM_VALID(pwm_num)))
+	volatile  PWM_TypeDef *pwm_reg = PWM_REG;
+	if(IS_PWM_NUM_VALID(pwm_num))
 	{
-		PWM_REG->pwm_en &= ~(1 << pwm_num);     // set pwm disable
+		pwm_reg->pwm_en &= ~(1 << pwm_num);     // set pwm disable
 	}
 }
 

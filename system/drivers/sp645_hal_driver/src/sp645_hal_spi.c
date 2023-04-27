@@ -95,15 +95,11 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 	uint32_t temp_reg=0;
 	uint32_t div;
 
-	if (hspi == NULL)
+	if (hspi == NULL || !IS_SPI_ALL_INSTANCE(hspi->Instance) || !IS_SPI_MODE(hspi->Init.spi_mode) || !IS_VALID_FREQ(hspi->Init.spiclk) )
 	{
 	  return HAL_ERROR;
 	}
 
-	assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
-    assert_param(IS_SPI_MODE(hspi->Init.spi_mode));
-	assert_param(IS_SPI_FIRST_BIT(hspi->Init.FirstBit));
-	assert_param(IS_VALID_FREQ(hspi->Init.spiclk));
 
 	hspi->ErrorCode = HAL_SPI_ERROR_NONE;
   	hspi->State     = HAL_SPI_STATE_READY;
@@ -118,12 +114,10 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 
 HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
 {
-  if (hspi == NULL)
+  if (hspi == NULL || !IS_SPI_ALL_INSTANCE(hspi->Instance))
   {
     return HAL_ERROR;
   }
-
-  assert_param(IS_SPI_ALL_INSTANCE(hspi->Instance));
 
   hspi->Instance->spi_config &= CLEAN_FLUG_MASK;
   /* reset regist ,clear fifo data */

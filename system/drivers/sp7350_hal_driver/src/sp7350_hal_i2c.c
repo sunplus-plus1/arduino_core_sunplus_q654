@@ -150,7 +150,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t 
 
 	i2c_sp_xfer_prepare(hi2c, DevAddress, pData, Size, I2C_MODE_DMA);
 
-	HAL_DMA_Start((uint32_t)pData, hi2c->DMAIndex, Size, NULL);
+	HAL_DMA_Start((uint32_t)pData, hi2c->DMAIndex, Size, NULL, NULL);
 
 	i2c_sp_wait_bus_not_busy(hi2c, 2560, I2C_MODE_BURST);
 
@@ -194,7 +194,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t D
 
 	//i2c_sp_wait_bus_not_busy(hi2c, 2560, I2C_MODE_DMA);
 
-	HAL_DMA_Start(hi2c->DMAIndex, (uint32_t)pData, Size, NULL);
+	HAL_DMA_Start(hi2c->DMAIndex, (uint32_t)pData, Size, NULL, NULL);
 
 	hi2c->Instance->ic_intr_mask = 0;
 	stat = hi2c->Instance->ic_clr_intr;
