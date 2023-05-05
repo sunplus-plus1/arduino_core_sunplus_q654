@@ -39,7 +39,7 @@ static void dump_common_reg(I2S_HandleTypeDef *hi2s)
 	addr_to_group_print((uint32_t)hi2s->Reg.fifo_len);
 }
 
-static void dump_audio_reg()
+static void dump_audio_reg(void)
 {
 	int i, j;
 	uint32_t addr, val;
@@ -54,6 +54,49 @@ static void dump_audio_reg()
 	}
 }
 
+static void dump_i2s_clk_info(I2S_HandleTypeDef *hi2s)
+{
+	int i;
+	uint32_t xck_div, bck_div;
+	uint32_t debug_xck, debug_bck, debug_lrck, lrck_cycle;
+	int debug_xck_div = 1, debug_bck_div = 1, debug_lrck_div;
+
+	xck_div = READ_BIT(*hi2s->Reg.xck, XCK_DIV_MSK) >> XCK_DIV_BIT;
+	bck_div = READ_BIT(*hi2s->Reg.bck, BCK_DIV_MSK) >> BCK_DIV_BIT;
+	lrck_cycle = READ_BIT(*hi2s->Reg.data_cfg, I2S_LRCYCLE_MASK) >> I2S_LRCYCLE_BIT;
+
+	for(i = 0; i < 11; i ++) {
+		if ((i < 7) && (xck_div & BIT(i)))
+			debug_xck_div = debug_xck_div * 2;
+		if ((i > 6) && (xck_div & BIT(i)))
+			debug_xck_div = debug_xck_div * 3;
+	}
+
+	for(i = 0; i < 11; i ++) {
+		if ((i < 7) && (bck_div & BIT(i)))
+			debug_bck_div = debug_bck_div * 2;
+		if ((i > 6) && (bck_div & BIT(i)))
+			debug_bck_div = debug_bck_div * 3;
+	}
+	debug_xck = hi2s->PllSrc / debug_xck_div;
+	debug_bck = debug_xck / debug_bck_div;
+
+	if (lrck_cycle == LRCK_CYCLE_16) {
+		debug_lrck_div = 16;
+	} else if(lrck_cycle == LRCK_CYCLE_32) {
+		debug_lrck_div = 32;
+	} else {
+		printf("[i2s_test] #    Error LRCK cycle setting \n");
+	}
+	debug_lrck = debug_bck / (debug_lrck_div * 2);
+
+	printf("[i2s_test] #    PLL SRC %d\n", hi2s->PllSrc);
+	printf("[i2s_test] #    XCK DIV %d, freq %d\n", debug_xck_div, debug_xck);
+	printf("[i2s_test] #    BCK DIV %d, freq %d\n", debug_bck_div, debug_bck);
+	printf("[i2s_test] #    LRCK DIV %d freq %d\n", (debug_lrck_div * 2), debug_lrck);
+	printf("[i2s_test] #    AudioFreq %d\n", hi2s->Init.AudioFreq);
+}
+
 static uint32_t single_swap_4bytes(uint32_t single)
 {
 	return ((single&0x000000ff)<<24|\
@@ -62,16 +105,19 @@ static uint32_t single_swap_4bytes(uint32_t single)
 	(single&0xff000000)>>24);
 }
 
-//TODO: refine the para  uint32_t -> uint8_t
-void copy_data(uint32_t *target, uint32_t *src, uint32_t len)
+//TODO: refine the para uint32_t -> uint8_t
+void copy_data(uint32_t *target, uint32_t *src, uint32_t len, uint32_t width)
 {
 	int i;
-
-	for(i = 0; i < len; i++) {
-		*(target + i) = single_swap_4bytes(*(src + i));
-		//*(target + i) = *(src + i);
+	if (width == I2S_DATAFORMAT_16B) {
+		for(i = 0; i < len; i++) {
+			*(target + i) = *(src + i);
+		}
+	} else if (width == I2S_DATAFORMAT_24B){//why 24bit need swap
+		for(i = 0; i < len; i++) {
+			*(target + i) = single_swap_4bytes(*(src + i));
+		}
 	}
-
 }
 
 /* For RX slave mode work, TX must set slave mode. So default config slave mode. */
@@ -233,7 +279,13 @@ static void _i2s_reset_all_fifo(void)
 static void _i2s_config_pcm_buffer(I2S_HandleTypeDef *hi2s) //FIXME  RX/TX same buffer
 {
 	uint32_t base_addr, fifo_addr;
-#if 1
+
+	/* Set FIFO mode */
+	if(hi2s->Init.DataFormat == I2S_DATAFORMAT_16B)
+		WRITE_REG(AUD_REG->aud_fifo_mode, 0x20001);
+	else if(hi2s->Init.DataFormat == I2S_DATAFORMAT_24B)
+		WRITE_REG(AUD_REG->aud_fifo_mode, 0x20000);
+#if 0
 	base_addr = ROUNDUP((uint32_t)&_heap_bottom, 128);
 	WRITE_REG(AUD_REG->aud_audhwya, base_addr);
 
@@ -262,6 +314,11 @@ static void _i2s_config_pcm_buffer(I2S_HandleTypeDef *hi2s) //FIXME  RX/TX same 
 /* I2S0 RX/TX each use a pin, I2S1/2 RX/TX use a pin in common */
 static void _i2s_pin_mux(I2S_HandleTypeDef *handle)
 {
+
+	HAL_Module_Clock_enable(AUD, 1);
+	HAL_Module_Clock_gate(AUD, 0);
+	HAL_Module_Reset(AUD, 0);
+
 	switch(handle->Index) {
 		case INDEX_I2S0:
 			HAL_PINMUX_Cfg(PINMUX_AUD_DAC_CLK, 1);// [7] I2S0 bck/lrck on {x1}
@@ -328,14 +385,15 @@ void _i2s_set_pll(I2S_HandleTypeDef *hi2s)
 		case I2S_AUDIOFREQ_48K:
 		case I2S_AUDIOFREQ_96K:
 		case I2S_AUDIOFREQ_192K:
-			AUD_Set_PLL(PLLA_147M);
+			hi2s->PllSrc = PLLA_147M;
 			break;
 		case I2S_AUDIOFREQ_11K:
 		case I2S_AUDIOFREQ_22K:
 		case I2S_AUDIOFREQ_44K:
-			AUD_Set_PLL(PLLA_135M);
+			hi2s->PllSrc = PLLA_135M;
 			break;
 	}
+	AUD_Set_PLL(hi2s->PllSrc);
 }
 
 void _i2s_param_analy(I2S_HandleTypeDef *hi2s)
@@ -386,7 +444,13 @@ static void _i2s_format_config(I2S_HandleTypeDef *hi2s)
 	SET_BIT(val, hi2s->FlagMode << I2S_MODE_BIT);
 
 	CLEAR_BIT(val, I2S_LRCYCLE_MASK);
-	SET_BIT(val, LRCK_CYCLE_32 << I2S_LRCYCLE_BIT);
+	if(hi2s->Init.DataFormat == I2S_DATAFORMAT_16B)
+		SET_BIT(val, LRCK_CYCLE_16 << I2S_LRCYCLE_BIT);
+	else if(hi2s->Init.DataFormat == I2S_DATAFORMAT_24B)
+		SET_BIT(val, LRCK_CYCLE_32 << I2S_LRCYCLE_BIT);
+
+	/* Workaround for data on the left and right channels is reversed */
+	SET_BIT(val, 1 << I2S_DPARITY_BIT);
 
 	CLEAR_BIT(val, I2S_DWIDTH_MASK);
 	SET_BIT(val, hi2s->Init.DataFormat << I2S_DWIDTH_BIT);
@@ -515,6 +579,24 @@ void _i2s_aud_clk_cfg(I2S_HandleTypeDef *hi2s)
 	if(hi2s->FlagMode == I2S_SLAVE)
 		return;
 
+	switch(hi2s->Init.AudioFreq) {
+		case I2S_AUDIOFREQ_8K:
+		case I2S_AUDIOFREQ_16K:
+		case I2S_AUDIOFREQ_32K:
+		case I2S_AUDIOFREQ_48K:
+		case I2S_AUDIOFREQ_96K:
+		case I2S_AUDIOFREQ_192K:
+			hi2s->PllSrc = PLLA_147M;
+			break;
+		case I2S_AUDIOFREQ_11K:
+		case I2S_AUDIOFREQ_22K:
+		case I2S_AUDIOFREQ_44K:
+			hi2s->PllSrc = PLLA_135M;
+			break;
+	}
+
+	AUD_Set_PLL(hi2s->PllSrc);
+
 	if (hi2s->Init.AudioFreq == I2S_AUDIOFREQ_8K)
 	{
 		/* One of bit[10:7] set 1 and div 3, One of bit[6:0] set 1 and div 2
@@ -545,9 +627,15 @@ void _i2s_aud_clk_cfg(I2S_HandleTypeDef *hi2s)
 		bck_div = BIT(0); //2
 	}
 
-	printf("[i2s_test] #    xck_div 0x%x    bck_div 0x%x\n", xck_div, bck_div);
+	/* S16_LE BCK is divided by 2 more than S24_3LE */
+	if (hi2s->Init.DataFormat == I2S_DATAFORMAT_16B)
+		xck_div |= BIT(4);
+
 	_i2s_xck_cfg(hi2s, xck_div);
 	_i2s_bck_cfg(hi2s, bck_div);
+
+	/* Debug info */
+	dump_i2s_clk_info(hi2s);
 }
 
 static void _i2s_fifo_enable(I2S_HandleTypeDef *hi2s)
@@ -682,8 +770,8 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef *hi2s)
 	/* Config GRM */
 	F_Mixer_Setting();///////////////////////////////TODO
 
-	/* Config PLL */
-	_i2s_set_pll(hi2s);
+	/* Config PLL*/
+	//_i2s_set_pll();//put in _i2s_aud_clk_cfg() to calculate the freq easily;
 
 	/* Config master/slave mode, LRCK cycle and pcm data format */
 	_i2s_format_config(hi2s);
@@ -839,10 +927,10 @@ HAL_StatusTypeDef HAL_I2S_Transmit(I2S_HandleTypeDef *hi2s, uint32_t *pData, uin
 			if(pre_offset > DRAM_PCM_BUF_CH_BYTES) {
 				back_len = pre_offset - DRAM_PCM_BUF_CH_BYTES;
 				front_len = copy_len - back_len;
-				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, front_len / 4);
-				copy_data(fifo_addr, hi2s->pTxBuffPtr + (done_cnt + front_len) / 4, back_len / 4);
+				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, front_len / 4, hi2s->Init.DataFormat);
+				copy_data(fifo_addr, hi2s->pTxBuffPtr + (done_cnt + front_len) / 4, back_len / 4, hi2s->Init.DataFormat);
 			} else {
-				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, copy_len / 4);
+				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, copy_len / 4, hi2s->Init.DataFormat);
 			}
 
 			/* Start the DMA transfer after copy data to buffer immediately */
@@ -946,10 +1034,10 @@ HAL_StatusTypeDef HAL_I2S_Receive(I2S_HandleTypeDef *hi2s, uint32_t *pData, uint
 		if(pre_offset > DRAM_PCM_BUF_CH_BYTES) {
 			back_len = pre_offset - DRAM_PCM_BUF_CH_BYTES;
 			front_len = copy_len - back_len;
-			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, front_len / 4);
-			copy_data(hi2s->pRxBuffPtr + (done_cnt + front_len) / 4, fifo_addr, back_len / 4);
+			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, front_len / 4, hi2s->Init.DataFormat);
+			copy_data(hi2s->pRxBuffPtr + (done_cnt + front_len) / 4, fifo_addr, back_len / 4, hi2s->Init.DataFormat);
 		} else {
-			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, copy_len / 4);
+			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, copy_len / 4, hi2s->Init.DataFormat);
 		}
 		/* I2S C/P spend longer times than CPU execution code, So put the not-essential code here */
 		done_cnt += copy_len;

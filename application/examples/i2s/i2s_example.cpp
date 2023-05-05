@@ -4,7 +4,8 @@
 
 #include "Arduino.h"
 #ifdef SP645
-#define PCM_ADDRESS 	((uint32_t *)0x24000000)
+#define PCM_ADDRESS_16BIT	((uint32_t *)0x24000000)
+#define PCM_ADDRESS_24BIT	((uint32_t *)0x25000000)
 #define TEST_BUF_SIZE	(4 * 1024)
 
 extern uint32_t single_swap_4bytes(uint32_t single);
@@ -249,18 +250,17 @@ void i2s_test_data_width(void)
 	hi2s.FlagDebug = I2S_DEBUG_OFF;
 	hi2s.Init.Mode = I2S_MODE_MASTER_TX;
 
-	#if 1//24bit
+	#if 0//24bit
 	hi2s.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s.Init.AudioFreq = I2S_AUDIOFREQ_8K;
 	data_len = 2880000;//60s B185.bin 24bit
-	data_buf = PCM_ADDRESS;
-	#endif
-
-	#if 0//16bit
+	data_buf = PCM_ADDRESS_24BIT;
+	#else//16bit
 	hi2s.Init.DataFormat = I2S_DATAFORMAT_16B;
-	hi2s.Init.AudioFreq = I2S_AUDIOFREQ_22K;
-	data_len = 480000;//pcm_fill.bin
-	data_buf = PCM_ADDRESS;
+	hi2s.Init.AudioFreq = I2S_AUDIOFREQ_48K;
+	//data_len = 905736;//48k16bit.pcm
+	data_len = 905216;//48k16bit.pcm
+	data_buf = PCM_ADDRESS_16BIT;
 	#endif
 
 	HAL_I2S_Init(&hi2s);
@@ -315,7 +315,7 @@ void i2s_test_rx_sine(void)
 void setup()
 {
 	printf("i2s example %s\n", __TIME__);
-#if 0
+#if 1
 	i2s_test_debug_signal();
 #endif
 
@@ -331,7 +331,7 @@ void setup()
 	i2s_test_data_width();//16bit not work
 #endif
 
-#if 1
+#if 0
 	i2s_test_rx_sine();
 #endif
 

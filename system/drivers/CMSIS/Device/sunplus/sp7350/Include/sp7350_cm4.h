@@ -1562,6 +1562,395 @@ struct dw_hsem_regs {
 #define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
 #define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
 
+/******************************************************************************/
+/*                                                                            */
+/*                       Audio  		                              */
+/*                                                                            */
+/******************************************************************************/
+typedef struct {
+	// Group 09 : AUD
+	__IOM uint32_t  audif_ctrl                            ; // 00
+    	__IOM uint32_t  aud_enable                            ; // 01
+    	__IOM uint32_t  pcm_cfg                               ; // 02
+    	__IOM uint32_t  i2s_mute_flag_ctrl                    ; // 03
+    	__IOM uint32_t  ext_adc_cfg                           ; // 04
+    	__IOM uint32_t  int_dac_ctrl0                         ; // 05
+    	__IOM uint32_t  int_adc_ctrl                          ; // 06
+    	__IOM uint32_t  adc_in_path_switch                    ; // 07
+    	__IOM uint32_t  int_adc_dac_cfg                       ; // 08
+    	__IOM uint32_t  G060_reserved_9                       ; // 09
+    	__IOM uint32_t  iec_cfg                               ; // 10
+    	__IOM uint32_t  iec0_valid_out                        ; // 11
+    	__IOM uint32_t  iec0_par0_out                         ; // 12
+    	__IOM uint32_t  iec0_par1_out                         ; // 13
+    	__IOM uint32_t  iec1_valid_out                        ; // 14
+    	__IOM uint32_t  iec1_par0_out                         ; // 15
+    	__IOM uint32_t  iec1_par1_out                         ; // 16
+    	__IOM uint32_t  iec0_rx_debug_info                    ; // 17
+    	__IOM uint32_t  iec0_valid_in                         ; // 18
+    	__IOM uint32_t  iec0_par0_in                          ; // 19
+    	__IOM uint32_t  iec0_par1_in                          ; // 20
+   	__IOM uint32_t  iec1_rx_debug_info                    ; // 21
+    	__IOM uint32_t  iec1_valid_in                         ; // 22
+    	__IOM uint32_t  iec1_par0_in                          ; // 23
+    	__IOM uint32_t  iec1_par1_in                          ; // 24
+    	__IOM uint32_t  iec2_rx_debug_info                    ; // 25
+    	__IOM uint32_t  iec2_valid_in                         ; // 26
+    	__IOM uint32_t  iec2_par0_in                          ; // 27
+    	__IOM uint32_t  iec2_par1_in                          ; // 28
+    	__IOM uint32_t  G060_reserved_29                      ; // 29
+    	__IOM uint32_t  iec_tx_user_wdata                     ; // 30
+    	__IOM uint32_t  iec_tx_user_ctrl                      ; // 31
+
+    	// Group 010 : AUD
+    	__IOM uint32_t  adcp_ch_enable                        ; // 00, ADCPRC Configuration Group 1
+    	__IOM uint32_t  adcp_fubypass                         ; // 01, ADCPRC Configuration Group 2
+   	__IOM uint32_t  adcp_mode_ctrl                        ; // 02, ADCPRC Mode Control
+    	__IOM uint32_t  adcp_init_ctrl                        ; // 03, ADCP Initialization Control
+    	__IOM uint32_t  adcp_coeff_din                        ; // 04, Coefficient Data Input
+    	__IOM uint32_t  adcp_agc_cfg                          ; // 05, ADCPRC AGC Configuration of Ch0/1
+    	__IOM uint32_t  adcp_agc_cfg2                         ; // 06, ADCPRC AGC Configuration of Ch2/3
+    	__IOM uint32_t  adcp_gain_0                           ; // 07, ADCP System Gain1
+    	__IOM uint32_t  adcp_gain_1                           ; // 08, ADCP System Gain2
+    	__IOM uint32_t  adcp_gain_2                           ; // 09, ADCP System Gain3
+    	__IOM uint32_t  adcp_gain_3                           ; // 10, ADCP System Gain4
+    	__IOM uint32_t  adcp_risc_gain                        ; // 11, ADCP RISC Gain
+    	__IOM uint32_t  adcp_mic_l                            ; // 12, ADCPRC Microphone - in Left Channel Data
+    	__IOM uint32_t  adcp_mic_r                            ; // 13, ADCPRC Microphone - in Right Channel Data
+    	__IOM uint32_t  adcp_agc_gain                         ; // 14, ADCPRC AGC Gain
+    	__IOM uint32_t  G061_reserved_15                      ; // 15, Reserved
+    	__IOM uint32_t  aud_apt_mode                          ; // 16, Audio Playback Timer Mode
+    	__IOM uint32_t  aud_apt_data                          ; // 17, Audio Playback Timer
+    	__IOM uint32_t  aud_apt_parameter                     ; // 18, Audio Playback Timer Parameter
+    	__IOM uint32_t  G061_reserved_19                      ; // 19, Reserved
+    	__IOM uint32_t  aud_audhwya                           ; // 20, DRAM Base Address Offset
+    	__IOM uint32_t  aud_inc_0                             ; // 21, DMA Counter Increment/Decrement
+    	__IOM uint32_t  aud_delta_0                           ; // 22, Delta Value
+    	__IOM uint32_t  aud_fifo_enable                       ; // 23, Audio FIFO Enable
+    	__IOM uint32_t  aud_fifo_mode                         ; // 24, FIFO Mode Control
+    	__IOM uint32_t  aud_fifo_support                      ; // 25, Supported FIFOs ( Debug Function )
+    	__IOM uint32_t  aud_fifo_reset                        ; // 26, Host FIFO Reset
+    	__IOM uint32_t  aud_chk_ctrl                          ; // 27, Checksum Control ( Debug Function )
+    	__IOM uint32_t  aud_checksum_data                     ; // 28, Checksum Data ( Debug Function )
+    	__IOM uint32_t  aud_chk_tcnt                          ; // 29, Target Count of Checksum ( Debug Function )
+    	__IOM uint32_t  aud_embedded_input_ctrl               ; // 30, Embedded Input Control ( Debug Function )
+    	__IOM uint32_t  aud_misc_ctrl                         ; // 31, Miscellaneous Control
+
+    	// Group 011 : AUD
+    	__IOM uint32_t  aud_ext_dac_xck_cfg                   ; // 00
+    	__IOM uint32_t  aud_ext_dac_bck_cfg                   ; // 01
+    	__IOM uint32_t  aud_iec0_bclk_cfg                     ; // 02
+    	__IOM uint32_t  aud_ext_adc_xck_cfg                   ; // 03
+    	__IOM uint32_t  aud_ext_adc_bck_cfg                   ; // 04
+    	__IOM uint32_t  aud_int_adc_xck_cfg                   ; // 05
+    	__IOM uint32_t  G062_reserved_6                       ; // 06
+    	__IOM uint32_t  aud_int_dac_xck_cfg                   ; // 07
+    	__IOM uint32_t  aud_int_dac_bck_cfg                   ; // 08
+    	__IOM uint32_t  aud_iec1_bclk_cfg                     ; // 09
+    	__IOM uint32_t  G062_reserved_10                      ; // 10
+    	__IOM uint32_t  aud_pcm_iec_bclk_cfg                  ; // 11
+    	__IOM uint32_t  aud_xck_osr104_cfg                    ; // 12
+    	__IOM uint32_t  aud_hdmi_tx_mclk_cfg                  ; // 13
+    	__IOM uint32_t  aud_hdmi_tx_bclk_cfg                  ; // 14
+    	__IOM uint32_t  hdmi_tx_i2s_cfg                       ; // 15
+    	__IOM uint32_t  hdmi_rx_i2s_cfg                       ; // 16
+    	__IOM uint32_t  aud_aadc_agc01_cfg0                   ; // 17
+    	__IOM uint32_t  aud_aadc_agc01_cfg1                   ; // 18
+    	__IOM uint32_t  aud_aadc_agc01_cfg2                   ; // 19
+    	__IOM uint32_t  aud_aadc_agc01_cfg3                   ; // 20
+    	__IOM uint32_t  int_adc_ctrl3                         ; // 21
+    	__IOM uint32_t  int_adc_ctrl2                         ; // 22
+    	__IOM uint32_t  int_dac_ctrl2                         ; // 23
+    	__IOM uint32_t  G062_reserved_24                      ; // 24
+    	__IOM uint32_t  int_dac_ctrl1                         ; // 25
+    	__IOM uint32_t  G062_reserved_26                      ; // 26
+    	__IOM uint32_t  G062_reserved_27                      ; // 27
+    	__IOM uint32_t  G062_reserved_28                      ; // 28
+    	__IOM uint32_t  G062_reserved_29                      ; // 29
+    	__IOM uint32_t  G062_reserved_30                      ; // 30
+    	__IOM uint32_t  G062_reserved_31                      ; // 31
+
+    	// Group 012 : AUD
+    	__IOM uint32_t  aud_bt_ifx_cfg                        ; // 00
+    	__IOM uint32_t  aud_bt_i2s_cfg                        ; // 01
+    	__IOM uint32_t  aud_bt_xck_cfg                        ; // 02
+    	__IOM uint32_t  aud_bt_bck_cfg                        ; // 03
+    	__IOM uint32_t  aud_bt_sync_cfg                       ; // 04
+    	__IOM uint32_t  G063_reserved_5                       ; // 05
+    	__IOM uint32_t  G063_reserved_6                       ; // 06
+    	__IOM uint32_t  G063_reserved_7                       ; // 07
+    	__IOM uint32_t  aud_pwm_xck_cfg                       ; // 08
+    	__IOM uint32_t  aud_pwm_bck_cfg                       ; // 09
+    	__IOM uint32_t  G063_reserved_10                      ; // 10
+    	__IOM uint32_t  G063_reserved_11                      ; // 11
+    	__IOM uint32_t  G063_reserved_12                      ; // 12
+   	__IOM uint32_t  G063_reserved_13                      ; // 13
+    	__IOM uint32_t  G063_reserved_14                      ; // 14
+    	__IOM uint32_t  G063_reserved_15                      ; // 15
+    	__IOM uint32_t  G063_reserved_16                      ; // 16
+    	__IOM uint32_t  G063_reserved_17                      ; // 17
+    	__IOM uint32_t  G063_reserved_18                      ; // 18
+    	__IOM uint32_t  G063_reserved_19                      ; // 19
+    	__IOM uint32_t  aud_aadc_agc2_cfg0                    ; // 20
+    	__IOM uint32_t  aud_aadc_agc2_cfg1                    ; // 21
+    	__IOM uint32_t  aud_aadc_agc2_cfg2                    ; // 22
+    	__IOM uint32_t  aud_aadc_agc2_cfg3                    ; // 23
+    	__IOM uint32_t  aud_opt_test_pat                      ; // 24
+    	__IOM uint32_t  aud_sys_status0                       ; // 25
+    	__IOM uint32_t  aud_sys_status1                       ; // 26
+    	__IOM uint32_t  int_adc_ctrl1                         ; // 27
+    	__IOM uint32_t  bt_mute_flag                          ; // 28
+    	__IOM uint32_t  cdrpll_losd_ctrl                      ; // 29
+    	__IOM uint32_t  G063_reserved_30                      ; // 30
+    	__IOM uint32_t  other_config                          ; // 31
+
+    	// Group 013 : AUD
+    	__IOM uint32_t  aud_a0_base                           ; //
+    	__IOM uint32_t  aud_a0_length                         ; //
+    	__IOM uint32_t  aud_a0_ptr                            ; //
+    	__IOM uint32_t  aud_a0_cnt                            ; //
+    	__IOM uint32_t  aud_a1_base                           ; //
+    	__IOM uint32_t  aud_a1_length                         ; //
+    	__IOM uint32_t  aud_a1_ptr                            ; //
+    	__IOM uint32_t  aud_a1_cnt                            ; //
+    	__IOM uint32_t  aud_a2_base                           ; //
+    	__IOM uint32_t  aud_a2_length                         ; //
+    	__IOM uint32_t  aud_a2_ptr                            ; //
+    	__IOM uint32_t  aud_a2_cnt                            ; //
+    	__IOM uint32_t  aud_a3_base                           ; //
+    	__IOM uint32_t  aud_a3_length                         ; //
+    	__IOM uint32_t  aud_a3_ptr                            ; //
+    	__IOM uint32_t  aud_a3_cnt                            ; //
+    	__IOM uint32_t  aud_a4_base                           ; //
+    	__IOM uint32_t  aud_a4_length                         ; //
+    	__IOM uint32_t  aud_a4_ptr                            ; //
+    	__IOM uint32_t  aud_a4_cnt                            ; //
+    	__IOM uint32_t  aud_a5_base                           ; //
+    	__IOM uint32_t  aud_a5_length                         ; //
+    	__IOM uint32_t  aud_a5_ptr                            ; //
+    	__IOM uint32_t  aud_a5_cnt                            ; //
+    	__IOM uint32_t  aud_a6_base                           ; //
+    	__IOM uint32_t  aud_a6_length                         ; //
+    	__IOM uint32_t  aud_a6_ptr                            ; //
+    	__IOM uint32_t  aud_a6_cnt                            ; //
+    	__IOM uint32_t  aud_a7_base                           ; //
+    	__IOM uint32_t  aud_a7_length                         ; //
+    	__IOM uint32_t  aud_a7_ptr                            ; //
+    	__IOM uint32_t  aud_a7_cnt                            ; //
+
+    	// Group 014 : AUD
+    	__IOM uint32_t  aud_a8_base                           ; //
+    	__IOM uint32_t  aud_a8_length                         ; //
+    	__IOM uint32_t  aud_a8_ptr                            ; //
+    	__IOM uint32_t  aud_a8_cnt                            ; //
+    	__IOM uint32_t  aud_a9_base                           ; //
+    	__IOM uint32_t  aud_a9_length                         ; //
+    	__IOM uint32_t  aud_a9_ptr                            ; //
+    	__IOM uint32_t  aud_a9_cnt                            ; //
+    	__IOM uint32_t  aud_a10_base                          ; //
+    	__IOM uint32_t  aud_a10_length                        ; //
+    	__IOM uint32_t  aud_a10_ptr                           ; //
+    	__IOM uint32_t  aud_a10_cnt                           ; //
+    	__IOM uint32_t  aud_a11_base                          ; //
+    	__IOM uint32_t  aud_a11_length                        ; //
+    	__IOM uint32_t  aud_a11_ptr                           ; //
+    	__IOM uint32_t  aud_a11_cnt                           ; //
+    	__IOM uint32_t  aud_a12_base                          ; //
+    	__IOM uint32_t  aud_a12_length                        ; //
+    	__IOM uint32_t  aud_a12_ptr                           ; //
+    	__IOM uint32_t  aud_a12_cnt                           ; //
+    	__IOM uint32_t  aud_a13_base                          ; //
+    	__IOM uint32_t  aud_a13_length                        ; //
+    	__IOM uint32_t  aud_a13_ptr                           ; //
+    	__IOM uint32_t  aud_a13_cnt                           ; //
+    	__IOM uint32_t  aud_a14_base                          ; //
+    	__IOM uint32_t  aud_a14_length                        ; //
+    	__IOM uint32_t  aud_a14_ptr                           ; //
+    	__IOM uint32_t  aud_a14_cnt                           ; //
+    	__IOM uint32_t  aud_a15_base                          ; //
+    	__IOM uint32_t  aud_a15_length                        ; //
+    	__IOM uint32_t  aud_a15_ptr                           ; //
+    	__IOM uint32_t  aud_a15_cnt                           ; //
+
+    	// Group 015 : AUD
+    	__IOM uint32_t  aud_a16_base                          ; //
+    	__IOM uint32_t  aud_a16_length                        ; //
+    	__IOM uint32_t  aud_a16_ptr                           ; //
+    	__IOM uint32_t  aud_a16_cnt                           ; //
+    	__IOM uint32_t  aud_a17_base                          ; //
+    	__IOM uint32_t  aud_a17_length                        ; //
+    	__IOM uint32_t  aud_a17_ptr                           ; //
+    	__IOM uint32_t  aud_a17_cnt                           ; //
+    	__IOM uint32_t  aud_a18_base                          ; //
+    	__IOM uint32_t  aud_a18_length                        ; //
+    	__IOM uint32_t  aud_a18_ptr                           ; //
+    	__IOM uint32_t  aud_a18_cnt                           ; //
+    	__IOM uint32_t  aud_a19_base                          ; //
+    	__IOM uint32_t  aud_a19_length                        ; //
+    	__IOM uint32_t  aud_a19_ptr                           ; //
+    	__IOM uint32_t  aud_a19_cnt                           ; //
+    	__IOM uint32_t  aud_a20_base                          ; //
+    	__IOM uint32_t  aud_a20_length                        ; //
+    	__IOM uint32_t  aud_a20_ptr                           ; //
+    	__IOM uint32_t  aud_a20_cnt                           ; //
+    	__IOM uint32_t  aud_a21_base                          ; //
+    	__IOM uint32_t  aud_a21_length                        ; //
+    	__IOM uint32_t  aud_a21_ptr                           ; //
+    	__IOM uint32_t  aud_a21_cnt                           ; //
+    	__IOM uint32_t  aud_a22_base                          ; // 24
+    	__IOM uint32_t  aud_a22_length                        ; // 25
+    	__IOM uint32_t  aud_a22_ptr                           ; // 26
+    	__IOM uint32_t  aud_a22_cnt                           ; // 27
+    	__IOM uint32_t  aud_a23_base                          ; // 28
+    	__IOM uint32_t  aud_a23_length                        ; // 29
+    	__IOM uint32_t  aud_a23_ptr                           ; // 30
+    	__IOM uint32_t  aud_a23_cnt                           ; // 31
+
+    	// Group 016 : AUD
+    	__IOM uint32_t  aud_grm_master_gain                   ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_0                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_1                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_2                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_3                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_4                ; // Gain Control
+    	__IOM uint32_t  aud_grm_mix_control_0                 ; // Mixer Setting
+    	__IOM uint32_t  aud_grm_mix_control_1                 ; // Mixer Setting
+    	__IOM uint32_t  aud_grm_mix_control_2                 ; // Mixer Setting
+    	__IOM uint32_t  aud_grm_switch_0                      ; // Channel Switch
+    	__IOM uint32_t  aud_grm_switch_1                      ; // Channel Switch
+    	__IOM uint32_t  aud_grm_switch_int                    ; // Channel Switch
+    	__IOM uint32_t  aud_grm_delta_volume                  ; // Gain Update
+    	__IOM uint32_t  aud_grm_delta_ramp_pcm                ; // Gain Update
+    	__IOM uint32_t  aud_grm_delta_ramp_risc               ; // Gain Update
+    	__IOM uint32_t  aud_grm_delta_ramp_linein             ; // Gain Update
+    	__IOM uint32_t  aud_grm_other                         ; // Other Setting
+    	__IOM uint32_t  aud_grm_gain_control_5                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_6                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_7                ; // Gain Control
+    	__IOM uint32_t  aud_grm_gain_control_8                ; // Gain Control
+    	__IOM uint32_t  aud_grm_fifo_eflag                    ; // FIFO Error Flag
+    	__IOM uint32_t  aud_grm_gain_control_9                ; //
+    	__IOM uint32_t  aud_grm_gain_control_10               ; //
+    	__IOM uint32_t  aud_grm_switch_hdmi_tx                ; // AUD_GRM_SWITCH_HDMI_TX
+    	__IOM uint32_t  aud_grm_gain_control_11               ; //
+    	__IOM uint32_t  aud_grm_tdm_switch_0                  ; //
+    	__IOM uint32_t  aud_grm_tdm_switch_1                  ; //
+    	__IOM uint32_t  aud_grm_gain_control_12               ; //
+    	__IOM uint32_t  aud_grm_mix_control_3                 ; //
+    	__IOM uint32_t  aud_grm_path_select                   ; //
+    	__IOM uint32_t  G067_reserved_31                      ; //
+
+    	// Group 017 : AUD
+    	__IOM uint32_t  G068_AUD[32]                          ;
+
+    	// Group 018 : Reserved
+    	__IOM uint32_t  G069_reserved_00                      ;
+    	__IOM uint32_t  G069_reserved_01                      ;
+    	__IOM uint32_t  G069_reserved_02                      ;
+    	__IOM uint32_t  G069_reserved_03                      ;
+    	__IOM uint32_t  G069_reserved_04                      ;
+    	__IOM uint32_t  G069_reserved_05                      ;
+    	__IOM uint32_t  G069_reserved_06                      ;
+    	__IOM uint32_t  G069_reserved_07                      ;
+    	__IOM uint32_t  G069_reserved_08                      ;
+    	__IOM uint32_t  G069_reserved_09                      ;
+    	__IOM uint32_t  G069_reserved_10                      ;
+    	__IOM uint32_t  G069_reserved_11                      ;
+    	__IOM uint32_t  G069_reserved_12                      ;
+    	__IOM uint32_t  G069_reserved_13                      ;
+    	__IOM uint32_t  G069_reserved_14                      ;
+    	__IOM uint32_t  I2S_PWM_CONTROL_1                     ;
+    	__IOM uint32_t  I2S_PWM_CONTROL_2                     ;
+    	__IOM uint32_t  I2S_PWM_CONTROL_3                     ;
+    	__IOM uint32_t  I2S_PWM_CONTROL_4                     ;
+    	__IOM uint32_t  CLASSD_MOS_CONTROL                    ;
+    	__IOM uint32_t  G069_reserved_20                      ;
+    	__IOM uint32_t  G069_reserved_21                      ;
+    	__IOM uint32_t  G069_reserved_22                      ;
+    	__IOM uint32_t  G069_reserved_23                      ;
+    	__IOM uint32_t  G069_reserved_24                      ;
+    	__IOM uint32_t  G069_reserved_25                      ;
+    	__IOM uint32_t  G069_reserved_26                      ;
+    	__IOM uint32_t  G069_reserved_27                      ;
+    	__IOM uint32_t  G069_reserved_28                      ;
+    	__IOM uint32_t  G069_reserved_29                      ;
+    	__IOM uint32_t  G069_reserved_30                      ;
+    	__IOM uint32_t  G069_reserved_31                      ;
+
+    	// Group 019 : Reserved
+    	__IOM uint32_t  G070_RESERVED[32]                     ;
+
+    	// Group 020 : Reserved
+    	__IOM uint32_t  aud_a24_base                          ; // 00
+    	__IOM uint32_t  aud_a24_length                        ; // 01
+    	__IOM uint32_t  aud_a24_ptr                           ; // 02
+    	__IOM uint32_t  aud_a24_cnt                           ; // 03
+    	__IOM uint32_t  aud_a25_base                          ; // 04
+    	__IOM uint32_t  aud_a25_length                        ; // 05
+    	__IOM uint32_t  aud_a25_ptr                           ; // 06
+    	__IOM uint32_t  aud_a25_cnt                           ; // 07
+    	__IOM uint32_t  aud_a26_base                          ; // 08
+    	__IOM uint32_t  aud_a26_length                        ; // 09
+    	__IOM uint32_t  aud_a26_ptr                           ; // 10
+    	__IOM uint32_t  aud_a26_cnt                           ; // 11
+    	__IOM uint32_t  aud_a27_base                          ; // 12
+    	__IOM uint32_t  aud_a27_length                        ; // 13
+    	__IOM uint32_t  aud_a27_ptr                           ; // 14
+    	__IOM uint32_t  aud_a27_cnt                           ; // 15
+    	__IOM uint32_t  aud_a28_base                          ; // 16
+    	__IOM uint32_t  aud_a28_length                        ; // 17
+    	__IOM uint32_t  aud_a28_ptr                           ; // 18
+    	__IOM uint32_t  aud_a28_cnt                           ; // 19
+    	__IOM uint32_t  aud_a29_base                          ; // 20
+    	__IOM uint32_t  aud_a29_length                        ; // 21
+    	__IOM uint32_t  aud_a29_ptr                           ; // 22
+    	__IOM uint32_t  aud_a29_cnt                           ; // 23
+    	__IOM uint32_t  G071_reserved_24                      ; // 24
+    	__IOM uint32_t  G071_reserved_25                      ; // 25
+    	__IOM uint32_t  G071_reserved_26                      ; // 26
+    	__IOM uint32_t  G071_reserved_27                      ; // 27
+    	__IOM uint32_t  G071_reserved_28                      ; // 28
+    	__IOM uint32_t  G071_reserved_29                      ; // 29
+    	__IOM uint32_t  G071_reserved_30                      ; // 30
+    	__IOM uint32_t  G071_reserved_31                      ; // 31
+
+    	// Group 021 : Reserved
+    	__IOM uint32_t  tdm_rx_cfg0                           ;//0
+    	__IOM uint32_t  tdm_rx_cfg1                           ;//1
+    	__IOM uint32_t  tdm_rx_cfg2                           ;//2
+    	__IOM uint32_t  tdm_rx_cfg3                           ;//3
+    	__IOM uint32_t  G72_reserved_4                        ;//4
+    	__IOM uint32_t  G72_reserved_5                        ;//5
+    	__IOM uint32_t  tdm_tx_cfg0                           ;//6
+    	__IOM uint32_t  tdm_tx_cfg1                           ;//7
+    	__IOM uint32_t  tdm_tx_cfg2                           ;//8
+    	__IOM uint32_t  tdm_tx_cfg3                           ;//9
+    	__IOM uint32_t  tdm_tx_cfg4                           ;//10
+    	__IOM uint32_t  G72_reserved_11                       ;//11
+    	__IOM uint32_t  G72_reserved_12                       ;//12
+    	__IOM uint32_t  G72_reserved_13                       ;//13
+    	__IOM uint32_t  pdm_rx_cfg0                           ;//14
+    	__IOM uint32_t  pdm_rx_cfg1                           ;//15
+    	__IOM uint32_t  pdm_rx_cfg2                           ;//16
+    	__IOM uint32_t  pdm_rx_cfg3                           ;//17
+    	__IOM uint32_t  pdm_rx_cfg4                           ;//18
+    	__IOM uint32_t  pdm_rx_cfg5                           ;//19
+    	__IOM uint32_t  G72_reserved_20                       ;//20
+    	__IOM uint32_t  G72_reserved_21                       ;//21
+    	__IOM uint32_t  tdm_tx_xck_cfg                        ;//22
+    	__IOM uint32_t  tdm_tx_bck_cfg                        ;//23
+    	__IOM uint32_t  tdm_rx_xck_cfg                        ;//24
+    	__IOM uint32_t  tdm_rx_bck_cfg                        ;//25 TDM_RX_BCK_CFG
+    	__IOM uint32_t  pdm_rx_xck_cfg                        ;//26
+    	__IOM uint32_t  pdm_rx_bck_cfg                        ;//27
+    	__IOM uint32_t  G72_reserved_28                       ;//28
+    	__IOM uint32_t  G72_reserved_29                       ;//29
+    	__IOM uint32_t  tdmpdm_tx_sel                         ;//30
+    	__IOM uint32_t  G72_reserved_31                       ;//31
+} AUD_TypeDef;
+
+#define AUD_REG ((volatile AUD_TypeDef *)RF_GRP_AO(9, 0))
+
 
 /* -------------------  Start of section using anonymous unions  ------------------ */
 #if defined ( __CC_ARM   )
