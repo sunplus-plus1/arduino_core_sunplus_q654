@@ -5,18 +5,24 @@
 
 SemaphoreHandle_t xPowerDown_Semaphore;
 
+//#define PM_ZEBU_TEST
+
+#ifdef PM_ZEBU_TEST
 #define UART_LSR_TX_RDY2     (1 << 0)
 #define UART_REG2            SP_UART1
 #define UART_tx_rdy2()       (UART_REG2->lsr & UART_LSR_TX_RDY2)
 #define UART_putc_nw2(c)     (UART_REG2->dr = (c))
 #define UART_wait2()         do { while (!UART_tx_rdy2()) ;} while (0)
 #define UART_putc2(c)        do { UART_wait2(); UART_putc_nw2(c); } while (0)
-
+#endif
 
 void Send_Cmd_To_PMIC(uint32_t cmd)
 {
-	//pmic_do_cmd(cmd);
+#ifdef PM_ZEBU_TEST
 	UART_putc2(cmd);
+#else
+	pmic_do_cmd(cmd);
+#endif
 }
 
 void vCA55_TO_CM4_Mailbox_ISR()

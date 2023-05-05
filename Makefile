@@ -2,7 +2,7 @@ TOP = .
 
 CHIP     ?= Q645
 CHIPDIRS ?= sp645
-FREERTOS ?= 0
+FREERTOS ?= 1
 OPENAMP  ?= 0
 LVGL     ?= 0
 CMSISDSP ?= 0
@@ -18,10 +18,9 @@ TARGET 	= firmware
 include ./make.cfg
 
 #for test.
-ifeq ($(CHIP),SP7350)
-FREERTOS = 1
-else ifeq ($(CHIP),Q628)
+ifeq ($(CHIP),Q628)
 OPENAMP  = 1
+FREERTOS  = 0
 CM_BACKTRACE = 0
 endif
 

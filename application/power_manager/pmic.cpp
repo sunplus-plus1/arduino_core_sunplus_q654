@@ -109,7 +109,7 @@ int pmic_do_cmd(uint32_t cmd)
 int pmic_init(void)
 {
 	uint8_t version = 0;
-	pmic_i2c = new TwoWire(SP_I2CM3);
+	pmic_i2c = new TwoWire(SP_I2CM7);
 	pmic_i2c->begin();
 #ifdef USE_I2C_READ
 	version = _pmic_i2c_read(RT5759_REG_VENDORINFO);

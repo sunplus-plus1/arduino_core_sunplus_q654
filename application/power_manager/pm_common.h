@@ -64,7 +64,7 @@ void pm_restore_data_after_ddr_retention(void);
 #define RGST_SECURE_REG       RF_GRP(502,0)
 #define SECGRP1_MAIN_REG      RF_GRP(113,0)
 #define SECGRP1_PAI_REG       RF_GRP(114,0)
-#define SECGRP1_PAII_REG  	  RF_GRP(115,0)
+#define SECGRP1_PAII_REG      RF_GRP(115,0)
 
 typedef struct{
 	uint32_t reg_Sec_Main[32];
@@ -74,9 +74,10 @@ typedef struct{
 }reg_data;
 
 /* ddr retention */
-#define CM4_SRAM_RET_ADDRESS    0xFA280000
+#define CM4_SRAM_RET_ADDRESS    0xFA29F000
 #define UMCTL2_REG_Base	   	    0xF8169000
 #define DWC_PHY_REG_Base        0xF9000000
+
 void ddr_retention_save(void);
 void ddr_retention_load(void);
 
