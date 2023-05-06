@@ -7,7 +7,7 @@
 
 #define __CM4_REV                 0x0001U  /*!< Core revision r0p1                            */
 #define __MPU_PRESENT             0U       /*!< SP7350 devices provide an MPU */
-#define __NVIC_PRIO_BITS          8U       /*!< SP7350 devices use 8 Bits for the Priority Levels */
+#define __NVIC_PRIO_BITS          4U       /*!< SP7350 devices use 4 Bits for the Priority Levels */
 #define __Vendor_SysTickConfig    0U       /*!< Set to 1 if different SysTick Config is used */
 #define __FPU_PRESENT             1U       /*!< SP7350 devices provide an FPU */
 

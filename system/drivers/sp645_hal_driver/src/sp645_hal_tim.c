@@ -68,7 +68,6 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 	if (htim->State == HAL_TIM_STATE_RESET)
 	{
 		htim->Lock = HAL_UNLOCKED;
-
 		irqn = HAL_TIM_GetIRQ(htim->Instance);
 		if (htim->IrqHandle != NULL){
 			IRQ_SetHandler(irqn, htim->IrqHandle);
@@ -76,7 +75,6 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 		}else{
 			IRQ_Disable(irqn);
 		}
-		//printf("set timer irq=%d  handler=%x \n",irqn,htim->IrqHandle);
 	}
 	htim->State = HAL_TIM_STATE_BUSY;
 	htim->Instance->control = 0;

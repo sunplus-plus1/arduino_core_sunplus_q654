@@ -115,7 +115,7 @@ void _spi_reg_ctrl0_set(SPI_HandleTypeDef *hspi,uint8_t tmode)
 	temp_reg |= 0 << SPI_FRF_OFFSET;
 	/* CTRLR0[11] Shift Register Loop */
 	temp_reg |= 0 << SPI_SRL_OFFSET;
-	printf("hspi->Init.spi_mode = %d \n",hspi->Init.spi_mode);
+
 	/* CPOL/CPHA select */
 	switch(hspi->Init.spi_mode)
 	{
