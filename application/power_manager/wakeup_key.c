@@ -1,17 +1,13 @@
 #include <FreeRTOS.h>
-#include<FreeRTOSConfig.h>
+#include <FreeRTOSConfig.h>
 #include <task.h>
 #include <semphr.h>
 
 #include "Arduino.h"
 #include "pm_common.h"
 
-#define WAKEUP_KEY_PIN		(90)
-#define SHORT_PRESS		    (1000)
-#define long_PRESS		    (5000)
-#define OFFSET_PRESS        (3500)
 
-
+#define MAILBOX_IN_SUSPEND_VALUE   (0xaabb1234)  /* match in sp_remoteproc.c*/
 
 int	deep_sleep = 0;
 int	in_suspend = 0;
@@ -24,12 +20,16 @@ void resume_by_rtc(void)
 void wakeup_shortkey()
 {
 	printf("short key \n");
-	deep_sleep = 0;
-	CM4_TO_CA55_MAILBOX->direct_transation[7]=deep_sleep;
 	if(in_suspend)
 	{
 		printf("resume by RTC \n");
 		resume_by_rtc();
+	}
+	else
+	{
+		/* mailbox to ca55 in suspend */
+		deep_sleep = 0;
+		CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
 	}
 }
 
@@ -37,7 +37,7 @@ void wakeup_longkey()
 {
 	printf("long key \n");
 	deep_sleep = 1;
-	CM4_TO_CA55_MAILBOX->direct_transation[7]=deep_sleep;
+	CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
 }
 
 void vWakeyupKeyTask( void *pvParameters )
@@ -46,7 +46,7 @@ void vWakeyupKeyTask( void *pvParameters )
 	( void ) pvParameters;
 	TickType_t xoffsetTimeout = pdMS_TO_TICKS( OFFSET_PRESS );
 	TickType_t xshortTimeout = pdMS_TO_TICKS( SHORT_PRESS );
-	TickType_t xlongTimeout = pdMS_TO_TICKS( long_PRESS );
+	TickType_t xlongTimeout = pdMS_TO_TICKS( LONG_PRESS );
 
 	TickType_t xfirsttime,xsencondtime;
 	bool xPress = false;

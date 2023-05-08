@@ -100,6 +100,12 @@ int pmic_do_cmd(uint32_t cmd)
 			_rt5759_enable();
 			_rt5759_set_0d8_vol();
 			break;
+		case MAIN_POWER_OFF:
+			digitalWrite(MAIN_DOMAIN_CONTROL_PIN, LOW);
+			break;
+		case MAIN_POWER_ON:
+			digitalWrite(MAIN_DOMAIN_CONTROL_PIN, HIGH);
+			break;
 		default:
 		break;
 	}
@@ -119,6 +125,7 @@ int pmic_init(void)
 		return -1;
 	}
 #endif
+	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
 	return 0;
 }
 

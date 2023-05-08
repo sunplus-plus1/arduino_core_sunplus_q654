@@ -16,6 +16,8 @@
 extern "C" {
 #endif
 
+//#define PM_ZEBU_TEST   /* test in zebu, power down/up by uart */
+
 
 #define MAIN_DOMAIN_PU_ACK_IRQ			(0)
 #define MAIN_DOMAIN_PD_ACK_IRQ			(1)
@@ -30,6 +32,8 @@ extern "C" {
 #define CA55_2_CM4_IRQ_INT0				(9)
 
 /* PMIC */
+#define MAIN_DOMAIN_CONTROL_PIN         (67)
+
 #define MAIN_POWER_OFF		0x80
 #define MAIN_POWER_ON		0x81
 
@@ -45,6 +49,11 @@ extern "C" {
 #define CA55_1V_POWER       0xB3
 
 /*wakeup key*/
+#define WAKEUP_KEY_PIN		(90)
+#define SHORT_PRESS         (1000)  /* short time: press time between 1s and 4.5s */
+#define LONG_PRESS          (5000)  /* long time: press time between 5s and 8.5s */
+#define OFFSET_PRESS        (3500)
+
 extern int	deep_sleep;
 extern int	in_suspend;
 void wakeup_key_init(void);
@@ -59,7 +68,7 @@ void vDoPowerupTask( void *pvParameters );
 void pm_save_data_before_ddr_retention(void);
 void pm_restore_data_after_ddr_retention(void);
 /* save data */
-#define PM_DATA_SAVE_ADDRESS   0xFA290000   /* after ddr retention data */
+#define PM_DATA_SAVE_ADDRESS   0xFA29E000   /* Save the maindomain register and User data */
 
 #define RGST_SECURE_REG       RF_GRP(502,0)
 #define SECGRP1_MAIN_REG      RF_GRP(113,0)
@@ -74,7 +83,7 @@ typedef struct{
 }reg_data;
 
 /* ddr retention */
-#define CM4_SRAM_RET_ADDRESS    0xFA29F000
+#define CM4_SRAM_RET_ADDRESS    0xFA29F000 /* Save the configuration info of ddr */
 #define UMCTL2_REG_Base	   	    0xF8169000
 #define DWC_PHY_REG_Base        0xF9000000
 

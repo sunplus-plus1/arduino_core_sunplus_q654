@@ -36,7 +36,7 @@ static HAL_StatusTypeDef ret;
 
 void _pwm_set(int pwm)
 {
-	ret = pwm_init(pwm,500000000,200000000,1,RESOLUTION_4096);
+	ret = pwm_init(pwm,500000000,200000000,1,PWM_RESOLUTION_0_4096);
 
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 	
@@ -75,22 +75,22 @@ void pwm3_test()
 
 void pwm_Init_test()
 {
-	ret = pwm_init(PWM0,20000000,10000000,1,RESOLUTION_4096);
+	ret = pwm_init(PWM0,20000000,10000000,1,PWM_RESOLUTION_0_4096);
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 
 
-	ret = pwm_init(PWM0,0,10000000,1,RESOLUTION_4096);
+	ret = pwm_init(PWM0,0,10000000,1,PWM_RESOLUTION_0_4096);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 	
-	ret = pwm_init(PWM0,10000000,20000000,1,RESOLUTION_4096);
+	ret = pwm_init(PWM0,10000000,20000000,1,PWM_RESOLUTION_0_4096);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 
 #ifdef SP7350
 	/* pinmux must set to 1/2 */
-	ret = pwm_init(PWM0,10000000,20000000,3,RESOLUTION_4096);
+	ret = pwm_init(PWM0,10000000,20000000,3,PWM_RESOLUTION_0_4096);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 
-	ret = pwm_init(PWM0,10000000,20000000,0,RESOLUTION_4096);
+	ret = pwm_init(PWM0,10000000,20000000,0,PWM_RESOLUTION_0_4096);
 	CU_ASSERT_EQUAL(ret, HAL_ERROR);
 #endif
 

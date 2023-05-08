@@ -454,9 +454,9 @@ void apb_ctl_after_retention(void)
 	ctl_apb_wr(0x30,0x00000020);    //Keep system on self refresh state
 	ctl_apb_wr(0x1b0,0x00000050);   //indicates to controller that PHY has completed re-training/initialization
 	
-	MOON0_REG->sft_cfg[14] = 0x00020002;  // 1->0: assert DDRCTL AXI RST_N
-	MOON0_REG->sft_cfg[14] = 0x00040004;  // 1->0: assert DDRCTL AHB RST_N
-	MOON0_REG->sft_cfg[14] = 0x00100010;  // 1->0: assert DDRDFI RST_N
+	MOON0_REG->sft_cfg[14] = 0x00020002;  // 0->1: de-assert DDRCTL AXI RST_N
+	MOON0_REG->sft_cfg[14] = 0x00040004;  // 0->1: de-assert DDRCTL AHB RST_N
+	MOON0_REG->sft_cfg[14] = 0x00100010;  // 0->1: de-assert DDRDFI RST_N
 	wait_loop(1000);
 	wait_loop(1000);
 

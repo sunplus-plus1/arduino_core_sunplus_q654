@@ -5,7 +5,6 @@
 
 SemaphoreHandle_t xPowerDown_Semaphore;
 
-//#define PM_ZEBU_TEST
 
 #ifdef PM_ZEBU_TEST
 #define UART_LSR_TX_RDY2     (1 << 0)

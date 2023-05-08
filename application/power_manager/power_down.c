@@ -11,15 +11,16 @@ void Main_Domain_PowerDown_ACK_Handler(void)
 	Send_Cmd_To_PMIC(MAIN_POWER_OFF);
 	
 	/* power up for zebu test (talk with PMIC)*/
+#ifdef PM_ZEBU_TEST
 	 Send_Cmd_To_PMIC(0x82);
-
+#endif
 	NVIC_DisableIRQ(MAIN_PWR_DOWN_IRQn);
 
 	//RTC power down AO domain
 	if(deep_sleep)
 	{
 		deep_sleep = 0;
-		//*(volatile unsigned int *)0xF88011D4 = 0x1;//G35.21=0x1;
+		*(volatile unsigned int *)0xF88011D4 = 0x1;//G35.21=0x1;
 	}
 	in_suspend = 1;
 }
@@ -77,7 +78,7 @@ int power_down_cluster()
 		}
 	}
 	/* disable request */
-	PMC_REGS->pmc_pctl_reg &= (0x1<<9);
+	PMC_REGS->pmc_pctl_reg &= ~(0x1<<9);
 
 	/* assert CA55 reset */
 	MOON0_REG->sft_cfg[1] 	= RF_MASK_V_SET(0x60);//0x00600060 ;
@@ -124,7 +125,7 @@ int power_down_cores()
 		return -1;
 	}
 	/* disable request */
-	PMC_REGS->pmc_pctl_reg &= (0xF<<5);
+	PMC_REGS->pmc_pctl_reg &= ~(0xF<<5);
 	
 	/* assert CA55 reset */
 	MOON0_REG->sft_cfg[1] = RF_MASK_V_SET(0x1E);//0x001E001E ;
