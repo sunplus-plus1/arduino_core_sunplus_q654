@@ -123,7 +123,7 @@ typedef enum
   I2C_MASTER3_IRQ                  = 96,      /*!< I2C 3  interrupt                             */
   I2C_MASTER4_IRQ                  = 97,      /*!< I2C 4  interrupt                             */
   I2C_MASTER5_IRQ                  = 98,      /*!< I2C 5  interrupt                             */
-  RTC_PREIODIC_IRQ                 = 99,      /*!< RTC Prediodic interrupt                      */
+  RTC_PERIODIC_IRQ                 = 99,      /*!< RTC Periodic interrupt                      */
   AUD_LOSD_IRQ                     = 100,      /*!< Audio LOSD interrupt                        */
   AUD_FIFO_IRQ                     = 101,      /*!< Audio FIFO interrupt                        */
   AUD_TWS_LATCH_IRQ                = 102,      /*!< Audio TWS Latch interrupt                   */
@@ -1693,8 +1693,28 @@ typedef struct {
     	__IOM uint32_t  tdmpdm_tx_sel                         ;//30
     	__IOM uint32_t  G72_reserved_31                       ;//31
 } AUD_TypeDef;
-
 #define AUD_REG ((volatile AUD_TypeDef *)RF_GRP(60, 0))
+
+/******************************************************************************/
+/*                                                                            */
+/*                               RTC                                          */
+/*                                                                            */
+/******************************************************************************/
+typedef struct{
+	RESERVED(0[1], uint32_t);
+	__IOM uint32_t rtc_ctrl;
+	__IOM uint32_t rtc_timer;
+	__IOM uint32_t rtc_ontime_set;
+	__IOM uint32_t rtc_clock_set;
+	__IOM uint32_t rtc_macro_ctrl;
+	__IOM uint32_t rtc_periodic_set;
+	__IOM uint32_t rtc_int_status;
+	RESERVED(1[2], uint32_t); ;
+	__IOM uint32_t rtc_system_cnt_31_0;
+	__IOM uint32_t rtc_system_cnt_63_32;
+	RESERVED(2[20], uint32_t);
+}RTC_TypeDef;
+#define RTC_REG                    ((RTC_TypeDef *)RF_GRP(116, 0))
 
 /* -------------------  Start of section using anonymous unions  ------------------ */
 #if defined ( __CC_ARM   )

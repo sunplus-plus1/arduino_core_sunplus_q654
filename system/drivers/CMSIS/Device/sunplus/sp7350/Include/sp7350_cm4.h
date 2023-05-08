@@ -123,7 +123,7 @@ typedef enum
   I2C_MASTER3_IRQ                  = 96,      /*!< I2C 3  interrupt                              */
   I2C_MASTER4_IRQ                  = 97,      /*!< I2C 4  interrupt                              */
   I2C_MASTER5_IRQ                  = 98,      /*!< I2C 5  interrupt                              */
-  RTC_PREIODIC_IRQ                 = 99,      /*!< RTC Prediodic interrupt                       */
+  RTC_PERIODIC_IRQ                 = 99,      /*!< RTC Periodic interrupt                       */
   AUD_LOSD_IRQ                     = 100,     /*!< Audio LOSD interrupt                          */
   AUD_FIFO_IRQ                     = 101,     /*!< Audio FIFO interrupt                          */
   AUD_TWS_LATCH_IRQ                = 102,     /*!< Audio TWS Latch interrupt                     */
