@@ -65,25 +65,6 @@ enum {
 	  .irq_num = (irqn), .irq_callback = (cb), \
 	  .dma_idx = (dma) }
 
-/*  Family specific description for I2C */
-typedef enum {
-	I2C0_INDEX = 0UL,
-	I2C1_INDEX,
-	I2C2_INDEX,
-	I2C3_INDEX,
-#if defined (SP645) || defined (SP7350)
-	I2C4_INDEX,
-	I2C5_INDEX,
-#endif
-#ifdef SP7350
-	I2C6_INDEX,
-	I2C7_INDEX,
-	I2C8_INDEX,
-	I2C9_INDEX,
-#endif
-	I2C_NUM
-} i2c_index_e;
-
 struct i2c_info {
 	volatile I2C_TypeDef *instance;
 	i2c_index_e index;

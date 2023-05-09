@@ -9,6 +9,14 @@
 /****************************************
 * I2C Master
 ****************************************/
+/* I2C Transmit Modes */
+#define I2C_MODE_BURST	0x0
+#define I2C_MODE_INTR	0x1
+#define I2C_MODE_DMA	0x2
+
+/* I2C Frequency Modes */
+#define I2C_MAX_STANDARD_MODE_FREQ	100000
+#define I2C_MAX_FAST_MODE_FREQ		400000
 
 //control0
 #define I2C_CTL0_FREQ(x)                  (x<<24)	//bit[26:24]
@@ -232,6 +240,17 @@ typedef enum {
 	HAL_I2C_ERR_ADDRESS_NACK = 0x400U	/* slave address NACK */
 } I2C_Status_e;
 
+/*  Family specific description for I2C */
+typedef enum {
+	I2C0_INDEX = 0UL,
+	I2C1_INDEX,
+	I2C2_INDEX,
+	I2C3_INDEX,
+	I2C4_INDEX,
+	I2C5_INDEX,
+	I2C_NUM
+} i2c_index_e;
+
 typedef enum {
 	I2C_DMA_WRITE_MODE,
 	I2C_DMA_READ_MODE
@@ -277,7 +296,7 @@ typedef struct __I2C_HandleTypeDef {
 	__IO uint16_t RegDataIndex;
 	__IO uint32_t BurstCount;
 	__IO uint32_t BurstRemainder;
-
+	uint8_t       Mode;
 } I2C_HandleTypeDef;
 
 void I2C_HAL_TEST_IRQHandler(void);
