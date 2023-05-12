@@ -18,6 +18,8 @@
 #include "sp7350_hal_dma.h"
 #include "sp7350_hal_adc.h"
 #include "sp7350_hal_hsem.h"
+#include "sp7350_hal_i2s.h"
+#include "sp7350_hal_rtc.h"
 #endif
 
 

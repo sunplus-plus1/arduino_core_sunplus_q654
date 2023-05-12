@@ -15,6 +15,7 @@
 #include "sp645_hal_wdg.h"
 #include "sp645_hal_pll.h"
 #include "sp645_hal_i2s.h"
+#include "sp645_hal_rtc.h"
 
 #endif
 

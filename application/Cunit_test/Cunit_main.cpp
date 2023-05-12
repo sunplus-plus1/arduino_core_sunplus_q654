@@ -51,6 +51,8 @@ int main(void)
 //	Add_Watchdog_Tests();
 //	Add_Uart_Tests();
 //	Add_Spi_Tests();
+//	Add_Rtc_Tests();
+
 	#endif
 
 	CU_basic_set_mode(CU_BRM_VERBOSE);

@@ -28,6 +28,7 @@ int Add_Pwm_Tests(void);
 int Add_GPIO_Tests(void);
 int Add_I2C_Tests(void);
 int Add_Spi_Tests(void);
+int Add_Rtc_Tests(void);
 
 #endif  /* CUNIT_MAIN_H_SEEN*/
 

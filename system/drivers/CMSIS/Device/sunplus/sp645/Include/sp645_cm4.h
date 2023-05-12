@@ -1714,7 +1714,7 @@ typedef struct{
 	__IOM uint32_t rtc_system_cnt_63_32;
 	RESERVED(2[20], uint32_t);
 }RTC_TypeDef;
-#define RTC_REG                    ((RTC_TypeDef *)RF_GRP(116, 0))
+#define RTC_REGS                    ((volatile RTC_TypeDef *)RF_GRP(116, 0))
 
 /* -------------------  Start of section using anonymous unions  ------------------ */
 #if defined ( __CC_ARM   )

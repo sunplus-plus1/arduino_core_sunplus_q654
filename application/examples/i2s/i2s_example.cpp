@@ -3,7 +3,7 @@
  */
 
 #include "Arduino.h"
-#ifdef SP645
+#ifndef SP7021
 #define PCM_ADDRESS_16BIT	((uint32_t *)0x24000000)
 #define PCM_ADDRESS_24BIT	((uint32_t *)0x25000000)
 #define TEST_BUF_SIZE	(4 * 1024)
