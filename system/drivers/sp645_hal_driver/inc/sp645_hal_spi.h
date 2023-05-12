@@ -137,9 +137,11 @@ HAL_StatusTypeDef HAL_SPI_Abort_IT(SPI_HandleTypeDef *hspi);
 HAL_SPI_StateTypeDef HAL_SPI_GetState(SPI_HandleTypeDef *hs);
 
 HAL_StatusTypeDef HAL_SPI_Transmit_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint32_t Size);
+HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint32_t Size);
+HAL_StatusTypeDef HAL_SPI_TransmitReceive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pTxData, uint8_t *pRxData,
+                                             uint16_t TxSize,uint16_t RxSize);
 
-void HAL_SPI_IRQHandler(SPI_HandleTypeDef *arg);
-void HAL_SPI_DMA_IRQHandler(SPI_HandleTypeDef *arg);
+void HAL_SPI_IRQHandler(void *arg);
 
 #ifdef __cplusplus
 }
