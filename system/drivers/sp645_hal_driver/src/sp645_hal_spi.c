@@ -117,6 +117,8 @@ static HAL_StatusTypeDef _SPI_DMA_Config(SPI_HandleTypeDef *hspi)
 			hspi->pRxBuffPtr = pDma_RxBuffer;
 		else
 			hspi->pRxBuffPtr = (uint8_t*)malloc(rxsize);
+		if(!hspi->pRxBuffPtr)
+			return HAL_ERROR;
 	}
 	else if(rxsize && !txsize)
 	{
@@ -132,6 +134,7 @@ static HAL_StatusTypeDef _SPI_DMA_Config(SPI_HandleTypeDef *hspi)
 
 	hspi->pTxBuffPtr += txsize;
 	hspi->pRxBuffPtr += rxsize;
+	return HAL_OK;
 }
 
 

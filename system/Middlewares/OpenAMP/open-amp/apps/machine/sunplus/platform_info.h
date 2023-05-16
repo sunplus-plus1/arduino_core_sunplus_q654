@@ -8,6 +8,8 @@
 #include "sp7021_arm926.h"
 #elif defined(SP645)
 #include "sp645_cm4.h"
+#elif defined(SP7350)
+#include "sp7350_cm4.h"
 #endif
 #include "xil_printf.h"
 
@@ -31,6 +33,7 @@ extern int __OPENAMP_region_end__[];    /* defined by linker script */
 #define SHARED_MEM_PA  ((metal_phys_addr_t)__OPENAMP_region_start__)
 #define SHARED_MEM_SIZE (size_t)((void *)__OPENAMP_region_end__ - (void *) __OPENAMP_region_start__)
 #define SHARED_BUF_OFFSET 0x80000UL
+
 
 /* Remoteproc private data struct */
 struct remoteproc_priv {

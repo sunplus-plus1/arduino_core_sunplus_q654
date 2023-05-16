@@ -97,6 +97,13 @@ uint32_t IRQ_GetPriority (IRQn_ID_t irqn)
 	return preemptpriority;
 }
 
+uint32_t IRQ_GetCurrentIRQNum(void)
+{
+	IRQn_ID_t irqn;
+	irqn = (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) >> SCB_ICSR_VECTACTIVE_Pos;
+	irqn -= 16;
+	return irqn;
+}
 int32_t IRQ_Clear(IRQn_ID_t irqn)
 {
 	return 0;
