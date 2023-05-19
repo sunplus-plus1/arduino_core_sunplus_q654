@@ -6,7 +6,12 @@
 #ifndef SP7021
 #define PCM_ADDRESS_16BIT	((uint32_t *)0x24000000)
 #define PCM_ADDRESS_24BIT	((uint32_t *)0x25000000)
-#define TEST_BUF_SIZE	(4 * 1024)
+#define TEST_BUF_SIZE		(4 * 1024)
+
+#define STAMP(v)                                   \
+	do {                                       \
+		*(volatile uint32_t *)0xf8000000UL = v; \
+	} while (0)
 
 extern uint32_t single_swap_4bytes(uint32_t single);
 extern void dump_common_reg(I2S_HandleTypeDef *hi2s);
@@ -285,14 +290,21 @@ void i2s_test_rx_sine(void)
 	I2S_HandleTypeDef hi2s2;
 
 	//HAL_I2S_Default_Init();
-	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
 
+#ifdef SP7350
 	hi2s0.Index = INDEX_I2S0;
+	hi2s2.Index = INDEX_I2S0;
 	hi2s0.Init.Mode = I2S_MODE_MASTER_RX;
+#else
+	HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
+	hi2s0.Index = INDEX_I2S0;
+	hi2s2.Index = INDEX_I2S2;
+	hi2s0.Init.Mode = I2S_MODE_SLAVE_RX;
+#endif
+	//hi2s0.Init.Mode = I2S_MODE_MASTER_RX;
 	hi2s0.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s0.Init.AudioFreq = I2S_AUDIOFREQ_48K;
 
-	hi2s2.Index = INDEX_I2S2;
 	hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
 	hi2s2.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_48K;
@@ -315,7 +327,7 @@ void i2s_test_rx_sine(void)
 void setup()
 {
 	printf("i2s example %s\n", __TIME__);
-#if 1
+#if 0
 	i2s_test_debug_signal();
 #endif
 
@@ -328,10 +340,10 @@ void setup()
 #endif
 
 #if 0
-	i2s_test_data_width();//16bit not work
+	i2s_test_data_width();
 #endif
 
-#if 0
+#if 1
 	i2s_test_rx_sine();
 #endif
 

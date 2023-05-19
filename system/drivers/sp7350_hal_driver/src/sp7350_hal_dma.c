@@ -1,8 +1,8 @@
 #include "sp7350_hal_dma.h"
 
 #define DUMP(s, v)	printf("%s%08x\n", s, v);
-#define DBG(s, v)	DUMP(s, v)
-//#define DBG(...)
+//#define DBG(s, v)	DUMP(s, v)
+#define DBG(...)
 
 #define STAMP(v)                                   \
 	do {                                       \

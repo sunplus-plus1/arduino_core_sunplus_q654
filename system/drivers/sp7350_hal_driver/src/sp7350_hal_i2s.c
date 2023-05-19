@@ -5,6 +5,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#define STAMP(v)                                   \
+	do {                                       \
+		*(volatile uint32_t *)0xf8000000UL = v; \
+	} while (0)
 
 //static HAL_StatusTypeDef  I2S_WaitFlagStateUntilTimeout(I2S_HandleTypeDef *hi2s, uint32_t Flag, FlagStatus State, uint32_t Timeout);
 
@@ -303,7 +307,7 @@ static void _i2s_config_pcm_buffer(I2S_HandleTypeDef *hi2s) //FIXME  RX/TX same 
 	WRITE_REG(AUD_REG->aud_audhwya, base_addr);
 	//printf("[i2s_test] Start of configure PCM buffer audhwya 0x%x \n", AUD_REG->aud_audhwya);
 
-	fifo_offset = DRAM_PCM_BUF_CH_BYTES * (hi2s->Index);
+	fifo_offset = DRAM_PCM_BUF_CH_BYTES * (2 * hi2s->Index + hi2s->FlagTxRx);
 	fifo_offset = ROUNDUP(fifo_offset, 128);
 
 	WRITE_REG(*hi2s->Reg.fifo_base, fifo_offset);
@@ -692,25 +696,25 @@ static uint32_t _i2s_get_fifo_ptr(I2S_HandleTypeDef *hi2s)
 	return READ_REG(*hi2s->Reg.fifo_ptr);
 }
 
-static uint32_t _i2s_dma_check_trans_done(I2S_HandleTypeDef *hi2s)
+static uint32_t _i2s_dma_check_trans_done(uint32_t ch)
 {
 	uint32_t val;
 
 	val = READ_REG(AUD_REG->aud_inc_0);
-	val &= hi2s->FlagDMAInc;
+	val &= ch;
 
 	return val;
 }
 
-static void _i2s_dma_set_trans_length(I2S_HandleTypeDef *hi2s, uint32_t len)
+static void _i2s_dma_set_trans_length(uint32_t len)
 {
 	WRITE_REG(AUD_REG->aud_delta_0, len);
 }
 
 
-static void _i2s_dma_trans_start(I2S_HandleTypeDef *hi2s)
+static void _i2s_dma_trans_start(uint32_t ch)
 {
-	WRITE_REG(AUD_REG->aud_inc_0, hi2s->FlagDMAInc);
+	WRITE_REG(AUD_REG->aud_inc_0, ch);
 }
 
 static uint32_t _i2s_get_fifo_addr(I2S_HandleTypeDef *hi2s)
@@ -796,7 +800,7 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef *hi2s)
 
 	_i2s_fifo_enable(hi2s);
 	_i2s_fifo_reset_block(hi2s);
-	_i2s_trigger(hi2s);
+	//_i2s_trigger(hi2s);
 
 	printf("[aud_test] i2s init end\n");
 	hi2s->ErrorCode = HAL_I2S_ERROR_NONE;
@@ -884,6 +888,7 @@ HAL_StatusTypeDef HAL_I2S_Transmit(I2S_HandleTypeDef *hi2s, uint32_t *pData, uin
 
 	uint32_t w_lenth = DMA_TRANS_LEN;
 	uint32_t loop = 0, done_cnt = 0;
+	uint32_t dma_ch = hi2s->FlagDMAInc;
 
 	if ((pData == NULL) || (Size == 0U))
 	{
@@ -911,47 +916,54 @@ HAL_StatusTypeDef HAL_I2S_Transmit(I2S_HandleTypeDef *hi2s, uint32_t *pData, uin
 	if (remainder)
 		run_block++;
 
+	_i2s_trigger(hi2s);
+
 	/* dont use for(;;), it is not certain that data is copied in each loop */
 	while (done_cnt < Size) {
-		free_cnt = DRAM_PCM_BUF_CH_BYTES - _i2s_get_fifo_cnt(hi2s);
-		if (free_cnt >= w_lenth) {
 
-			if(loop == (run_block - 1)) { //last part of pcm data
-				remainder ? (copy_len = remainder) : (copy_len = w_lenth);
-			} else {
-				copy_len = w_lenth;
-			}
+		do {
+			free_cnt = DRAM_PCM_BUF_CH_BYTES - _i2s_get_fifo_cnt(hi2s);
+		} while (free_cnt < w_lenth);
 
-			/* Consider the case that the size of channel (DRAM_PCM_BUF_CH_BYTES)
-			 * is not multiple of transfer data (copy_len)
-			 */
-			pre_offset = hi2s->TxOffset + copy_len;
-			if(pre_offset > DRAM_PCM_BUF_CH_BYTES) {
-				back_len = pre_offset - DRAM_PCM_BUF_CH_BYTES;
-				front_len = copy_len - back_len;
-				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, front_len / 4, hi2s->Init.DataFormat);
-				copy_data(fifo_addr, hi2s->pTxBuffPtr + (done_cnt + front_len) / 4, back_len / 4, hi2s->Init.DataFormat);
-			} else {
-				copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, copy_len / 4, hi2s->Init.DataFormat);
-			}
-
-			/* Start the DMA transfer after copy data to buffer immediately */
-			while(_i2s_dma_check_trans_done(hi2s) != 0);
-
-			_i2s_dma_set_trans_length(hi2s, copy_len);
-			_i2s_dma_trans_start(hi2s);
-
-			while(_i2s_dma_check_trans_done(hi2s) != 0);
-
-			/* I2S C/P spend longer times than CPU execution code, So put the not-essential code here */
-			done_cnt += copy_len;
-			loop ++;
-
-			/* Record the fifo buffer offset to avoid data overwriting */
-			hi2s->TxOffset += copy_len;
-			if (hi2s->TxOffset >= DRAM_PCM_BUF_CH_BYTES)
-				hi2s->TxOffset -= DRAM_PCM_BUF_CH_BYTES;
+		if(loop == (run_block - 1)) { //last part of pcm data
+			remainder ? (copy_len = remainder) : (copy_len = w_lenth);
+		} else {
+			copy_len = w_lenth;
 		}
+
+		/* Consider the case that the size of channel (DRAM_PCM_BUF_CH_BYTES)
+		 * is not multiple of transfer data (copy_len)
+		 */
+		pre_offset = hi2s->TxOffset + copy_len;
+		if(pre_offset > DRAM_PCM_BUF_CH_BYTES) {
+			back_len = pre_offset - DRAM_PCM_BUF_CH_BYTES;
+			front_len = copy_len - back_len;
+			//copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, front_len / 4, hi2s->Init.DataFormat);
+			//copy_data(fifo_addr, hi2s->pTxBuffPtr + (done_cnt + front_len) / 4, back_len / 4, hi2s->Init.DataFormat);
+			HAL_DMA_Start((uint32_t)(hi2s->pTxBuffPtr + done_cnt / 4), (uint32_t)(fifo_addr + hi2s->TxOffset / 4), front_len, NULL, NULL);
+			HAL_DMA_Start((uint32_t)(hi2s->pTxBuffPtr + (done_cnt + front_len) / 4), (uint32_t)(fifo_addr), back_len, NULL, NULL);
+		} else {
+			HAL_DMA_Start((uint32_t)(hi2s->pTxBuffPtr + done_cnt / 4), (uint32_t)(fifo_addr + hi2s->TxOffset / 4), copy_len, NULL, NULL);
+			//copy_data(fifo_addr + hi2s->TxOffset / 4, hi2s->pTxBuffPtr + done_cnt / 4, copy_len / 4, hi2s->Init.DataFormat);
+		}
+
+		/* Start the DMA transfer after copy data to buffer immediately */
+		while(_i2s_dma_check_trans_done(dma_ch) != 0);
+
+		_i2s_dma_set_trans_length(copy_len);
+		_i2s_dma_trans_start(dma_ch);
+
+		while(_i2s_dma_check_trans_done(dma_ch) != 0);
+
+		/* I2S C/P spend longer times than CPU execution code, So put the not-essential code here */
+		done_cnt += copy_len;
+		loop ++;
+
+		/* Record the fifo buffer offset to avoid data overwriting */
+		hi2s->TxOffset += copy_len;
+		if (hi2s->TxOffset >= DRAM_PCM_BUF_CH_BYTES)
+			hi2s->TxOffset -= DRAM_PCM_BUF_CH_BYTES;
+
 	}
 
 	hi2s->State = HAL_I2S_STATE_READY;
@@ -988,6 +1000,7 @@ HAL_StatusTypeDef HAL_I2S_Receive(I2S_HandleTypeDef *hi2s, uint32_t *pData, uint
 
 	uint32_t w_lenth = DMA_TRANS_LEN;
 	uint32_t loop = 0, done_cnt = 0;
+	uint32_t dma_ch = hi2s->FlagDMAInc;
 
 	if ((pData == NULL) || (Size == 0U))
 	{
@@ -1015,6 +1028,8 @@ HAL_StatusTypeDef HAL_I2S_Receive(I2S_HandleTypeDef *hi2s, uint32_t *pData, uint
 	if(Size % w_lenth)
 		run_block ++;
 
+	_i2s_trigger(hi2s);
+
 	while(done_cnt < Size) {
 
 		if(loop == (run_block - 1))
@@ -1024,10 +1039,10 @@ HAL_StatusTypeDef HAL_I2S_Receive(I2S_HandleTypeDef *hi2s, uint32_t *pData, uint
 
 		while(_i2s_get_fifo_cnt(hi2s) < copy_len);
 
-		while(_i2s_dma_check_trans_done(hi2s) != 0);
-		_i2s_dma_set_trans_length(hi2s, copy_len);
-		_i2s_dma_trans_start(hi2s);
-		while(_i2s_dma_check_trans_done(hi2s) != 0);
+		while(_i2s_dma_check_trans_done(dma_ch) != 0);
+		_i2s_dma_set_trans_length(copy_len);
+		_i2s_dma_trans_start(dma_ch);
+		while(_i2s_dma_check_trans_done(dma_ch) != 0);
 
 		/* Consider the case that the size of channel (DRAM_PCM_BUF_CH_BYTES)
 		 * is not multiple of transfer data (copy_len)
@@ -1036,11 +1051,15 @@ HAL_StatusTypeDef HAL_I2S_Receive(I2S_HandleTypeDef *hi2s, uint32_t *pData, uint
 		if(pre_offset > DRAM_PCM_BUF_CH_BYTES) {
 			back_len = pre_offset - DRAM_PCM_BUF_CH_BYTES;
 			front_len = copy_len - back_len;
-			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, front_len / 4, hi2s->Init.DataFormat);
-			copy_data(hi2s->pRxBuffPtr + (done_cnt + front_len) / 4, fifo_addr, back_len / 4, hi2s->Init.DataFormat);
+			//copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, front_len / 4, hi2s->Init.DataFormat);
+			//copy_data(hi2s->pRxBuffPtr + (done_cnt + front_len) / 4, fifo_addr, back_len / 4, hi2s->Init.DataFormat);
+			HAL_DMA_Start((uint32_t)(fifo_addr + hi2s->RxOffset / 4), (uint32_t)(hi2s->pRxBuffPtr + done_cnt / 4), front_len, NULL, NULL);
+			HAL_DMA_Start((uint32_t)(fifo_addr), (uint32_t)(hi2s->pRxBuffPtr + (done_cnt + front_len) / 4), back_len, NULL, NULL);
 		} else {
-			copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, copy_len / 4, hi2s->Init.DataFormat);
+			HAL_DMA_Start((uint32_t)(fifo_addr + hi2s->RxOffset / 4), (uint32_t)(hi2s->pRxBuffPtr + done_cnt / 4), copy_len, NULL, NULL);
+			//copy_data(hi2s->pRxBuffPtr + done_cnt / 4, fifo_addr + hi2s->RxOffset / 4, copy_len / 4, hi2s->Init.DataFormat);
 		}
+
 		/* I2S C/P spend longer times than CPU execution code, So put the not-essential code here */
 		done_cnt += copy_len;
 		loop ++;
