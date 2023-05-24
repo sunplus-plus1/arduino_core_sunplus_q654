@@ -9,6 +9,10 @@ CMSISDSP ?= 0
 CM_BACKTRACE ?= 1
 USER_APPLICATION ?= 1
 
+#SP7350 max firmware size, ID-RAM(256K)-BSS(16K)
+#heap/stack set in S-RAM
+MAX_FIRAWARE_SIZE = $$((240 * 1024))
+
 #for cunit test
 CUNIT ?= 0
 
@@ -149,6 +153,14 @@ all: $(OBJS)
 	$(OBJDUMP) -d -S $(BIN)/$(TARGET) > $(BIN)/$(TARGET).dis
 	$(OBJCOPY) -O binary -S $(BIN)/$(TARGET) $(BIN)/$(TARGET).bin
 	@echo "firmware buid done !"
+ifeq ($(CHIP),SP7350)
+	@sz=`du -sb $(BIN)/$(TARGET).bin | cut -f1` ; \
+	printf "firmware size = %d (hex %x)\n" $$sz $$sz ; \
+	if [ $$sz -gt $(MAX_FIRAWARE_SIZE) ];then \
+		echo -e "\033[0;1;31;40m firmware size limit is $(MAX_FIRAWARE_SIZE). Please reduce its size.\033[0m" ; \
+		exit 1; \
+	fi
+endif
 
 %.o: %.S
 	$P mkdir -p $(BIN)
