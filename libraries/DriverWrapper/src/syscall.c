@@ -32,7 +32,12 @@ extern int errno;
 #define UART_RTS_B          (1 << 1)
 
 // UART
+#ifdef SP7350
 #define UART_REG            SP_UART6
+#else
+#define UART_REG            SP_UART1
+#endif
+
 #define UART_tx_rdy()       (UART_REG->lsr & UART_LSR_TX_RDY)
 #define UART_rx_rdy()       (UART_REG->lsr & UART_LSR_RX_RDY)
 #define UART_tx_empty()     (UART_REG->lsr & UART_TX_EMPTY)
