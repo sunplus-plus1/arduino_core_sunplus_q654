@@ -38,8 +38,9 @@ _estack = ORIGIN(SRAM) + LENGTH(SRAM);
 /* Memories definition */
 MEMORY
 {
-  RAM       (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 256K
-  SRAM      (xrw)    : ORIGIN = 0xFA280000,   LENGTH = 0x18000
+  IDRAM     (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 256K - 0x200
+  VIRTIO    (xrw)    : ORIGIN = 0xfa240000  + LENGTH(IDRAM) ,   LENGTH = 0x200  /* openamp resource_table */
+  SRAM      (xrw)    : ORIGIN = 0xfa280000,   LENGTH = 0x18000
   shmem     (rw)     : ORIGIN = 0x77800000,   LENGTH = 0x108000 /* 1M + 16K + 16K */
 }
 /* Symbols needed for OpenAMP to enable rpmsg */
@@ -55,7 +56,7 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   /* The program code and other data into "FLASH" Rom type memory */
   .text :
@@ -73,7 +74,7 @@ SECTIONS
 
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
-  } >RAM
+  } >IDRAM
 
   /* Constant data into "FLASH" Rom type memory */
   .rodata :
@@ -82,13 +83,13 @@ SECTIONS
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   .ARM.extab   : {
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   .ARM : {
     . = ALIGN(4);
@@ -96,7 +97,7 @@ SECTIONS
     *(.ARM.exidx*)
     __exidx_end = .;
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   .preinit_array     :
   {
@@ -105,7 +106,7 @@ SECTIONS
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   .init_array :
   {
@@ -115,7 +116,7 @@ SECTIONS
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
     . = ALIGN(4);
-  } >RAM
+  } >IDRAM
 
   .fini_array :
   {
@@ -124,8 +125,8 @@ SECTIONS
     KEEP (*(SORT(.fini_array.*)))
     KEEP (*(.fini_array*))
     PROVIDE_HIDDEN (__fini_array_end = .);
-    . = ALIGN(4);
-  } >RAM
+    . = ALIGN(16);
+  } >IDRAM
 
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
@@ -133,17 +134,17 @@ SECTIONS
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {
-    . = ALIGN(4);
+    . = ALIGN(16);
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
 
-    . = ALIGN(4);
+    . = ALIGN(0x200);
     _edata = .;        /* define a global symbol at data end */
+  } >IDRAM
 
-  } >RAM
 
   /* Uninitialized data section into "S-RAM" Ram type memory */
   . = ALIGN(4);
@@ -159,12 +160,19 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
-  } >RAM
+  } >IDRAM
+
+  .resource_table : AT(_edata)
+  {
+    _sresource = .;
+    *(*source*)
+    _eresource = .;
+   } >VIRTIO
 
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
     .heap :
     {
-        . = ALIGN(8);
+        . = ALIGN(16);
         PROVIDE ( end = . );
         PROVIDE ( _end = . );
         _heap_bottom = .;

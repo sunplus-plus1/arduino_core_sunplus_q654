@@ -9,9 +9,9 @@ CMSISDSP ?= 0
 CM_BACKTRACE ?= 1
 USER_APPLICATION ?= 1
 
-#SP7350 max firmware size, ID-RAM(256K)-BSS(16K)
+#SP7350 max firmware size, ID-RAM(256K) - resource_table(1K)
 #heap/stack set in S-RAM
-MAX_FIRAWARE_SIZE = $$((240 * 1024))
+MAX_FIRAWARE_SIZE = $$((255 * 1024))
 
 #for cunit test
 CUNIT ?= 0

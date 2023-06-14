@@ -238,7 +238,6 @@ int dram_test(void)
 		value_16b  = value_16b  + 2;
 	} while ((ulong)rd_src_32b < (ulong)(des_adr + 0x1000));
 
-
 	return 0;
 }
 
@@ -260,11 +259,6 @@ void ddr_retention_save(void)
 	dwc_ddrphy_apb_wr(0xc0080, 0x2);
 	dwc_ddrphy_apb_wr(0xd0000, 0x1);
 
-	if (0 == dram_test()) {
-			printf("\n ddr_retention_save dram_test ok \n");
-		} else {
-			printf("\n ddr_retention_save dram_test fail \n");
-	}
 	apb_ctl_before_retention();
 }
 
@@ -513,10 +507,4 @@ void ddr_retention_load(void)
 
 	apb_ctl_after_retention();
 	
-	if (0 == dram_test()) 
-	{
-		printf("\n ddr_retention_load dram_test ok \n");
-	} else {
-		printf("\n ddr_retention_load dram_test fail \n");
-	}
 }
