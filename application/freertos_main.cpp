@@ -17,7 +17,7 @@ int freertos_main (void)
 
 
 	#ifdef SP7350
-	//pm_main();
+	pm_main();
 	#endif
 	/* Start the tasks and timer running. */
 	vTaskStartScheduler();

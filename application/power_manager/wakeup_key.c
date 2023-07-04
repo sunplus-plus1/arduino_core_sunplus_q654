@@ -9,8 +9,8 @@
 
 #define MAILBOX_IN_SUSPEND_VALUE   (0xaabb1234)  /* match in sp_remoteproc.c*/
 
-int	deep_sleep = 0;
-int	in_suspend = 0;
+volatile int	deep_sleep = 0;
+volatile int	in_suspend = 0;
 void resume_by_rtc(void)
 {
 	RTC_REGS->rtc_ontime_set = 0x1;
@@ -23,7 +23,7 @@ void wakeup_shortkey()
 	if(in_suspend)
 	{
 		printf("resume by RTC \n");
-		resume_by_rtc();
+		//resume_by_rtc();
 	}
 	else
 	{
@@ -55,13 +55,13 @@ void vWakeyupKeyTask( void *pvParameters )
 		if((RTC_REGS->rtc_wakeupkey_int_status == 1) && !xPress)
 		{
 			xPress = true;
-			RTC_REGS->rtc_wakeupkey_int_status = 0;
+			RTC_REGS->rtc_wakeupkey_int_status = 1;
 			xfirsttime = xTaskGetTickCount();
 		}
 		if((RTC_REGS->rtc_wakeupkey_int_status == 1) && xPress)
 		{
 			xsencondtime = xTaskGetTickCount();
-			RTC_REGS->rtc_wakeupkey_int_status = 0;
+			RTC_REGS->rtc_wakeupkey_int_status = 1;
 		}
 		if(xPress && (xTaskGetTickCount() - xsencondtime) > pdMS_TO_TICKS(200))
 		{
@@ -76,7 +76,7 @@ void vWakeyupKeyTask( void *pvParameters )
 			xPress = false;
 			xfirsttime = 0;
 			xsencondtime = 0;
-			RTC_REGS->rtc_wakeupkey_int_status = 0;
+			RTC_REGS->rtc_wakeupkey_int_status = 1;
 		}
 		vTaskDelay(pdMS_TO_TICKS(20));
 	}

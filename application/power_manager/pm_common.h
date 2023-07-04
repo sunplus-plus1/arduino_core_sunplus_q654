@@ -32,13 +32,15 @@ extern "C" {
 #define CA55_2_CM4_IRQ_INT0				(9)
 
 /* PMIC */
+#define PWR_NPU_CONTROL_PIN             (65)
+#define PWR_VCL_CONTROL_PIN             (66)
 #define MAIN_DOMAIN_CONTROL_PIN         (67)
 
 #define MAIN_POWER_OFF		0x80
 #define MAIN_POWER_ON		0x81
 
-#define NPU_POWER_OFF		0x90
-#define NPU_POWER_ON		0x91
+#define NPU_VCL_POWER_OFF	0x90
+#define NPU_VCL_POWER_ON	0x91
 
 #define BLOCKA_POWER_OFF	0xA0
 #define BLOCKA_POWER_ON		0xA1
@@ -54,8 +56,8 @@ extern "C" {
 #define LONG_PRESS          (5000)  /* long time: press time between 5s and 8.5s */
 #define OFFSET_PRESS        (3500)
 
-extern int	deep_sleep;
-extern int	in_suspend;
+extern volatile int	deep_sleep;
+extern volatile int	in_suspend;
 void wakeup_key_init(void);
 
 /* power manager */

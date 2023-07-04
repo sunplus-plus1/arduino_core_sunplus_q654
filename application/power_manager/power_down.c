@@ -31,9 +31,9 @@ int power_down_maindomain(void)
 	/* register interrupt */
 	NVIC_SetVector(MAIN_PWR_DOWN_IRQn, (uint32_t)Main_Domain_PowerDown_ACK_Handler);
 	NVIC_EnableIRQ(MAIN_PWR_DOWN_IRQn);
-	NVIC_SetPriority(MAIN_PWR_DOWN_IRQn, 0xE0); 
+	NVIC_SetPriority(MAIN_PWR_DOWN_IRQn, 0x8); 
 	/* register power down interrupt*/
-	PMC_REGS->pmc_main_pwr_ctrl	|= 0x2 ;
+	PMC_REGS->pmc_main_pwr_ctrl	= 0x2 ;
 
 	/*Q-channel CTRL  G30*/
 
@@ -41,6 +41,14 @@ int power_down_maindomain(void)
 	PMC_REGS->pmc_iso_pwd       = 0xFFAA5500;
 
 	return 0;
+}
+int power_down_npu_vcl()
+{
+	MOON0_REG->sft_cfg[7] = RF_MASK_V_SET(0x4007);
+	MOON0_REG->sft_cfg[2] = RF_MASK_V_SET(0x1FC0);
+	PMC_REGS->pmc_iso_pwd       = 0xFFAA5500;
+	PMC_REGS->pmc_iso_en		|= 0x30;
+	Send_Cmd_To_PMIC(NPU_VCL_POWER_OFF);
 }
 
 int power_down_cluster()
@@ -160,12 +168,12 @@ void power_down_ddr_retention()
 
 void power_down_init()
 {
-	PMC_REGS->pmc_timer         = 0x00030003; //Quick
-	PMC_REGS->pmc_timer2        = 0x00030003; //Quick
+	PMC_REGS->pmc_timer         = 0x01000100; //Quick
+	PMC_REGS->pmc_timer2        = 0x01000100; //Quick
 	
 	PMC_REGS->pmc_ctrl |=(1 << 4) |   // enable powerdown IOP DM
                          (1 << 5) |   // disable system reset PMC
-                         (1 << 8) |   // change wakeup source0 polarity
+                         (1 << 9) |   // change wakeup source0 polarity
                          (1 <<10) ;   // change wakeup source1 polarity
 
 	PMC_REGS->pmc_main_dowmain_pwd_1      = 0x55aa00ff;
@@ -199,6 +207,7 @@ void vDoPowerdownTask( void *pvParameters )
 				pm_save_data_before_ddr_retention();
 				/* ddr retention */
 				power_down_ddr_retention();
+				power_down_npu_vcl();
 				/* power ca55 clust and cores */
 				if(power_down_ca55() != 0)
 				{
@@ -214,6 +223,7 @@ void vDoPowerdownTask( void *pvParameters )
 				}
 				/* set power down flag */
 				pm_set_power_down_bit();
+
 			}
 		}
 	}

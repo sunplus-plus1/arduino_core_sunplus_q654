@@ -3,7 +3,7 @@
 
 TwoWire *pmic_i2c;
 
-#define RT5759_ADDR             0x60
+#define RT5759_ADDR             0x62
 
 #define RT5759_REG_VENDORINFO   0x00
 #define RT5759_REG_FREQ         0x01
@@ -106,6 +106,14 @@ int pmic_do_cmd(uint32_t cmd)
 		case MAIN_POWER_ON:
 			digitalWrite(MAIN_DOMAIN_CONTROL_PIN, HIGH);
 			break;
+		case NPU_VCL_POWER_OFF:
+			digitalWrite(PWR_NPU_CONTROL_PIN, LOW);
+			digitalWrite(PWR_VCL_CONTROL_PIN, LOW);
+			break;
+		case NPU_VCL_POWER_ON:
+			digitalWrite(PWR_NPU_CONTROL_PIN, HIGH);
+			digitalWrite(PWR_VCL_CONTROL_PIN, HIGH);
+			break;
 		default:
 		break;
 	}
@@ -125,6 +133,8 @@ int pmic_init(void)
 		return -1;
 	}
 #endif
+	pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
+	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
 	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
 	return 0;
 }

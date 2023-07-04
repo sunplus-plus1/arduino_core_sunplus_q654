@@ -51,7 +51,7 @@ void pm_main()
 		/* CM4 power down after CA55 into idle state*/
 		NVIC_SetVector(IPC_CA552CM4_INT0_IRQn, (uint32_t)vCA55_TO_CM4_Mailbox_ISR); 
 		NVIC_EnableIRQ(IPC_CA552CM4_INT0_IRQn);
-		NVIC_SetPriority(IPC_CA552CM4_INT0_IRQn, 0xE0); 
+		NVIC_SetPriority(IPC_CA552CM4_INT0_IRQn, 0x8); 
 		xTaskCreate( vDoPowerdownTask, "powerdown", PM_TASK_STACK_SIZE, NULL, 1, NULL );
 		xTaskCreate( vDoPowerupTask, "powerup", PM_TASK_STACK_SIZE, NULL, 1, NULL );
 	}
@@ -76,18 +76,23 @@ void pm_set_retention_done_bit(void)
 void pm_save_data_before_ddr_retention(void)
 {
 	/* save maindomain register data to CM4_Sram */
-	reg_data *save_data = (reg_data *)PM_DATA_SAVE_ADDRESS; 
-	memcpy((void *)save_data->reg_Sec_Group,(void *)RGST_SECURE_REG, sizeof(uint32_t)*32);
-	memcpy((void *)save_data->reg_Sec_Main, (void *)SECGRP1_MAIN_REG,sizeof(uint32_t)*32);
-	memcpy((void *)save_data->reg_Sec_PAI,  (void *)SECGRP1_PAI_REG, sizeof(uint32_t)*32);
-	memcpy((void *)save_data->reg_Sec_PAII, (void *)SECGRP1_PAII_REG,sizeof(uint32_t)*32);
+
 }
 void pm_restore_data_after_ddr_retention(void)
 {
-	/* restore maindomain register data from CM4_Sram */
-	reg_data *save_data = (reg_data *)PM_DATA_SAVE_ADDRESS; 
-	memcpy((void *)RGST_SECURE_REG, (void *)save_data->reg_Sec_Group,sizeof(uint32_t)*32);
-	memcpy((void *)SECGRP1_MAIN_REG,(void *)save_data->reg_Sec_Main, sizeof(uint32_t)*32);
-	memcpy((void *)SECGRP1_PAI_REG, (void *)save_data->reg_Sec_PAI,  sizeof(uint32_t)*32);
-	memcpy((void *)SECGRP1_PAII_REG,(void *)save_data->reg_Sec_PAII, sizeof(uint32_t)*32);
+	for(int i = 0; i < 32;i++ )
+	{
+		// rewrite MOON0 ~ MOON5 register data. write through to main domain register. 
+		MOON0_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON0_REG->sft_cfg[i]);
+		MOON1_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON1_REG->sft_cfg[i]);
+		MOON2_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON2_REG->sft_cfg[i]);
+		MOON4_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON4_REG->sft_cfg[i]);
+		MOON5_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON5_REG->sft_cfg[i]);
+	}
+	for(int i = 0; i < 32;i++ )
+	{
+		if(i < 5 || (i >=20 && i <=22)) //PLLA/S used for AO domain. 
+			continue;
+		MOON3_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON3_REG->sft_cfg[i]);
+	}
 }
