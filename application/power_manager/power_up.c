@@ -7,14 +7,14 @@ void _power_up_main_domain(void)
 	Send_Cmd_To_PMIC(MAIN_POWER_ON);
 	/*  power up finish */
 	PMC_REGS->pmc_main_pwr_ctrl = 0x1;
-	delay(40);
+	delay(50);
 }
 
 void _power_up_CA55_domain(void)
 {
 
 	Send_Cmd_To_PMIC(CA55_0D8V_POWER);
-	delay(40);
+	delay(50);
 	MOON0_REG->sft_cfg[1] = RF_MASK_V_SET(0x7E);  ///maindomain powerup will reset CA55
 /// core0
 	PMC_REGS->pmc_corepsw_en   &= 0xFFFFFFFE ;
@@ -43,7 +43,7 @@ void _power_up_CA55_domain(void)
 void _power_up_npu_vcl_domain()
 {
 	Send_Cmd_To_PMIC(NPU_VCL_POWER_ON);
-	delay(2000);
+	delay(50);
 	PMC_REGS->pmc_iso_pwd		= 0xFFAA5500;
 	PMC_REGS->pmc_iso_en		&= 0xFFFFFFCF ;
 	MOON0_REG->sft_cfg[7] = RF_MASK_V_CLR(0x4007);
