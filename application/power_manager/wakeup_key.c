@@ -23,7 +23,7 @@ void wakeup_shortkey()
 	if(in_suspend)
 	{
 		printf("resume by RTC \n");
-		//resume_by_rtc();
+		resume_by_rtc();
 	}
 	else
 	{
