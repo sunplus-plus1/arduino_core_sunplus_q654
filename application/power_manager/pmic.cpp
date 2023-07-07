@@ -106,12 +106,16 @@ int pmic_do_cmd(uint32_t cmd)
 		case MAIN_POWER_ON:
 			digitalWrite(MAIN_DOMAIN_CONTROL_PIN, HIGH);
 			break;
-		case NPU_VCL_POWER_OFF:
+		case NPU_POWER_OFF:
 			digitalWrite(PWR_NPU_CONTROL_PIN, LOW);
+			break;
+		case NPU_POWER_ON:
+			digitalWrite(PWR_NPU_CONTROL_PIN, HIGH);
+			break;
+		case VCL_POWER_OFF:
 			digitalWrite(PWR_VCL_CONTROL_PIN, LOW);
 			break;
-		case NPU_VCL_POWER_ON:
-			digitalWrite(PWR_NPU_CONTROL_PIN, HIGH);
+		case VCL_POWER_ON:
 			digitalWrite(PWR_VCL_CONTROL_PIN, HIGH);
 			break;
 		default:

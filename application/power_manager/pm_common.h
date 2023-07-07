@@ -19,42 +19,42 @@ extern "C" {
 //#define PM_ZEBU_TEST   /* test in zebu, power down/up by uart */
 
 
-#define MAIN_DOMAIN_PU_ACK_IRQ			(0)
-#define MAIN_DOMAIN_PD_ACK_IRQ			(1)
+#define MAIN_DOMAIN_PU_ACK_IRQ          (0)
+#define MAIN_DOMAIN_PD_ACK_IRQ          (1)
 
-#define PMC_RESET_VECTOR_ADDRESS		(0x100000)
+#define PMC_RESET_VECTOR_ADDRESS        (0x100000)
 
 #define PMC_WAIT_DDR_RETENTION_DONE_BIT (15)  /*G36.28 [15] ddr retention done statue */
 #define PMC_CA55_TOP_RESET_STATUS_BIT   (12)  /*G36.28 [14:12] check ca55 top reset status */
 
-#define TIMEOUT_MS						(10UL)
+#define TIMEOUT_MS                      (10UL)
 
-#define CA55_2_CM4_IRQ_INT0				(9)
+#define CA55_2_CM4_IRQ_INT0             (9)
 
 /* PMIC */
 #define PWR_NPU_CONTROL_PIN             (65)
 #define PWR_VCL_CONTROL_PIN             (66)
 #define MAIN_DOMAIN_CONTROL_PIN         (67)
 
-#define MAIN_POWER_OFF		0x80
-#define MAIN_POWER_ON		0x81
+#define MAIN_POWER_OFF          0x80
+#define MAIN_POWER_ON           0x81
 
-#define NPU_VCL_POWER_OFF	0x90
-#define NPU_VCL_POWER_ON	0x91
+#define NPU_POWER_OFF           0x90
+#define NPU_POWER_ON            0x91
 
-#define BLOCKA_POWER_OFF	0xA0
-#define BLOCKA_POWER_ON		0xA1
+#define VCL_POWER_OFF           0xA0
+#define VCL_POWER_ON            0xA1
 
-#define CA55_POWER_OFF		0xB0
-#define CA55_0D7V_POWER     0xB1
-#define CA55_0D8V_POWER     0xB2
-#define CA55_1V_POWER       0xB3
+#define CA55_POWER_OFF          0xB0
+#define CA55_0D7V_POWER         0xB1
+#define CA55_0D8V_POWER         0xB2
+#define CA55_1V_POWER           0xB3
 
 /*wakeup key*/
-#define WAKEUP_KEY_PIN		(90)
-#define SHORT_PRESS         (1000)  /* short time: press time between 1s and 4.5s */
-#define LONG_PRESS          (5000)  /* long time: press time between 5s and 8.5s */
-#define OFFSET_PRESS        (3500)
+#define WAKEUP_KEY_PIN          (90)
+#define SHORT_PRESS             (1000)  /* short time: press time between 1s and 4.5s */
+#define LONG_PRESS              (5000)  /* long time: press time between 5s and 8.5s */
+#define OFFSET_PRESS            (3500)
 
 extern volatile int	deep_sleep;
 extern volatile int	in_suspend;

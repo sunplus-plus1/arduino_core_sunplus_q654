@@ -80,6 +80,8 @@ void pm_save_data_before_ddr_retention(void)
 }
 void pm_restore_data_after_ddr_retention(void)
 {
+  // mantis #10541
+#if 1
 	for(int i = 0; i < 32;i++ )
 	{
 		// rewrite MOON0 ~ MOON5 register data. write through to main domain register. 
@@ -95,4 +97,50 @@ void pm_restore_data_after_ddr_retention(void)
 			continue;
 		MOON3_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON3_REG->sft_cfg[i]);
 	}
+#else
+	//// MOON0
+	for(int i = 0; i < 32;i++ )
+	{
+		if((i==6)||(i==13)|| (i==14)){
+			printf("G0.%d\n",i);
+			MOON0_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON0_REG->sft_cfg[i]);
+			}
+	}
+
+	//// MOON1
+	for(int i = 0; i < 32;i++ )
+	{
+		if((i >= 0 && i <= 2) || (i >=6 && i <=10)){
+			printf("G1.%d\n",i);
+			MOON1_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON1_REG->sft_cfg[i]);
+			}
+	}
+
+	//// MOON3
+	for(int i = 0; i < 32;i++ )
+	{
+		if((i >=5 && i <=19) || (i >=23 && i <=25) || (i >=28 && i <=30)){
+			printf("G3.%d\n",i);
+			MOON3_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON3_REG->sft_cfg[i]);
+			}
+	}
+
+	//// MOON4
+	for(int i = 0; i < 32;i++ )
+	{
+		if((i >=0 && i <= 12) || (i==14)|| (i==15)|| (i==23)|| (i==24) || (i==27)){
+			printf("G4.%d\n",i);
+			MOON4_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON4_REG->sft_cfg[i]);
+			}
+	}
+
+	//// MOON5
+	for(int i = 0; i < 32;i++ )
+	{
+		if((i >=0 && i <= 5) || (i >=13 && i <=19)|| (i==22)|| (i==23)){
+			printf("G5.%d\n",i);
+			MOON5_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON5_REG->sft_cfg[i]);
+			}
+	}
+#endif
 }

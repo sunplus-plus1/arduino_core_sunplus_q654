@@ -1,6 +1,8 @@
 #include "pm_common.h"
 
 SemaphoreHandle_t xPowerUp_Semaphore;
+extern volatile int do_npu_power ;
+extern volatile int do_vcl_power ;
 
 void _power_up_main_domain(void)
 {
@@ -42,12 +44,24 @@ void _power_up_CA55_domain(void)
 
 void _power_up_npu_vcl_domain()
 {
-	Send_Cmd_To_PMIC(NPU_VCL_POWER_ON);
+	if(do_npu_power){
+		Send_Cmd_To_PMIC(NPU_POWER_ON);
+	}
+	if(do_vcl_power){
+		Send_Cmd_To_PMIC(VCL_POWER_ON);
+	}
 	delay(50);
-	PMC_REGS->pmc_iso_pwd		= 0xFFAA5500;
-	PMC_REGS->pmc_iso_en		&= 0xFFFFFFCF ;
-	MOON0_REG->sft_cfg[7] = RF_MASK_V_CLR(0x4007);
-	MOON0_REG->sft_cfg[2] = RF_MASK_V_CLR(0x1FC0);
+	if(do_npu_power){
+		PMC_REGS->pmc_iso_pwd		= 0xFFAA5500;
+		PMC_REGS->pmc_iso_en		&= 0xFFFFFFEF ;
+		MOON0_REG->sft_cfg[7] = RF_MASK_V_CLR(0x4007);
+	}
+
+	if(do_vcl_power){
+		PMC_REGS->pmc_iso_pwd		= 0xFFAA5500;
+		PMC_REGS->pmc_iso_en		&= 0xFFFFFFDF ;
+		MOON0_REG->sft_cfg[2] = RF_MASK_V_CLR(0x1FC0);
+	}
 }
 
 void Main_Domain_PowerUP(void)

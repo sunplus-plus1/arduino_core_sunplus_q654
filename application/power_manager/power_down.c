@@ -1,5 +1,8 @@
 #include "pm_common.h"
 
+volatile int do_npu_power = 0;
+volatile int do_vcl_power = 0;
+
 void Main_Domain_PowerDown_ACK_Handler(void)
 {
 	printf("#### Main_Domain_PowerDown_ACK_Handler \n");
@@ -44,11 +47,21 @@ int power_down_maindomain(void)
 }
 int power_down_npu_vcl()
 {
-	MOON0_REG->sft_cfg[7] = RF_MASK_V_SET(0x4007);
-	MOON0_REG->sft_cfg[2] = RF_MASK_V_SET(0x1FC0);
-	PMC_REGS->pmc_iso_pwd       = 0xFFAA5500;
-	PMC_REGS->pmc_iso_en		|= 0x30;
-	Send_Cmd_To_PMIC(NPU_VCL_POWER_OFF);
+	if(do_npu_power)
+	{
+		MOON0_REG->sft_cfg[7] = RF_MASK_V_SET(0x4007);
+		PMC_REGS->pmc_iso_pwd = 0xFFAA5500;
+		PMC_REGS->pmc_iso_en  |= 0x10;
+		Send_Cmd_To_PMIC(NPU_POWER_OFF);
+	}
+
+	if(do_vcl_power)
+	{
+		MOON0_REG->sft_cfg[2] = RF_MASK_V_SET(0x1FC0);
+		PMC_REGS->pmc_iso_pwd = 0xFFAA5500;
+		PMC_REGS->pmc_iso_en  |= 0x20;
+		Send_Cmd_To_PMIC(VCL_POWER_OFF);
+	}
 }
 
 int power_down_cluster()
@@ -184,9 +197,14 @@ void power_down_init()
 	PMC_REGS->pmc_lvs_pwd       = 0x00AA55FF;
 	PMC_REGS->pmc_iso_pwd       = 0xFFAA5500;
 
-	/* power down npu/blocka */
-//	Send_Cmd_To_PMIC(BLOCKA_POWER_OFF); 
-//	Send_Cmd_To_PMIC(NPU_POWER_OFF);
+	do_npu_power = 1;
+	do_vcl_power = 1;
+	if(digitalRead(PWR_NPU_CONTROL_PIN) == 0){
+		do_npu_power = 0;
+	}
+	if(digitalRead(PWR_VCL_CONTROL_PIN) == 0){
+		do_vcl_power = 0;
+	}
 }
 
 void vDoPowerdownTask( void *pvParameters )
