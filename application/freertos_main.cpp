@@ -10,6 +10,19 @@
 #include "pm.h"
 #endif
 
+#ifdef PVT_TEST
+void isr_127(void)
+{
+	int value = CA55_TO_CM4_MAILBOX->normal_transation[0];
+	CA55_TO_CM4_MAILBOX->cpu_to_cpu_int_trigger = 0;
+	printf("ISR_127 %d\n",value);
+	if(value == 0x77) {
+		CM4_TO_CA55_MAILBOX->normal_transation[0]=0x99;
+		CM4_TO_CA55_MAILBOX->cpu_to_cpu_writelock_flag=0x10;
+		CM4_TO_CA55_MAILBOX->cpu_to_cpu_int_trigger = 1;
+	}
+}
+#endif
 
 int freertos_main (void)
 {
@@ -20,6 +33,12 @@ int freertos_main (void)
 	pm_main();
 	#endif
 	/* Start the tasks and timer running. */
+
+#ifdef PVT_TEST
+	NVIC_SetVector(IPC_CA552CM4_NORMAL_INT_IRQn, (uint32_t)isr_127);
+	NVIC_EnableIRQ(IPC_CA552CM4_NORMAL_INT_IRQn);
+#endif
+
 	vTaskStartScheduler();
 	for( ;; );
 }
