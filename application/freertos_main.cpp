@@ -9,7 +9,7 @@
 #ifdef SP7350
 #include "pm.h"
 #endif
-
+#define PVT_TEST
 #ifdef PVT_TEST
 void isr_127(void)
 {
