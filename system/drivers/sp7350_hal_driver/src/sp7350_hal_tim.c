@@ -6,16 +6,20 @@
 extern "C" {
 #endif
 
-
-static IRQn_Type HAL_TIM_GetIRQ(TIM_TypeDef *tim)
+static IRQn_Type HAL_TIM_GetIRQ(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type IRQn = MAX_IRQ_n;
-	if ((tim == NULL) || (tim == (TIM_TypeDef*)0xFFFFFFFF))
-		return IRQn;
+	uint32_t tim;
 
-	assert_param(IS_TIM_INSTANCE(tim));
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
 
-	switch ((uint32_t)tim)
+	if (IS_TIM64_INSTANCE(htim->Instance64)) {
+		tim = (uint32_t)htim->Instance64;
+	} else {
+		tim = (uint32_t)htim->Instance;
+	}
+
+	switch (tim)
 	{
 		case  (uint32_t)TIM0 ... (uint32_t)TIM2:
 			IRQn = STC_TIMER0_IRQn + ((uint32_t)tim - (uint32_t)TIM0)/_OFFSET_BETWEEN_TIMERS;
@@ -32,6 +36,21 @@ static IRQn_Type HAL_TIM_GetIRQ(TIM_TypeDef *tim)
 		case  (uint32_t)TIM12 ... (uint32_t)TIM14:
 			IRQn = STC_AV4_TIMER0_IRQn + ((uint32_t)tim - (uint32_t)TIM12)/_OFFSET_BETWEEN_TIMERS;
 			break;
+		case  (uint32_t)TIM15:
+			IRQn = STC_TIMER3_IRQn;
+			break;
+		case  (uint32_t)TIM16:
+			IRQn = STC_AV0_TIMER3_IRQn;
+			break;
+		case  (uint32_t)TIM17:
+			IRQn = STC_AV1_TIMER3_IRQn;
+			break;
+		case  (uint32_t)TIM18:
+			IRQn = STC_AV2_TIMER3_IRQn;
+			break;
+		case  (uint32_t)TIM19:
+			IRQn = STC_AV4_TIMER3_IRQn;
+			break;
 		default:
 			break;
 	}
@@ -47,12 +66,23 @@ timerObj_t *HAL_TIM_Get_timer_obj(TIM_HandleTypeDef *htim)
 	return (obj);
 }
 
-void TIM_SetConfig(TIM_TypeDef *TIMx, TIM_InitTypeDef *Structure)
+void TIM_SetConfig(TIM_HandleTypeDef *htim)
 {
-	MODIFY_REG(TIMx->control, TIMER_TRIG_SRC, Structure->ClockSource << TIMER_TRIG_SRC_Pos);
-	MODIFY_REG(TIMx->control, TIMER_RPT, Structure->AutoReloadPreload << TIMER_RPT_Pos);
-	TIMx->counter_val = Structure->Counter;
-	TIMx->reload_val = Structure->ReloadCounter;
+	TIM_InitTypeDef *Structure = &htim->Init;
+
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		MODIFY_REG(htim->Instance64->control, TIMER_TRIG_SRC, Structure->ClockSource << TIMER_TRIG_SRC_Pos);
+		MODIFY_REG(htim->Instance64->control, TIMER_RPT, Structure->AutoReloadPreload << TIMER_RPT_Pos);
+		htim->Instance64->counter_l = Structure->Counter;
+		htim->Instance64->counter_h = Structure->Counter_h;
+		htim->Instance64->reload_l = Structure->ReloadCounter;
+		htim->Instance64->reload_h = Structure->ReloadCounter_h;
+	}else{
+		MODIFY_REG(htim->Instance->control, TIMER_TRIG_SRC, Structure->ClockSource << TIMER_TRIG_SRC_Pos);
+		MODIFY_REG(htim->Instance->control, TIMER_RPT, Structure->AutoReloadPreload << TIMER_RPT_Pos);
+		htim->Instance->counter_val = Structure->Counter;
+		htim->Instance->reload_val = Structure->ReloadCounter;
+	}
 }
 
 HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
@@ -61,23 +91,33 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 
 	if (htim == NULL)
   	{
-    	return HAL_ERROR;
+    		return HAL_ERROR;
   	}
 
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
 
 	if (htim->State == HAL_TIM_STATE_RESET)
 	{
 		htim->Lock = HAL_UNLOCKED;
-		irqn = HAL_TIM_GetIRQ(htim->Instance);
+		irqn = HAL_TIM_GetIRQ(htim);
 		IRQ_SetHandler(irqn, htim->IrqHandle);
 		IRQ_Enable(irqn);
 	}
 	htim->State = HAL_TIM_STATE_BUSY;
-	htim->Instance->control = 0;
-	htim->Instance->reload_val = 0;
-	htim->Instance->counter_val = 0;
-	TIM_SetConfig(htim->Instance, &htim->Init);
+
+	if (IS_TIM64_INSTANCE(htim->Instance64)) {
+		htim->Instance64->control = 0;
+		htim->Instance64->reload_l = 0;
+		htim->Instance64->reload_h = 0;
+		htim->Instance64->counter_l = 0;
+		htim->Instance64->counter_h = 0;
+	} else {
+		htim->Instance->control = 0;
+		htim->Instance->reload_val = 0;
+		htim->Instance->counter_val = 0;
+	}
+
+	TIM_SetConfig(htim);
 
 	/* Initialize the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
@@ -89,12 +129,16 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 HAL_StatusTypeDef HAL_TIM_DeInit(TIM_HandleTypeDef *htim)
 {
 	/* Check the parameters */
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
 
 	htim->State = HAL_TIM_STATE_BUSY;
 
 	/* Disable the TIM Peripheral Clock */
-	MODIFY_REG(htim->Instance->control, TIMER_GO, 0 << TIMER_GO_Pos);
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		MODIFY_REG(htim->Instance64->control, TIMER_GO, 0 << TIMER_GO_Pos);
+	} else {
+		MODIFY_REG(htim->Instance->control, TIMER_GO, 0 << TIMER_GO_Pos);
+	}
 
 	/* Change TIM state */
 	htim->State = HAL_TIM_STATE_RESET;
@@ -114,12 +158,17 @@ HAL_TIM_StateTypeDef HAL_TIM_GetState(TIM_HandleTypeDef *htim)
 HAL_StatusTypeDef HAL_TIM_Start(TIM_HandleTypeDef *htim)
 {
 	/* Check the parameters */
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
 
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
 
-	MODIFY_REG(htim->Instance->control, TIMER_GO, 1<<TIMER_GO_Pos);
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		MODIFY_REG(htim->Instance64->control, TIMER_GO, 1 << TIMER_GO_Pos);
+		//printf("0x%x 0x%x", &htim->Instance64->control, htim->Instance64->control);
+	} else {
+		MODIFY_REG(htim->Instance->control, TIMER_GO, 1 << TIMER_GO_Pos);
+	}
 
 	/* Change the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
@@ -131,12 +180,15 @@ HAL_StatusTypeDef HAL_TIM_Start(TIM_HandleTypeDef *htim)
 HAL_StatusTypeDef HAL_TIM_Stop(TIM_HandleTypeDef *htim)
 {
 	/* Check the parameters */
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
 
 	/* Set the TIM state */
 	htim->State = HAL_TIM_STATE_BUSY;
 
-	MODIFY_REG(htim->Instance->control, TIMER_GO, 0<<TIMER_GO_Pos);
+	if(IS_TIM64_INSTANCE(htim->Instance64))
+		MODIFY_REG(htim->Instance64->control, TIMER_GO, 0 << TIMER_GO_Pos);
+	else
+		MODIFY_REG(htim->Instance->control, TIMER_GO, 0 << TIMER_GO_Pos);
 
 	/* Change the TIM state*/
 	htim->State = HAL_TIM_STATE_READY;
@@ -145,24 +197,50 @@ HAL_StatusTypeDef HAL_TIM_Stop(TIM_HandleTypeDef *htim)
 	return HAL_OK;
 }
 
-HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count)
+HAL_StatusTypeDef HAL_TIM_setCount(TIM_HandleTypeDef *htim, uint32_t u32Count, uint32_t u32Count_h)
 {
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	htim->Instance->counter_val = u32Count;
-	htim->Instance->reload_val = u32Count;
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		htim->Instance64->counter_h = u32Count_h;
+		htim->Instance64->counter_l = u32Count;
+		htim->Instance64->reload_h = u32Count_h;
+		htim->Instance64->reload_l = u32Count;
+	} else {
+		UNUSED(u32Count_h);
+		htim->Instance->counter_val = u32Count;
+		htim->Instance->reload_val = u32Count;
+	}
+
 	return HAL_OK;
 }
 
 uint32_t HAL_TIM_GetCount(TIM_HandleTypeDef *htim)
 {
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	return htim->Instance->counter_val;
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		return htim->Instance64->counter_l;
+	} else {
+		return htim->Instance->counter_val;
+	}
 }
 
+uint32_t HAL_TIM_GetCount_h(TIM_HandleTypeDef *htim)
+{
+	assert_param(IS_TIM64_INSTANCE(htim->Instance64));
+
+	return htim->Instance64->counter_h;
+}
 uint32_t HAL_TIM_GetCLKSrc(TIM_HandleTypeDef *htim)
 {
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+
+	if(IS_TIM64_INSTANCE(htim->Instance64)) {
+		return (READ_BIT(htim->Instance64->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
+	} else {
+		return (READ_BIT(htim->Instance->control, TIMER_TRIG_SRC)>>TIMER_TRIG_SRC_Pos);
+	}
 }
 
 HAL_StatusTypeDef HAL_TIM_SetPrescaler(TIM_HandleTypeDef *htim, uint32_t u32Prescaler)
@@ -240,8 +318,8 @@ HAL_StatusTypeDef HAL_TIM_Enable_Interrupt(TIM_HandleTypeDef *htim)
   	{
     	return HAL_ERROR;
   	}
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	irqn = HAL_TIM_GetIRQ(htim->Instance);
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+	irqn = HAL_TIM_GetIRQ(htim);
 	if (IRQ_Enable(irqn) == 0)
 		return HAL_OK;
 	else
@@ -256,8 +334,8 @@ HAL_StatusTypeDef HAL_TIM_Disable_Interrupt(TIM_HandleTypeDef *htim)
 	{
 		return HAL_ERROR;
 	}
-	assert_param(IS_TIM_INSTANCE(htim->Instance));
-	irqn = HAL_TIM_GetIRQ(htim->Instance);
+	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+	irqn = HAL_TIM_GetIRQ(htim);
 	if (IRQ_Disable(irqn) == 0)
 		return HAL_OK;
 	else

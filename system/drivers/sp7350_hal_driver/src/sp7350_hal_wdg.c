@@ -30,12 +30,12 @@ __STATIC_INLINE void _wdg_cntmax(WDG_TypeDef *Instance)
 	WRITE_REG(Instance->control, WDG_CMD_CNTMAX);
 }
 
-__STATIC_INLINE void _wdg_setcnt(WDG_TypeDef *Instance, uint16_t value)
+__STATIC_INLINE void _wdg_setcnt(WDG_TypeDef *Instance, uint32_t value)
 {
 	WRITE_REG(Instance->counter_val, value);
 }
 
-__STATIC_INLINE uint16_t _wdg_getcnt(WDG_TypeDef *Instance)
+__STATIC_INLINE uint32_t _wdg_getcnt(WDG_TypeDef *Instance)
 {
 	return READ_REG(Instance->counter_val);
 }

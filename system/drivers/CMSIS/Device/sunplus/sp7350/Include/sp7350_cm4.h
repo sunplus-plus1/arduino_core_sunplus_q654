@@ -642,7 +642,7 @@ typedef struct{
 	__IOM uint32_t stc_64;				/*!< \brief  standard time clock counter, the MSB 64 bit, when write the bit ,clear the stc counter at once */
 	__IOM uint32_t stc_prescale_val;
 	__IOM uint32_t stc_config;
-	RESERVED(0[19], uint32_t)
+	RESERVED(0[18], uint32_t)
 	__IOM uint32_t stcl_31_0;
 	__IOM uint32_t stcl_32;
 }STC_TypeDef;
@@ -742,8 +742,17 @@ typedef struct
 
 typedef struct
 {
+	__IOM uint32_t control;           /*!< \brief timer control register for >*/
+	__IOM uint32_t counter_l;             /*!< \brief the low 32-bit of 64-bit counter*/
+	__IOM uint32_t counter_h;             /*!< \brief the high 32-bit of 64-bit counter */
+	__IOM uint32_t reload_l;          /*!< \brief when count reaches to 0, the value will reload to the counter >*/
+	__IOM uint32_t reload_h;          /*!< \brief when count reaches to 0, the value will reload to the counter >*/
+}TIM64_TypeDef;
+
+typedef struct
+{
 	__IOM uint32_t control;           /*!< \brief write command to this register to control the watchdog */
-	__IOM uint32_t counter_val;       /*!< \brief 16-bit counter, it down to 0, the wathcdog will generate the interrupt */
+	__IOM uint32_t counter_val;       /*!< \brief 32-bit counter, it down to 0, the wathcdog will generate the interrupt */
 	RESERVED(0[18], uint32_t);
 	__IOM uint32_t mode;              /*!< \brief set watchdog interrupt mode */
 	__IOM uint32_t intr_counter_val;  /*!< \brief 32-bit counter for watchdog interrupt and reset mode */
@@ -996,6 +1005,13 @@ typedef struct{
 #define TIM13_BASE                   RF_GRP_AO(38, 12)
 #define TIM14_BASE                   RF_GRP_AO(38, 15)
 
+#define TIM15_BASE                   RF_GRP_AO(23, 18)
+#define TIM16_BASE                   RF_GRP_AO(24, 18)
+#define TIM17_BASE                   RF_GRP_AO(25, 18)
+#define TIM18_BASE                   RF_GRP_AO(26, 18)
+#define TIM19_BASE                   RF_GRP_AO(38, 18)
+
+/* 32-bit counter TIMER */
 #define TIM0                         ((TIM_TypeDef *) TIM0_BASE)
 #define TIM1                         ((TIM_TypeDef *) TIM1_BASE)
 #define TIM2                         ((TIM_TypeDef *) TIM2_BASE)
@@ -1011,6 +1027,13 @@ typedef struct{
 #define TIM12                        ((TIM_TypeDef *) TIM12_BASE)
 #define TIM13                        ((TIM_TypeDef *) TIM13_BASE)
 #define TIM14                        ((TIM_TypeDef *) TIM14_BASE)
+
+/* 64-bit counter TIMER */
+#define TIM15                        ((TIM64_TypeDef *) TIM15_BASE)
+#define TIM16                        ((TIM64_TypeDef *) TIM16_BASE)
+#define TIM17                        ((TIM64_TypeDef *) TIM17_BASE)
+#define TIM18                        ((TIM64_TypeDef *) TIM18_BASE)
+#define TIM19                        ((TIM64_TypeDef *) TIM19_BASE)
 
 /********************  Bit definition for timer register  ********************/
 #define TIMER_GO_Pos                 (11U)
@@ -1031,6 +1054,8 @@ typedef struct{
                                       ((INSTANCE) == TIM9) || ((INSTANCE) == TIM10) || ((INSTANCE) == TIM11) ||\
                                       ((INSTANCE) == TIM12) || ((INSTANCE) == TIM13) || ((INSTANCE) == TIM14))
 
+#define IS_TIM64_INSTANCE(INSTANCE)    (((INSTANCE) == TIM15) || ((INSTANCE) == TIM16) || ((INSTANCE) == TIM17) ||\
+                                      ((INSTANCE) == TIM18) || ((INSTANCE) == TIM19))
 /******************************************************************************/
 /*                                                                            */
 /*                        watchdog module                                     */

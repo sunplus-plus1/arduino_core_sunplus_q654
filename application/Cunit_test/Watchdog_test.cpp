@@ -71,14 +71,13 @@ static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance)
 	return index;
 }
 
+static int occur_interrupt = 0;
 void callback(void)
 {
 	watchdog_index_t index = get_watchdog_index(TEST_TARGET);
-#ifdef SP7350
-	STAMP(0x11);
-#else
+
+	occur_interrupt++;
 	CU_PASS("cb\n");
-#endif
 
 	/* reset if not stop counter */
 	HAL_WDG_IRQHandler(&hwdg[index]);
@@ -116,7 +115,7 @@ static void test_case_SetTimeout(void)
 	uint32_t input, output;
 
 	HAL_InitCommonSTC(STC0, 1000000);
-	input = 2000;//2000 ticks(us)
+	input = 2000000;//2000000 ticks(us)
 
 	/* Init */
 	hwdg[index].Instance = TEST_TARGET;
@@ -125,7 +124,7 @@ static void test_case_SetTimeout(void)
 
 	/* Normal flow */
 	HAL_WDG_SetTimeout(&hwdg[index], input);
-	output = HAL_WDG_GetTimeout(&hwdg[index]);;
+	output = HAL_WDG_GetTimeout(&hwdg[index]);
 	CU_ASSERT_EQUAL(input, output);
 
 	/* Struct varible / Parameter */
@@ -138,7 +137,9 @@ static void test_case_FeedDog(void)
 {
 	watchdog_index_t index = get_watchdog_index(TEST_TARGET);
 
-	uint32_t timeout = 2000;//us
+	uint32_t timeout = 4000000;//ticks = us
+	uint32_t feedog = 2000000;
+	uint32_t fdloop = 5;
 	int i;
 
 	HAL_InitCommonSTC(STC0, 1000000);
@@ -147,7 +148,7 @@ static void test_case_FeedDog(void)
 #ifdef SP7350
 	hwdg[index].IrqMode = WDG_INTR_RST;
 	hwdg[index].IrqHandle = callback;
-	hwdg[index].IrqTicks = 1500;
+	hwdg[index].IrqTicks = 2500000;//pretimeout
 #else
 	hwdg[index].IrqMode = WDG_RST;
 	hwdg[index].IrqHandle = NULL;
@@ -156,12 +157,18 @@ static void test_case_FeedDog(void)
 	HAL_WDG_SetTimeout(&hwdg[index], timeout);
 	HAL_WDG_Start(&hwdg[index]);
 
-	for(i=0; i++; i<10)
+	for(i = 0; i < fdloop; i++)
 	{
-		HAL_Delay(1000);//us
+		HAL_Delay(feedog);//us
 		HAL_WDG_SetTimeout(&hwdg[index], timeout);
+		//printf("fd\n");
 		CU_PASS("Feed dog");
 	}
+
+	printf("occur_interrupt %d\n", occur_interrupt);
+	CU_ASSERT_EQUAL(occur_interrupt, fdloop);
+	occur_interrupt = 0;
+
 	HAL_WDG_Stop(&hwdg[index]);
 }
 
@@ -201,4 +208,3 @@ int Add_Watchdog_Tests(void)
 
 	return 0;
 }
-
