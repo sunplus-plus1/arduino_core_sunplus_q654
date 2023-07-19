@@ -849,7 +849,7 @@ typedef struct {
 #define SP_IRQ_CTRL                  ((volatile IRQ_Ctrl_Type*) RF_GRP(9, 0))
 
 /* IPCC Mailbox */
-#define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(255, 0))
+#define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(258, 0))
 
 /*SP654 module clock enable bit*/
 #define CLK_EN                       ((Module_Clock_En_type*)RF_GRP_AO(2, 1))
@@ -1345,7 +1345,7 @@ struct dw_adc_regs {
 	unsigned int adc_reserved[20];		/*43 */
 
 };
-#define ADC_REG_AO ((volatile struct dw_adc_regs *)RF_GRP(94, 0))
+#define ADC_REG_AO ((volatile struct dw_adc_regs *)RF_GRP_AO(94, 0))
 
 struct dw_hsem_regs {
 	unsigned int lock[16];			/* 0--15 */

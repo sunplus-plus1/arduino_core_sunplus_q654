@@ -9,12 +9,20 @@
 #include "sp7350_hal_conf.h"
 #include "sp7350xx.h"
 
-#define SP_ADC_CLK_DIV_MASK		0x700
-#define SP_ADC_DATA_MASK		0xFFF
+#define SP_ADC_CLK_DIV_MASK     0x700
+#define SP_ADC_DATA_MASK        0xFFF
+#define SP_ADC_CHEN_MASK        0x38	//bit3 ~ bit5
 
-#define SP_ADC_EN				(0x1<<1)
-#define SP_ADC_SRFS				(0x2<<1)
-#define SP_ADC_DATA_READY		(0x1<<15)  
+#define SP_ADC_EN               0x02
+#define SP_ADC_SRFS             0x04
+#define SP_ADC_BYPASS           0x20
+#define SP_ADC_DATA_READY       0x8000
+#define SP_ADC_CHAN_SET         0x688  //  011010001000 = 0x688
+#define SP_ADC_CHAN0_SET        0x00
+#define SP_ADC_CHAN1_SET        0x08
+#define SP_ADC_CHAN2_SET        0x10
+#define SP_ADC_CHAN3_SET        0x18
+
 
 typedef enum {
 	ADC_CHAN_0=0,

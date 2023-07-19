@@ -9,20 +9,21 @@ extern "C" {
 HAL_StatusTypeDef HAL_IPCC_Init(IPCC_HandleTypeDef *hipcc)
 {
 	int i = 0;  
-	IRQn_Type irqn =  MAX_IRQ_n;
-	if (hipcc == NULL)
-  	{
-    	return HAL_ERROR;
-  	}
+	IRQn_Type irqn[CHN_MAX] = {IPC_CA552CM4_INT0_IRQn,IPC_CA552CM4_INT1_IRQn,IPC_CA552CM4_INT2_IRQn,
+                               IPC_CA552CM4_INT3_IRQn,IPC_CA552CM4_INT4_IRQn,IPC_CA552CM4_INT5_IRQn,
+                               IPC_CA552CM4_INT6_IRQn,IPC_CA552CM4_INT7_IRQn,IPC_CA552CM4_NORMAL_INT_IRQn};
 
-	assert_param(IS_TIM_INSTANCE(hipcc->Instance));
+    if (hipcc == NULL || hipcc->Instance != IPC_MAILBOX)
+    {
+    	return HAL_ERROR;
+    }
+
 	for (i=0; i < CHN_MAX; i++)
 	{
 		if (hipcc->szIRQHDL[i] != NULL)
 		{
-			irqn = IPC_CM42CA55_INT0_IRQn + i - DIRECT_CHN_0;
-			IRQ_SetHandler(irqn, hipcc->szIRQHDL[i]);
-			IRQ_Enable(irqn);
+			IRQ_SetHandler(irqn[i], hipcc->szIRQHDL[i]);
+			IRQ_Enable(irqn[i]);
 		}
 	}
 	return HAL_OK;
@@ -30,14 +31,13 @@ HAL_StatusTypeDef HAL_IPCC_Init(IPCC_HandleTypeDef *hipcc)
 
 HAL_StatusTypeDef HAL_IPCC_DeInit(IPCC_HandleTypeDef *hipcc)
 {
-	int i = 0;  
+	int i = 0;
 	IRQn_Type irqn =  MAX_IRQ_n;
-	if (hipcc == NULL)
+	if (hipcc == NULL || hipcc->Instance != IPC_MAILBOX)
   	{
     	return HAL_ERROR;
   	}
 
-	assert_param(IS_TIM_INSTANCE(hipcc->Instance));
 	for (i=0; i < CHN_MAX; i++)
 	{
 		irqn = IPC_CM42CA55_INT0_IRQn + i - DIRECT_CHN_0;
@@ -49,11 +49,10 @@ HAL_StatusTypeDef HAL_IPCC_DeInit(IPCC_HandleTypeDef *hipcc)
 HAL_StatusTypeDef HAL_IPCC_UrgentNoify(IPCC_HandleTypeDef *hipcc, IPPC_CHN_type enChn, uint32_t data)
 {
 	uint32_t mask = 0;
-	if (hipcc == NULL)
-	{
-		return HAL_ERROR;
-	}
-	assert_param(IS_TIM_INSTANCE(hipcc->Instance));
+	if (hipcc == NULL || hipcc->Instance != IPC_MAILBOX)
+  	{
+    	return HAL_ERROR;
+  	}
 
 	if (enChn > DIRECT_CHN_7)
 		return HAL_ERROR;
@@ -67,20 +66,17 @@ HAL_StatusTypeDef HAL_IPCC_UrgentNoify(IPCC_HandleTypeDef *hipcc, IPPC_CHN_type 
 
 }
 
-
 HAL_StatusTypeDef HAL_IPCC_Noify(IPCC_HandleTypeDef *hipcc, uint32_t* pData, uint32_t seek, uint32_t size )
 {
 	uint32_t mask = 0;
 	int i = 0;
-	if ((hipcc == NULL) || (pData == NULL))
+	if ((hipcc == NULL) || (pData == NULL) || (hipcc->Instance != IPC_MAILBOX))
 	{
 		return HAL_ERROR;
 	}
 
 	if ((seek + size) > NORMAL_DATA_SIZE)
 		return HAL_ERROR;
-
-	assert_param(IS_TIM_INSTANCE(hipcc->Instance));
 
 	for (i=0; i < size; i++)
 	{
