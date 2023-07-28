@@ -26,7 +26,7 @@ typedef enum{
 
 typedef struct
 {
-	IPCC_Typedef *Instance;     		/*!< Register base address  */
+	volatile IPCC_Typedef *Instance;     		/*!< Register base address  */
 	IRQHandler_t szIRQHDL[CHN_MAX];		/*IPCC MAILBOX Interrupt handle function array*/
 } IPCC_HandleTypeDef;
 	

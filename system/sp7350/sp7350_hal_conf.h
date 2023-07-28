@@ -20,6 +20,7 @@
 #include "sp7350_hal_hsem.h"
 #include "sp7350_hal_i2s.h"
 #include "sp7350_hal_rtc.h"
+#include "sp7350_hal_ipcc.h"
 #endif
 
 

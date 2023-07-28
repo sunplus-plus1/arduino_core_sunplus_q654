@@ -30,15 +30,21 @@ enum {
 	ePWM_DD_MAX
 };
 
+typedef enum {
+	PWM_RESOLUTION_0_4096=0,
+	PWM_RESOLUTION_1_256,
+	PWM_RESOLUTION_MAX
+}PWM_ResTypeDef;
 
 typedef struct
 {
   /* set pwm number. the value set from PWM0 to PWM7 */
   PWM_NUMTypeDef pwm_num;
-  /* set pwm period. unit is ns */
+  PWM_ResTypeDef resolution_sel; /* not used */
   uint32_t period_ns;
   /* set pwm duty. unit is ns */ 
   uint32_t duty_ns;
+  uint32_t pin;/* gpio: GPIO(XX) */
 }PWM_InitTypeDef;
 
 

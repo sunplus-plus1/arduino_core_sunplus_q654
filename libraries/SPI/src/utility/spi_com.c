@@ -58,8 +58,9 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
     handle->Instance  = SPI2;
 #elif SPI_SEL_INSTANCE == 3
     handle->Instance  = SPI3;
+#endif 
 #if  (defined(SP645) || defined(SP7350))
-#elif SPI_SEL_INSTANCE == 4
+#if SPI_SEL_INSTANCE == 4
     handle->Instance  = SPI4;
 #elif SPI_SEL_INSTANCE == 5
     handle->Instance  = SPI5;
@@ -172,7 +173,7 @@ void spi_deinit(spi_t *obj)
         HAL_Module_Clock_enable(SPI_COMBO0 + SPI_SEL_INSTANCE, 0);
         HAL_Module_Clock_gate(SPI_COMBO0 + SPI_SEL_INSTANCE, 0);
     }
-#elif defined(SP645)
+#elif (defined(SP645) || defined(SP7350))
     if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
     {
         HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 0);

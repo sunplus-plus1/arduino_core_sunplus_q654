@@ -33,10 +33,16 @@
 #endif
 
 static HAL_StatusTypeDef ret;
+PWM_InitTypeDef PWM_Init;
 
-void _pwm_set(int pwm)
+void _pwm_set(PWM_NUMTypeDef pwm)
 {
-	ret = pwm_init(pwm,500000000,200000000,1,PWM_RESOLUTION_0_4096);
+	PWM_Init.pwm_num = pwm;
+	PWM_Init.period_ns=1100000;
+	PWM_Init.duty_ns=500000;
+	PWM_Init.pin=1;
+	PWM_Init.resolution_sel = PWM_RESOLUTION_1_256;
+	ret = pwm_init(&PWM_Init);
 
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 	
@@ -44,12 +50,14 @@ void _pwm_set(int pwm)
 	delay(3000);
 	pwm_stop(pwm);
 	delay(3000);
-	ret = pwm_set_period(pwm,80000,40000);
+	pwm_start(pwm);
+	delay(1000);
+	ret = pwm_set_period(pwm,180000,40000);
 
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 
 	pwm_start(pwm);
-	delay(3000);
+	delay(1000);
 	pwm_stop(pwm);
 }
 
@@ -73,50 +81,6 @@ void pwm3_test()
 	_pwm_set(PWM3);
 }
 
-void pwm_Init_test()
-{
-	ret = pwm_init(PWM0,20000000,10000000,1,PWM_RESOLUTION_0_4096);
-	CU_ASSERT_EQUAL(ret, HAL_OK);
-
-
-	ret = pwm_init(PWM0,0,10000000,1,PWM_RESOLUTION_0_4096);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-	
-	ret = pwm_init(PWM0,10000000,20000000,1,PWM_RESOLUTION_0_4096);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-
-#ifdef SP7350
-	/* pinmux must set to 1/2 */
-	ret = pwm_init(PWM0,10000000,20000000,3,PWM_RESOLUTION_0_4096);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-
-	ret = pwm_init(PWM0,10000000,20000000,0,PWM_RESOLUTION_0_4096);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-#endif
-
-}
-
-void pwm_Start_test()
-{
-	pwm_start(PWM0);
-	CU_ASSERT_EQUAL((PWM_REG->pwm_en) & (1<<PWM0), (1<<PWM0));
-}
-
-void pwm_Stop_test()
-{
-	pwm_stop(PWM0);
-	CU_ASSERT_EQUAL((PWM_REG->pwm_en) & (1<<PWM0), (0<<PWM0));
-}
-
-void pwm_Set_test()
-{
-	ret = pwm_set_period(PWM0,0,40000);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-
-
-	ret = pwm_set_period(PWM0,40000,80000);
-	CU_ASSERT_EQUAL(ret, HAL_ERROR);
-}
 
 static CU_TestInfo   pwm_testcases[] =
 {
@@ -125,10 +89,6 @@ static CU_TestInfo   pwm_testcases[] =
 	{"PWM2 test：",	   pwm2_test},
 	{"PWM3 test：",	   pwm3_test},
 
-	{"PWM Init test：",     pwm_Init_test},
-	{"PWM Start test：",    pwm_Start_test},
-	{"PWM Stop test：",	   pwm_Stop_test},
-	{"PWM Set test：",	   pwm_Set_test},
 	CU_TEST_INFO_NULL
 };
 

@@ -26,6 +26,7 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 	_i2c.handle.Instance = SP_I2CM2;
 #elif I2C_SEL_INSTANCE == 3
 	_i2c.handle.Instance = SP_I2CM3;
+#endif
 
 #if defined (SP645) || defined (SP7350)
 #elif I2C_SEL_INSTANCE == 4
@@ -45,7 +46,6 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 	_i2c.handle.Instance = SP_I2CM9;
 #endif
 
-#endif
 }
 
 TwoWire::TwoWire(volatile I2C_TypeDef *instance)

@@ -2,7 +2,7 @@
 #include "Arduino.h"
 #include "HardwareSerial.h"
 
-#if defined(HAVE_HWSERIAL1) || defined(HAVE_HWSERIAL2) || defined(HAVE_HWSERIAL3) || defined(HAVE_HWSERIAL4) 
+#if defined(HAVE_HWSERIAL1) || defined(HAVE_HWSERIAL2) || defined(HAVE_HWSERIAL3) || defined(HAVE_HWSERIAL4) || defined(HAVE_HWSERIAL6) || defined(HAVE_HWSERIAL7) 
   #if defined(HAVE_HWSERIAL1)
     HardwareSerial Serial1(SP_UART1);
     void serialEvent1() __attribute__((weak));

@@ -2,6 +2,11 @@
 
 static uint32_t g_resolution_sel[PWM_MAX]={0}; // for freq set
 
+// 4096/25M, max_freq=6K  min_period=164000ns
+// 4096/50M, max_freq=50K min_period=20000ns
+
+// 256/25M, max_freq=90K  min_period= 11000ns
+// 256/50M, max_freq=200K min_period=5100ns
 static uint32_t _PWM_Get_SrcClk(void)
 {
 	uint32_t temp, freq_Hz;

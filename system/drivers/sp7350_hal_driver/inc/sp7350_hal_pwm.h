@@ -44,6 +44,7 @@ typedef struct
   uint32_t period_ns;
   /* set pwm duty. unit is ns */ 
   uint32_t duty_ns;
+  uint32_t pin;/* pinmux set, 0/3 disable,1/2 select pinmux */
 }PWM_InitTypeDef;
 
 

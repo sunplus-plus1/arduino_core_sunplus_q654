@@ -36,13 +36,15 @@
 static SPI_HandleTypeDef hspi_test;
 static HAL_StatusTypeDef ret;
 
-static unsigned char rxbuf[100]={0},txbuf[100]={0};
+static uint8_t *rxbuf=(uint8_t *)0x56000000;
+static uint8_t *txbuf=(uint8_t *)0x66000000;
 static int rw_ret=0;
 
 volatile SPI_TypeDef *spi_base ;
 static PINMUX_Type pinmux_idx;
 static IRQn_Type irq_no;
 
+#define SPI_MASTER  0
 static void spi_callback(void)
 {
 	HAL_SPI_IRQHandler(&hspi_test);
@@ -223,15 +225,15 @@ static void spi_test_TransmitReceive_Polling(void)
 	CU_ASSERT_EQUAL(ret, HAL_OK);
 }
 
-void spi_test_Tx_DMA(void)       {_get_Spi_param(0); spi_test_Transmit_DMA();     }
-void spi_test_Rx_DMA(void)       {_get_Spi_param(0); spi_test_Receive_DMA();      }
-void spi_test_TxRx_DMA(void)     {_get_Spi_param(0); spi_test_TransmitReceive_DMA();      }
-void spi_test_Tx_IT(void)        {_get_Spi_param(0); spi_test_Transmit_IT();      }
-void spi_test_Rx_IT(void)        {_get_Spi_param(0); spi_test_Receive_IT();       }
-void spi_test_TxRx_IT(void)      {_get_Spi_param(0); spi_test_TransmitReceive_IT();       }
-void spi_test_Tx_Polling(void)   {_get_Spi_param(0); spi_test_Transmit_Polling(); }
-void spi_test_Rx_Polling(void)   {_get_Spi_param(0); spi_test_Receive_Polling();  }
-void spi_test_TxRx_Polling(void) {_get_Spi_param(0); spi_test_TransmitReceive_Polling();  }
+void spi_test_Tx_DMA(void)       {_get_Spi_param(SPI_MASTER); spi_test_Transmit_DMA();     }
+void spi_test_Rx_DMA(void)       {_get_Spi_param(SPI_MASTER); spi_test_Receive_DMA();      }
+void spi_test_TxRx_DMA(void)     {_get_Spi_param(SPI_MASTER); spi_test_TransmitReceive_DMA();      }
+void spi_test_Tx_IT(void)        {_get_Spi_param(SPI_MASTER); spi_test_Transmit_IT();      }
+void spi_test_Rx_IT(void)        {_get_Spi_param(SPI_MASTER); spi_test_Receive_IT();       }
+void spi_test_TxRx_IT(void)      {_get_Spi_param(SPI_MASTER); spi_test_TransmitReceive_IT();       }
+void spi_test_Tx_Polling(void)   {_get_Spi_param(SPI_MASTER); spi_test_Transmit_Polling(); }
+void spi_test_Rx_Polling(void)   {_get_Spi_param(SPI_MASTER); spi_test_Receive_Polling();  }
+void spi_test_TxRx_Polling(void) {_get_Spi_param(SPI_MASTER); spi_test_TransmitReceive_Polling();  }
 
 static CU_TestInfo   spi_testcases[] =
 {
