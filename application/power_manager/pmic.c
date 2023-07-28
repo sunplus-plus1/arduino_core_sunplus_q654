@@ -1,7 +1,7 @@
 #include "pm_common.h"
-#include "Wire.h"
+#include "sp7350_hal.h"
 
-TwoWire *pmic_i2c;
+I2C_HandleTypeDef *test_handle;
 
 #define RT5759_ADDR             0x62
 
@@ -16,16 +16,14 @@ TwoWire *pmic_i2c;
 #define RT5759_MANUFACTURER_ID  0x82
 
 uint8_t tx_buf[2];
-
+uint8_t rx_buf[2];
 
 //#define USE_I2C_READ
 
-int _pmic_i2c_write(uint8_t tx_buf[])
+int _pmic_i2c_write(uint8_t *buf)
 {
-	pmic_i2c->beginTransmission(RT5759_ADDR);
-	pmic_i2c->write(tx_buf,sizeof(tx_buf)/sizeof(tx_buf[0]));
-
-	uint8_t ret = pmic_i2c->endTransmission();
+	int ret;
+	ret = HAL_I2C_Master_Transmit(test_handle, RT5759_ADDR, tx_buf, sizeof(tx_buf)/sizeof(uint8_t), 0);
 	if (ret) {
 		printf("Transmit error code %d\n", ret);
 		return -1;
@@ -37,19 +35,17 @@ int _pmic_i2c_write(uint8_t tx_buf[])
 uint8_t _pmic_i2c_read(uint8_t reg)
 {
 	uint8_t data = 0;
-	pmic_i2c->beginTransmission(RT5759_ADDR);
-	pmic_i2c->write(reg); 
-	pmic_i2c->endTransmission(0); // end transmission,not send stop bit
+	
+	HAL_I2C_Master_Transmit(test_handle, RT5759_ADDR, &reg, 1, 0);
+	HAL_I2C_Master_Receive(test_handle, RT5759_ADDR, &data, 1, 0);
 
-	pmic_i2c->requestFrom(RT5759_ADDR, (size_t)1);// send data n-bytes read
-	pmic_i2c->available();
-	data = pmic_i2c->read(); // receive DATA
-	return 	data;
-}
+	return data;
+}	
 #endif
 
 void _rt5759_enable(void)
 {
+	HAL_I2C_Init(test_handle);
 #ifdef USE_I2C_READ
 	uint8_t data = _pmic_i2c_read(RT5759_REG_DCDCCTRL);
 	data |=  (0x1<<1);
@@ -64,6 +60,7 @@ void _rt5759_enable(void)
 
 void _rt5759_disable(void)
 {
+	HAL_I2C_Init(test_handle);
 #ifdef USE_I2C_READ
 	uint8_t data = _pmic_i2c_read(RT5759_REG_DCDCCTRL);
 	data &= ~(0x1<<1);
@@ -127,20 +124,26 @@ int pmic_do_cmd(uint32_t cmd)
 int pmic_init(void)
 {
 	uint8_t version = 0;
-	pmic_i2c = new TwoWire(SP_I2CM7);
-	pmic_i2c->begin();
+	
+	test_handle = (I2C_HandleTypeDef *)malloc(sizeof(I2C_HandleTypeDef));
+	test_handle->Instance = SP_I2CM7;
+	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
+	test_handle->Mode = I2C_MODE_BURST;
+	
+	HAL_I2C_Init(test_handle);
+	
 #ifdef USE_I2C_READ
 	version = _pmic_i2c_read(RT5759_REG_VENDORINFO);
-	if(version != RT5759_MANUFACTURER_ID)
+	if (version != RT5759_MANUFACTURER_ID)
 	{
-		printf("pmic device init error \n");
+		printf("pmic device init error 0x%x\n", version);
 		return -1;
 	}
 #endif
+
 	pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
 	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
 	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
-	return 0;
 }
 
 #ifdef __cplusplus
