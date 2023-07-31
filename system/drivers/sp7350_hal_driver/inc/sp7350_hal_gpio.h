@@ -10,8 +10,8 @@
 #include "sp7350_hal_conf.h"
 #include "sp7350xx.h"
 
-/** 
-  * @brief  GPIO Bit SET and Bit RESET enumeration 
+/**
+  * @brief  GPIO Bit SET and Bit RESET enumeration
   */
 typedef enum
 {
@@ -28,7 +28,7 @@ typedef enum
 
 typedef enum
 {
-  GPIO_PULL_DISABLE = 0,      // pull disable 
+  GPIO_PULL_DISABLE = 0,      // pull disable
   GPIO_PULL_UP,               // pull up
   GPIO_PULL_DOWN,             // pull down
 }GPIO_PULLState;
@@ -46,7 +46,7 @@ typedef struct
 {
   /* set input/output mode                         GPIO_INPUT_MODE:input          GPIO_OUTPUT_MODE:output   */
   GPIO_PinMode Mode;
-  /* set default value.for output mode/enable OD,  GPIO_OUT_LOW:low               GPIO_OUT_HIGH:high        */ 
+  /* set default value.for output mode/enable OD,  GPIO_OUT_LOW:low               GPIO_OUT_HIGH:high        */
   GPIO_PULLState pull;
   /* set output higher driving current, */
   /* set output default value after gpio init */
@@ -67,7 +67,7 @@ GPIO_PinState     HAL_GPIO_ReadPin(uint16_t GPIO_Pin);
 HAL_StatusTypeDef              HAL_GPIO_WritePin(uint16_t GPIO_Pin, GPIO_PinState PinState);
 HAL_StatusTypeDef              HAL_GPIO_TogglePin(uint16_t GPIO_Pin);
 int               HAL_GPIO_Get_Mode(uint16_t GPIO_Pin);
-
+extern int gpio_first_val_set(uint32_t bit,int firset_set);
 
 #ifdef __cplusplus
 }

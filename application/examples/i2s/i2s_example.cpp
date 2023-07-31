@@ -1,5 +1,13 @@
 /*
  *	Test i2s.
+ *	Q654 evb board I2S1 is used for wifi module.
+ *	So following special changes is required:
+ *		1.Modify the circuit: R455 = 0 (disable wifi module)
+ *		2.GPIO56,57 first is set 0 (disable GPIO mode)
+ *
+ *	Q654 evb board I2S2 is used for UA6 (CM4 console).
+ *	So following special changes is required:
+ *		1.MOON UA6 pinmux is set 0 (disable GPIO80 ua6 function)
  */
 
 #include "Arduino.h"
@@ -291,20 +299,14 @@ void i2s_test_rx_sine(void)
 
 	//HAL_I2S_Default_Init();
 
-#ifdef SP7350
-	hi2s0.Index = INDEX_I2S0;
-	hi2s2.Index = INDEX_I2S0;
-	hi2s0.Init.Mode = I2S_MODE_MASTER_RX;
-#else
 	HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
 	hi2s0.Index = INDEX_I2S0;
-	hi2s2.Index = INDEX_I2S2;
 	hi2s0.Init.Mode = I2S_MODE_SLAVE_RX;
-#endif
 	//hi2s0.Init.Mode = I2S_MODE_MASTER_RX;
 	hi2s0.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s0.Init.AudioFreq = I2S_AUDIOFREQ_48K;
 
+	hi2s2.Index = INDEX_I2S2;
 	hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
 	hi2s2.Init.DataFormat = I2S_DATAFORMAT_24B;
 	hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_48K;
@@ -324,9 +326,48 @@ void i2s_test_rx_sine(void)
 	}
 }
 
+extern int gpio_first_val_set(uint32_t bit,int firset_set);
+
 void setup()
 {
 	printf("i2s example %s\n", __TIME__);
+
+#if 0//TEST PIN is connected
+	GPIO_InitTypeDef GPIO_I2S1BCK;
+	memset(&GPIO_I2S1BCK,0,sizeof(GPIO_I2S1BCK));
+	GPIO_I2S1BCK.Mode = GPIO_PP_OUTPUT_MODE;
+	GPIO_I2S1BCK.Pin = GPIO(56);
+	GPIO_I2S1BCK.out_value = GPIO_OUT_LOW;
+	HAL_GPIO_Init(&GPIO_I2S1BCK);
+
+	GPIO_InitTypeDef GPIO_I2S2BCK;
+	memset(&GPIO_I2S2BCK,0,sizeof(GPIO_I2S2BCK));
+	GPIO_I2S2BCK.Mode = GPIO_PP_OUTPUT_MODE;
+	GPIO_I2S2BCK.Pin = GPIO(80);
+	GPIO_I2S2BCK.out_value = GPIO_OUT_LOW;
+	HAL_GPIO_Init(&GPIO_I2S2BCK);
+
+	while (1) {
+		HAL_GPIO_WritePin(GPIO(56),GPIO_OUT_HIGH);
+		delay(10);
+		HAL_GPIO_WritePin(GPIO(56),GPIO_OUT_LOW);
+		delay(10);
+		HAL_GPIO_WritePin(GPIO(80),GPIO_OUT_HIGH);
+		delay(10);
+		HAL_GPIO_WritePin(GPIO(80),GPIO_OUT_LOW);
+		delay(10);
+	}
+#endif
+#ifdef SP7350
+	/* Invalid I2S1 pinmux*/
+	gpio_first_val_set(GPIO(56), 0);
+	gpio_first_val_set(GPIO(57), 0);
+	/* Invalid I2S2 pinmux*/
+	HAL_PINMUX_Cfg(PINMUX_UART6, 0);
+
+	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
+	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S2, I2S_DEBUG_0DB);
+#endif
 #if 0
 	i2s_test_debug_signal();
 #endif
