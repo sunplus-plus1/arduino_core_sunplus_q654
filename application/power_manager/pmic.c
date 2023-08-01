@@ -144,6 +144,7 @@ int pmic_init(void)
 	pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
 	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
 	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
+	return 0;
 }
 
 #ifdef __cplusplus
