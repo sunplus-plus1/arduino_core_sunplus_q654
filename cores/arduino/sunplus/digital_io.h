@@ -46,8 +46,8 @@ static inline void digitalToggleFast(uint32_t pn)
 
 static inline void digitalModeSet(uint32_t ulPin, uint32_t ulMode)
 {
-  GPIO_InitTypeDef GPIO_Init;
-	memset(&GPIO_Init,0,sizeof(GPIO_InitTypeDef));
+    GPIO_InitTypeDef GPIO_Init;
+    GPIO_Init.invert = 0;
 
     switch (ulMode) {
       case INPUT:
@@ -64,6 +64,7 @@ static inline void digitalModeSet(uint32_t ulPin, uint32_t ulMode)
 	  	#ifdef SP7021
         GPIO_Init.opendrain = GPIO_OD_ENABLE;
 		#elif defined(SP645) || defined(SP7350)
+		GPIO_Init.out_value = 1; //default output high
 		GPIO_Init.Mode = GPIO_OD_OUTPUT_MODE;
 		#endif
         break;
