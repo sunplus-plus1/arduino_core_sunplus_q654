@@ -86,7 +86,7 @@ void pm_restore_data_after_ddr_retention(void)
 	{
 		// rewrite MOON0 ~ MOON5 register data. write through to main domain register. 
 		MOON0_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON0_REG->sft_cfg[i]);
-		MOON1_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON1_REG->sft_cfg[i]);
+		MOON1_REG->sft_cfg[i] = MOON1_REG->sft_cfg[i];
 		MOON2_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON2_REG->sft_cfg[i]);
 		MOON4_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON4_REG->sft_cfg[i]);
 		MOON5_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON5_REG->sft_cfg[i]);
