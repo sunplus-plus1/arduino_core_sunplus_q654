@@ -162,11 +162,11 @@ SECTIONS
     __bss_end__ = _ebss;
   } >IDRAM
 
-  .resource_table : AT(_edata)
+  .resource_table : AT(_ebss)
   {
-    _sresource = .;
-    *(*source*)
-    _eresource = .;
+
+    *(.resource_table)
+
    } >VIRTIO
 
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */

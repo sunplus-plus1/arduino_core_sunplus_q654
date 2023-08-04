@@ -45,14 +45,6 @@ __attribute__((naked)) void Reset_Handler(void)
     __asm volatile ("ldr r0, =_estack");
     __asm volatile ("mov sp, r0");
 
-	extern uint32_t _edata, _sresource,_eresource;
-	char *src = (char *)&_edata;
-	char *dst = (char *)&_sresource;
-
-	while (dst < (char *)&_eresource) {
-		*dst++ = *src++;
-
-	}
     // zero out .bss section
     for (uint32_t *dest = &_sbss; dest < &_ebss;)
     {
