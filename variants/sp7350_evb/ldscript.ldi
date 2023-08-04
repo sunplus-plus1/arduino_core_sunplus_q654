@@ -141,7 +141,6 @@ SECTIONS
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
 
-    . = ALIGN(0x200);
     _edata = .;        /* define a global symbol at data end */
   } >IDRAM
 
@@ -157,7 +156,7 @@ SECTIONS
     *(.bss*)
     *(COMMON)
 
-    . = ALIGN(4);
+    . = ALIGN(0x200); /* resource table section , 16byte align */
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >IDRAM
