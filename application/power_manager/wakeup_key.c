@@ -13,9 +13,8 @@ volatile int	deep_sleep = 0;
 volatile int	in_suspend = 0;
 void resume_by_rtc(void)
 {
-	RTC_REGS->rtc_ontime_set = 0x1;
+	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x2;  // rtc irq to pmc
-	RTC_REGS->rtc_clock_set = 0x0; //
 }
 void wakeup_shortkey()
 {
