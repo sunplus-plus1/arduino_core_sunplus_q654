@@ -845,6 +845,12 @@ typedef struct {
 #define MOON4_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(4, 0))
 #define MOON5_REG                    ((volatile MOON_REG_Type *)RF_GRP_AO(5, 0))
 
+#define MOON101_REG                  ((volatile MOON_REG_Type *)RF_GRP_AO(101, 0))
+#define MOON102_REG                  ((volatile MOON_REG_Type *)RF_GRP_AO(102, 0))
+#define MOON103_REG                  ((volatile MOON_REG_Type *)RF_GRP_AO(103, 0))
+#define MOON104_REG                  ((volatile MOON_REG_Type *)RF_GRP_AO(104, 0))
+#define MOON105_REG                  ((volatile MOON_REG_Type *)RF_GRP_AO(105, 0))
+
 /* IRQ */
 #define SP_IRQ_CTRL                  ((volatile IRQ_Ctrl_Type*) RF_GRP(9, 0))
 
