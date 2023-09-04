@@ -41,7 +41,7 @@ MEMORY
   IDRAM     (xrw)    : ORIGIN = LD_RUN_ADDRESS,   LENGTH = 256K - 0x200
   VIRTIO    (xrw)    : ORIGIN = 0xfa240000  + LENGTH(IDRAM) ,   LENGTH = 0x200  /* openamp resource_table */
   SRAM      (xrw)    : ORIGIN = 0xfa280000,   LENGTH = 0x18000
-  shmem     (rw)     : ORIGIN = 0x5fa00000,   LENGTH = 0x108000 /* 1M + 16K + 16K */
+  shmem     (rw)     : ORIGIN = 0x5be00000,   LENGTH = 0x108000 /* 1M + 16K + 16K */
 }
 /* Symbols needed for OpenAMP to enable rpmsg */
 __OPENAMP_region_start__  = ORIGIN(shmem);
