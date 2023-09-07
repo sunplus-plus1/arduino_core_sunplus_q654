@@ -75,7 +75,7 @@ void Main_Domain_PowerUP(void)
 
 	pm_restore_data_after_ddr_retention();
 	pm_set_retention_done_bit();
-	in_suspend = 0;
+	suspend_state = SUSPEND_OUT;
 }
 
 /* trigger by send 0x82 cmd to PMIC */

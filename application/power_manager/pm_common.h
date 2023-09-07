@@ -56,8 +56,15 @@ extern "C" {
 #define LONG_PRESS              (5000)  /* long time: press time between 5s and 8.5s */
 #define OFFSET_PRESS            (3500)
 
+typedef enum
+{
+	SUSPEND_START=0, // short key -- >  powerdown isr
+	SUSPEND_IN,      // powerdown isr -- > powerdown complete
+	SUSPEND_OUT      // powerdown --> powerup complete
+}Suspend_Type;
+
 extern volatile int	deep_sleep;
-extern volatile int	in_suspend;
+extern volatile Suspend_Type	suspend_state;
 void wakeup_key_init(void);
 
 /* power manager */

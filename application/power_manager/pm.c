@@ -31,7 +31,8 @@ void vCA55_TO_CM4_Mailbox_ISR()
 	value = CA55_TO_CM4_MAILBOX->direct_transation[0];
 	value = value ;
 
-	if(xSemaphoreGiveFromISR( xPowerDown_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE)
+	//"echo mem > /sys/power/state will not in  powerdown flow (tfa/sp_pm.c/xx_wfi)
+	if((suspend_state == SUSPEND_START) && (xSemaphoreGiveFromISR( xPowerDown_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE))
 	{
 		printf("Semaphore Send ISR Fail!\r\n");
 	}

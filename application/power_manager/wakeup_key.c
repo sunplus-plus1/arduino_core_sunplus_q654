@@ -10,7 +10,8 @@
 #define MAILBOX_IN_SUSPEND_VALUE   (0xaabb1234)  /* match in sp_remoteproc.c*/
 
 volatile int	deep_sleep = 0;
-volatile int	in_suspend = 0;
+volatile Suspend_Type	suspend_state = SUSPEND_OUT;
+
 void resume_by_rtc(void)
 {
 	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
@@ -19,7 +20,7 @@ void resume_by_rtc(void)
 void wakeup_shortkey()
 {
 	printf("short key \n");
-	if(in_suspend)
+	if(suspend_state == SUSPEND_IN)
 	{
 		printf("resume by RTC \n");
 		resume_by_rtc();
@@ -28,6 +29,7 @@ void wakeup_shortkey()
 	{
 		/* mailbox to ca55 in suspend */
 		deep_sleep = 0;
+		suspend_state = SUSPEND_START;
 		CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
 	}
 }
@@ -36,6 +38,7 @@ void wakeup_longkey()
 {
 	printf("long key \n");
 	deep_sleep = 1;
+	suspend_state = SUSPEND_START;
 	CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
 }
 

@@ -25,7 +25,7 @@ void Main_Domain_PowerDown_ACK_Handler(void)
 		deep_sleep = 0;
 		*(volatile unsigned int *)0xF88011D4 = 0x1;//G35.21=0x1;
 	}
-	in_suspend = 1;
+	suspend_state = SUSPEND_IN;
 }
 
 int power_down_maindomain(void)
