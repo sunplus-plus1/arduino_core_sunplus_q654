@@ -1594,8 +1594,11 @@ struct dw_hsem_regs {
 #define DIRECT_OVERWITE_DATA7_Msk	(1<< DIRECT_OVERWITE_DATA7_Pos)
 #define DIRECT_OVERWITE_DATA7		DIRECT_OVERWITE_DATA7_Msk
 
-#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(259, 31)) /* MBOX_CM4_TO_CA55_DIRECT[7] */
-#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(258, 31)) /* MBOX_CA55_TO_CM4_DIRECT[7] */
+#define MBOX_TO_NOTIFY		(*(volatile unsigned int *)RF_GRP(259, 31)) /* MBOX_CM4_TO_CA55_DIRECT[7]  cm4 tell ca55 in suspend*/
+#define MBOX_NOTIFICATION	(*(volatile unsigned int *)RF_GRP(258, 31)) /* MBOX_CA55_TO_CM4_DIRECT[7]  remoptroc */
+#define MBOX_RTC_WAKEUP 	(*(volatile unsigned int *)RF_GRP(258, 30)) /* MBOX_CA55_TO_CM4_DIRECT[6]  ca55 tell cm4 change suspend state(wakeup)*/
+#define MBOX_DEEP_SLEEP 	(*(volatile unsigned int *)RF_GRP(258, 24)) /* MBOX_CA55_TO_CM4_DIRECT[0]  ca55 powerdown tell cm4 powerdown*/
+
 #define IRQ_NOTIFICATION	(IPC_CA552CM4_INT7_IRQn) /* ca55 to cm4 */
 /******************************************************************************/
 /*                                                                            */

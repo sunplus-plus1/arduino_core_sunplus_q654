@@ -27,8 +27,7 @@ void Send_Cmd_To_PMIC(uint32_t cmd)
 void vCA55_TO_CM4_Mailbox_ISR()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
-	int value = CA55_TO_CM4_MAILBOX->direct_transation[1];
-	value = CA55_TO_CM4_MAILBOX->direct_transation[0];
+	int value = MBOX_DEEP_SLEEP;
 	value = value ;
 
 	//"echo mem > /sys/power/state will not in  powerdown flow (tfa/sp_pm.c/xx_wfi)

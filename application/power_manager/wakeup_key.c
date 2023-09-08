@@ -8,29 +8,42 @@
 
 
 #define MAILBOX_IN_SUSPEND_VALUE   (0xaabb1234)  /* match in sp_remoteproc.c*/
+#define MBOX_RTC_SUSPEND_IN        (0x11225566)
+#define MBOX_RTC_SUSPEND_OUT       (0x33447788)
 
 volatile int	deep_sleep = 0;
 volatile Suspend_Type	suspend_state = SUSPEND_OUT;
 
-void resume_by_rtc(void)
+void suspend_resume_by_rtc(void)
 {
 	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x2;  // rtc irq to pmc
 }
+void freeze_zmem_resume_by_rtc(void)
+{
+	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
+	RTC_REGS->rtc_ctrl = 0x1;  // rtc irq to system
+}
 void wakeup_shortkey()
 {
-	printf("short key \n");
-	if(suspend_state == SUSPEND_IN)
+	printf("short key\n");
+	if(suspend_state == FREEZE_MEM_IN)
 	{
-		printf("resume by RTC \n");
-		resume_by_rtc();
+		printf("freeze/mem resume by RTC \n");
+		freeze_zmem_resume_by_rtc();
+		suspend_state == FREEZE_MEM_OUT;
+	}
+	else if(suspend_state == SUSPEND_IN)
+	{
+		printf("suspend resume by RTC \n");
+		suspend_resume_by_rtc();
 	}
 	else
 	{
 		/* mailbox to ca55 in suspend */
 		deep_sleep = 0;
 		suspend_state = SUSPEND_START;
-		CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
+		MBOX_TO_NOTIFY=MAILBOX_IN_SUSPEND_VALUE;
 	}
 }
 
@@ -39,7 +52,7 @@ void wakeup_longkey()
 	printf("long key \n");
 	deep_sleep = 1;
 	suspend_state = SUSPEND_START;
-	CM4_TO_CA55_MAILBOX->direct_transation[7]=MAILBOX_IN_SUSPEND_VALUE;
+	MBOX_TO_NOTIFY=MAILBOX_IN_SUSPEND_VALUE;
 }
 
 void vWakeyupKeyTask( void *pvParameters )
@@ -54,6 +67,18 @@ void vWakeyupKeyTask( void *pvParameters )
 	bool xPress = false;
 	for( ;; )
 	{
+	    //for freeze/mem wakeup by wakeupkey, change the suspend_state to freeze/mem.
+		if(suspend_state == FREEZE_MEM_OUT && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_IN)
+		{
+			suspend_state = FREEZE_MEM_IN;
+			MBOX_RTC_WAKEUP = 0;
+		}
+		else if(suspend_state == FREEZE_MEM_IN && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_OUT)
+		{
+			suspend_state = FREEZE_MEM_OUT;
+			MBOX_RTC_WAKEUP = 0;
+		}
+
 		if((RTC_REGS->rtc_wakeupkey_int_status == 1) && !xPress)
 		{
 			xPress = true;

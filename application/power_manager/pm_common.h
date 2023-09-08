@@ -60,7 +60,9 @@ typedef enum
 {
 	SUSPEND_START=0, // short key -- >  powerdown isr
 	SUSPEND_IN,      // powerdown isr -- > powerdown complete
-	SUSPEND_OUT      // powerdown --> powerup complete
+	SUSPEND_OUT,      // powerdown --> powerup complete
+	FREEZE_MEM_OUT = SUSPEND_OUT,
+	FREEZE_MEM_IN,    // into freeze/mem state (echo freeze/mem > /sys/power/state)
 }Suspend_Type;
 
 extern volatile int	deep_sleep;
