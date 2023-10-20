@@ -52,17 +52,18 @@ extern "C" {
 
 /*wakeup key*/
 #define WAKEUP_KEY_PIN          (90)
-#define SHORT_PRESS             (1000)  /* short time: press time between 1s and 4.5s */
-#define LONG_PRESS              (5000)  /* long time: press time between 5s and 8.5s */
-#define OFFSET_PRESS            (3500)
+#define T1000MS_PRESS           (1000)  /* short time: press time between 1s ,poweron/into deepsleep  */
+#define T300MS_PRESS            (300)  /* 300ms time: back to normal from free/zmem/wakeupkey */
+#define OFFSET_PRESS            (5000) /* Time interval between 300/1000ms operations */
+
 
 typedef enum
 {
 	SUSPEND_START=0, // short key -- >  powerdown isr
 	SUSPEND_IN,      // powerdown isr -- > powerdown complete
 	SUSPEND_OUT,      // powerdown --> powerup complete
-	FREEZE_MEM_OUT = SUSPEND_OUT,
-	FREEZE_MEM_IN,    // into freeze/mem state (echo freeze/mem > /sys/power/state)
+	FREEZE_CMD_OUT = SUSPEND_OUT,
+	FREEZE_CMD_IN,    // into freeze state (echo freeze > /sys/power/state)
 }Suspend_Type;
 
 extern volatile int	deep_sleep;

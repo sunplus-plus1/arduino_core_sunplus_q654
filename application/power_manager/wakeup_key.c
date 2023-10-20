@@ -19,28 +19,28 @@ void suspend_resume_by_rtc(void)
 	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x2;  // rtc irq to pmc
 }
-void freeze_zmem_resume_by_rtc(void)
+void freeze_resume_by_rtc(void)
 {
 	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x1;  // rtc irq to system
 }
 void wakeup_shortkey()
 {
-	printf("short key\n");
-	if(suspend_state == FREEZE_MEM_IN)
+	if(suspend_state == FREEZE_CMD_IN)
 	{
-		printf("freeze/mem resume by RTC \n");
-		freeze_zmem_resume_by_rtc();
-		suspend_state == FREEZE_MEM_OUT;
+		printf("freeze resume by RTC \n");
+		freeze_resume_by_rtc();
+		suspend_state == FREEZE_CMD_OUT;
 	}
 	else if(suspend_state == SUSPEND_IN)
 	{
 		printf("suspend resume by RTC \n");
 		suspend_resume_by_rtc();
 	}
-	else
+	else if(suspend_state == SUSPEND_OUT)
 	{
 		/* mailbox to ca55 in suspend */
+	    printf("wakeupkey in suspend \n");
 		deep_sleep = 0;
 		suspend_state = SUSPEND_START;
 		MBOX_TO_NOTIFY=MAILBOX_IN_SUSPEND_VALUE;
@@ -59,23 +59,25 @@ void vWakeyupKeyTask( void *pvParameters )
 {
 	/* Remove compiler warning about unused parameter. */
 	( void ) pvParameters;
-	TickType_t xoffsetTimeout = pdMS_TO_TICKS( OFFSET_PRESS );
-	TickType_t xshortTimeout = pdMS_TO_TICKS( SHORT_PRESS );
-	TickType_t xlongTimeout = pdMS_TO_TICKS( LONG_PRESS );
+	TickType_t xoffsetTimeout = OFFSET_PRESS;
+	TickType_t x1000msTimeout = T1000MS_PRESS;
+	TickType_t x300msTimeout =  T300MS_PRESS;
 
 	TickType_t xfirsttime,xsencondtime;
+	TickType_t intervaltime; // time interval between 300ms/1000ms
 	bool xPress = false;
+
 	for( ;; )
 	{
-	    //for freeze/mem wakeup by wakeupkey, change the suspend_state to freeze/mem.
-		if(suspend_state == FREEZE_MEM_OUT && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_IN)
+	    //for freeze wakeup by wakeupkey, change the suspend_state to freeze/mem.
+		if(suspend_state == FREEZE_CMD_OUT && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_IN)
 		{
-			suspend_state = FREEZE_MEM_IN;
+			suspend_state = FREEZE_CMD_IN;
 			MBOX_RTC_WAKEUP = 0;
 		}
-		else if(suspend_state == FREEZE_MEM_IN && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_OUT)
+		else if(suspend_state == FREEZE_CMD_IN && MBOX_RTC_WAKEUP == MBOX_RTC_SUSPEND_OUT)
 		{
-			suspend_state = FREEZE_MEM_OUT;
+			suspend_state = FREEZE_CMD_OUT;
 			MBOX_RTC_WAKEUP = 0;
 		}
 
@@ -83,29 +85,36 @@ void vWakeyupKeyTask( void *pvParameters )
 		{
 			xPress = true;
 			RTC_REGS->rtc_wakeupkey_int_status = 1;
-			xfirsttime = xTaskGetTickCount();
+			xfirsttime = millis();
 		}
 		if((RTC_REGS->rtc_wakeupkey_int_status == 1) && xPress)
 		{
-			xsencondtime = xTaskGetTickCount();
+			xsencondtime = millis();
 			RTC_REGS->rtc_wakeupkey_int_status = 1;
 		}
-		if(xPress && (xTaskGetTickCount() - xsencondtime) > pdMS_TO_TICKS(200))
+
+		if(xPress && (millis() - xfirsttime) > (100)) //check per 100ms
 		{
-			if((xsencondtime-xfirsttime) > xshortTimeout &&  (xsencondtime-xfirsttime) < (xshortTimeout + xoffsetTimeout))
+			if((millis()-xfirsttime) > x300msTimeout && !intervaltime && ((suspend_state == FREEZE_CMD_IN) || (suspend_state == SUSPEND_IN)))
 			{
 				wakeup_shortkey();
+				xfirsttime = 0;
+				intervaltime = millis();
 			}
-			if((xsencondtime-xfirsttime) > xlongTimeout &&  (xsencondtime-xfirsttime) < (xlongTimeout + xoffsetTimeout))
+			else if((millis()-xfirsttime) > x1000msTimeout && !intervaltime)
 			{
-				wakeup_longkey();
+				wakeup_shortkey();
+				xfirsttime = 0;
+				intervaltime = millis();
 			}
-			xPress = false;
-			xfirsttime = 0;
-			xsencondtime = 0;
-			RTC_REGS->rtc_wakeupkey_int_status = 1;
 		}
-		vTaskDelay(pdMS_TO_TICKS(20));
+		if((millis() - xsencondtime) > 300) //check is unpress?
+		{
+			intervaltime = 0;
+			xsencondtime = 0;
+			xPress = false;
+		}
+		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
 
