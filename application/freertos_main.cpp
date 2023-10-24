@@ -14,14 +14,11 @@
 #ifdef PVT_TEST
 void isr_127(void)
 {
-	int value = CA55_TO_CM4_MAILBOX->normal_transation[0];
-	CA55_TO_CM4_MAILBOX->cpu_to_cpu_int_trigger = 0;
-	printf("ISR_127 %d\n",value);
-	if(value == 0x77) {
-		CM4_TO_CA55_MAILBOX->normal_transation[0]=0x99;
-		CM4_TO_CA55_MAILBOX->cpu_to_cpu_writelock_flag=0x10;
-		CM4_TO_CA55_MAILBOX->cpu_to_cpu_int_trigger = 1;
-	}
+	CA55_TO_CM4_MAILBOX->cpu_to_cpu_int_trigger = 0; // clear intr
+	printf("ISR_127...\n");
+	for (int i = 0; i < 20; i++)
+		CM4_TO_CA55_MAILBOX->normal_transation[i] = ~CA55_TO_CM4_MAILBOX->normal_transation[i];
+	CM4_TO_CA55_MAILBOX->cpu_to_cpu_int_trigger = 1;
 }
 #endif
 
@@ -125,4 +122,3 @@ void vLoggingPrintf( const char *pcFormat, ... )
 /*-----------------------------------------------------------*/
 
 #endif  // #ifdef FREERTOS
-
