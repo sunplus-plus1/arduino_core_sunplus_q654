@@ -1,5 +1,5 @@
-#ifndef __SP7021_LL_STC_H__
-#define __SP7021_LL_STC_H__
+#ifndef __SP7350_LL_SPI_H__
+#define __SP7350_LL_SPI_H__
 
 #ifdef __cplusplus
 extern "C" {

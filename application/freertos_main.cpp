@@ -6,10 +6,8 @@
 #include <task.h>
 #include <string.h>
 
-#ifdef SP7350
 #include "pm.h"
 #define PVT_TEST
-#endif
 
 #ifdef PVT_TEST
 void isr_127(void)
@@ -26,10 +24,7 @@ int freertos_main (void)
 {
 	printf("\nFreeRTOS (build @pm_main "__TIME__")\n\n");
 
-
-	#ifdef SP7350
 	pm_main();
-	#endif
 	/* Start the tasks and timer running. */
 
 #ifdef PVT_TEST

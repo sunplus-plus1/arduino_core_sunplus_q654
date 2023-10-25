@@ -1,159 +1,18 @@
 #include "core_debug.h"
 #include "Arduino.h"
-
-#ifdef SP7021
-#include "sp7021_hal_conf.h"
-#elif defined(SP645)
-#include "sp645_hal_conf.h"
-#elif defined(SP7350)
 #include "sp7350_hal_conf.h"
-#endif
-
 #include "twi.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef SP7350//////////////
 #define	I2C_MAX_FREQ		(I2C_MAX_FAST_MODE_PLUS_FREQ / 1000)
 
 #ifndef I2C_TIMEOUT_TICK
 #define I2C_TIMEOUT_TICK	0xffffffff
 #endif
 
-
-#else//////////////////
-
-
-#ifdef SP7021
-#define PINMUX_I2C_0 PINMUX_I2CM0_SCL
-#define PINMUX_I2C_1 PINMUX_I2CM1_SCL
-#define PINMUX_I2C_2 PINMUX_I2CM2_SCL
-#define PINMUX_I2C_3 PINMUX_I2CM3_SCL
-#endif
-#ifndef SP7350
-enum {
-        PER_I2C0,
-        PER_I2C1,
-        PER_I2C2,
-        PER_I2C3,
-        PER_I2C4,
-        PER_I2C5,
-        PER_I2C6,
-        PER_I2C7,
-        PER_I2C8,
-        PER_I2C9,
-};
-#endif
-/* Private Defines */
-/// @brief I2C timout in tick unit
-#ifndef I2C_TIMEOUT_TICK
-#define I2C_TIMEOUT_TICK	0xffffffff
-#endif
-
-#ifdef SP7350
-#define	I2C_MAX_FREQ		(I2C_MAX_FAST_MODE_PLUS_FREQ / 1000)
-#else
-#define I2C_MAX_FREQ		400
-#endif
-#define I2C_INIT_FREQ		100
-
-#define I2C_INFO(inst, idx, clk, pin, irqn, cb, dma) \
-	{ .instance = (inst), .index = (idx), \
-	  .clk_id = (clk), .pinmux = (pin), \
-	  .irq_num = (irqn), .irq_callback = (cb), \
-	  .dma_idx = (dma) }
-
-struct i2c_info {
-	volatile I2C_TypeDef *instance;
-	i2c_index_e index;
-	MODULE_ID_Type clk_id;
-	PINMUX_Type pinmux;
-	IRQn_Type irq_num;
-	IRQHandler_t irq_callback;
-	uint32_t dma_idx; /* DMA mode use */
-};
-
-/* Private Variables */
-const static struct i2c_info sp_i2c_info[] = {
-	I2C_INFO(SP_I2CM0, I2C0_INDEX, I2CM0, PINMUX_I2C_0, I2C_MASTER0_IRQ, &I2C0_IRQHandler, PER_I2C0),
-	I2C_INFO(SP_I2CM1, I2C1_INDEX, I2CM1, PINMUX_I2C_1, I2C_MASTER1_IRQ, &I2C1_IRQHandler, PER_I2C1),
-	I2C_INFO(SP_I2CM2, I2C2_INDEX, I2CM2, PINMUX_I2C_2, I2C_MASTER2_IRQ, &I2C2_IRQHandler, PER_I2C2),
-	I2C_INFO(SP_I2CM3, I2C3_INDEX, I2CM3, PINMUX_I2C_3, I2C_MASTER3_IRQ, &I2C3_IRQHandler, PER_I2C3),
-#if defined (SP645) || defined (SP7350)
-	I2C_INFO(SP_I2CM4, I2C4_INDEX, I2CM4, PINMUX_I2C_4, I2C_MASTER4_IRQ, &I2C4_IRQHandler, PER_I2C4),
-	I2C_INFO(SP_I2CM5, I2C5_INDEX, I2CM5, PINMUX_I2C_5, I2C_MASTER5_IRQ, &I2C5_IRQHandler, PER_I2C5),
-#endif
-#ifdef SP7350
-	I2C_INFO(SP_I2CM6, I2C6_INDEX, I2CM6, PINMUX_I2C_6, I2C_MASTER6_IRQ, &I2C6_IRQHandler, PER_I2C6),
-	I2C_INFO(SP_I2CM7, I2C7_INDEX, I2CM7, PINMUX_I2C_7, I2C_MASTER7_IRQ, &I2C7_IRQHandler, PER_I2C7),
-	I2C_INFO(SP_I2CM8, I2C8_INDEX, I2CM8, PINMUX_I2C_8, I2C_MASTER8_IRQ, &I2C8_IRQHandler, PER_I2C8),
-	I2C_INFO(SP_I2CM9, I2C9_INDEX, I2CM9, PINMUX_I2C_9, I2C_MASTER9_IRQ, &I2C9_IRQHandler, PER_I2C9),
-#endif
-};
-
-/* Just for IRQHandler() */
-I2C_HandleTypeDef *gpHandle[I2C_NUM];
-
-static void i2c_detect(I2C_HandleTypeDef *handle)
-{
-	int i;
-
-	for(i = 0; i < I2C_NUM; i++) {
-		if(handle->Instance == sp_i2c_info[i].instance) {
-			handle->Index = sp_i2c_info[i].index;
-#ifdef SP7350
-			handle->DMAIndex = sp_i2c_info[i].dma_idx;
-#endif
-			break;
-		}
-	}
-}
-
-static void i2c_irq_config(IRQn_Type irqn, IRQHandler_t callback)
-{
-	//IRQ_Disable(irqn);
-	IRQ_SetMode(irqn, IRQ_MODE_TRIG_LEVEL_HIGH);
-	IRQ_SetHandler(irqn, callback);
-#if defined (SP7350) && defined (INTR_MODE)
-	IRQ_Enable(irqn);
-#endif
-}
-
-static void i2c_clken_config(MODULE_ID_Type clk_id)
-{
-	HAL_Module_Clock_enable(clk_id, 1);
-	HAL_Module_Clock_gate(clk_id, 0);
-	HAL_Module_Reset(clk_id, 0);
-}
-
-/* TODO: refine the code of pinmux config */
-static void i2c_pinmux_config(PINMUX_Type pinmux, i2c_t *obj)
-{
-#ifdef SP7021
-	uint32_t i2c_sda, i2c_scl;
-
-	i2c_sda = GPIO_TO_PINMUX(obj->pin_sda);
-	if (!IS_VALID_PINMUX(i2c_sda)) {
-		core_debug("ERROR: [I2C] SDA pin error!\n");
-		return;
-	}
-
-	i2c_scl = GPIO_TO_PINMUX(obj->pin_scl);
-	if (!IS_VALID_PINMUX(i2c_scl)) {
-		core_debug("ERROR: [I2C] SCL pin error!\n");
-		return;
-	}
-
-	HAL_PINMUX_Cfg(pinmux + 1, i2c_sda);
-	HAL_PINMUX_Cfg(pinmux, i2c_scl);
-#else
-	UNUSED(obj);
-	HAL_PINMUX_Cfg(pinmux, 1);
-#endif
-}
-#endif
 /**
 * @brief Compute I2C timing according current I2C clock source and
 * required I2C clock.
@@ -201,20 +60,7 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		return;
 
 	I2C_HandleTypeDef *handle = &(obj->handle);
-#ifndef SP7350
-	/* Match the i2c information */
-	i2c_detect(handle);
-	/* Set irq trigger mode and irq callback */
-	i2c_irq_config(sp_i2c_info[handle->Index].irq_num, sp_i2c_info[handle->Index].irq_callback);
-	/* Enable clock */
-	i2c_clken_config(sp_i2c_info[handle->Index].clk_id);
-	/* Config pinmux */
-	i2c_pinmux_config(sp_i2c_info[handle->Index].pinmux, obj);
-	/* Just for i2c_deinit() */
-	obj->irq = sp_i2c_info[handle->Index].irq_num;
-	/* Just for IRQHandler() */
-	gpHandle[handle->Index] = handle;
-#endif
+	
 	handle->Init.Timing = i2c_getTiming(obj, timing);
 	handle->State = HAL_I2C_STATE_RESET;
 
@@ -369,59 +215,7 @@ i2c_t *get_i2c_obj(I2C_HandleTypeDef * hi2c)
 
 	return (obj);
 }
-#ifndef SP7350
-void I2C0_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C0_INDEX]);
-}
 
-void I2C1_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C1_INDEX]);
-}
-
-void I2C2_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C2_INDEX]);
-}
-
-void I2C3_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C3_INDEX]);
-}
-#if defined(SP645) || defined(SP7350)
-void I2C4_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C4_INDEX]);
-}
-
-void I2C5_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C5_INDEX]);
-}
-#endif
-#ifdef SP7350
-void I2C6_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C6_INDEX]);
-}
-
-void I2C7_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C7_INDEX]);
-}
-
-void I2C8_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C8_INDEX]);
-}
-
-void I2C9_IRQHandler()
-{
-	HAL_I2C_IRQHandler(gpHandle[I2C9_INDEX]);
-}
-#endif
-#endif
 #ifdef __cplusplus
 }
 #endif

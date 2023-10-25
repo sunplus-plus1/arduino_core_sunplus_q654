@@ -4,13 +4,7 @@
 #include <openamp/remoteproc.h>
 #include <openamp/virtio.h>
 #include <openamp/rpmsg.h>
-#if defined(SP7021)
-#include "sp7021_arm926.h"
-#elif defined(SP645)
-#include "sp645_cm4.h"
-#elif defined(SP7350)
 #include "sp7350_cm4.h"
-#endif
 #include "xil_printf.h"
 
 #if defined __cplusplus

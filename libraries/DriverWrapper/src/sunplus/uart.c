@@ -55,25 +55,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 		core_debug("ERROR: uart register set error!\n");
 		return;
 	}
-#ifdef SP7021
-	if(obj->uart != SP_UART0)
-	{
-		uart_tx = GPIO_TO_PINMUX(obj->pin_rx);
-		uart_rx = GPIO_TO_PINMUX(obj->pin_tx);
-
-		if(IS_VALID_PINMUX(uart_tx) == 0)
-		{
-			core_debug("ERROR: [UART] Tx pin error!\n");
-			return;
-		}
-
-		if(IS_VALID_PINMUX(uart_rx) == 0)
-		{
-			core_debug("ERROR: [UART] Rx pin error!\n");
-			return;
-		}
-	}
-#endif
 
 	/* Enable USART clock */
 	if(obj->uart == SP_UART0)
@@ -89,12 +70,8 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	else if(obj->uart == SP_UART1)
 	{
 	/* pinmux set */
-#ifdef SP7021
-		HAL_PINMUX_Cfg(PINMUX_UA1_TX,uart_tx);
-		HAL_PINMUX_Cfg(PINMUX_UA1_RX,uart_rx);
-#else
 		HAL_PINMUX_Cfg(PINMUX_UART1,1);
-#endif
+
 		/*interrupt set */
 		obj->index = UART1_INDEX;
 		obj->irq = UART1_IRQn;
@@ -104,12 +81,8 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	else if(obj->uart == SP_UART2)
 	{
 		/* pinmux set */
-#ifdef SP7021
-		HAL_PINMUX_Cfg(PINMUX_UA2_TX,uart_tx);
-		HAL_PINMUX_Cfg(PINMUX_UA2_RX,uart_rx);
-#else
 		HAL_PINMUX_Cfg(PINMUX_UART2,1);
-#endif
+
 		/*interrupt set */
 		obj->index = UART2_INDEX;
 		obj->irq = UART2_IRQn;
@@ -119,32 +92,14 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	else if(obj->uart == SP_UART3)
 	{
 		/* pinmux set */
-#ifdef SP7021
-		HAL_PINMUX_Cfg(PINMUX_UA3_TX,uart_tx);
-		HAL_PINMUX_Cfg(PINMUX_UA3_RX,uart_rx);
-#else
 		HAL_PINMUX_Cfg(PINMUX_UART3,1);
-#endif
+
 		/*interrupt set */
 		obj->index = UART3_INDEX;
 		obj->irq = UART3_IRQn;
 		IRQ_SetHandler(obj->irq, UART3_IRQHandler);
 		IRQ_Enable(obj->irq);
 	}
-#ifdef SP7021
-	else if(obj->uart == SP_UART4)
-	{
-		/* pinmux set */
-
-		HAL_PINMUX_Cfg(PINMUX_UA4_TX,uart_tx);
-		HAL_PINMUX_Cfg(PINMUX_UA4_RX,uart_rx);
-		/*interrupt set */
-		obj->index = UART4_INDEX;
-		obj->irq = UART4_IRQn;
-		IRQ_SetHandler(obj->irq, UART4_IRQHandler);
-		IRQ_Enable(obj->irq);
-	}
-#else
 	else if(obj->uart == SP_UART6)
 	{
 		/* pinmux set */
@@ -167,7 +122,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 		IRQ_SetHandler(obj->irq, UART7_IRQHandler);
 		IRQ_Enable(obj->irq);
 	}
-#endif
 	else
 	{
 		return;
@@ -222,12 +176,6 @@ void uart_deinit(serial_t *obj)
 		HAL_Module_Clock_enable(UART3, 0);
 		HAL_Module_Clock_gate(UART3, 0);
 		break;
-#ifdef SP7021
-	case UART4_INDEX:
-		HAL_Module_Clock_enable(UART4, 0);
-		HAL_Module_Clock_gate(UART4, 0);
-		break;
-#endif
 	}
 
 	HAL_UART_DeInit(uart_handlers[obj->index]);

@@ -35,14 +35,11 @@ IWatchdogClass::IWatchdogClass(WDG_TypeDef *instance)
 	IWatchdog_Handle[index] = &_watchdogObj;
 	_watchdogObj.handle.Instance = instance;
 
-#ifdef SP7350
 	//_watchdogObj.handle.IrqMode = WDG_RST;
 	_watchdogObj.handle.IrqMode = WDG_INTR_RST;
 
 	_watchdogObj.handle.IrqTicks = 1500;//us
-#else
-	_watchdogObj.handle.IrqMode = 0;
-#endif
+
 	_watchdogObj.__this = (void *)this;
 
 	switch(index)

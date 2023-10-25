@@ -31,11 +31,7 @@ UART1/2/3/6/7 RX connect to its own TX, send/receive by itself
 #include "Arduino.h"
 #include "CUnit.h"
 
-#ifdef SP645
-#include "sp645_hal_conf.h"
-#elif defined(SP7350)
 #include "sp7350_hal_conf.h"
-#endif
 
 static UART_HandleTypeDef huart_test;
 static HAL_StatusTypeDef ret;
@@ -84,21 +80,13 @@ static void _get_Uart_param(int uart_idx)
 		case 6:
 			uart_base = SP_UART6;
 			irq_no = UART6_IRQn;
-#ifdef SP645
-			txdma_base= UART_TXDMA1;
-#elif defined(SP7350)
 			txdma_base= UART_TXDMA6;
-#endif
 			pinmux_idx = PINMUX_UART6;
 			break;
 		case 7:
 			uart_base = SP_UART7;
 			irq_no = UART7_IRQn;
-#ifdef SP645
-			txdma_base= UART_TXDMA2;
-#elif defined(SP7350)
 			txdma_base= UART_TXDMA7;
-#endif
 			pinmux_idx = PINMUX_UART7;
 			break;
 		default:
@@ -136,40 +124,8 @@ static void uart_test_Transmit_DMA(void)
 static void uart_test_Receive_Polling(void);
 static void uart_test_Receive_DMA(void)
 {
-#ifdef SP645
-
-	HAL_UART_DeInit(&huart_test);
-	memset(&huart_test,0,sizeof(UART_HandleTypeDef));
-	huart_test.Instance = uart_base;
-	huart_test.Init.BaudRate = 115200;
-	huart_test.rxdma = UART_RXDMA1;
-	HAL_UART_Init(&huart_test);
-
-	/* set pinmux */
-	HAL_PINMUX_Cfg(pinmux_idx,1);
-
-	/* set interrupt */
-	HAL_NVIC_SetVector(UADMA1_IRQn, (uint32_t)uart_rxdma_callback);
-	HAL_NVIC_EnableIRQ(UADMA1_IRQn);
-
-	ret = HAL_UART_Receive_DMA(&huart_test, (uint8_t*)buf, 6);
-	CU_ASSERT_EQUAL(ret, HAL_OK);
-
-	/* TX send data to RX */
-	ret = HAL_UART_Transmit(&huart_test, (uint8_t*)"abcdefg123abc", 10,0xFFFFFF);
-	CU_ASSERT_EQUAL(ret, HAL_OK);
-
-	/* wait to receive data */
-	delay(500);
-
-	CU_ASSERT_EQUAL(rw_ret, 1);
-	CU_ASSERT_STRING_EQUAL(buf, "abcdef");
-
-#elif defined(SP7350)
     /* SP7350 no rxdma mode, use polling to replace */
 	return uart_test_Receive_Polling();
-#endif
-
 }
 
 static void uart_test_Transmit_IT(void)

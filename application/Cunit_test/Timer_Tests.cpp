@@ -27,12 +27,7 @@
 #include "Arduino.h"
 #include "sunplus_ll.h"
 #include "sunplus_def.h"
-#ifdef SP645
-#include "sp645_hal.h"
-#elif defined(SP7350)
 #include "sp7350_hal.h"
-#endif
-
 
 static void test_case_repeat(void)
 {
@@ -380,69 +375,6 @@ static void hal_tim_case_Stop1(void)
 
 }
 
-#ifndef SP7350
-static void hal_tim_case_SetPrescaler0(void)
-{
-	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
-	timerObj_t obj;
-	memset(&obj, 0, sizeof(timerObj_t));
-	obj.handle.Instance = TIM0;
-	//obj.handle.IrqHandle = CUINIT_TIM_IRQHandler;
-	obj.handle.State = HAL_TIM_STATE_RESET;
-	obj.handle.Init.Prescaler = 0;
-	obj.handle.Init.Counter = 0xFFFF;
-	obj.handle.Init.ReloadCounter = 0xFFFF;
-	obj.handle.Init.ClockSource = CLK_SYS_SRC;
-	obj.handle.Init.AutoReloadPreload = REPEAT_MODE;
-	obj.pfcallback = NULL;
-	eRet = HAL_TIM_Init(&(obj.handle));
-	eRet = HAL_TIM_SetPrescaler(&(obj.handle), 0xFFFF);
-	CU_ASSERT_EQUAL(READ_REG(TIM0->prescale_val), 0xFFFF);
-	HAL_TIM_DeInit(&(obj.handle));
-}
-
-
-static void hal_tim_case_SetPrescaler1(void)
-{
-	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
-	timerObj_t obj;
-	memset(&obj, 0, sizeof(timerObj_t));
-	obj.handle.Instance = TIM0;
-	//obj.handle.IrqHandle = CUINIT_TIM_IRQHandler;
-	obj.handle.State = HAL_TIM_STATE_RESET;
-	obj.handle.Init.Prescaler = 0;
-	obj.handle.Init.Counter = 0xFFFF;
-	obj.handle.Init.ReloadCounter = 0xFFFF;
-	obj.handle.Init.ClockSource = CLK_SYS_SRC;
-	obj.handle.Init.AutoReloadPreload = REPEAT_MODE;
-	obj.pfcallback = NULL;
-	eRet = HAL_TIM_Init(&(obj.handle));
-	eRet = HAL_TIM_SetPrescaler(&(obj.handle), 0xFFFF);
-	CU_ASSERT_NOT_EQUAL(READ_REG(TIM1->prescale_val), 0xFFFF);
-	HAL_TIM_DeInit(&(obj.handle));
-}
-
-static void hal_tim_case_SetPrescaler2(void)
-{
-	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
-	timerObj_t obj;
-	memset(&obj, 0, sizeof(timerObj_t));
-	obj.handle.Instance = TIM0;
-	//obj.handle.IrqHandle = CUINIT_TIM_IRQHandler;
-	obj.handle.State = HAL_TIM_STATE_RESET;
-	obj.handle.Init.Prescaler = 0;
-	obj.handle.Init.Counter = 0xFFFF;
-	obj.handle.Init.ReloadCounter = 0xFFFF;
-	obj.handle.Init.ClockSource = CLK_SYS_SRC;
-	obj.handle.Init.AutoReloadPreload = REPEAT_MODE;
-	obj.pfcallback = NULL;
-	eRet = HAL_TIM_Init(&(obj.handle));
-	obj.handle.Instance = TIM7+2;
-	eRet = HAL_TIM_SetPrescaler(&(obj.handle), 0xFFFF);
-	CU_ASSERT_NOT_EQUAL(eRet, HAL_OK);
-	HAL_TIM_DeInit(&(obj.handle));
-}
-#endif
 static void hal_tim_case_GetCount0(void)
 {
 	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
@@ -543,48 +475,7 @@ static void hal_tim_case_GetCLKSrc2(void)
 	CU_ASSERT_EQUAL(HAL_TIM_GetCLKSrc(&(obj.handle)), CLK_RTC_SRC);
 	HAL_TIM_DeInit(&(obj.handle));
 }
-#ifndef SP7350
-static void hal_tim_case_GetCLKSrc3(void)
-{
-	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
-	timerObj_t obj;
-	memset(&obj, 0, sizeof(timerObj_t));
-	obj.handle.Instance = TIM0;
-	//obj.handle.IrqHandle = CUINIT_TIM_IRQHandler;
-	obj.handle.State = HAL_TIM_STATE_RESET;
-	obj.handle.Init.Prescaler = 0;
-	obj.handle.Init.Counter = 0xFFFF;
-	obj.handle.Init.ReloadCounter = 0xFFFF;
-	obj.handle.Init.ClockSource = CLK_EXT_SRC;
-	obj.handle.Init.AutoReloadPreload = REPEAT_MODE;
-	obj.pfcallback = NULL;
-	eRet = HAL_TIM_Init(&(obj.handle));
-	CU_ASSERT_EQUAL(HAL_TIM_GetCLKSrc(&(obj.handle)), CLK_EXT_SRC);
-	HAL_TIM_DeInit(&(obj.handle));
-}
 
-
-static void hal_tim_case_GetCLKSrc4(void)
-{
-	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
-	timerObj_t obj;
-	memset(&obj, 0, sizeof(timerObj_t));
-	obj.handle.Instance = TIM0;
-	//obj.handle.IrqHandle = CUINIT_TIM_IRQHandler;
-	obj.handle.State = HAL_TIM_STATE_RESET;
-	obj.handle.Init.Prescaler = 0;
-	obj.handle.Init.Counter = 0xFFFF;
-	obj.handle.Init.ReloadCounter = 0xFFFF;
-	obj.handle.Init.ClockSource = CLK_SLAVE_TRIG_SRC;
-	obj.handle.Init.AutoReloadPreload = REPEAT_MODE;
-	obj.pfcallback = NULL;
-	eRet = HAL_TIM_Init(&(obj.handle));
-
-	//printf("%s, %x,%x, %d\n", __FUNCTION__, TIM0->control, READ_BIT(TIM0->control, TIMER_TRIG_SRC), HAL_TIM_GetCLKSrc(&(obj.handle)));
-	CU_ASSERT_EQUAL(HAL_TIM_GetCLKSrc(&(obj.handle)), CLK_SLAVE_TRIG_SRC);
-	HAL_TIM_DeInit(&(obj.handle));
-}
-#endif
 static void hal_tim_case_GetCLKSrc5(void)
 {
 	HAL_StatusTypeDef eRet = HAL_TIMEOUT;
@@ -626,20 +517,11 @@ CU_TestInfo   timer_testcases[] =
     {"Test HAL_TIM_Start TIM2 read TIM6", hal_tim_case_Start3},
     {"Test HAL_TIM_Stop TIM0", hal_tim_case_Stop0},
     {"Test HAL_TIM_Stop the handle is error", hal_tim_case_Stop1},
-#ifndef SP7350
-    {"Test HAL_TIM_SetPrescaler TIM0", hal_tim_case_SetPrescaler0},
-    {"Test HAL_TIM_SetPrescaler TIM0, read TIM1", hal_tim_case_SetPrescaler1},
-    {"Test HAL_TIM_SetPrescalerHandle is TIM7+1", hal_tim_case_SetPrescaler2},
-#endif
     {"Test hal_tim_case_GetCount0 TIM0", hal_tim_case_GetCount0},
     {"Test hal_tim_case_GetCount0 TIM0, error handle TIM7+1", hal_tim_case_GetCount1},
     {"Test hal_tim_case_GetCLKSrc0 TIM0", hal_tim_case_GetCLKSrc0},
     {"Test hal_tim_case_GetCLKSrc1 TIM0", hal_tim_case_GetCLKSrc1},
     {"Test hal_tim_case_GetCLKSrc2 TIM0", hal_tim_case_GetCLKSrc2},
-#ifndef SP7350
-    {"Test hal_tim_case_GetCLKSrc3 TIM0", hal_tim_case_GetCLKSrc3},
-    {"Test hal_tim_case_GetCLKSrc4 TIM0", hal_tim_case_GetCLKSrc4},
-#endif
     {"Test hal_tim_case_GetCLKSrc5 TIM0", hal_tim_case_GetCLKSrc5},
 
     CU_TEST_INFO_NULL

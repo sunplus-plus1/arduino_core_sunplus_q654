@@ -25,22 +25,13 @@
 
 #include "Arduino.h"
 #include "CUnit.h"
-
-#ifdef SP645
-#include "sp645_hal_conf.h"
-#elif defined(SP7350)
 #include "sp7350_hal_conf.h"
-#endif
 
 static HAL_StatusTypeDef ret;
 
 #define GPIO_TEST_PIN    GPIO(15)
 
-#ifdef SP645
-#define GPIO_DELAY			1000
-#elif defined(SP7350)
 #define GPIO_DELAY			3
-#endif
 
 void gpio_out_test()
 {

@@ -4,11 +4,7 @@
 #include <assert.h>
 
 #include "CUnit.h"
-#ifdef SP645
-#include "sp645_hal.h"
-#elif defined(SP7350)
 #include "sp7350_hal.h"
-#endif
 
 /*
  * NOTE to develop SP7350:
@@ -63,11 +59,10 @@ static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance)
 	else if (instance == WDG2) {
 		index = WDG2_INDEX;
 	}
-#ifdef SP7350
 	else if (instance == WDG3) {
 		index = WDG2_INDEX;
 	}
-#endif
+
 	return index;
 }
 
@@ -145,14 +140,10 @@ static void test_case_FeedDog(void)
 	HAL_InitCommonSTC(STC0, 1000000);
 	/* Init */
 	hwdg[index].Instance = TEST_TARGET;
-#ifdef SP7350
 	hwdg[index].IrqMode = WDG_INTR_RST;
 	hwdg[index].IrqHandle = callback;
 	hwdg[index].IrqTicks = 2500000;//pretimeout
-#else
-	hwdg[index].IrqMode = WDG_RST;
-	hwdg[index].IrqHandle = NULL;
-#endif
+
 	HAL_WDG_Init(&hwdg[index]);
 	HAL_WDG_SetTimeout(&hwdg[index], timeout);
 	HAL_WDG_Start(&hwdg[index]);

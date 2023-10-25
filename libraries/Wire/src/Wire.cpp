@@ -12,12 +12,6 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 	_i2c.pin_sda = sda;
 	_i2c.pin_scl = scl;
 
-#if defined(SP7021) && I2C_SEL_INSTANCE > 3
-	return;
-#elif defined(SP645) && I2C_SEL_INSTANCE > 5
-	return;
-#endif
-
 #if I2C_SEL_INSTANCE == 0
 	_i2c.handle.Instance = SP_I2CM0;
 #elif I2C_SEL_INSTANCE == 1
@@ -26,16 +20,10 @@ TwoWire::TwoWire(uint8_t sda, uint8_t scl)
 	_i2c.handle.Instance = SP_I2CM2;
 #elif I2C_SEL_INSTANCE == 3
 	_i2c.handle.Instance = SP_I2CM3;
-#endif
-
-#if defined (SP645) || defined (SP7350)
 #elif I2C_SEL_INSTANCE == 4
 	_i2c.handle.Instance = SP_I2CM4;
 #elif I2C_SEL_INSTANCE == 5
 	_i2c.handle.Instance = SP_I2CM5;
-#endif
-
-#ifdef SP7350
 #elif I2C_SEL_INSTANCE == 6
 	_i2c.handle.Instance = SP_I2CM6;
 #elif I2C_SEL_INSTANCE == 7

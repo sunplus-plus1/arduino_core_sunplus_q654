@@ -5,11 +5,7 @@
 
 #include "CUnit.h"
 #include "Arduino.h"
-#ifdef SP645
-#include "sp645_hal.h"
-#elif defined(SP7350)
 #include "sp7350_hal.h"
-#endif
 
 #define I2C_FREQ	100
 

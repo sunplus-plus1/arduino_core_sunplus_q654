@@ -15,11 +15,7 @@
 #include <metal/irq_controller.h>
 #include <metal/log.h>
 #include <irq_ctrl.h>
-#if defined(SP645)
-#include "sp645_cm4.h"
-#elif defined(SP7350)
 #include "sp7350_cm4.h"
-#endif
 
 #define IRQ_GIC_LINE_COUNT 200
 

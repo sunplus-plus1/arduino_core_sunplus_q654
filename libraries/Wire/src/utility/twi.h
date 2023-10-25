@@ -62,16 +62,13 @@ void I2C0_IRQHandler(void);
 void I2C1_IRQHandler(void);
 void I2C2_IRQHandler(void);
 void I2C3_IRQHandler(void);
-#if defined (SP645) || defined(SP7350)
 void I2C4_IRQHandler(void);
 void I2C5_IRQHandler(void);
-#endif
-#ifdef SP7350
 void I2C6_IRQHandler(void);
 void I2C7_IRQHandler(void);
 void I2C8_IRQHandler(void);
 void I2C9_IRQHandler(void);
-#endif
+
 #ifdef __cplusplus
 }
 #endif

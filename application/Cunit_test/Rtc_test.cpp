@@ -6,11 +6,7 @@
 
 #include "Arduino.h"
 #include "CUnit.h"
-#ifdef SP645
-#include "sp645_hal.h"
-#elif defined(SP7350)
 #include "sp7350_hal.h"
-#endif
 
 #define STAMP(v)                                   \
 	do {                                       \
@@ -118,7 +114,7 @@ static void test_case_Periodic(void)
 
 	free(tm);
 }
-#ifdef SP7350
+
 static void test_case_Rtc2hz(void)
 {
 	HAL_RTC_Init(sec_start, NULL, NULL, irq_handler_rtc2hz);
@@ -126,16 +122,15 @@ static void test_case_Rtc2hz(void)
 	flag_r = 0;
 	HAL_RTC_DeInit();
 }
-#endif
+
 CU_TestInfo rtc_testcases[] =
 {
 	{"test_case_Gettime", test_case_Gettime},
 	{"test_case_Update", test_case_Update},
 	{"test_case_Alarm", test_case_Alarm},
 	{"test_case_Periodic", test_case_Periodic},
-#ifdef SP7350
 	{"test_case_Rtc2hz", test_case_Rtc2hz},
-#endif
+
 	CU_TEST_INFO_NULL
 };
 

@@ -857,13 +857,13 @@ typedef struct {
 /* IPCC Mailbox */
 #define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(258, 0))
 
-/*SP654 module clock enable bit*/
+/*SP7350 module clock enable bit*/
 #define CLK_EN                       ((Module_Clock_En_type*)RF_GRP_AO(2, 1))
 
-/*SP654 module clock enable bit*/
+/*SP7350 module clock enable bit*/
 #define CLK_GATE                     ((Module_Clock_Gate_Type*)RF_GRP_AO(2, 15))
 
-/*SP654 module rest bit*/
+/*SP7350 module rest bit*/
 #define MODULE_REST                  ((Module_Reset_Type*)RF_GRP_AO(0, 1))
 
 

@@ -30,14 +30,13 @@ struct irq_conf{
 	{EXTI7_IRQn, PINMUX_GPIO_INT7, IRQ_TYPE_IRQ, EXTI7_IRQHandler},
 };
 
-#if defined(SP645) || defined(SP7350)
 namespace std {
 	void __throw_bad_function_call()
 	{
 		while(1);
 	};
 }
-#endif
+
 typedef struct {
 	EXTI_HandleTypeDef exti_handles;
 	std::function<void(void)> callback;

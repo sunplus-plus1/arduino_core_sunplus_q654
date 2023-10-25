@@ -5,7 +5,6 @@
 #include "Basic.h"
 #include "Cunit_main.h"
 
-
 static void test_case1(void)
 {
 	CU_ASSERT(1);

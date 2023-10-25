@@ -11,7 +11,7 @@
  */
 
 #include "Arduino.h"
-#ifndef SP7021
+
 #define PCM_ADDRESS_16BIT	((uint32_t *)0x24000000)
 #define PCM_ADDRESS_24BIT	((uint32_t *)0x25000000)
 #define TEST_BUF_SIZE		(4 * 1024)
@@ -358,7 +358,6 @@ void setup()
 		delay(10);
 	}
 #endif
-#ifdef SP7350
 	/* Invalid I2S1 pinmux*/
 	gpio_first_val_set(GPIO(56), 0);
 	gpio_first_val_set(GPIO(57), 0);
@@ -367,7 +366,6 @@ void setup()
 
 	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S1, I2S_DEBUG_0DB);
 	//HAL_I2S_Debug_Tx_Sine(INDEX_I2S2, I2S_DEBUG_0DB);
-#endif
 #if 0
 	i2s_test_debug_signal();
 #endif
@@ -394,14 +392,3 @@ void loop()
 {
 
 }
-#else
-void setup()
-{
-
-}
-
-void loop()
-{
-
-}
-#endif

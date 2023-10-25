@@ -13,13 +13,8 @@
 
 #define USE_HAL_DRIVER
 
-#if defined(SP7021)
-#include "sp70xx.h"
-#elif defined(SP645)
-#include "sp64xx.h"
-#elif defined(SP7350)
+
 #include "sp7350xx.h"
-#endif
 
 #ifndef F_CPU
   #define F_CPU SystemCoreClock

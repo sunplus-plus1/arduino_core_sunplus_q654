@@ -7,10 +7,7 @@
 #include <semphr.h>
 
 #include "Arduino.h"
-
-#ifdef SP7350
 #include "sp7350_hal_conf.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

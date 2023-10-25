@@ -1,14 +1,5 @@
 #include "core_debug.h"
 #include "Arduino.h"
-
-#ifdef SP7021
-#include "sp7021_hal_conf.h"
-#include "sp7021_ll_spi.h"
-#elif defined(SP645)
-#include "sp645_hal_conf.h"
-#include "sp645_ll_spi.h"
-#endif
-
 #include "spi_com.h"
 
 #ifdef __cplusplus
@@ -58,13 +49,10 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
     handle->Instance  = SPI2;
 #elif SPI_SEL_INSTANCE == 3
     handle->Instance  = SPI3;
-#endif 
-#if  (defined(SP645) || defined(SP7350))
-#if SPI_SEL_INSTANCE == 4
+#elif SPI_SEL_INSTANCE == 4
     handle->Instance  = SPI4;
 #elif SPI_SEL_INSTANCE == 5
     handle->Instance  = SPI5;
-#endif 
 #endif 
 
     handle->Init.spiclk             = speed;
@@ -76,48 +64,6 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
       handle->Init.FirstBit         = SPI_FIRSTBIT_MSB;
     }
 
-#ifdef SP7021
-    /* Configure SPI GPIO pins  gpio to pinmux set */
-    spi_mosi = GPIO_TO_PINMUX(obj->pin_mosi);
-    if(!IS_VALID_PINMUX(spi_mosi))
-    {
-      core_debug("ERROR: [SPI] MOSI pin error!\n");
-      return;
-    }
-    spi_miso = GPIO_TO_PINMUX(obj->pin_miso);
-    if(!IS_VALID_PINMUX(spi_miso))
-    {
-      core_debug("ERROR: [SPI] MISO pin error!\n");
-      return;
-    }
-    spi_sclk = GPIO_TO_PINMUX(obj->pin_sclk);
-    if(!IS_VALID_PINMUX(spi_sclk))
-    {
-      core_debug("ERROR: [SPI] clk pin error!\n");
-      return;
-    }
-    if (obj->pin_ssel != -1)
-    {
-        spi_ssel = GPIO_TO_PINMUX(obj->pin_ssel);
-        if(!IS_VALID_PINMUX(spi_ssel))
-        {
-          core_debug("ERROR: [SPI] SSEL pin error!\n");
-          return;
-        }
-    }
-    if (SPI_SEL_INSTANCE >= 0 && SPI_SEL_INSTANCE <= 3)
-    {
-        HAL_Module_Clock_enable(SPI_COMBO0 + SPI_SEL_INSTANCE, 1);
-        HAL_Module_Clock_gate(SPI_COMBO0 + SPI_SEL_INSTANCE, 1);
-        HAL_Module_Reset(SPI_COMBO0 + SPI_SEL_INSTANCE, 0);
-
-        HAL_PINMUX_Cfg(PINMUX_SPIM0_CLK + 5*SPI_SEL_INSTANCE,spi_sclk);
-        HAL_PINMUX_Cfg(PINMUX_SPIM0_DO + 5*SPI_SEL_INSTANCE ,spi_mosi);
-        HAL_PINMUX_Cfg(PINMUX_SPIM0_DI + 5*SPI_SEL_INSTANCE,spi_miso);
-        if (obj->pin_ssel != -1)
-        HAL_PINMUX_Cfg(PINMUX_SPIM0_EN + 5*SPI_SEL_INSTANCE,spi_ssel);
-    }
-#elif  (defined(SP645) || defined(SP7350))
     if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
     {
         HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 1);
@@ -129,9 +75,6 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
         }
         else
         {
-        #ifdef SP645
-            HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + 2*(SPI_SEL_INSTANCE - 1),1);
-		#else
 			if(SPI_SEL_INSTANCE == 1)
 	        {
 	            HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST,1);
@@ -144,10 +87,8 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
 			{
 				HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + SPI_SEL_INSTANCE + 1,1);
 			}
-		#endif
 		}
     }
-#endif
 
     HAL_SPI_Init(handle);
 }
@@ -167,19 +108,12 @@ void spi_deinit(spi_t *obj)
     SPI_HandleTypeDef *handle = &(obj->handle);
 
     HAL_SPI_DeInit(handle);
-#ifdef SP7021
-    if (SPI_SEL_INSTANCE >= 0 && SPI_SEL_INSTANCE <= 3)
-    {
-        HAL_Module_Clock_enable(SPI_COMBO0 + SPI_SEL_INSTANCE, 0);
-        HAL_Module_Clock_gate(SPI_COMBO0 + SPI_SEL_INSTANCE, 0);
-    }
-#elif (defined(SP645) || defined(SP7350))
+
     if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
     {
         HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
         HAL_Module_Clock_gate(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
     }
-#endif
 }
 
 

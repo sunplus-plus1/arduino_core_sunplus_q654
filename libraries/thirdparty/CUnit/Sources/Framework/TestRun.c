@@ -79,11 +79,7 @@
 #include <time.h>
 
 #include<FreeRTOSConfig.h>
-#ifdef SP645
-#include "sp645_hal_conf.h"
-#elif defined(SP7350)
 #include "sp7350_hal_conf.h"
-#endif
 
 #include "CUnit.h"
 #include "MyMem.h"

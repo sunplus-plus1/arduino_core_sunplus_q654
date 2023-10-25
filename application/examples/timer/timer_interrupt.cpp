@@ -41,23 +41,9 @@ uint32_t start = 0;
 void tim0_callback(void)
 {
 #ifdef WDG_TEST
-#ifdef SP7350
-	start = HAL_GetTick();
-	timer_cnt = *(uint32_t *)(0xf8800ba8);
-	wdg_cnt = *(uint32_t *)(0xf8800ba0);
-	wdg_intr_cnt = *(uint32_t *)(0xf8800bf0);
-	STAMP(0x33);
-	STAMP(start);
-	STAMP(timer_cnt);
-	STAMP(wdg_cnt);
-	STAMP(wdg_intr_cnt);
-	//STAMP(0xabcddcba);
-#else
 	wdg1->get(&wdg_cnt, WDG_TICK_FMT);
 	printf("%d\n", wdg_cnt);
 	wdg1->reload();
-#endif
-
 #else
 	printf("@@@@@@@timer1 callback @@@@@@@, tick= %lu\n", HAL_GetTick());
 	start = HAL_GetTick();
@@ -66,22 +52,9 @@ void tim0_callback(void)
 }
 
 #ifdef WDG_TEST
-
 void wdg1_callback(void)
 {
-#ifdef SP7350
-	start = HAL_GetTick();
-	timer_cnt = *(uint32_t *)(0xf8800ba8);
-	wdg_cnt = *(uint32_t *)(0xf8800ba0);
-	wdg_intr_cnt = *(uint32_t *)(0xf8800bf0);
-	STAMP(0x22);
-	STAMP(start);
-	STAMP(timer_cnt);
-	STAMP(wdg_cnt);
-	STAMP(wdg_intr_cnt);
-#else
 	printf("h\n");
-#endif
 	//printf("@@@@@@@watchdog callback @@@@@@@, tick= %lu\n", HAL_GetTick());
 }
 #endif
@@ -126,17 +99,10 @@ void setup()
 	//HAL_InitCommonSTC(STC1, 100000);//STC1 set 100kHz
 
 	timer0 = new HardwareTimer(TIM0);
-#ifdef SP7350
 	timer0->setClockSource(CLK_STC_SRC);
 	timer0->setCount(1000, TICK_FORMAT); // 500us when sysclk = 1MHz
 	timer0->setOverflow(1000, TICK_FORMAT);
-#else
-	timer0->setClockSource(CLK_SYS_SRC);
-	u32Freq = HAL_PLL_GetSystemFreq();
-	timer0->setPrescaleFactor(u32Freq / 10000);// 10kHz
-	timer0->setCount(15000, TICK_FORMAT); // 15000 / 10000 = 1.5s
-	timer0->setOverflow(15000, TICK_FORMAT);
-#endif
+
 	/* DEBUG */
 	printf("Timer SRC Select = %d(0:sys 1:stc)\n", timer0->getClockSource());
 	printf("Timer Frequence = %d Hz\n", timer0->getTimerClkFreq());
@@ -150,29 +116,10 @@ void setup()
 	timer0->resume();
 #endif
 #ifdef WDG_TEST
-	/* The clock freq on the ZEBU is 1/2000 of the clk on the real chip */
-#ifdef SP7350
-	//STC set 1MHz
-	//STAMP(0xabcd1234);
-	wdg1 = new IWatchdogClass(WDG0);
-	wdg1->attachInterrupt(wdg1_callback);
-	wdg1->begin(2000, WDG_TICK_FMT); // param 0 is unused
-	timer0->resume();
-	start = HAL_GetTick();
-	timer_cnt = *(uint32_t *)(0xf8800ba8);
-	wdg_cnt = *(uint32_t *)(0xf8800ba0);
-	wdg_intr_cnt = *(uint32_t *)(0xf8800bf0);
-	STAMP(0x11);
-	STAMP(start);
-	STAMP(timer_cnt);
-	STAMP(wdg_cnt);
-	STAMP(wdg_intr_cnt);
-#else
 	wdg1 = new IWatchdogClass(WDG1);
 	wdg1->attachInterrupt(wdg1_callback);
-	timer0->resume();
 	wdg1->begin(200000, WDG_TICK_FMT); // param 0 is unused
-#endif
+	timer0->resume();
 #endif
 }
 

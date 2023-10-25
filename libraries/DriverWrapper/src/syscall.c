@@ -32,11 +32,7 @@ extern int errno;
 #define UART_RTS_B          (1 << 1)
 
 // UART
-#ifdef SP7350
 #define UART_REG            SP_UART6
-#else
-#define UART_REG            SP_UART1
-#endif
 
 #define UART_tx_rdy()       (UART_REG->lsr & UART_LSR_TX_RDY)
 #define UART_rx_rdy()       (UART_REG->lsr & UART_LSR_RX_RDY)
@@ -58,42 +54,6 @@ do { \
 } while (0)
 
 
-#ifdef SP7021
-/*This funciton for new libc atomic operation for arm926(ARMv5) */
-void __sync_synchronize(void)
-{
-
-}
-
-int __atomic_compare_exchange_1(char *obj, char *expected, char desired)
-{
-        int ret = (*obj == *expected);
-        if (ret)
-                *obj = desired;
-        else
-                *expected = *obj;
-        return ret;
-}
-int __atomic_compare_exchange_4(int *obj, int *expected, int desired)
-{
-    int ret = (*obj == *expected);
-    if (ret)
-            *obj = desired;
-    else
-            *expected = *obj;
-    return ret;
-}
-
- __attribute__((weak)) caddr_t  _sbrk(int incr)
-{
-	extern char __bss_end__;
-	static char *__brkval = &__bss_end__;
-    char *ret = __brkval;
-
-     __brkval += incr;
-    return (caddr_t)ret;
-}
-#else
 extern unsigned long _heap_bottom;
 extern unsigned long _heap_top;
 
@@ -119,7 +79,6 @@ void* _sbrk(int incr)
 
 	 return prev_heap_end;
  }
-#endif
 
  __attribute__((weak))
  int _close(UNUSED(int file))

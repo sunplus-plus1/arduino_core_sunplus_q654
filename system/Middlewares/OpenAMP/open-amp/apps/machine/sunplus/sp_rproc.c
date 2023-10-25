@@ -21,11 +21,6 @@
 #include <metal/device.h>
 #include <metal/irq.h>
 #include "platform_info.h"
-#if defined(SP7021)
-#include "core_armv5.h"
-#elif defined(SP645)
-#include "core_cm4.h"
-#endif
 
 static int sp_proc_irq_handler(int vect_id, void *data)
 {
@@ -33,17 +28,7 @@ static int sp_proc_irq_handler(int vect_id, void *data)
 	struct remoteproc_priv *prproc;
 
 	if (MBOX_NOTIFICATION == 0xDEADC0DE) { /* clear intr for Q645/SP7350 */
-#if defined(SP7021)
-		MBOX_NOTIFICATION = 0;
-		printf("!!!!!! a926 reset !!!!!!\n");
-		MMU_Disable();
-		IRQ_Clear(vect_id);
-		__asm volatile (
-			"LDR	R0, =0xffff00c0	\n\t"
-			"STMFD	SP!, {R0}	\n\t"	/* Push R0. */
-			"LDMFD	SP!, {PC}^	"	/* Pop PC.  */
-		);
-#endif
+
 	}
 
 	(void)vect_id;
