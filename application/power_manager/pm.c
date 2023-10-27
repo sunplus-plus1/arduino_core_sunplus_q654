@@ -5,7 +5,6 @@
 
 SemaphoreHandle_t xPowerDown_Semaphore;
 
-
 #ifdef PM_ZEBU_TEST
 #define UART_LSR_TX_RDY2     (1 << 0)
 #define UART_REG2            SP_UART1
@@ -28,7 +27,14 @@ void vCA55_TO_CM4_Mailbox_ISR()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
 	int value = MBOX_DEEP_SLEEP;
-	value = value ;
+
+	if(value == CA55_2_CM4_POWEROFF_CMD)
+	{
+		printf("poweroff main/AO power\n");
+		RTC_REGS->rtc_ao_power_off_req =1; // request power off ao maindomain
+		return;
+	}
+
 	suspend_state = SUSPEND_START;
 	if( (xSemaphoreGiveFromISR( xPowerDown_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE))
 	{

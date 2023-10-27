@@ -68,6 +68,9 @@ extern volatile Suspend_Type	suspend_state;
 void wakeup_key_init(void);
 
 /* power manager */
+#define CA55_2_CM4_SUSPEND_CMD    0x1234abcd
+#define CA55_2_CM4_POWEROFF_CMD   0x12348765
+
 extern SemaphoreHandle_t xPowerDown_Semaphore;
 void pm_set_power_down_bit(void);
 void pm_set_retention_done_bit(void);

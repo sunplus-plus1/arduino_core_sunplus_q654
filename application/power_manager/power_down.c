@@ -23,7 +23,7 @@ void Main_Domain_PowerDown_ACK_Handler(void)
 	if(deep_sleep)
 	{
 		deep_sleep = 0;
-		*(volatile unsigned int *)0xF88011D4 = 0x1;//G35.21=0x1;
+		RTC_REGS->rtc_ao_power_off_req =1; // request power off ao maindomain
 	}
 	suspend_state = SUSPEND_IN;
 }
