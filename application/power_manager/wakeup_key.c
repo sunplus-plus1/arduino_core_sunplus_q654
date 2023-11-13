@@ -121,5 +121,5 @@ void vWakeyupKeyTask( void *pvParameters )
 void wakeup_key_init(void)
 {
 	pinMode(WAKEUP_KEY_PIN, INPUT);
-	xTaskCreate( vWakeyupKeyTask, "wakeupkey", configMINIMAL_STACK_SIZE, NULL, 1, NULL );
+	xTaskCreate( vWakeyupKeyTask, "wakeupkey", 200, NULL, 1, NULL );
 }

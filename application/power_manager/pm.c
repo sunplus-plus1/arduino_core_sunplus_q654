@@ -1,7 +1,7 @@
 #include "pm_common.h"
 #include "pmic.h"
 
-#define PM_TASK_STACK_SIZE				(configMINIMAL_STACK_SIZE)
+#define PM_TASK_STACK_SIZE				(200)
 
 SemaphoreHandle_t xPowerDown_Semaphore;
 
