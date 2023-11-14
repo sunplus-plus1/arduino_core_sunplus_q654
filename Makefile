@@ -94,7 +94,9 @@ ifeq ($(USER_APPLICATION),1)
 ifeq ($(FREERTOS),1)
 CCFLAGS += -DFREERTOS
 DIRS += $(TOP)/application/power_manager
+DIRS += $(TOP)/application/VirtIOSerial
 CCFLAGS += -I$(TOP)/application/power_manager
+CCFLAGS += -I$(TOP)/application/VirtIOSerial
 endif
 DIRS += $(TOP)/application
 else

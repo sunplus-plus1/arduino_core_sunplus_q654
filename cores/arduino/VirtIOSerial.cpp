@@ -4,7 +4,7 @@
 #include "VirtIOSerial.h"
 #include "virt_uart.h"
 
-VirtIOSerial SerialVirtIO;
+VirtIOSerial SerialVirtIO, uart1, uart2;
 
 void VirtIOSerial::begin(void)
 {

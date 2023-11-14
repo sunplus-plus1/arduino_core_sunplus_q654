@@ -33,7 +33,7 @@ class VirtIOSerial : public Stream {
     }
 };
 
-extern VirtIOSerial SerialVirtIO;
+extern VirtIOSerial SerialVirtIO, uart1, uart2;
 
 
 #endif

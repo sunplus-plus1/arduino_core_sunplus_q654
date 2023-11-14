@@ -211,12 +211,11 @@ void vDoPowerdownTask( void *pvParameters )
 {
 	/* Remove compiler warning about unused parameter. */
 	( void ) pvParameters;
-
 	for( ;; )
 	{
 		if( xPowerDown_Semaphore != NULL )
 		{
-			printf(" power down wait Semaphore !\n"); 
+			printf(" power down wait Semaphore !\n");
 			if(xSemaphoreTake( xPowerDown_Semaphore, portMAX_DELAY) == pdTRUE)
 			{
 				printf(" power down start !\n"); 

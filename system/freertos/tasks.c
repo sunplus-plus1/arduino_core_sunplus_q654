@@ -808,6 +808,8 @@ static void prvAddNewTaskToReadyList( TCB_t * pxNewTCB ) PRIVILEGED_FUNCTION;
             xReturn = errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY;
         }
 
+        printf("CreateTask-%s-result:%d \n",pcName,xReturn);
+
         return xReturn;
     }
 

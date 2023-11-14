@@ -7,6 +7,8 @@
 #include <string.h>
 
 #include "pm.h"
+#include "vios.h"
+
 #define PVT_TEST
 
 #ifdef PVT_TEST
@@ -23,8 +25,7 @@ void isr_127(void)
 int freertos_main (void)
 {
 	printf("\nFreeRTOS (build @pm_main "__TIME__")\n\n");
-	SerialVirtIO.begin(); //open the virtIO
-
+    vios_setup();
 	pm_main();
 	/* Start the tasks and timer running. */
 
