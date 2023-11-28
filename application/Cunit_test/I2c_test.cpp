@@ -19,7 +19,7 @@
 
 //#define I2C_ALL_TEST
 #ifndef I2C_ALL_TEST
-#define I2C_SINGLE_TEST		SP_I2CM7
+#define I2C_SINGLE_TEST		SP_I2CM0
 #endif
 
 
@@ -158,7 +158,25 @@ void test_case_i2c_rx_dma(void)
 	free(test_handle);
 }
 
-void test_case_i2c_SHT3x(void)
+#define TEST_TRANSFER_INTERFACE
+#define SLAVE_ADDRESS_SHT3x	0x44
+
+void SHT3x_cal_temperature_humidity(uint8_t *buf)
+{
+	int temp = (buf[0] << 8) | buf[1];
+	temp = temp * 17500 / 65536;
+	int temp_L = temp % 100;
+	int temp_H = temp / 100 - 45;
+
+	int RH = (buf[3] << 8) | buf[4];
+	RH = RH * 10000 / 65536;
+	int RH_L = RH % 100;
+	int RH_H = RH / 100;
+
+	printf("\n temp=%d.%d   %d.%d    \n", temp_H, temp_L, RH_H, RH_L);
+}
+
+void test_case_i2c_SHT3x_single_shot(void)
 {
 	uint8_t *tx_buf, *rx_buf;
 
@@ -177,30 +195,122 @@ void test_case_i2c_SHT3x(void)
 
 	HAL_I2C_Init(test_handle);
 
+#ifdef TEST_TRANSFER_INTERFACE
+	struct i2c_msg msg[] = {
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_WRITE | I2C_M_STOP,
+			.len  = 2,
+			.buf  = tx_buf,
+		},
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_READ,
+			.len  = 6,
+			.buf  = rx_buf,
+		},
+	};
+#endif
 	//for(int i = 0; i < 5; i++) {
 	while(1) {
 		test_handle->State = HAL_I2C_STATE_READY;
+#ifdef TEST_TRANSFER_INTERFACE
+		ret = HAL_I2C_Master_Transfer(test_handle, msg, 2);
+		CU_ASSERT_EQUAL(ret, HAL_OK);
+#else
 		ret = HAL_I2C_Master_Transmit(test_handle, TEST_SLAVE_ADDRESS, tx_buf, 2, 0);
 		CU_ASSERT_EQUAL(ret, HAL_OK);
 		ret = HAL_I2C_Master_Receive(test_handle, TEST_SLAVE_ADDRESS, rx_buf, 6, 0);
 		CU_ASSERT_EQUAL(ret, HAL_OK);
+#endif
+		SHT3x_cal_temperature_humidity(rx_buf);
 
-		int temp = (rx_buf[0] << 8) | rx_buf[1];
-		temp = temp * 17500 / 65536;
-		int temp_L = temp % 100;
-		int temp_H = temp / 100 - 45;
-
-		int RH = (rx_buf[3] << 8) | rx_buf[4];
-		RH = RH * 10000 / 65536;
-		int RH_L = RH % 100;
-		int RH_H = RH / 100;
-
-		printf("\n temp=%d.%d   %d.%d    \n", temp_H, temp_L, RH_H, RH_L);
 		delay(2000);
 	}
 	HAL_I2C_DeInit(test_handle);
 
-	free(buf);
+	free(tx_buf);
+	free(rx_buf);
+	free(test_handle);
+}
+
+void test_case_i2c_SHT3x_periodic(void)
+{
+	uint8_t *tx_buf, *rx_buf;
+
+	I2C_HandleTypeDef *test_handle = (I2C_HandleTypeDef *)malloc(sizeof(I2C_HandleTypeDef));
+
+	tx_buf = (uint8_t *)malloc(8);
+	memset(tx_buf, 0, 8);
+	rx_buf = (uint8_t *)malloc(8);
+	memset(rx_buf, 0, 8);
+
+	tx_buf[0] = 0x21;
+	tx_buf[1] = 0x30;
+	tx_buf[2] = 0xe0;
+	tx_buf[3] = 0x00;
+	/* soft reset */
+	tx_buf[4] = 0x30;
+	tx_buf[5] = 0xa2;
+
+	test_handle->Instance = I2C_SINGLE_TEST;
+	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
+	test_handle->Mode = I2C_MODE_BURST;
+
+	HAL_I2C_Init(test_handle);
+
+	struct i2c_msg msg_set_periodic[] = {
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_WRITE,
+			.len  = 2,
+			.buf  = tx_buf,
+		},
+	};
+	struct i2c_msg msg_get_periodic[] = {
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_WRITE | I2C_M_RESTART,
+			.len  = 2,
+			.buf  = tx_buf + 2,
+		},
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_READ,
+			.len  = 6,
+			.buf  = rx_buf,
+		},
+	};
+
+	struct i2c_msg msg_reset[] = {
+		{
+			.addr = SLAVE_ADDRESS_SHT3x,
+			.flag = I2C_M_WRITE,
+			.len  = 2,
+			.buf  = tx_buf+4,
+		},
+	};
+
+	HAL_I2C_Master_Transfer(test_handle, msg_set_periodic, 1);
+
+	while(1) {
+		test_handle->State = HAL_I2C_STATE_READY;
+
+		ret = HAL_I2C_Master_Transfer(test_handle, msg_get_periodic, 2);
+		//CU_ASSERT_EQUAL(ret, HAL_OK);
+		if (test_handle->ErrorCode == HAL_I2C_ERR_ADDRESS_NACK) {
+			HAL_I2C_Master_Transfer(test_handle, msg_reset, 1);
+			test_handle->ErrorCode = HAL_I2C_ERR_NONE;
+		}
+
+		SHT3x_cal_temperature_humidity(rx_buf);
+
+		delay(2000);
+	}
+	HAL_I2C_DeInit(test_handle);
+
+	free(tx_buf);
+	free(rx_buf);
 	free(test_handle);
 }
 /****************************************** TEST CASE *************************************/
@@ -273,7 +383,8 @@ CU_TestInfo i2c_testcases[] =
 #endif
 CU_TestInfo i2c_testcases[] =
 {
-	{"test_case_i2c_SHT3x: ",	test_case_i2c_SHT3x},
+	{"test_case_i2c_SHT3x_single_shot: ",	test_case_i2c_SHT3x_single_shot},
+	//{"test_case_i2c_SHT3x_periodic ",	test_case_i2c_SHT3x_periodic},
 	//{"test_case_i2c_pmic: ",	test_case_i2c_pmic},
 	CU_TEST_INFO_NULL
 };
@@ -294,8 +405,41 @@ static CU_SuiteInfo suites[] =
 	CU_SUITE_INFO_NULL
 };
 
+#define TEST_SCL 91
+#define TEST_SDA 90
+
 int Add_I2C_Tests(void)
 {
+	printf(" build @ " __DATE__ " " __TIME__ "\n");
+
+#if 0	/* Test I2CX pinmux SDA SCL */
+	printf("[DEBUG] Set pinmux.\n"); //xt temp add
+	GPIO_InitTypeDef gpio_i2c0data;
+	memset(&gpio_i2c0data, 0, sizeof(gpio_i2c0data));
+	gpio_i2c0data.Mode = GPIO_PP_OUTPUT_MODE;
+	gpio_i2c0data.Pin = GPIO(TEST_SCL);
+	gpio_i2c0data.out_value = GPIO_OUT_LOW;
+	HAL_GPIO_Init(&gpio_i2c0data);
+
+	GPIO_InitTypeDef gpio_i2c0clk;
+	memset(&gpio_i2c0clk, 0, sizeof(gpio_i2c0clk));
+	gpio_i2c0clk.Mode = GPIO_PP_OUTPUT_MODE;
+	gpio_i2c0clk.Pin = GPIO(TEST_SDA);
+	gpio_i2c0clk.out_value = GPIO_OUT_LOW;
+	HAL_GPIO_Init(&gpio_i2c0clk);
+
+	printf("[DEBUG] Output the level.\n"); //xt temp add
+	while (1) {
+		HAL_GPIO_WritePin(GPIO(TEST_SCL), GPIO_OUT_HIGH);
+		delay(1);
+		HAL_GPIO_WritePin(GPIO(TEST_SCL), GPIO_OUT_LOW);
+		delay(1);
+		HAL_GPIO_WritePin(GPIO(TEST_SDA), GPIO_OUT_HIGH);
+		delay(2);
+		HAL_GPIO_WritePin(GPIO(TEST_SDA), GPIO_OUT_LOW);
+		delay(2);
+	}
+#endif
 	assert(NULL != CU_get_registry());
 	assert(!CU_is_test_running());
 	if(CUE_SUCCESS != CU_register_suites(suites))  //注册测试suite

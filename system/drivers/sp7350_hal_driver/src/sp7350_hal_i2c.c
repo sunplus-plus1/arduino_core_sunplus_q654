@@ -2,7 +2,7 @@
 #include "sp7350_hal_dma.h"
 #include <stdlib.h>
 
-#define HAL_I2C_DEBUG
+//#define HAL_I2C_DEBUG
 #ifdef HAL_I2C_DEBUG
 #define debug_print(format, ...) printf("[%s:%d] "format"", __FUNCTION__, __LINE__, ##__VA_ARGS__);
 #else
@@ -72,17 +72,22 @@ static void i2c_pinmux_config(PINMUX_Type pinmux)
 	HAL_PINMUX_Cfg(pinmux, 1);
 }
 
-static uint8_t i2c_speed_config(uint32_t speed)
+static uint8_t i2c_speed_config(I2C_HandleTypeDef *hi2c, uint32_t speed)
 {
 	uint8_t temp_reg;
 
-	if(speed < I2C_MAX_STANDARD_MODE_FREQ)
+	MOON3_REG->sft_cfg[27] = (3 << 22) | (0 << 6);
+	if(speed < I2C_MAX_STANDARD_MODE_FREQ) {
 		temp_reg = SP_IC_CON_SPEED_STD;
-	else if(speed < I2C_MAX_FAST_MODE_FREQ)
+		hi2c->Instance->ic_ss_scl_hcnt = 397;
+		hi2c->Instance->ic_ss_scl_lcnt = 496;
+	} else if(speed < I2C_MAX_FAST_MODE_FREQ) {
 		temp_reg = SP_IC_CON_SPEED_FAST;
-	else if(speed < I2C_MAX_FAST_MODE_PLUS_FREQ)
+		hi2c->Instance->ic_fs_scl_hcnt = 57;
+		hi2c->Instance->ic_fs_scl_lcnt = 129;
+	} else if(speed < I2C_MAX_FAST_MODE_PLUS_FREQ) {
 		temp_reg = SP_IC_CON_SPEED_HIGH;
-
+	}
 	return temp_reg;
 }
 
@@ -117,7 +122,7 @@ void i2c_irq_handler(void)
 
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
 {
-
+	//printf("%s\n",__TIME__);
 	if(hi2c == NULL) {
 		return HAL_ERROR;
 	}
@@ -130,13 +135,16 @@ HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c)
 	/* Pinmux config  */
 	i2c_pinmux_config(sp_i2c_info[hi2c->Index].pinmux);
 	/* Speed config */
-	hi2c->Speed = i2c_speed_config(hi2c->Init.Timing);
+	hi2c->Speed = i2c_speed_config(hi2c, hi2c->Init.Timing);
 	/* Set irq trigger mode and irq callback */
 	if(hi2c->Mode == I2C_MODE_INTR) {
 		//i2c_irq_config(sp_i2c_info[hi2c->Index].irq_num, sp_i2c_info[hi2c->Index].irq_callback);
 		i2c_irq_config(sp_i2c_info[hi2c->Index].irq_num);
 		gpHandle[hi2c->Index] = hi2c;
 	}
+
+	//xtdebug
+	//i2c_sp_dump_reg(hi2c);
 
 	hi2c->ErrorCode = HAL_I2C_ERR_NONE;
 
@@ -157,6 +165,67 @@ HAL_StatusTypeDef HAL_I2C_DeInit(I2C_HandleTypeDef *hi2c)
 
 	return HAL_OK;
 }
+
+HAL_StatusTypeDef HAL_I2C_Master_Transfer(I2C_HandleTypeDef *hi2c, struct i2c_msg *msgs, int num)
+{
+	uint32_t stat;
+	//printf("%s\n", __TIME__);
+	if (hi2c->State != HAL_I2C_STATE_READY)
+		return HAL_BUSY;
+
+	__HAL_LOCK(hi2c);
+
+	i2c_sp_xfer_prepare(hi2c, msgs[0].addr , NULL, 0);
+	//i2c_sp_dump_reg(hi2c);
+
+	for(int i = 0; i < num; i++) {
+		if (msgs[i].flag & I2C_M_RESTART)
+			hi2c->NeedRestart = 1;
+
+		if (msgs[i].flag & I2C_M_STOP)
+			hi2c->NeedStop = 1;
+
+		if (msgs[i].flag & I2C_M_READ) {
+			hi2c->State = HAL_I2C_STATE_BUSY_RX;
+			hi2c->ReadLen = msgs[i].len;
+		} else {
+			hi2c->State = HAL_I2C_STATE_BUSY_TX;
+			hi2c->ReadLen = 0;
+		}
+
+		hi2c->DataTotalLen = msgs[i].len;
+		hi2c->Buffer = msgs[i].buf;
+
+		debug_print("i %d State 0x%x DataTotalLen %d ReadLen %d \n", i, hi2c->State, hi2c->DataTotalLen, hi2c->ReadLen);
+		while(hi2c->DataTotalLen || hi2c->ReadLen) {
+
+			i2c_sp_xfer(hi2c);
+
+			stat = hi2c->Instance->ic_status;
+			if (stat & SP_IC_STATUS_RFNE) {
+				debug_print("r ne\n");
+				i2c_sp_read(hi2c);
+			}
+
+			stat = i2c_sp_read_clear_intrbits(hi2c);
+			if (stat & SP_IC_INTR_TX_ABRT) {
+				i2c_sp_handle_tx_abort(hi2c);
+				hi2c->XferAction = 0;
+				hi2c->State = HAL_I2C_STATE_ABORT;
+				break;
+			}
+		}
+
+	}
+	i2c_sp_wait_bus_not_busy(hi2c, 2560);
+	hi2c->Instance->ic_intr_mask = 0;
+	stat = hi2c->Instance->ic_clr_intr;
+	hi2c->Instance->ic_enable = 0;
+
+	__HAL_UNLOCK(hi2c);
+	return HAL_OK;
+}
+
 
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
                                           uint32_t Timeout)
@@ -548,6 +617,18 @@ static void i2c_sp_xfer_prepare(I2C_HandleTypeDef *hi2c, uint16_t addr, uint8_t 
 	hi2c->RxOutStanding = 0;
 	hi2c->XferAction = 1;
 	hi2c->XferWaitTxEnd = 0;
+	hi2c->NeedRestart = 0;
+	hi2c->NeedStop = 0;
+
+	//xtdebug
+#if 0
+	printf("ic_con 0x%x\n", hi2c->Instance->ic_con);
+	printf("ic_tar 0x%x\n", hi2c->Instance->ic_tar);
+	printf("ic_intr_mask 0x%x\n", hi2c->Instance->ic_intr_mask);
+	printf("ic_tx_tl 0x%x\n", hi2c->Instance->ic_tx_tl);
+	printf("ic_rx_tl 0x%x\n", hi2c->Instance->ic_rx_tl);
+	printf("ic_enable 0x%x\n", hi2c->Instance->ic_enable);
+#endif
 /******** TODO: put the master initialization code in HAL_init()*********/
 	uint32_t timeout = 100;
 	do {
@@ -629,6 +710,15 @@ static void i2c_sp_xfer_prepare(I2C_HandleTypeDef *hi2c, uint16_t addr, uint8_t 
 
 	/* ???why clear intr here */
 	//i2c_sp_read_clear_intrbits(hi2c);
+#if 0
+	//xtdebug
+	printf("ic_con 0x%x\n", hi2c->Instance->ic_con);
+	printf("ic_tar 0x%x\n", hi2c->Instance->ic_tar);
+	printf("ic_intr_mask 0x%x\n", hi2c->Instance->ic_intr_mask);
+	printf("ic_tx_tl 0x%x\n", hi2c->Instance->ic_tx_tl);
+	printf("ic_rx_tl 0x%x\n", hi2c->Instance->ic_rx_tl);
+	printf("ic_enable 0x%x\n", hi2c->Instance->ic_enable);
+#endif
 }
 
 static void i2c_sp_read(I2C_HandleTypeDef *hi2c)
@@ -658,23 +748,38 @@ static void i2c_sp_xfer(I2C_HandleTypeDef *hi2c)
 {
 	uint32_t tx_free, rx_free;
 	uint32_t intr_mask;
-	uint32_t temp;
+	uint32_t temp = 0;
 
 	intr_mask = SP_IC_INTR_MASTER_MASK;
 
 	tx_free = I2C_FIFO_DEPTH - hi2c->Instance->ic_txflr;
 	rx_free = I2C_FIFO_DEPTH - hi2c->Instance->ic_rxflr;
-	//debug_print("tx_free %d, rx_free %d\n", tx_free, rx_free);
+	debug_print("tx_free %d, rx_free %d\n", tx_free, rx_free);
 	while(hi2c->DataTotalLen > 0 && tx_free > 0 && rx_free > 0) {
-		if(hi2c->State == HAL_I2C_STATE_BUSY_TX) {
-			temp = *hi2c->Buffer++;
-			//debug_print("data 0x%x\n", temp);
+		debug_print("11\n");
+		temp = 0;
+		if (hi2c->NeedRestart) {
+			temp |= BIT(10);
+			hi2c->NeedRestart = 0;
+		}
+
+		if (hi2c->NeedStop && hi2c->DataTotalLen == 1) {
+			temp |= BIT(9);
+			hi2c->NeedStop = 0;
+		}
+
+		if (hi2c->State == HAL_I2C_STATE_BUSY_TX) {
+			debug_print("22\n");
+			temp |= *hi2c->Buffer++;
+			debug_print("data 0x%x\n", temp);
 			hi2c->Instance->ic_data_cmd = temp;
 			tx_free--;
-		} else {
+		} else if (hi2c->State == HAL_I2C_STATE_BUSY_RX){
+			debug_print("33\n");
 			if(hi2c->RxOutStanding >= rx_free)
 				break;
-			hi2c->Instance->ic_data_cmd = I2C_READ_DATA;
+			temp |= I2C_READ_DATA;
+			hi2c->Instance->ic_data_cmd = temp;
 			hi2c->RxOutStanding++;
 			rx_free--;
 		}
@@ -714,14 +819,21 @@ void i2c_sp_dump_reg(I2C_HandleTypeDef *hi2c)
 void i2c_sp_handle_tx_abort(I2C_HandleTypeDef *hi2c)
 {
 	unsigned int abort_source = hi2c->AbortSource;
-	int i;
+	int i, temp_code;
 
 	if (abort_source & SP_IC_TX_ABRT_NOACK) {
-		for(i = 0; i <= 4; i++)
-			printf("NACK fail \n");
+		for (i = 0; i <= 4; i++) {
+			if (abort_source & ( 1 << i )) {
+				printf("NACK fail %d\n", i);
+				temp_code = i;
+			}
+
+		}
 		return;
 	}
 
 	for(i = 5; i <= 13; i++)
 		printf("NACK fail 02\n");
+	if (temp_code == 1)
+		hi2c->ErrorCode = HAL_I2C_ERR_ADDRESS_NACK;
 }

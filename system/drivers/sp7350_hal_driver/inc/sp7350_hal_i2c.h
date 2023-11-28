@@ -113,6 +113,21 @@ typedef enum {
 	I2C_NUM
 } i2c_index_e;
 
+typedef enum
+{
+	I2C_M_WRITE	= 0x0UL,
+	I2C_M_READ	= 0x1UL,
+	I2C_M_RESTART	= 0x2UL,
+	I2C_M_STOP	= 0x4UL,
+} HAL_I2C_Direction;
+
+struct i2c_msg {
+	uint16_t addr;
+	uint32_t flag;
+	uint32_t len;
+	uint8_t *buf;
+};
+
 struct i2c_hal_info {
 	volatile I2C_TypeDef *instance;
 	i2c_index_e index;
@@ -180,10 +195,13 @@ typedef struct __I2C_HandleTypeDef
 	uint32_t                   DMAIndex;
 	uint8_t                    Mode;
 	uint8_t                    Speed;
+	uint8_t                    NeedRestart;
+	uint8_t                    NeedStop;
 } I2C_HandleTypeDef;
 
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef HAL_I2C_DeInit(I2C_HandleTypeDef *hi2c);
+HAL_StatusTypeDef HAL_I2C_Master_Transfer(I2C_HandleTypeDef *hi2c, struct i2c_msg *msgs, int num);
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
 					  uint8_t *pData, uint32_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
