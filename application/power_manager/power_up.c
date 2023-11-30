@@ -39,6 +39,7 @@ void _power_up_CA55_domain(void)
 
 	PMC_REGS->pmc_lvs_pwd = 0x00AA55FF ;  /// LVS password
 	PMC_REGS->pmc_lvs_disable = 0x0 ;     /// LVS disable
+
 	MOON0_REG->sft_cfg[1] = RF_MASK_V_CLR(0x7E);//0x007E0000 ;  ///de-assert CA55 reset
 }
 
@@ -64,7 +65,8 @@ void _power_up_npu_vcl_domain()
 	}
 }
 
-void Main_Domain_PowerUP(void)
+#ifdef POWER_MAINDOMAIN_ALIVE
+void system_PowerUP(void)
 {
 	_power_up_main_domain();
 
@@ -77,13 +79,24 @@ void Main_Domain_PowerUP(void)
 	pm_set_retention_done_bit();
 	suspend_state = SUSPEND_OUT;
 }
+#else
+void system_PowerUP(void)
+{
 
+	_power_up_CA55_domain();
+
+	_power_up_npu_vcl_domain();
+	pm_set_retention_done_bit();
+
+	suspend_state = SUSPEND_OUT;
+}
+#endif
 /* trigger by send 0x82 cmd to PMIC */
 void Main_Domain_PowerUP_REQ_Handler()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
 	printf("Power Up ISR ! \n");
-	Main_Domain_PowerUP();
+	system_PowerUP();
 
 	/*semap will hang until ca55 restart.*/
 	if(xSemaphoreGiveFromISR( xPowerUp_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE)

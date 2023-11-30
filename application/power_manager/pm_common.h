@@ -15,6 +15,7 @@ extern "C" {
 
 //#define PM_ZEBU_TEST   /* test in zebu, power down/up by uart */
 
+#define POWER_MAINDOMAIN_ALIVE    /* mask it, only ca55/npu/vcl powerdown */
 
 #define MAIN_DOMAIN_PU_ACK_IRQ          (0)
 #define MAIN_DOMAIN_PD_ACK_IRQ          (1)
@@ -79,6 +80,7 @@ void vDoPowerdownTask( void *pvParameters );
 void vDoPowerupTask( void *pvParameters );
 void pm_save_data_before_ddr_retention(void);
 void pm_restore_data_after_ddr_retention(void);
+void system_PowerUP(void);
 /* save data */
 #define PM_DATA_SAVE_ADDRESS   0xFA29E000   /* Save the maindomain register and User data */
 

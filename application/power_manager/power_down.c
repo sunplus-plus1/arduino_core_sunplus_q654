@@ -105,7 +105,7 @@ int power_down_cluster()
 	MOON0_REG->sft_cfg[1] 	= RF_MASK_V_SET(0x60);//0x00600060 ;
 
 	/*config LVS*/	
-	PMC_REGS->pmc_lvs_pwd       = 0xFFAA5500;
+	PMC_REGS->pmc_lvs_pwd       = 0x00AA55FF;
 	PMC_REGS->pmc_lvs_disable	= 0x1;
 
 	/* power off CA55(talk with PMIC)*/
@@ -207,6 +207,38 @@ void power_down_init()
 	}
 }
 
+#ifdef POWER_MAINDOMAIN_ALIVE
+void system_powerdown(void)
+{
+	pm_save_data_before_ddr_retention();
+	power_down_ddr_retention();
+	power_down_npu_vcl();
+	if(power_down_ca55() != 0)
+	{
+		printf(" power_down_ca55 fail \n");
+		suspend_state = SUSPEND_OUT;
+		return ;
+	}
+	if(power_down_maindomain() != 0)
+	{
+		printf(" power_down_maindomain fail \n");
+		suspend_state = SUSPEND_OUT;
+		return ;
+	}
+}
+#else
+void system_powerdown(void)
+{
+	power_down_npu_vcl();
+	if(power_down_ca55() != 0)
+	{
+		printf(" power_down_ca55 fail \n");
+		suspend_state = SUSPEND_OUT;
+		return ;
+	}
+	suspend_state = SUSPEND_IN;
+}
+#endif
 void vDoPowerdownTask( void *pvParameters )
 {
 	/* Remove compiler warning about unused parameter. */
@@ -220,25 +252,10 @@ void vDoPowerdownTask( void *pvParameters )
 			{
 				printf(" power down start !\n"); 
 				power_down_init();
-				/* save data */
-				pm_save_data_before_ddr_retention();
-				/* ddr retention */
-				power_down_ddr_retention();
-				power_down_npu_vcl();
-				/* power ca55 clust and cores */
-				if(power_down_ca55() != 0)
-				{
-					printf(" power_down_ca55 fail \n");
-					continue;
-				}
 
-				/* power down main domain */
-				if(power_down_maindomain() != 0)
-				{
-					printf(" power_down_maindomain fail \n");
-					continue;
-				}
-				/* set power down flag */
+				/* power ca55 clust and cores */
+				system_powerdown(); // start to powerdown
+
 				pm_set_power_down_bit();
 
 			}
