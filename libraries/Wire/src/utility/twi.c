@@ -60,9 +60,10 @@ void i2c_custom_init(i2c_t *obj, uint32_t timing, uint32_t addressingMode, uint3
 		return;
 
 	I2C_HandleTypeDef *handle = &(obj->handle);
-	
-	handle->Init.Timing = i2c_getTiming(obj, timing);
+
+	handle->Init.Timing = i2c_getTiming(obj, timing) * 1000;
 	handle->State = HAL_I2C_STATE_RESET;
+	handle->Mode = I2C_MODE_INTR;//I2C_MODE_BURST
 
 	/* Init the I2C */
 	HAL_I2C_Init(handle);
@@ -109,15 +110,7 @@ i2c_status_e i2c_master_write(i2c_t * obj, uint8_t dev_address, uint8_t * data, 
 	uint32_t delta = 0;
 	uint32_t err = 0;
 
-#if defined(BURST_MODE)
 	if (HAL_I2C_Master_Transmit(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
-#elif defined (INTR_MODE)
-	if (HAL_I2C_Master_Transmit_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#elif defined(DMA_MODE)
-	if (HAL_I2C_Master_Transmit_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#elif defined(DMA_IT_MODE)
-	if (HAL_I2C_Master_Transmit_DMA_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#endif
 		// wait for transfer completion
 		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)
 		       && (delta < I2C_TIMEOUT_TICK)) {
@@ -161,15 +154,7 @@ i2c_status_e i2c_master_read(i2c_t * obj, uint8_t dev_address, uint8_t * data, u
 	uint32_t delta = 0;
 	uint32_t err = 0;
 
-#if defined(BURST_MODE)
 	if (HAL_I2C_Master_Receive(&(obj->handle), dev_address, data, size, 0xffff) == HAL_OK) {
-#elif defined(INTR_MODE)
-	if (HAL_I2C_Master_Receive_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#elif defined(DMA_MODE)
-	if (HAL_I2C_Master_Receive_DMA(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#elif defined(DMA_IT_MODE)
-	if (HAL_I2C_Master_Receive_DMA_IT(&(obj->handle), dev_address, data, size) == HAL_OK) {
-#endif
 		uint32_t state = obj->handle.State;
 		/* wait for transfer completion */
 		while ((HAL_I2C_GetState(&(obj->handle)) != HAL_I2C_STATE_READY)

@@ -235,6 +235,3 @@ void HAL_lreg(int group)
 #ifdef __cplusplus
 }
 #endif
-
-
-

@@ -10,20 +10,26 @@ extern "C" {
 #include "irq_ctrl.h"
 #include "sp7350xx.h"
 
+#define STATUS_READ_IN_PROGRESS		0x1
+#define STATUS_WRITE_IN_PROGRESS	0x2
+
 /* Confirm the value by reading reg 0xf4(RX[15:8] TX[23:16]) */
 #define I2C_FIFO_DEPTH	8
+/* Data_cmd_reg (0x10) Master read cmd */
+#define I2C_READ_DATA	0x100
+
+#if 0
 /* DMA transfer rate far more than I2C transfer rate, Therefore RX thresold > TX thresold */
 /* For TX, FIFO data length less than or equal to watermark level (= TDRL), DMA request trigger */
 #define I2C_TDRL	0//2
 /* For RX, FIFO data length more than or equal to watermark level (= RDRL + 1), DMA request trigger */
 #define I2C_RDRL	0//5
-
-#define I2C_READ_DATA	0x100
+#endif
 
 /* I2C Transmit Modes */
 #define I2C_MODE_BURST	0x0
 #define I2C_MODE_INTR	0x1
-#define I2C_MODE_DMA	0x2
+//#define I2C_MODE_DMA	0x2
 
 /* I2C Frequency Modes */
 #define I2C_MAX_STANDARD_MODE_FREQ	100000
@@ -117,8 +123,6 @@ typedef enum
 {
 	I2C_M_WRITE	= 0x0UL,
 	I2C_M_READ	= 0x1UL,
-	I2C_M_RESTART	= 0x2UL,
-	I2C_M_STOP	= 0x4UL,
 } HAL_I2C_Direction;
 
 struct i2c_msg {
@@ -175,28 +179,29 @@ typedef struct
 
 typedef struct __I2C_HandleTypeDef
 {
-	__IO I2C_TypeDef           *Instance;      /*!< I2C registers base address                */
-	I2C_InitTypeDef            Init;           /*!< I2C communication parameters              */
-	HAL_LockTypeDef            Lock;           /*!< I2C locking object                        */
-	__IO HAL_I2C_StateTypeDef  State;          /*!< I2C communication state                   */
-	__IO uint32_t              ErrorCode;      /*!< I2C Error code                            */
+	__IO I2C_TypeDef *Instance; /*!< I2C registers base address */
+	I2C_InitTypeDef Init; /*!< I2C communication parameters */
+	HAL_LockTypeDef Lock; /*!< I2C locking object */
+	__IO HAL_I2C_StateTypeDef State; /*!< I2C communication state */
+	__IO uint32_t ErrorCode; /*!< I2C Error code */
+	uint8_t Index;
+	uint8_t Mode;
 
-	volatile GDMA_TypeDef      *gdma;/*!< Reserved it just to reduce the unnecessary marco definition for twi.c */
-
-	uint8_t                    Index;
-	uint32_t                   DataIndex;      /*!< Data index in buffer                      */
-	uint32_t                   DataTotalLen;   /*!< I2C transfer size                         */
-	uint32_t                   AbortSource;    /*!< I2C transfer source of abort              */
-	uint32_t                   ReadLen;        /*!< Length of data which read form RX FIFO                           */
-	uint32_t                   RxOutStanding;  /*!< Length of data which is left space in FIFO but not yet available */
-	uint8_t                    XferAction;
-	uint8_t                    XferWaitTxEnd;
-	uint8_t                    *Buffer;
-	uint32_t                   DMAIndex;
-	uint8_t                    Mode;
-	uint8_t                    Speed;
-	uint8_t                    NeedRestart;
-	uint8_t                    NeedStop;
+	//uint32_t DMAIndex;
+	struct i2c_msg *msgs;
+	int msgs_num;
+	int msg_write_idx;
+	int msg_read_idx;
+	uint32_t rx_outstanding; /*!< Length of data which is left space in FIFO but not yet available */
+	uint32_t master_cfg;
+	uint32_t abort_source; /*!< I2C transfer source of abort */
+	uint32_t rx_buf_len;
+	uint32_t tx_buf_len;
+	uint8_t *rx_buf;
+	uint8_t *tx_buf;
+	uint8_t status;
+	uint8_t msg_err;
+	uint8_t completion;
 } I2C_HandleTypeDef;
 
 HAL_StatusTypeDef HAL_I2C_Init(I2C_HandleTypeDef *hi2c);
@@ -206,22 +211,10 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevA
 					  uint8_t *pData, uint32_t Size, uint32_t Timeout);
 HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
 					 uint8_t *pData, uint32_t Size, uint32_t Timeout);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
-					      uint8_t *pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_DMA(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
-					     uint8_t *pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Transmit_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
-					     uint8_t *pData, uint32_t Size);
-HAL_StatusTypeDef HAL_I2C_Master_Receive_IT(I2C_HandleTypeDef *hi2c, uint16_t DevAddress,
-					    uint8_t *pData, uint32_t Size);
 HAL_I2C_StateTypeDef HAL_I2C_GetState(I2C_HandleTypeDef * hi2c);
 void HAL_I2C_ClearError(I2C_HandleTypeDef * hi2c);
 uint32_t HAL_I2C_GetError(I2C_HandleTypeDef * hi2c);
-void HAL_I2C_IRQHandler(I2C_HandleTypeDef *hi2c);
-
-void sp_i2c_en(I2C_HandleTypeDef *hi2c);
-void HAL_I2C_TEST(void);
-void HAL_I2C_SLAVE_TEST(void);
+void HAL_I2C_IRQHandler(void);
 
 #ifdef __cplusplus
 }

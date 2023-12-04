@@ -1,12 +1,15 @@
 /*
  *	Test i2c on a temperature sensor(SHT3X).
- *	The transmission of Arduino layer(twi.c) is implemented as burst_irq transmit.
- *	if want to use other mode. Please select the mode in twi.h.
+ *	The transmission of Arduino layer(twi.c) is implemented as INTR MODE.
+ *	if want to use other mode. Please assgin the varible in i2c_custom_init() of twi.c.
  *	e.x.
- *		//#define BURST_MODE
- *		#define IT_MODE
- *		//#define DMA_MODE
- *		//#define DMA_IT_MODE
+ *		i2c_custom_init()
+ *		{
+ *			...
+ *			handle->Mode = I2C_MODE_INTR;//I2C_MODE_BURST
+ *			...
+ *		}
+ *
  */
 
 #include "Arduino.h"
@@ -26,7 +29,7 @@ void setup()
 	memset(&tx_buff, 0x0, 32);
 	memset(&rx_buff, 0x0, 32);
 
-	i2cm_test = new TwoWire(SP_I2CM3);
+	i2cm_test = new TwoWire(SP_I2CM0);
 	i2cm_test->begin();
 }
 
@@ -67,9 +70,3 @@ void loop()
 
 	delay(2000);
 }
-
-void loop()
-{
-
-}
-#endif
