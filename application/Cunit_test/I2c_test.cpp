@@ -15,6 +15,7 @@
 void SHT3x_cal_temperature_humidity(uint8_t *buf)
 {
 	int temp = (buf[0] << 8) | buf[1];
+	/* Keep two decimals. And convert decimal to integer by mutiply 100 */
 	temp = temp * 17500 / 65536;
 	int temp_L = temp % 100;
 	int temp_H = temp / 100 - 45;
@@ -42,7 +43,7 @@ void test_case_i2c_SHT3x_single_shot(void)
 	tx_buf[1] = 0x00;
 
 	test_handle->Instance = I2C_SINGLE_TEST;
-	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
+	test_handle->Init.Timing = I2C_MAX_FAST_MODE_FREQ;//I2C_MAX_STANDARD_MODE_FREQ
 	test_handle->Mode = I2C_MODE_INTR;//I2C_MODE_BURST
 
 	HAL_I2C_Init(test_handle);

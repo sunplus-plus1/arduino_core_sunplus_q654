@@ -15,6 +15,8 @@
 		*(volatile uint32_t *)0xf8000000UL = v; \
 	} while (0)
 
+#define DIV_ROUND_CLOSEST(x, divisor)	(((x)+ ((divisor) / 2)) / (divisor))
+
 /* Private Variables */
 const static struct i2c_hal_info sp_i2c_info[] = {
 	I2C_HAL_INFO(SP_I2CM0, I2C0_INDEX, I2CM0, PINMUX_I2C_0, I2C_MASTER0_IRQ, PER_I2C0),
@@ -63,25 +65,6 @@ static void i2c_pinmux_config(PINMUX_Type pinmux)
 	HAL_PINMUX_Cfg(pinmux, 1);
 }
 
-static uint8_t i2c_speed_config(I2C_HandleTypeDef *hi2c, uint32_t speed)
-{
-	uint8_t temp_reg;
-
-	MOON3_REG->sft_cfg[27] = (3 << 22) | (0 << 6);
-	if(speed < I2C_MAX_STANDARD_MODE_FREQ) {
-		temp_reg = SP_IC_CON_SPEED_STD;
-		hi2c->Instance->ic_ss_scl_hcnt = 397;
-		hi2c->Instance->ic_ss_scl_lcnt = 496;
-	} else if(speed < I2C_MAX_FAST_MODE_FREQ) {
-		temp_reg = SP_IC_CON_SPEED_FAST;
-		hi2c->Instance->ic_fs_scl_hcnt = 57;
-		hi2c->Instance->ic_fs_scl_lcnt = 129;
-	} else if(speed < I2C_MAX_FAST_MODE_PLUS_FREQ) {
-		temp_reg = SP_IC_CON_SPEED_HIGH;
-	}
-	return temp_reg;
-}
-
 static uint32_t i2c_irq_get_index(uint32_t irqn)
 {
 	int i, index;
@@ -126,23 +109,62 @@ static void __i2c_disable_nowait(I2C_HandleTypeDef *hi2c)
 	hi2c->Instance->ic_enable = 0;
 }
 
-static void __i2c_init_master(I2C_HandleTypeDef *hi2c)
+static void __i2c_cal_scl_cnt(uint32_t clk_rate_khz, uint32_t tHIGH, uint32_t tLOW, uint32_t scl_falling_time,
+			 uint32_t *scl_hcnt, uint32_t *scl_lcnt)
 {
+	*scl_hcnt = DIV_ROUND_CLOSEST(clk_rate_khz * tHIGH, 1000000) - 8;
+	*scl_lcnt = DIV_ROUND_CLOSEST(clk_rate_khz * (tLOW + scl_falling_time), 1000000) - 1;
+}
+
+static void __i2c_timing_set(I2C_HandleTypeDef *hi2c)
+{
+	uint32_t clk_rate_khz;
+	uint32_t scl_hcnt, scl_lcnt;
+	uint32_t scl_falling_time = 300; /* ns */
 
 	/* I2C clk tree: 0->100M, 0b1->50M, 0b11->25M */
+	clk_rate_khz = 100000;
 	MOON3_REG->sft_cfg[27] = (3 << 22) | (0 << 6);
 
-	if(hi2c->Init.Timing < I2C_MAX_STANDARD_MODE_FREQ) {
+	/* Set SCL hcnt/lcnt */
+	if(hi2c->Init.Timing <= I2C_MAX_STANDARD_MODE_FREQ) {
 		hi2c->master_cfg = SP_IC_CON_SPEED_STD;
-		hi2c->Instance->ic_ss_scl_hcnt = 397;
-		hi2c->Instance->ic_ss_scl_lcnt = 496;
-	} else if(hi2c->Init.Timing < I2C_MAX_FAST_MODE_FREQ) {
+		__i2c_cal_scl_cnt(clk_rate_khz, 4000, 4700, scl_falling_time, &scl_hcnt, &scl_lcnt);
+		hi2c->Instance->ic_ss_scl_hcnt = scl_hcnt;
+		hi2c->Instance->ic_ss_scl_lcnt = scl_lcnt;
+		debug_print("ss_scl_h %d \n", hi2c->Instance->ic_ss_scl_hcnt);
+		debug_print("ss_scl_l %d \n", hi2c->Instance->ic_ss_scl_lcnt);
+	} else if(hi2c->Init.Timing <= I2C_MAX_FAST_MODE_FREQ) {
 		hi2c->master_cfg = SP_IC_CON_SPEED_FAST;
-		hi2c->Instance->ic_fs_scl_hcnt = 57;
-		hi2c->Instance->ic_fs_scl_lcnt = 129;
-	} else if(hi2c->Init.Timing < I2C_MAX_FAST_MODE_PLUS_FREQ) {
+		__i2c_cal_scl_cnt(clk_rate_khz, 600, 1300, scl_falling_time, &scl_hcnt, &scl_lcnt);
+		hi2c->Instance->ic_fs_scl_hcnt = scl_hcnt;
+		hi2c->Instance->ic_fs_scl_lcnt = scl_lcnt;
+		debug_print("fs_scl_h %d \n", hi2c->Instance->ic_fs_scl_hcnt);
+		debug_print("fs_scl_l %d \n", hi2c->Instance->ic_fs_scl_lcnt);
+	} else if(hi2c->Init.Timing <= I2C_MAX_FAST_MODE_PLUS_FREQ) {
+		hi2c->master_cfg = SP_IC_CON_SPEED_FAST;
+		__i2c_cal_scl_cnt(clk_rate_khz, 260, 500, scl_falling_time, &scl_hcnt, &scl_lcnt);
+		hi2c->Instance->ic_fs_scl_hcnt = scl_hcnt;
+		hi2c->Instance->ic_fs_scl_lcnt = scl_lcnt;
+		debug_print("fs_scl_h %d \n", hi2c->Instance->ic_fs_scl_hcnt);
+		debug_print("fs_scl_l %d \n", hi2c->Instance->ic_fs_scl_lcnt);
+	} else if (hi2c->Init.Timing <= I2C_MAX_HIGH_SPEED_MODE_FREQ) {
 		hi2c->master_cfg = SP_IC_CON_SPEED_HIGH;
+		__i2c_cal_scl_cnt(clk_rate_khz, 160, 320, scl_falling_time, &scl_hcnt, &scl_lcnt);
+		hi2c->Instance->ic_hs_scl_hcnt = scl_hcnt;
+		hi2c->Instance->ic_hs_scl_lcnt = scl_lcnt;
+		debug_print("hs_scl_h %d \n", hi2c->Instance->ic_hs_scl_hcnt);
+		debug_print("hs_scl_l %d \n", hi2c->Instance->ic_hs_scl_lcnt);
 	}
+
+	/* Set SDA hold time , ic_sda_hold <= scl_lcnt - 2 */
+	hi2c->Instance->ic_sda_hold = scl_lcnt - 2;
+	debug_print("ic_sda_hold %d \n", hi2c->Instance->ic_sda_hold);
+}
+
+static void __i2c_init_master(I2C_HandleTypeDef *hi2c)
+{
+	__i2c_timing_set(hi2c);
 
 	hi2c->master_cfg |= SP_IC_CON_MASTER | SP_IC_CON_SLAVE_DISABLE | SP_IC_CON_RESTART_EN;
 
@@ -463,7 +485,6 @@ void i2c_irq_handler(I2C_HandleTypeDef *hi2c)
 	uint32_t stat;
 	debug_print("h\n");
 	//printf("%s (%d)\n", __FUNCTION__, __LINE__);
-	//*(volatile unsigned int *)0xF8803338 = 0x0;//xtdebug
 	enabled = hi2c->Instance->ic_enable;//0x6c
 	stat = hi2c->Instance->ic_raw_intr_stat;//0x34
 	/* End the hanlder: 1.I2C disable 2.Interrupt which I2C activity generate */
