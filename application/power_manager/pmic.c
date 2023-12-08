@@ -18,8 +18,6 @@ I2C_HandleTypeDef *test_handle;
 uint8_t tx_buf[2];
 uint8_t rx_buf[2];
 
-//#define USE_I2C_READ
-
 int _pmic_i2c_write(uint8_t *buf)
 {
 	int ret;
@@ -31,45 +29,23 @@ int _pmic_i2c_write(uint8_t *buf)
 	return 0;
 }
 
-#ifdef USE_I2C_READ
-uint8_t _pmic_i2c_read(uint8_t reg)
-{
-	uint8_t data = 0;
-	
-	HAL_I2C_Master_Transmit(test_handle, RT5759_ADDR, &reg, 1, 0);
-	HAL_I2C_Master_Receive(test_handle, RT5759_ADDR, &data, 1, 0);
-
-	return data;
-}	
-#endif
-
 void _rt5759_enable(void)
 {
 	HAL_I2C_Init(test_handle);
-#ifdef USE_I2C_READ
-	uint8_t data = _pmic_i2c_read(RT5759_REG_DCDCCTRL);
-	data |=  (0x1<<1);
-	tx_buf[0]=RT5759_REG_DCDCCTRL;
-	tx_buf[1]=data;
-#else
+
 	tx_buf[0]=RT5759_REG_DCDCCTRL;
 	tx_buf[1]=0xA;
-#endif
+
 	_pmic_i2c_write(tx_buf);
 }
 
 void _rt5759_disable(void)
 {
 	HAL_I2C_Init(test_handle);
-#ifdef USE_I2C_READ
-	uint8_t data = _pmic_i2c_read(RT5759_REG_DCDCCTRL);
-	data &= ~(0x1<<1);
-	tx_buf[0]=RT5759_REG_DCDCCTRL;
-	tx_buf[1]=data;
-#else
+
 	tx_buf[0]=RT5759_REG_DCDCCTRL;
 	tx_buf[1]=0x8;
-#endif
+
 	_pmic_i2c_write(tx_buf);
 }
 
@@ -83,7 +59,7 @@ void _rt5759_set_0d8_vol(void)
 
 #ifdef __cplusplus
 extern "C" {
-#endif 
+#endif
 
 int pmic_do_cmd(uint32_t cmd)
 {
@@ -124,22 +100,11 @@ int pmic_do_cmd(uint32_t cmd)
 int pmic_init(void)
 {
 	uint8_t version = 0;
-	
+
 	test_handle = (I2C_HandleTypeDef *)malloc(sizeof(I2C_HandleTypeDef));
 	test_handle->Instance = SP_I2CM7;
 	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
 	test_handle->Mode = I2C_MODE_BURST;
-	
-	HAL_I2C_Init(test_handle);
-	
-#ifdef USE_I2C_READ
-	version = _pmic_i2c_read(RT5759_REG_VENDORINFO);
-	if (version != RT5759_MANUFACTURER_ID)
-	{
-		printf("pmic device init error 0x%x\n", version);
-		return -1;
-	}
-#endif
 
 	pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
 	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
