@@ -250,13 +250,7 @@ static uint32_t i2c_sp_read_clear_intrbits(I2C_HandleTypeDef *hi2c)
 	 *
 	 * The raw version might be useful for debugging purposes.
 	 */
-
-	/*0x2C
-	 *
-	 */
-	// *(volatile unsigned int *)0xF8803338 = 0x11;//xtdebug
 	stat = (uint32_t)hi2c->Instance->ic_intr_stat;
-	//*(volatile unsigned int *)0xF8803338 = 0x12;//xtdebug
 	/*
 	 * Do not use the IC_CLR_INTR register to clear interrupts, or
 	 * you'll miss some interrupts, triggered during the period from
@@ -302,8 +296,8 @@ void i2c_sp_handle_tx_abort(I2C_HandleTypeDef *hi2c)
 
 	if (abort_source & SP_IC_TX_ABRT_NOACK) {
 		for (i = 0; i <= 4; i++) {
-			if (abort_source & ( 1 << i )) {
-				debug_print("NACK fail %d\n", i);
+			if (abort_source & (1 << i)) {
+				printf("NACK fail %d\n", i);
 				temp_code = i;
 			}
 
@@ -311,8 +305,14 @@ void i2c_sp_handle_tx_abort(I2C_HandleTypeDef *hi2c)
 		return;
 	}
 
-	for(i = 5; i <= 13; i++)
-		debug_print("NACK fail 02\n");
+	for(i = 5; i <= 13; i++) {
+		if (abort_source & (1 << i)) {
+			if (i == 12)
+				printf("lost arbition and again\n");
+			debug_print("NACK fail 02\n");
+		}
+	}
+	
 	if (temp_code == 1)
 		hi2c->ErrorCode = HAL_I2C_ERR_ADDRESS_NACK;
 }
@@ -483,24 +483,27 @@ void i2c_irq_handler(I2C_HandleTypeDef *hi2c)
 {
 	uint8_t enabled;
 	uint32_t stat;
-	debug_print("h\n");
-	//printf("%s (%d)\n", __FUNCTION__, __LINE__);
+		
 	enabled = hi2c->Instance->ic_enable;//0x6c
 	stat = hi2c->Instance->ic_raw_intr_stat;//0x34
 	/* End the hanlder: 1.I2C disable 2.Interrupt which I2C activity generate */
+	debug_print("stat %x\n", stat);
 	if (!enabled || !(stat & ~SP_IC_INTR_ACTIVITY))
 		return;
+
 	stat = i2c_sp_read_clear_intrbits(hi2c);
+	debug_print("stat2 %x\n", stat);
 	if (stat & SP_IC_INTR_TX_ABRT) {
 		i2c_sp_handle_tx_abort(hi2c);
 		hi2c->Instance->ic_intr_mask = 0;
 		hi2c->State = HAL_I2C_STATE_ABORT;
-		return;
+		goto tx_abort;
 	}
 	if (stat & SP_IC_INTR_RX_FULL)
 		i2c_sp_read(hi2c);
 	if (stat & SP_IC_INTR_TX_EMPTY)
 		i2c_sp_xfer(hi2c);
+tx_abort:
 	if (stat & (SP_IC_INTR_STOP_DET | SP_IC_INTR_TX_ABRT) || hi2c->msg_err) {
 		hi2c->completion = 0;
 		hi2c->State = HAL_I2C_STATE_READY;
@@ -580,7 +583,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transfer(I2C_HandleTypeDef *hi2c, struct i2c_ms
 		while (hi2c->completion) {
 			/* 2s */
 			if (i2c_sp_timeout(hi2c, 2000000, tickstart)) {
-				debug_print("[I2C]Xfer Timeout!\n");
+				printf("[I2C]Xfer Timeout!\n");
 				hi2c->ErrorCode |= HAL_I2C_ERR_TIMEOUT;
 				goto done;
 			}
@@ -594,7 +597,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transfer(I2C_HandleTypeDef *hi2c, struct i2c_ms
 		while (hi2c->completion) {
 			/* 2s */
 			if (i2c_sp_timeout(hi2c, 2000000, tickstart)) {
-				debug_print("[I2C]Xfer Timeout!\n");
+				printf("[I2C]Xfer Timeout!\n");
 				hi2c->ErrorCode |= HAL_I2C_ERR_TIMEOUT;
 				goto done;
 			}
