@@ -626,7 +626,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevA
 			.buf  = pData,
 		},
 	};
-	HAL_I2C_Master_Transfer(hi2c, msg, 1);
+	return HAL_I2C_Master_Transfer(hi2c, msg, 1);
 }
 
 HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint32_t Size,
@@ -641,7 +641,7 @@ HAL_StatusTypeDef HAL_I2C_Master_Receive(I2C_HandleTypeDef *hi2c, uint16_t DevAd
 			.buf  = pData,
 		},
 	};
-	HAL_I2C_Master_Transfer(hi2c, msg, 1);
+	return HAL_I2C_Master_Transfer(hi2c, msg, 1);
 }
 
 void HAL_I2C_IRQHandler(void)

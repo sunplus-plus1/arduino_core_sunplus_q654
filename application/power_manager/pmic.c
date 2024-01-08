@@ -102,6 +102,8 @@ int pmic_init(void)
 	uint8_t version = 0;
 
 	test_handle = (I2C_HandleTypeDef *)malloc(sizeof(I2C_HandleTypeDef));
+	memset(test_handle,0,sizeof(I2C_HandleTypeDef));
+
 	test_handle->Instance = SP_I2CM7;
 	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
 	test_handle->Mode = I2C_MODE_BURST;
