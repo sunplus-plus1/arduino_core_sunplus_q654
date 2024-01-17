@@ -108,7 +108,12 @@ int pmic_init(void)
 	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
 	test_handle->Mode = I2C_MODE_BURST;
 
-	pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
+	/*** This function will let PWR_NPU_CONTROL_PIN(GPIO_65) to be high after GPIO_65 is initialized.
+	   Now NPU power is controlled by Linux kernel NPU driver. CM4 doesn't need to handle NPU power during system start up process.
+	   CM4 just only handles the NPU power when system suspend and resume.
+	   So it needs to cancel this GPIO_65 initialzation to let Linux kernel control the NPU power when system start up. ***/
+	//pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
+
 	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
 	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
 	return 0;
