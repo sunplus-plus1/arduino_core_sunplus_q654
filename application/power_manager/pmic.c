@@ -15,13 +15,36 @@ I2C_HandleTypeDef *test_handle;
 #define RT5759_0D8V             ((0.8-0.6)*100)
 #define RT5759_MANUFACTURER_ID  0x82
 
+
+#define STI8070C_ADDR			0x60
+
+#define STI8070C_VSET			0x00
+#define STI8070C_REG3			0x03
+#define STI8070C_REG3_VALUE		0x88
+
+#define STI8070C_0D8V			7  /*((0.8-0.7125)/0.0125)*/
+
 uint8_t tx_buf[2];
 uint8_t rx_buf[2];
+
+enum {
+	PMIC_RT5759=0,
+	PMIC_STI8070C,
+	PMIC_MAX
+};
+
+int pmic_ic = PMIC_MAX;
 
 int _pmic_i2c_write(uint8_t *buf)
 {
 	int ret;
-	ret = HAL_I2C_Master_Transmit(test_handle, RT5759_ADDR, tx_buf, sizeof(tx_buf)/sizeof(uint8_t), 0);
+	uint16_t i2c_addr = RT5759_ADDR;
+
+	if(pmic_ic == PMIC_STI8070C)
+		i2c_addr = STI8070C_ADDR;
+
+	ret = HAL_I2C_Master_Transmit(test_handle, i2c_addr, tx_buf, sizeof(tx_buf)/sizeof(uint8_t), 0);
+
 	if (ret) {
 		printf("Transmit error code %d\n", ret);
 		return -1;
@@ -29,31 +52,92 @@ int _pmic_i2c_write(uint8_t *buf)
 	return 0;
 }
 
-void _rt5759_enable(void)
+int get_pmic_ic(void)
+{
+	char tx_buf[1],rx_buf[1];
+
+	if(pmic_ic == PMIC_MAX)
+	{
+		struct i2c_msg msg[] = {
+			{
+				.addr = STI8070C_ADDR,
+				.flag = I2C_M_WRITE,
+				.len  = 1,
+				.buf  = tx_buf,
+			},
+			{
+				.addr = STI8070C_ADDR,
+				.flag = I2C_M_READ,
+				.len  = 1,
+				.buf  = rx_buf,
+			},
+		};
+		/*  RT5759  */
+		pmic_ic = PMIC_RT5759;  // Set RT5759 to defalut pmic.
+
+		/*  STI8070C  */
+		printf("[CM4] check PMIC by I2C: ");
+		tx_buf[0] = STI8070C_REG3;
+		int ret = HAL_I2C_Master_Transfer(test_handle, msg, 2);
+		if (ret) {
+			printf("[STI8070C]Transmit error code %d\n", ret);
+			return -1;
+		}
+		if(rx_buf[0] == STI8070C_REG3_VALUE)
+		{
+			printf("PMIC is STI8070C \n");
+			pmic_ic = PMIC_STI8070C;
+			return pmic_ic;
+		}
+		printf("PMIC is RT5759 \n");
+	}
+	return pmic_ic;
+}
+
+void _pmic_enable(void)
 {
 	HAL_I2C_Init(test_handle);
 
-	tx_buf[0]=RT5759_REG_DCDCCTRL;
-	tx_buf[1]=0xA;
-
-	_pmic_i2c_write(tx_buf);
+	if(pmic_ic == PMIC_RT5759)
+	{
+		tx_buf[0]=RT5759_REG_DCDCCTRL;
+		tx_buf[1]=0xA;
+		_pmic_i2c_write(tx_buf);
+	}
 }
 
-void _rt5759_disable(void)
+void _pmic_disable(void)
 {
 	HAL_I2C_Init(test_handle);
-
-	tx_buf[0]=RT5759_REG_DCDCCTRL;
-	tx_buf[1]=0x8;
-
-	_pmic_i2c_write(tx_buf);
+	get_pmic_ic();
+	if(pmic_ic == PMIC_RT5759)
+	{
+		tx_buf[0]=RT5759_REG_DCDCCTRL;
+		tx_buf[1]=0x8;
+		_pmic_i2c_write(tx_buf);
+	}
+	else if(pmic_ic == PMIC_STI8070C)
+	{
+		tx_buf[0]=STI8070C_VSET;
+		tx_buf[1]=0x0;
+		_pmic_i2c_write(tx_buf);
+	}
 }
 
-void _rt5759_set_0d8_vol(void)
+void _pmic_set_0d8_vol(void)
 {
-	tx_buf[0]=RT5759_REG_VSEL;
-	tx_buf[1]=RT5759_0D8V;
-	_pmic_i2c_write(tx_buf);
+	if(pmic_ic == PMIC_RT5759)
+	{
+		tx_buf[0]=RT5759_REG_VSEL;
+		tx_buf[1]=RT5759_0D8V;
+		_pmic_i2c_write(tx_buf);
+	}
+	else if(pmic_ic == PMIC_STI8070C)
+	{
+		tx_buf[0]=STI8070C_VSET;
+		tx_buf[1]=0x80 | STI8070C_0D8V;
+		_pmic_i2c_write(tx_buf);
+	}
 }
 
 
@@ -67,11 +151,11 @@ int pmic_do_cmd(uint32_t cmd)
 	switch(cmd)
 	{
 		case CA55_POWER_OFF:
-			_rt5759_disable();
+			_pmic_disable();
 			break;
 		case CA55_0D8V_POWER:
-			_rt5759_enable();
-			_rt5759_set_0d8_vol();
+			_pmic_enable();
+			_pmic_set_0d8_vol();
 			break;
 		case MAIN_POWER_OFF:
 			digitalWrite(MAIN_DOMAIN_CONTROL_PIN, LOW);
@@ -107,7 +191,6 @@ int pmic_init(void)
 	test_handle->Instance = SP_I2CM7;
 	test_handle->Init.Timing = I2C_MAX_STANDARD_MODE_FREQ;
 	test_handle->Mode = I2C_MODE_BURST;
-
 	/*** This function will let PWR_NPU_CONTROL_PIN(GPIO_65) to be high after GPIO_65 is initialized.
 	   Now NPU power is controlled by Linux kernel NPU driver. CM4 doesn't need to handle NPU power during system start up process.
 	   CM4 just only handles the NPU power when system suspend and resume.
