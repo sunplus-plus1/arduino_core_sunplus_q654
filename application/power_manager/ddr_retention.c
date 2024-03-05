@@ -246,7 +246,8 @@ static uint32_t sum32(uint32_t sum, uint8_t *data, int len)
 
         return sum;
 }
-void ddr_retention_save(void)
+
+void ddr_retention_save_param(void)
 {
 	// Size of ddr phy register is 16 bit.
 	volatile uint16_t * const ddr_ret = (uint16_t * const) CM4_SRAM_RET_ADDRESS;  // SRAM (CM4) CPU view
@@ -263,10 +264,18 @@ void ddr_retention_save(void)
 	// Disabling Ucclk (PMU)
 	dwc_ddrphy_apb_wr(0xc0080, 0x2);
 	dwc_ddrphy_apb_wr(0xd0000, 0x1);
+}
 
-
+static int save_flag = 0;
+void ddr_retention_save(void)
+{
+	if(save_flag == 0)
+	{
+	    /* Make only one save, otherwise there may be a memory data error after DDR retention (readable but not writable)*/
+		ddr_retention_save_param();
+		save_flag = 1;
+	}
 	printf("ddr_retention_save \n");
-
 
 	apb_ctl_before_retention();
 }

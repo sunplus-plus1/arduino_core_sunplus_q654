@@ -36,7 +36,7 @@ void vCA55_TO_CM4_Mailbox_ISR()
 	}
 
 	suspend_state = SUSPEND_START;
-	if( (xSemaphoreGiveFromISR( xPowerDown_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE))
+	if((value == CA55_2_CM4_SUSPEND_CMD) && (xSemaphoreGiveFromISR( xPowerDown_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE))
 	{
 		printf("Semaphore Send ISR Fail!\r\n");
 	}

@@ -85,8 +85,8 @@ typedef struct __SPI_HandleTypeDef
 #define SPI_FREQ_MIN                    (40000)     /* spi clk  min is 40k */
 #define SPI_FREQ_MAX                    (50000000)  /* spi clk  max is 50M */
 
-/* full duplex, fifo length is config 128 byte */
-#define SPI_FIFO_MAX_LENGTH     (128)
+/* full duplex, fifo length is config 32 byte */
+#define SPI_FIFO_MAX_LENGTH     (32)
 
 #define SPI_TMOD_TR			    0x0		/* xmit & recv */
 #define SPI_TMOD_TO			    0x1		/* xmit only */
