@@ -284,8 +284,9 @@ HAL_StatusTypeDef HAL_DMA_Start(u32 src, u32 dst, u32 len, dma_callback_t callba
 	u32 tt, sinc, dinc;
 	u32 t,s,l=1;
 
-	// src, dst, len must be 4-byte aligned
+	HAL_HW_Init(AHB_DMA);
 
+	// src, dst, len must be 4-byte aligned
 	/* transfer type */
 	sinc = (src < PER_MAX) ? 3 : 0;
 	dinc = (dst < PER_MAX) ? 3 : 0;

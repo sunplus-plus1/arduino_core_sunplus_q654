@@ -67,9 +67,11 @@ HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 		return HAL_ERROR;
 	}
 
+	HAL_HW_Init(DISP_PWM); //hw init
+
 	pwm_num = PWM_Init->pwm_num;
 	g_resolution_sel[pwm_num] = PWM_Init->resolution_sel;
-	
+
 	/* select pwm resolution  256/4095 */
 	MODIFY_REG(pwm_reg->pwm_resolution,1<<(pwm_num),PWM_Init->resolution_sel<<(pwm_num));
 
@@ -78,7 +80,6 @@ HAL_StatusTypeDef HAL_PWM_Init(PWM_InitTypeDef *PWM_Init)
 
 	return _PWM_Set(pwm_num,PWM_Init->period_ns,PWM_Init->duty_ns);
 }
-
 
 void HAL_PWM_Start(int pwm_num)
 {

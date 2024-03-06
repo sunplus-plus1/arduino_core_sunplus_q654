@@ -260,6 +260,8 @@ typedef struct __UART_HandleTypeDef
 
 /* ######################## not config by user ####################### */
 	HAL_LockTypeDef     	Lock;		              /*!< Locking object                    */
+	MODULE_ID_Type			module_id;
+	PINMUX_Type 			pinmux_id;
 	uint8_t					uart_idx;				  /*  uart0:0x0  uart5:0x5				 */
 	uint32_t				gState;					  /*  uart states(busy,tx,rx,ready)		 */
 	uint32_t				RxState;				  /*  uart states(busy,tx,rx,ready)		 */

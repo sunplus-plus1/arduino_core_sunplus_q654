@@ -1,21 +1,13 @@
 #include "sp7350_hal_adc.h"
 #include "Arduino.h"
 
-void HAL_ADC_Start(int adc_chan)
-{
-
-}
-
-void HAL_ADC_Stop(int adc_chan)
-{
-
-}
-
 uint32_t HAL_ADC_Get_Vaule(int adc_chan)
 {
 	unsigned int temp_reg,temp_buf;
 	volatile uint32_t stat;
 	volatile struct dw_adc_regs *adc_regs = ADC_REG_AO;
+
+	HAL_HW_Init(SAR12B);
 
 	temp_reg = adc_regs->adc_cfg0b;
 	temp_reg |= SP_ADC_EN;

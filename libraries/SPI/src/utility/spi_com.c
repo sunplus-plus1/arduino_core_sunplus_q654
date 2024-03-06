@@ -64,32 +64,6 @@ void spi_init(spi_t *obj, uint32_t speed, spi_mode_e mode, uint8_t msb)
       handle->Init.FirstBit         = SPI_FIRSTBIT_MSB;
     }
 
-    if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
-    {
-        HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 1);
-        HAL_Module_Clock_gate(SPICOMBO0 + SPI_SEL_INSTANCE, 1);
-        HAL_Module_Reset(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
-        if(SPI_SEL_INSTANCE == 0)
-        {
-            HAL_PINMUX_Cfg(PINMUX_SPI_COM0_MST,1);
-        }
-        else
-        {
-			if(SPI_SEL_INSTANCE == 1)
-	        {
-	            HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST,1);
-	        }
-			else if(SPI_SEL_INSTANCE == 2 || SPI_SEL_INSTANCE == 3)
-			{
-				HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + SPI_SEL_INSTANCE,1);
-			}
-			else if(SPI_SEL_INSTANCE == 4 || SPI_SEL_INSTANCE == 5)
-			{
-				HAL_PINMUX_Cfg(PINMUX_SPI_COM1_MST + SPI_SEL_INSTANCE + 1,1);
-			}
-		}
-    }
-
     HAL_SPI_Init(handle);
 }
 
@@ -109,13 +83,7 @@ void spi_deinit(spi_t *obj)
 
     HAL_SPI_DeInit(handle);
 
-    if (SPI_SEL_INSTANCE >=0 && SPI_SEL_INSTANCE <= 5)
-    {
-        HAL_Module_Clock_enable(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
-        HAL_Module_Clock_gate(SPICOMBO0 + SPI_SEL_INSTANCE, 0);
-    }
 }
-
 
 spi_status_e spi_send(spi_t *obj, uint8_t *Data, uint16_t len, uint32_t Timeout)
 {

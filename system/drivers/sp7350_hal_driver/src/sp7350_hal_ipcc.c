@@ -18,6 +18,8 @@ HAL_StatusTypeDef HAL_IPCC_Init(IPCC_HandleTypeDef *hipcc)
     	return HAL_ERROR;
     }
 
+	HAL_HW_Init(MAILBOX);
+
 	for (i=0; i < CHN_MAX; i++)
 	{
 		if (hipcc->szIRQHDL[i] != NULL)

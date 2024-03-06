@@ -85,16 +85,37 @@ void TIM_SetConfig(TIM_HandleTypeDef *htim)
 	}
 }
 
+void HAL_TIM_HW_Set(TIM_HandleTypeDef *htim,int onoff)
+{
+	if((htim->Instance == TIM0) || (htim->Instance == TIM1) || (htim->Instance == TIM2) || (htim->Instance64 == TIM15)){
+		(onoff == 1)?HAL_HW_Init(STC_0):HAL_HW_DeInit(STC_0);
+	}
+	else if(htim->Instance == TIM3 || htim->Instance == TIM4 || htim->Instance == TIM5 || htim->Instance64 == TIM16){
+		(onoff == 1)?HAL_HW_Init(STC_AV0):HAL_HW_DeInit(STC_AV0);
+	}
+	else if(htim->Instance == TIM6 || htim->Instance == TIM7 || htim->Instance == TIM8 || htim->Instance64 == TIM17){
+		(onoff == 1)?HAL_HW_Init(STC_AV1):HAL_HW_DeInit(STC_AV1);
+	}
+	else if(htim->Instance == TIM9 || htim->Instance == TIM10 || htim->Instance == TIM11 || htim->Instance64 == TIM18){
+		(onoff == 1)?HAL_HW_Init(STC_AV2):HAL_HW_DeInit(STC_AV2);
+	}
+	else if(htim->Instance == TIM12 || htim->Instance == TIM13 || htim->Instance == TIM14 || htim->Instance64 == TIM19){
+		(onoff == 1)?HAL_HW_Init(STC_AV4):HAL_HW_DeInit(STC_AV4);
+	}
+}
+
 HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 {
 	IRQn_Type irqn =  MAX_IRQ_n;
 
 	if (htim == NULL)
   	{
-    		return HAL_ERROR;
+        return HAL_ERROR;
   	}
 
 	assert_param(IS_TIM_INSTANCE(htim->Instance) || IS_TIM64_INSTANCE(htim->Instance64));
+
+	HAL_TIM_HW_Set(htim,1);
 
 	if (htim->State == HAL_TIM_STATE_RESET)
 	{
@@ -124,7 +145,6 @@ HAL_StatusTypeDef HAL_TIM_Init(TIM_HandleTypeDef *htim)
 
 	return HAL_OK;
 }
-
 
 HAL_StatusTypeDef HAL_TIM_DeInit(TIM_HandleTypeDef *htim)
 {

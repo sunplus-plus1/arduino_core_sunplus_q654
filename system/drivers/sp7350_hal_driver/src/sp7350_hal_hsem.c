@@ -11,6 +11,8 @@ HAL_StatusTypeDef HAL_Hsem_Take(int lock_index)
 	if(lock_index >= HSEM_TOTAL_NUM)
 		return HAL_ERROR;
 
+	HAL_HW_Init(SEMAPHORE);
+
 	if((hsem_status[lock_index] == 0) && (HSEM_REG_AO->lock[lock_index] == HSEM_R_UNLOCK))
 	{
 		hsem_status[lock_index] = 1;
@@ -19,7 +21,7 @@ HAL_StatusTypeDef HAL_Hsem_Take(int lock_index)
 	return HAL_ERROR;
 }
 
-uint32_t HAL_HSEM_IsSemTaken(uint32_t lock_index)
+uint32_t HAL_Hsem_IsSemTaken(uint32_t lock_index)
 {
 	if(lock_index >= HSEM_TOTAL_NUM)
 		return 1;

@@ -360,8 +360,8 @@ typedef enum {
   PMC                              = 121,       /*!< PMC moudle ID */
   RTC                              = 122,       /*!< RTC moudle ID */
   INTERRUPT_AO                     = 123,       /*!< INTERRUPT_AO moudle ID */
-  UA6                              = 124,       /*!< UA6 moudle ID */
-  UA7                              = 125,       /*!< UA7 moudle ID */
+  UART6                            = 124,       /*!< UA6 moudle ID */
+  UART7                            = 125,       /*!< UA7 moudle ID */
   GDMAUA                           = 126,       /*!< GDMAUA moudle ID */
   CM4                              = 127,       /*!< CM4 moudle ID */
 /*G2.9*/
@@ -371,7 +371,7 @@ typedef enum {
   STC_AV2                          = 131,       /*!< STC_AV2 moudle ID */
   AHB_DMA                          = 132,       /*!< AHB_DMA moudle ID */
   SAR12B                           = 133,       /*!< SAR12B moudle ID */
-  DISP                             = 134,       /*!< DISP moudle ID */
+  DISP_PWM                         = 134,       /*!< DISP_PWM moudle ID */
   NICPAIII                         = 135,       /*!< NICPAIII moudle ID */
   GPIO_AO_INT                      = 136,       /*!< GPIO_AO_INT moudle ID */
   I2CM0                            = 137,       /*!< I2C0 moudle ID */
@@ -432,6 +432,7 @@ typedef enum {
   PD_CM4                           = 189,       /*!< PD_CM4 moudle ID */
   PD_HWUA_TX_GDMA                  = 190,       /*!< PD_HWUA_TX_GDMA moudle ID */
   QCTRL                            = 191,       /*!< QCTRL moudle ID */
+  MODULE_MAX,
 }MODULE_ID_Type;
 
 #define PINMUX_DFMP_2BIT            (0x10000)
@@ -858,13 +859,13 @@ typedef struct {
 #define IPC_MAILBOX                  ((volatile IPCC_Typedef *)RF_GRP(258, 0))
 
 /*SP7350 module clock enable bit*/
-#define CLK_EN                       ((Module_Clock_En_type*)RF_GRP_AO(2, 1))
+#define CLK_EN                       ((volatile Module_Clock_En_type*)RF_GRP_AO(2, 1))
 
 /*SP7350 module clock enable bit*/
-#define CLK_GATE                     ((Module_Clock_Gate_Type*)RF_GRP_AO(2, 15))
+#define CLK_GATE                     ((volatile Module_Clock_Gate_Type*)RF_GRP_AO(2, 15))
 
 /*SP7350 module rest bit*/
-#define MODULE_REST                  ((Module_Reset_Type*)RF_GRP_AO(0, 1))
+#define MODULE_REST                  ((volatile Module_Reset_Type*)RF_GRP_AO(0, 1))
 
 
 typedef struct{

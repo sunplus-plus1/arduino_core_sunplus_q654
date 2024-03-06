@@ -59,8 +59,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	/* Enable USART clock */
 	if(obj->uart == SP_UART0)
 	{
-		/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART0,1);
 		/*interrupt set */
 		obj->index = UART0_INDEX;
 		obj->irq = UART0_IRQn;
@@ -69,9 +67,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 	else if(obj->uart == SP_UART1)
 	{
-	/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART1,1);
-
 		/*interrupt set */
 		obj->index = UART1_INDEX;
 		obj->irq = UART1_IRQn;
@@ -80,9 +75,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 	else if(obj->uart == SP_UART2)
 	{
-		/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART2,1);
-
 		/*interrupt set */
 		obj->index = UART2_INDEX;
 		obj->irq = UART2_IRQn;
@@ -91,9 +83,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 	else if(obj->uart == SP_UART3)
 	{
-		/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART3,1);
-
 		/*interrupt set */
 		obj->index = UART3_INDEX;
 		obj->irq = UART3_IRQn;
@@ -102,9 +91,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 	else if(obj->uart == SP_UART6)
 	{
-		/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART6,1);
-
 		/*interrupt set */
 		obj->index = UART6_INDEX;
 		obj->irq = UART6_IRQn;
@@ -113,8 +99,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	}
 	else if(obj->uart == SP_UART7)
 	{
-		/* pinmux set */
-		HAL_PINMUX_Cfg(PINMUX_UART7,1);
 
 		/*interrupt set */
 		obj->index = UART7_INDEX;
@@ -126,10 +110,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	{
 		return;
 	}
-	/* enable clk */
-	HAL_Module_Clock_enable(UART0 + SERIAL_UART_INSTANCE, 1);
-	HAL_Module_Clock_gate(UART0 + SERIAL_UART_INSTANCE, 1);
-	HAL_Module_Reset(UART0 + SERIAL_UART_INSTANCE, 0);
 
 	/* Configure uart */
 	uart_handlers[obj->index] = huart;
@@ -156,27 +136,6 @@ void uart_init(serial_t *obj, uint32_t baudrate)
 	*/
 void uart_deinit(serial_t *obj)
 {
-	/* Reset UART and disable clock */
-	switch (obj->index) {
-	case UART0_INDEX:
-		HAL_Module_Clock_enable(UART0, 0);
-		HAL_Module_Clock_gate(UART0, 0);
-		break;
-	case UART1_INDEX:
-		HAL_Module_Clock_enable(UART1, 0);
-		HAL_Module_Clock_gate(UART1, 0);
-		break;
-
-	case UART2_INDEX:
-		HAL_Module_Clock_enable(UART2, 0);
-		HAL_Module_Clock_gate(UART2, 0);
-		break;
-
-	case UART3_INDEX:
-		HAL_Module_Clock_enable(UART3, 0);
-		HAL_Module_Clock_gate(UART3, 0);
-		break;
-	}
 
 	HAL_UART_DeInit(uart_handlers[obj->index]);
 	/* Release uart debug to ensure init */

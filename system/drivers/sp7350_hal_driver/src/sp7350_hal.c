@@ -181,12 +181,12 @@ void HAL_Module_Clock_enable(MODULE_ID_Type id, uint32_t enable)
 {
 	if (enable == 1)
 	{
-		if(READ_BIT(CLK_EN->clock_enable[id/16], id%16) == 0)
+		if(READ_BIT(CLK_EN->clock_enable[id/16], 1<<(id%16)) == 0)
 			CLK_EN->clock_enable[id/16] = RF_MASK_V_SET(1 << (id%16));
 	}
 	else
 	{
-		if(READ_BIT(CLK_EN->clock_enable[id/16], id%16) == 1)
+		if(READ_BIT(CLK_EN->clock_enable[id/16], 1<<(id%16)) == (1<<(id%16)))
 			CLK_EN->clock_enable[id/16] = RF_MASK_V_CLR(1 << (id%16));
 	}
 }
@@ -195,28 +195,47 @@ void HAL_Module_Clock_gate(MODULE_ID_Type id, uint32_t enable)
 {
 	if (enable == 1)
 	{
-		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], id%16) == 0)
+		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], 1<<(id%16)) == 0)
 			CLK_GATE->clock_gate_enable[id/16] = RF_MASK_V_SET(1 << (id%16));
 	}
 	else
 	{
-		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], id%16) == 1)
+		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], 1<<(id%16)) == (1<<(id%16)))
 			CLK_GATE->clock_gate_enable[id/16] = RF_MASK_V_CLR(1 << (id%16));
 	}
 }
-
 
 void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable)
 {
 	if (enable == 1)
 	{
-		if(READ_BIT(MODULE_REST->reset[id/16], id%16) == 0)
+		if(READ_BIT(MODULE_REST->reset[id/16], 1<<(id%16)) == 0)
 			MODULE_REST->reset[id/16] = RF_MASK_V_SET(1 << (id%16));
 	}
 	else
 	{
-		if(READ_BIT(MODULE_REST->reset[id/16], id%16) == 1)
+		if(READ_BIT(MODULE_REST->reset[id/16], 1<<(id%16)) == (1<<(id%16)))
 			MODULE_REST->reset[id/16] = RF_MASK_V_CLR(1 << (id%16));
+	}
+}
+
+void HAL_HW_Init(MODULE_ID_Type id)
+{
+	if(id < MODULE_MAX)
+	{
+		HAL_Module_Clock_enable(id, 1);
+		HAL_Module_Clock_gate(id, 0);
+	//	HAL_Module_Reset(id, 0);
+	}
+}
+
+void HAL_HW_DeInit(MODULE_ID_Type id)
+{
+	if(id < MODULE_MAX)
+	{
+		HAL_Module_Clock_enable(id, 0);
+		HAL_Module_Clock_gate(id, 1);
+	//	HAL_Module_Reset(id, 1);
 	}
 }
 

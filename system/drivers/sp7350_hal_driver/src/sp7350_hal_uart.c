@@ -873,6 +873,8 @@ uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart)
 
 HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 {
+	PINMUX_Type pinmux_id;
+	MODULE_ID_Type module_id;
 
 	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
 	{
@@ -884,25 +886,42 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 	{
 		case (uint32_t)SP_UART0:
 			huart->uart_idx = 0;
+			huart->module_id = UART0;
+			huart->pinmux_id = PINMUX_UART0;
 			break;
 		case (uint32_t)SP_UART1:
 			huart->uart_idx = 1;
+			huart->module_id = UART1;
+			huart->pinmux_id = PINMUX_UART1;
 			break;
 		case (uint32_t)SP_UART2:
 			huart->uart_idx = 2;
+			huart->module_id = UART2;
+			huart->pinmux_id = PINMUX_UART2;
 			break;
 		case (uint32_t)SP_UART3:
 			huart->uart_idx = 3;
+			huart->module_id = UART3;
+			huart->pinmux_id = PINMUX_UART3;
 			break;
 		case (uint32_t)SP_UART6:
 			huart->uart_idx = 6;
+			huart->module_id = UART6;
+			huart->pinmux_id = PINMUX_UART6;
 			break;
 		case (uint32_t)SP_UART7:
 			huart->uart_idx = 7;
+			huart->module_id = UART7;
+			huart->pinmux_id = PINMUX_UART7;
 			break;
 		default:
 			return HAL_ERROR;
 	}
+
+	/* pinmux set */
+	HAL_PINMUX_Cfg(pinmux_id,1);
+	/* enable clk */
+	HAL_HW_Init(module_id);
 
 	/* step 3: set uart baudrate */
 	huart->Instance->div_l = UART_BAUD_DIV_L(huart->Init.BaudRate, _uart_Get_SrcClk(huart->uart_idx));
@@ -961,6 +980,11 @@ HAL_StatusTypeDef HAL_UART_DeInit(UART_HandleTypeDef *huart)
 
 	huart->gState = HAL_UART_STATE_READY;
 	huart->RxState = HAL_UART_STATE_READY;
+
+	/* pinmux set */
+	HAL_PINMUX_Cfg(huart->pinmux_id,0);
+	/* disable clk */
+	HAL_HW_DeInit(huart->module_id);
 
 	__HAL_UNLOCK(huart);
 

@@ -27,6 +27,8 @@ extern HAL_TickFreqTypeDef uwTickFreq;
 
 HAL_StatusTypeDef HAL_Init(void);
 HAL_StatusTypeDef HAL_DeInit(void);
+void HAL_HW_Init(MODULE_ID_Type id);
+void HAL_HW_DeInit(MODULE_ID_Type id);
 HAL_StatusTypeDef HAL_InitTick (STC_TypeDef *STCx);
 HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq);
 

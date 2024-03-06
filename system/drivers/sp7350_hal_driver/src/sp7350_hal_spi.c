@@ -235,6 +235,39 @@ __weak void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 	UNUSED(hspi);
 }
 
+void HAL_SPI_HW_Set(SPI_HandleTypeDef *hspi,int onoff)
+{
+	MODULE_ID_Type	module_id;
+	PINMUX_Type 	pinmux_id;
+	if((hspi->Instance == SPI0)){
+		module_id = SPICOMBO0;
+		pinmux_id = PINMUX_SPI_COM0_MST;
+	}
+	else if((hspi->Instance == SPI1)){
+		module_id = SPICOMBO1;
+		pinmux_id = PINMUX_SPI_COM1_MST;
+	}
+	else if((hspi->Instance == SPI2)){
+		module_id = SPICOMBO2;
+		pinmux_id = PINMUX_SPI_COM2_MST;
+	}
+	else if((hspi->Instance == SPI3)){
+		module_id = SPICOMBO3;
+		pinmux_id = PINMUX_SPI_COM3_MST;
+	}
+	else if((hspi->Instance == SPI4)){
+		module_id = SPICOMBO4;
+		pinmux_id = PINMUX_SPI_COM4_MST;
+	}
+	else if((hspi->Instance == SPI5)){
+		module_id = SPICOMBO5;
+		pinmux_id = PINMUX_SPI_COM5_MST;
+	}
+
+	(onoff == 1)?HAL_HW_Init(module_id):HAL_HW_DeInit(module_id);
+	HAL_PINMUX_Cfg(pinmux_id,1);
+}
+
 HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 {
 	uint32_t div;
@@ -243,6 +276,8 @@ HAL_StatusTypeDef HAL_SPI_Init(SPI_HandleTypeDef *hspi)
 	{
 		return HAL_ERROR;
 	}
+
+	HAL_SPI_HW_Set(hspi,1);
 
 	hspi->ErrorCode = HAL_SPI_ERROR_NONE;
 	hspi->State     = HAL_SPI_STATE_READY;
@@ -262,9 +297,12 @@ HAL_StatusTypeDef HAL_SPI_DeInit(SPI_HandleTypeDef *hspi)
 		return HAL_ERROR;
 	}
 
+	_spi_reset(hspi);
+
 	hspi->ErrorCode = HAL_SPI_ERROR_NONE;
 	hspi->State = HAL_SPI_STATE_RESET;
-	_spi_reset(hspi);
+
+	HAL_SPI_HW_Set(hspi,0);
 
 	__HAL_UNLOCK(hspi);
 
