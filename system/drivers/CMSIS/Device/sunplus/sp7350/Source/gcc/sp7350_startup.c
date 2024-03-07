@@ -188,10 +188,6 @@ void _start(void)
 {
 	SCB->VTOR = (uint32_t)isr_vector; // Set Vector Table
 	printf("CM4  build @ " __DATE__ " " __TIME__ "\n");
-	printf("isr_vector : %p\n", isr_vector);
-	printf("_sbss      : %p\n", &_sbss);
-	printf("_ebss      : %p\n", &_ebss);
-	printf("_estack    : %p\n\n", &_estack);
 	SystemInit();
 	__libc_init_array();
 	cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFTWARE_VERSION);

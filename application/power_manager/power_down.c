@@ -215,13 +215,13 @@ void system_powerdown(void)
 	power_down_npu_vcl();
 	if(power_down_ca55() != 0)
 	{
-		printf(" power_down_ca55 fail \n");
+		printf("power_down_ca55 fail \n");
 		suspend_state = SUSPEND_OUT;
 		return ;
 	}
 	if(power_down_maindomain() != 0)
 	{
-		printf(" power_down_maindomain fail \n");
+		printf("power_down_maindomain fail \n");
 		suspend_state = SUSPEND_OUT;
 		return ;
 	}
@@ -232,7 +232,7 @@ void system_powerdown(void)
 	power_down_npu_vcl();
 	if(power_down_ca55() != 0)
 	{
-		printf(" power_down_ca55 fail \n");
+		printf("power_down_ca55 fail \n");
 		suspend_state = SUSPEND_OUT;
 		return ;
 	}
@@ -247,10 +247,10 @@ void vDoPowerdownTask( void *pvParameters )
 	{
 		if( xPowerDown_Semaphore != NULL )
 		{
-			printf(" power down wait Semaphore !\n");
+			printf("power down wait Semaphore !\n");
 			if(xSemaphoreTake( xPowerDown_Semaphore, portMAX_DELAY) == pdTRUE)
 			{
-				printf(" power down start !\n"); 
+				printf("power down start !\n"); 
 				power_down_init();
 
 				/* power ca55 clust and cores */
