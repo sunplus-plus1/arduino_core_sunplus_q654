@@ -10,13 +10,13 @@
  * NOTE to develop SP7350:
  * 1.STC Group of CM4:
  *	 ---------------------------------------------------------------------------------------
- *	|	|STC	 	|STC_AV0	|STC_AV1	|STC_AV2	|STC_AV4	|
+ *	|       |STC            |STC_AV0        |STC_AV1        |STC_AV2        |STC_AV4        |
  *	|-------|---------------|---------------|---------------|---------------|---------------|
- *	|STC	|STC0		|STC1	  	|STC2	   	|STC3		|STC4		|
+ *	|STC    |STC0           |STC1           |STC2           |STC3           |STC4           |
  *	|-------|---------------|---------------|---------------|---------------|---------------|
- *	|TIM	|TIM0/1/2	|TIM3/4/5	|TIM6/7/8	|TIM9/10/11	|TIM12/13/14	|
+ *	|TIM    |TIM0/1/2       |TIM3/4/5       |TIM6/7/8       |TIM9/10/11     |TIM12/13/14    |
  *	|-------|---------------|---------------|---------------|---------------|---------------|
- *	|WDG	|WDG0		|WDG1		|WDG2		|	-	|WDG3		|
+ *	|WDG    |WDG0           |WDG1           |WDG2           |       -       |WDG3           |
  *	 ---------------------------------------------------------------------------------------
  * 2.only use timer 0/1/2 of every STC
  *	e.x. TIM0 is timer0 of STC
@@ -189,6 +189,7 @@ static CU_SuiteInfo suites[] =
 
 int Add_Watchdog_Tests(void)
 {
+	printf(" build @ " __DATE__ " " __TIME__ "\n");
 	assert(NULL != CU_get_registry());
 	assert(!CU_is_test_running());
 	if(CUE_SUCCESS != CU_register_suites(suites))  //注册测试suite

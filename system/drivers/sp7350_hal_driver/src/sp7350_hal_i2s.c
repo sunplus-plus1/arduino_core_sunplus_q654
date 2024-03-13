@@ -140,33 +140,23 @@ static void workaroud_for_config_rx_slave(I2S_HandleTypeDef *hi2s)
 	}
 }
 
-//TODO: REG address and bit is error
 static void AUD_Set_PLL(uint32_t freq)
 {
-	MOON3_REG->sft_cfg[0] = 0xFFFF5100; // PLLA Disable 3.01[11]
+	/* reference clk-sp7350.c in kennel */
 	if(freq == PLLA_147M) {
-		/* 147.456Hz/25MHz = 5.89824....... = 5.8+0.0982
-		 * DIVN=5, PH_SEL=8
-		 * K_SDM=0x3eb (1003)
-		 * M_SDM=0x3fd (1021)
-		 */
-		MOON4_REG->sft_cfg[1] = 0xFFFF7814;	//[14:9] DIVN
-		MOON4_REG->sft_cfg[2] = 0xFFFF0c21;	//[5:4]  PH_STEP_SEL
-							//[3:0]  PH_SEL
-		MOON4_REG->sft_cfg[3] = 0xFFFFbe90;	//[10:0] K_SDM
-		MOON4_REG->sft_cfg[4] = 0xFFFF0154;	//[10:0] M_SDM
+		MOON3_REG->sft_cfg[0] = 0xffff5200;
+		MOON3_REG->sft_cfg[1] = 0xfffff02c;//bit[2]
+		MOON3_REG->sft_cfg[2] = 0xffff1f51;
+		MOON3_REG->sft_cfg[3] = 0xffff3fd0;
+		MOON3_REG->sft_cfg[4] = 0xffff0168;
 	} else if (freq == PLLA_135M) {
-		/* 135.4752Hz/25MHz = 5.4190....... = 5.4+0.0190
-		 * DIVN=5, PH_SEL=4
-		 * K_SDM=0x0be (190)
-		 * M_SDM=0x3e9 (1001)
-		 */
-		//MOON4_REG->sft_cfg[25] = 0xFFFF0a11;
-		//MOON4_REG->sft_cfg[26] = 0xFFFF0014;
-		//MOON4_REG->sft_cfg[27] = 0xFFFF00be;
-		//MOON4_REG->sft_cfg[28] = 0xFFFF03e9;
+		MOON3_REG->sft_cfg[0] = 0xffff5200;
+		MOON3_REG->sft_cfg[1] = 0xfffff02c;
+		MOON3_REG->sft_cfg[2] = 0xffff0c21;
+		MOON3_REG->sft_cfg[3] = 0xffff3fd0;
+		MOON3_REG->sft_cfg[4] = 0xffff0154;
 	}
-	//MOON4_REG->sft_cfg[29] = 0xFFFF0000;
+	//printf("[%s(%d)] PLLA 0x%x\n", __FUNCTION__, __LINE__, MOON3_REG->sft_cfg[1]);
 }
 
 static void F_Mixer_Setting(void)
@@ -320,7 +310,7 @@ static void _i2s_config_pcm_buffer(I2S_HandleTypeDef *hi2s) //FIXME  RX/TX same 
 static void _i2s_pin_mux(I2S_HandleTypeDef *handle)
 {
 	HAL_Module_Clock_enable(AUD, 1);
-	HAL_Module_Clock_gate(AUD, 0);
+	HAL_Module_Clock_gate(AUD, 1);
 	HAL_Module_Reset(AUD, 0);
 
 	switch(handle->Index) {
@@ -773,6 +763,12 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef *hi2s)
 	/* Config pinmux */
 	_i2s_pin_mux(hi2s);
 
+	/* Set XCK and BCK divsion. _i2s_aud_clk_cfg() which contains
+	 * the operation of plla active needs to be placed before all
+	 * register read and write operations.
+	 */
+	_i2s_aud_clk_cfg(hi2s);
+
 	/* Config GRM */
 	F_Mixer_Setting();///////////////////////////////TODO
 
@@ -781,9 +777,6 @@ HAL_StatusTypeDef HAL_I2S_Init(I2S_HandleTypeDef *hi2s)
 
 	/* Config master/slave mode, LRCK cycle and pcm data format */
 	_i2s_format_config(hi2s);
-
-	/* Set XCK and BCK divsion */
-	_i2s_aud_clk_cfg(hi2s);
 
 	/* Debug function */
 	//_i2s_playback_debug(hi2s);
@@ -855,11 +848,14 @@ HAL_StatusTypeDef HAL_I2S_Debug_Tx_Sine(HAL_I2S_IndexTypeDef index, HAL_I2S_Debu
 	/* Config pinmux */
 	_i2s_pin_mux(&hi2s);
 
+	/* Set XCK and BCK divsion, _i2s_aud_clk_cfg() which contains
+	 * the operation of plla active needs to be placed before all
+	 * register read and write operations.
+	 */
+	_i2s_aud_clk_cfg(&hi2s);
+
 	/* Config master/slave mode, LRCK cycle and pcm data format */
 	_i2s_format_config(&hi2s);
-
-	/* Set XCK and BCK divsion */
-	_i2s_aud_clk_cfg(&hi2s);
 
 	/* Debug function */
 	_i2s_playback_debug(&hi2s);

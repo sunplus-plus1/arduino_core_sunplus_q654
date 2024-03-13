@@ -56,7 +56,7 @@ static void i2c_irq_config(IRQn_Type irqn)
 static void i2c_clken_config(MODULE_ID_Type clk_id)
 {
 	HAL_Module_Clock_enable(clk_id, 1);
-	HAL_Module_Clock_gate(clk_id, 0);
+	HAL_Module_Clock_gate(clk_id, 1);
 	HAL_Module_Reset(clk_id, 0);
 }
 

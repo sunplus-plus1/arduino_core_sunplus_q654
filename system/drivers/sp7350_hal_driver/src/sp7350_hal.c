@@ -65,10 +65,6 @@ HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq)
 		id = STC_AV4;
 	}
 
-	HAL_Module_Clock_enable(id , 1);
-	HAL_Module_Clock_gate(id , 1);
-	HAL_Module_Reset(id , 0);
-
 	stc.Instance = STCx;
 	stc.ClockSource = 0; //sel system clk
 	stc.Prescaler = u32Sysclk / u32Freq - 1;
@@ -186,7 +182,7 @@ void HAL_Module_Clock_enable(MODULE_ID_Type id, uint32_t enable)
 	}
 	else
 	{
-		if(READ_BIT(CLK_EN->clock_enable[id/16], 1<<(id%16)) == (1<<(id%16)))
+		if(READ_BIT(CLK_EN->clock_enable[id/16], 1<<(id%16)))
 			CLK_EN->clock_enable[id/16] = RF_MASK_V_CLR(1 << (id%16));
 	}
 }
@@ -200,7 +196,7 @@ void HAL_Module_Clock_gate(MODULE_ID_Type id, uint32_t enable)
 	}
 	else
 	{
-		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], 1<<(id%16)) == (1<<(id%16)))
+		if(READ_BIT(CLK_GATE->clock_gate_enable[id/16], 1<<(id%16)))
 			CLK_GATE->clock_gate_enable[id/16] = RF_MASK_V_CLR(1 << (id%16));
 	}
 }
@@ -214,7 +210,7 @@ void HAL_Module_Reset(MODULE_ID_Type id, uint32_t enable)
 	}
 	else
 	{
-		if(READ_BIT(MODULE_REST->reset[id/16], 1<<(id%16)) == (1<<(id%16)))
+		if(READ_BIT(MODULE_REST->reset[id/16], 1<<(id%16)))
 			MODULE_REST->reset[id/16] = RF_MASK_V_CLR(1 << (id%16));
 	}
 }
