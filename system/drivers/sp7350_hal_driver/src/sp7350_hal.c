@@ -2,6 +2,7 @@
 #include "sp7350_hal_def.h"
 #include "sp7350xx.h"
 #include "sp7350_hal_stc.h"
+#include "sp7350_hal_uart.h"
 #include "irq_ctrl.h"
 
 /*
@@ -34,6 +35,7 @@ __IO uint32_t uwTick = 0;
 HAL_TickFreqTypeDef uwTickFreq = HAL_TICK_FREQ_DEFAULT;//1MHz
 
 STC_HandleTypeDef SysStandardTimeClk;
+UART_HandleTypeDef SysUartLog;
 
 #ifdef  USE_FULL_ASSERT
 void assert_failed(unsigned char *file, unsigned int line)
@@ -72,9 +74,16 @@ HAL_StatusTypeDef HAL_InitCommonSTC(STC_TypeDef *STCx, uint32_t u32Freq)
 	HAL_STC_Init(&stc);
 }
 
+void UART_init()
+{
+	SysUartLog.Instance = SP_UART6; //equal UART_REG in syscall.c
+	SysUartLog.Init.BaudRate = 115200;
+	HAL_UART_Init(&SysUartLog);
+}
 HAL_StatusTypeDef HAL_Init(void)
 {
 	HAL_InitTick(STC2);
+	UART_init();
 }
 
 HAL_StatusTypeDef HAL_DeInit(void)
