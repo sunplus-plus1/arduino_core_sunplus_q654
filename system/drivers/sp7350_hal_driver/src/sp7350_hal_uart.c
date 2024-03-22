@@ -873,8 +873,6 @@ uint32_t HAL_UART_GetState(UART_HandleTypeDef *huart)
 
 HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 {
-	PINMUX_Type pinmux_id;
-	MODULE_ID_Type module_id;
 
 	if (huart == NULL || huart->Instance == NULL || !IS_UART_INSTANCE(huart->Instance))
 	{
@@ -919,9 +917,9 @@ HAL_StatusTypeDef HAL_UART_Init(UART_HandleTypeDef *huart)
 	}
 
 	/* pinmux set */
-	HAL_PINMUX_Cfg(pinmux_id,1);
+	HAL_PINMUX_Cfg(huart->pinmux_id,1);
 	/* enable clk */
-	HAL_HW_Init(module_id);
+	HAL_HW_Init(huart->module_id);
 
 	/* step 3: set uart baudrate */
 	huart->Instance->div_l = UART_BAUD_DIV_L(huart->Init.BaudRate, _uart_Get_SrcClk(huart->uart_idx));

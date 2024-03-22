@@ -187,10 +187,12 @@ extern void __libc_init_array (void);
 void _start(void)
 {
 	SCB->VTOR = (uint32_t)isr_vector; // Set Vector Table
-	printf("CM4  build @ " __DATE__ " " __TIME__ "\n");
-	SystemInit();
+	SystemInit(); // printf must be used after this function.
 	__libc_init_array();
 	cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFTWARE_VERSION);
+
+	printf("CM4  build @ " __DATE__ " " __TIME__ "\n");
+
 	main(0, 0);
 	exit(0);
 }
