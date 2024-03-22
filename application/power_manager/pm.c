@@ -114,4 +114,5 @@ void pm_restore_data_after_ddr_retention(void)
 		MOON3_REG->sft_cfg[i] = RF_MASK_V(0xFFFF,MOON3_REG->sft_cfg[i]);
 	}
 
+	MOON2_REG->sft_cfg[5] = RF_MASK_V_SET(1 << 15); // SEMAPHORE_CLKEN -> 1
 }

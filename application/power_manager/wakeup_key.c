@@ -85,6 +85,9 @@ void vWakeyupKeyTask( void *pvParameters )
 			MBOX_RTC_WAKEUP = 0;
 		}
 
+		if ((suspend_state == SUSPEND_OUT) && HSEM_REG_AO->lock[15])
+			continue;
+
 		if((RTC_REGS->rtc_wakeupkey_int_status == 1) && !xPress)
 		{
 			xPress = true;
@@ -96,6 +99,9 @@ void vWakeyupKeyTask( void *pvParameters )
 			xsencondtime = millis();
 			RTC_REGS->rtc_wakeupkey_int_status = 1;
 		}
+
+		if (suspend_state == SUSPEND_OUT)
+			HSEM_REG_AO->lock[15] = 0x554E4C4B; // unlock
 
 		if(xPress && (millis() - xfirsttime) > (100)) //check per 100ms
 		{
