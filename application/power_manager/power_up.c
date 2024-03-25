@@ -73,19 +73,22 @@ void system_PowerUP(void)
 	_power_up_CA55_domain();
 
 	_power_up_npu_vcl_domain();
+
 	ddr_retention_load();
 
 	pm_restore_data_after_ddr_retention();
+
 	pm_set_retention_done_bit();
+
 	suspend_state = SUSPEND_OUT;
 }
 #else
 void system_PowerUP(void)
 {
-
 	_power_up_CA55_domain();
 
 	_power_up_npu_vcl_domain();
+
 	pm_set_retention_done_bit();
 
 	suspend_state = SUSPEND_OUT;
@@ -96,8 +99,7 @@ void Main_Domain_PowerUP_REQ_Handler()
 {
 	static BaseType_t xHigherPriorityTaskWoken;
 	printf("Power Up ISR ! \n");
-	system_PowerUP();
-
+	NVIC_DisableIRQ(MAIN_PWR_UP_REQ_IRQn);
 	/*semap will hang until ca55 restart.*/
 	if(xSemaphoreGiveFromISR( xPowerUp_Semaphore, &xHigherPriorityTaskWoken ) != pdTRUE)
 	{
@@ -130,10 +132,11 @@ void vDoPowerupTask( void *pvParameters )
 		if( xPowerUp_Semaphore != NULL )
 		{
 
-
 			if(xSemaphoreTake( xPowerUp_Semaphore, portMAX_DELAY) == pdTRUE)
 			{
-				//Main_Domain_PowerUP();
+				system_PowerUP();
+				NVIC_ClearPendingIRQ(MAIN_PWR_UP_REQ_IRQn);
+				NVIC_EnableIRQ(MAIN_PWR_UP_REQ_IRQn);
 			}
 		}
 	}

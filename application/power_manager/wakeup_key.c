@@ -64,12 +64,14 @@ void vWakeyupKeyTask( void *pvParameters )
 	/* Remove compiler warning about unused parameter. */
 	( void ) pvParameters;
 	TickType_t xoffsetTimeout = OFFSET_PRESS;
-	TickType_t x1000msTimeout = T1000MS_PRESS;
-	TickType_t x300msTimeout =  T300MS_PRESS;
+	TickType_t xShutDownTimeout = T7000MS_PRESS;
+	TickType_t xSuspendTimeout = T1000MS_PRESS;
+	TickType_t xResumeTimeout =  T300MS_PRESS;
 
 	TickType_t xfirsttime,xsencondtime;
 	TickType_t intervaltime; // time interval between 300ms/1000ms
-	bool xPress = false;
+	volatile bool xPress = false;
+	volatile bool isReadyShutdown = false;
 
 	for( ;; )
 	{
@@ -101,21 +103,27 @@ void vWakeyupKeyTask( void *pvParameters )
 		}
 
 		if (suspend_state == SUSPEND_OUT)
-			HSEM_REG_AO->lock[15] = 0x554E4C4B; // unlock
+			HSEM_REG_AO->lock[15] = RLEASE_SEMAPHORE; // unlock
 
 		if(xPress && (millis() - xfirsttime) > (100)) //check per 100ms
 		{
-			if((millis()-xfirsttime) > x300msTimeout && !intervaltime && ((suspend_state == FREEZE_CMD_IN) || (suspend_state == SUSPEND_IN)))
+			if((millis()-xfirsttime) > xResumeTimeout && !intervaltime && ((suspend_state == FREEZE_CMD_IN) || (suspend_state == SUSPEND_IN)))
 			{
 				wakeup_shortkey();
 				xfirsttime = 0;
 				intervaltime = millis();
 			}
-			else if((millis()-xfirsttime) > x1000msTimeout && !intervaltime)
+			else if((millis()-xfirsttime) > xSuspendTimeout && !intervaltime)
 			{
 				wakeup_shortkey();
-				xfirsttime = 0;
 				intervaltime = millis();
+				isReadyShutdown = true;
+			}
+			else if((millis()-xfirsttime) > xShutDownTimeout && isReadyShutdown && (suspend_state == SUSPEND_IN))
+			{
+				xfirsttime = 0;
+				RTC_REGS->rtc_ao_power_off_req =1; // request power off ao maindomain
+				isReadyShutdown = false;
 			}
 		}
 		if((millis() - xsencondtime) > 300) //check is unpress?
@@ -123,6 +131,7 @@ void vWakeyupKeyTask( void *pvParameters )
 			intervaltime = 0;
 			xsencondtime = 0;
 			xPress = false;
+			isReadyShutdown = false;
 		}
 		vTaskDelay(pdMS_TO_TICKS(10));
 	}
@@ -130,6 +139,5 @@ void vWakeyupKeyTask( void *pvParameters )
 
 void wakeup_key_init(void)
 {
-	pinMode(WAKEUP_KEY_PIN, INPUT);
 	xTaskCreate( vWakeyupKeyTask, "wakeupkey", 200, NULL, 1, NULL );
 }

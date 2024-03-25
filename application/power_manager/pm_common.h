@@ -49,7 +49,7 @@ extern "C" {
 #define CA55_1V_POWER           0xB3
 
 /*wakeup key*/
-#define WAKEUP_KEY_PIN          (90)
+#define T7000MS_PRESS           (7000)  /* long time: press time longer than 7s ,shutdown  */
 #define T1000MS_PRESS           (1000)  /* short time: press time between 1s ,poweron/into deepsleep  */
 #define T300MS_PRESS            (300)  /* 300ms time: back to normal from free/zmem/wakeupkey */
 #define OFFSET_PRESS            (5000) /* Time interval between 300/1000ms operations */

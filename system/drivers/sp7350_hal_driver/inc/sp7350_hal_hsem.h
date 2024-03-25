@@ -11,8 +11,9 @@
 
 #define HSEM_TOTAL_NUM					   (16)
 
-#define IS_ADC_CHAN_VALID(num)               (((num) >= ADC_CHAN_0) && ((num) <= ADC_CHAN_3))
+#define IS_ADC_CHAN_VALID(num)              (((num) >= ADC_CHAN_0) && ((num) <= ADC_CHAN_3))
 
+#define RLEASE_SEMAPHORE                   (0x554E4C4B)    /* free */
 
 HAL_StatusTypeDef HAL_Hsem_Take(int lock_index);
 uint32_t HAL_HSEM_IsSemTaken(uint32_t lock_index);

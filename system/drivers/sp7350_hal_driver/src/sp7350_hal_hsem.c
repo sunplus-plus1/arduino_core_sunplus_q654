@@ -3,7 +3,6 @@
 #define HSEM_R_UNLOCK                      (0)     /* free */
 #define HSEM_R_LOCK                        (1)     /* locked */
 
-#define RLEASE_SEMAPHORE                   (0x554E4C4B)    /* free */
 
 volatile int hsem_status[HSEM_TOTAL_NUM] = {0};
 HAL_StatusTypeDef HAL_Hsem_Take(int lock_index)
