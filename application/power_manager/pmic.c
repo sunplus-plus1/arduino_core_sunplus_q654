@@ -54,43 +54,13 @@ int _pmic_i2c_write(uint8_t *buf)
 
 int get_pmic_ic(void)
 {
-	char tx_buf[1],rx_buf[1];
 
-	if(pmic_ic == PMIC_MAX)
-	{
-		struct i2c_msg msg[] = {
-			{
-				.addr = STI8070C_ADDR,
-				.flag = I2C_M_WRITE,
-				.len  = 1,
-				.buf  = tx_buf,
-			},
-			{
-				.addr = STI8070C_ADDR,
-				.flag = I2C_M_READ,
-				.len  = 1,
-				.buf  = rx_buf,
-			},
-		};
-		/*  RT5759  */
-		pmic_ic = PMIC_RT5759;  // Set RT5759 to defalut pmic.
+#ifdef BOARD_SP7350_DM
+	pmic_ic = PMIC_STI8070C;
+#else
+	pmic_ic = PMIC_RT5759;
+#endif
 
-		/*  STI8070C  */
-		printf("[CM4] check PMIC by I2C: ");
-		tx_buf[0] = STI8070C_REG3;
-		int ret = HAL_I2C_Master_Transfer(test_handle, msg, 2);
-		if (ret) {
-			printf("[STI8070C]Transmit error code %d\n", ret);
-			return -1;
-		}
-		if(rx_buf[0] == STI8070C_REG3_VALUE)
-		{
-			printf("PMIC is STI8070C \n");
-			pmic_ic = PMIC_STI8070C;
-			return pmic_ic;
-		}
-		printf("PMIC is RT5759 \n");
-	}
 	return pmic_ic;
 }
 

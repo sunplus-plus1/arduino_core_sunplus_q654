@@ -135,6 +135,7 @@ DEPS = $(OBJS:.o=.d)
 .PHONY: clean all
 
 all: $(OBJS)
+	@echo "Board Name: $(BOARD_NAME)"
 	$P mkdir -p $(BIN)
 	$P $(CPP) -P $(CFLAGS) $(LD_SRC) $(LD_FILE)
 	$P $(GCC)  $(CFLAGS) $(CCFLAGS) $(LDFLAGS) $+ -o $(BIN)/$(TARGET) $(LDFLAGS_END)
