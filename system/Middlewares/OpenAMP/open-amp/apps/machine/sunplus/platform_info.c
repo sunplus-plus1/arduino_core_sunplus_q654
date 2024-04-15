@@ -1,6 +1,4 @@
 /*
- * Copyright (c) 2022, Sunplus Technology Co., Ltd. All rights reserved.
- *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
