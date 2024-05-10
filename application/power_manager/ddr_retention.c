@@ -511,7 +511,11 @@ void apb_ctl_after_retention(void)
 	}
 
 	ctl_apb_wr(0x1b0,0x00000050);
+	#ifdef MT53E1G32D2_A
+	ctl_apb_wr(0x1b0,0x00000055); //trigger SDRAM initilaztion.
+	#else
 	ctl_apb_wr(0x1b0,0x00000051); //trigger SDRAM initilaztion.
+	#endif
 	ctl_apb_wr(0x030,0x00000000); //PWRCTL
 	ctl_apb_wr(0x1c4,0x00000001);   //enable the PHY master interface.
 	ctl_apb_wr(0x304,0x00000000);   //enable dq and hif.
