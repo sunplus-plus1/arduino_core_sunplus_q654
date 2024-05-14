@@ -22,6 +22,7 @@ struct umctl2_regs {
 inline void ctl_apb_wr(uint32_t adr, uint32_t dat)
 {
 	UMCTL2_REG(adr) = dat;
+	//printf("UMCTL2_REG adr 0x%03x dat 0x%08x\n", adr, dat);
 }
 
 inline uint32_t ctl_apb_rd(uint32_t adr)

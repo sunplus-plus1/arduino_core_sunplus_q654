@@ -129,7 +129,7 @@ void wait_loop(unsigned int wait_counter)
 {
 	unsigned int i;
 
-	for (i = 0; i < wait_counter; i++) 
+	for (i = 0; i < wait_counter; i++)
 	{
 		__asm__("nop");
 	}
@@ -142,10 +142,10 @@ void apb_ctl_before_retention(void)
 	wait_loop(10000);
 	ctl_apb_wr(0x490,0x00000000);   //blocks AXI ports from taking anymore transactions
 
-	while (1) 
+	while (1)
 	{
 		rd_data = ctl_apb_rd(0x3fc);
-		if (rd_data == 0) 
+		if (rd_data == 0)
 		{
 			break;
 		}
@@ -154,7 +154,7 @@ void apb_ctl_before_retention(void)
 	ctl_apb_wr(0x30,0x00000020);    //Causes system to move to self refresh state
 
 	rd_data = ctl_apb_rd(0x4);
-	while (((rd_data&0x30)!= 0x20) | ((rd_data&0x300) != 0x200)) 
+	while (((rd_data&0x30)!= 0x20) | ((rd_data&0x300) != 0x200))
 	{
 		rd_data = ctl_apb_rd(0x4);
 	}
@@ -171,7 +171,7 @@ void apb_ctl_before_retention(void)
 	ctl_apb_wr(0x1b0,0x00001f50);   //Set dfi_init_start to 0
 
 	rd_data = ctl_apb_rd(0x1bc);
-	while((rd_data & 0x01)!= 1) 
+	while((rd_data & 0x01)!= 1)
 	{
 		rd_data = ctl_apb_rd(0x1bc);  //Wait PHY assert dfi_init_complete
 	}
@@ -217,7 +217,7 @@ int dram_test(void)
 	value_16b    = 0;
 	do {
 		value_32b = ((value_16b + 1) << 16) | ((value_16b + 0) <<  0) ;
-		if (value_32b != *rd_src_32b) 
+		if (value_32b != *rd_src_32b)
 		{
 			return -1;
 		}
@@ -286,133 +286,11 @@ int dwc_umctl2_init_before_ctl_rst(void)
 
 	ctl_apb_wr(0x304, 0x00000001);
 	ctl_apb_wr(0x030, 0x00000001);
-	//ctl_apb_rd(0x004, 0x00000000);
 	ctl_apb_rd(0x004);
 
-	ctl_apb_wr(0x000 , 0x83080020);
-	ctl_apb_wr(0x020 , 0x00001202);
-	ctl_apb_wr(0x024 , 0x00000000);
-	ctl_apb_wr(0x02c , 0x00000000);
-	ctl_apb_wr(0x030 , 0x00000020);
-	ctl_apb_wr(0x034 , 0x00400010);
-	ctl_apb_wr(0x050 , 0x90210004);
-	ctl_apb_wr(0x054 , 0x002b0000);
-	ctl_apb_wr(0x060 , 0x00000000);
-	ctl_apb_wr(0x064 , 0x000c0098);
-	ctl_apb_wr(0x068 , 0x00480000);
-	ctl_apb_wr(0x0d0 , 0xc0020003);
-	ctl_apb_wr(0x0d4 , 0x00010002);
-	ctl_apb_wr(0x0d8 , 0x00000d00);
-	ctl_apb_wr(0x0dc , 0x0054002d);
-	ctl_apb_wr(0x0e0 , 0x00310020);
-	ctl_apb_wr(0x0e4 , 0x00040009);
-	ctl_apb_wr(0x0e8 , 0x00660047);
-	ctl_apb_wr(0x0ec , 0x001c0047);
-	ctl_apb_wr(0x0f4 , 0x0000f53f);
-	ctl_apb_wr(0x100 , 0x1b201a22);
-	ctl_apb_wr(0x104 , 0x00060633);
-	ctl_apb_wr(0x108 , 0x070e1214);
-	ctl_apb_wr(0x10c , 0x0080c000);
-	ctl_apb_wr(0x110 , 0x0f04080f);
-	ctl_apb_wr(0x114 , 0x02040c0c);
-	ctl_apb_wr(0x118 , 0x01010007);
-	ctl_apb_wr(0x11c , 0x00000402);
-	ctl_apb_wr(0x120 , 0x00000000);
-	ctl_apb_wr(0x124 , 0x00000000);
-	ctl_apb_wr(0x128 , 0x00000000);
-	ctl_apb_wr(0x12c , 0x00000000);
-	ctl_apb_wr(0x130 , 0x00020000);
-	ctl_apb_wr(0x134 , 0x0c100002);
-	ctl_apb_wr(0x138 , 0x00000136);
-	ctl_apb_wr(0x13c , 0x00000000);
-	ctl_apb_wr(0x180 , 0x13200018);
-	ctl_apb_wr(0x184 , 0x028b282b);
-	ctl_apb_wr(0x188 , 0x00000000);
-	ctl_apb_wr(0x190 , 0x0397820a);
-	ctl_apb_wr(0x194 , 0x000a0101);
-	ctl_apb_wr(0x198 , 0x01000000);
-	ctl_apb_wr(0x19c , 0x00000000);
-	ctl_apb_wr(0x1a0 , 0xc0300018);
-	ctl_apb_wr(0x1a4 , 0x0042009c);
-	ctl_apb_wr(0x1a8 , 0x80000000);
-	ctl_apb_wr(0x1b0 , 0x00000041);
-	ctl_apb_wr(0x1b4 , 0x0000170a);
-	ctl_apb_wr(0x1b8 , 0x00000004);
-	ctl_apb_wr(0x1c0 , 0x00000000);
-	ctl_apb_wr(0x1c4 , 0x80000000);
+	printf("dwc_umctl2_lpddr4_1600_SP7350_for_realchip\n");
+	#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_1600_SP7350_for_realchip.txt>
 
-#ifdef MT53E1G32D2_A
-	ctl_apb_wr(0x200 , 0x001f1f18);
-	ctl_apb_wr(0x204 , 0x00080808);
-	ctl_apb_wr(0x208 , 0x00000000);
-	ctl_apb_wr(0x20c , 0x00000000);
-	ctl_apb_wr(0x210 , 0x00001F1F);
-	ctl_apb_wr(0x214 , 0x070F0707);
-	ctl_apb_wr(0x218 , 0x07070707);
-	ctl_apb_wr(0x21c , 0x00000F07);
-	ctl_apb_wr(0x220 , 0x00003f3f);
-	ctl_apb_wr(0x224 , 0x07070707);
-	ctl_apb_wr(0x228 , 0x07070707);
-	ctl_apb_wr(0x22c , 0x001f1f07);
-#else
-	ctl_apb_wr(0x200 , 0x00000017);
-	ctl_apb_wr(0x204 , 0x00080808);
-	ctl_apb_wr(0x208 , 0x00000000);
-	ctl_apb_wr(0x20c , 0x00000000);
-	ctl_apb_wr(0x210 , 0x00001F1F);
-	ctl_apb_wr(0x214 , 0x070F0707);
-	ctl_apb_wr(0x218 , 0x07070707);
-	ctl_apb_wr(0x21c , 0x00000F08);
-	ctl_apb_wr(0x220 , 0x00000000);
-	ctl_apb_wr(0x224 , 0x07070707);
-	ctl_apb_wr(0x228 , 0x07070707);
-	ctl_apb_wr(0x22c , 0x00000007);
-#endif
-
-	ctl_apb_wr(0x240 , 0x00000000);
-	ctl_apb_wr(0x244 , 0x00000000);
-	ctl_apb_wr(0x250 , 0x00003d04);
-	ctl_apb_wr(0x254 , 0x000000f0);
-	ctl_apb_wr(0x25c , 0x0f000001);
-	ctl_apb_wr(0x264 , 0x0f00007f);
-	ctl_apb_wr(0x26c , 0x0f00007f);
-	ctl_apb_wr(0x300 , 0x00000000);
-	ctl_apb_wr(0x304 , 0x00000000);
-	ctl_apb_wr(0x30c , 0x00000000);
-	ctl_apb_wr(0x320 , 0x00000001);
-	ctl_apb_wr(0x328 , 0x00000000);
-	ctl_apb_wr(0x36c , 0x00000000);
-	ctl_apb_wr(0x400 , 0x00000000);
-	ctl_apb_wr(0x404 , 0x0000700f);
-	ctl_apb_wr(0x408 , 0x0000700f);
-	ctl_apb_wr(0x494 , 0x0020000d);
-	ctl_apb_wr(0x498 , 0x00000000);
-	ctl_apb_wr(0x49c , 0x00000e0d);
-	ctl_apb_wr(0x4a0 , 0x00000000);
-	ctl_apb_wr(0x4b4 , 0x0000700f);
-	ctl_apb_wr(0x4b8 , 0x0000700f);
-	ctl_apb_wr(0x544 , 0x0020000d);
-	ctl_apb_wr(0x548 , 0x00000000);
-	ctl_apb_wr(0x54c , 0x00000e0d);
-	ctl_apb_wr(0x550 , 0x00000000);
-	ctl_apb_wr(0x564 , 0x0000700f);
-	ctl_apb_wr(0x568 , 0x0000700f);
-	ctl_apb_wr(0x5f4 , 0x0020000d);
-	ctl_apb_wr(0x5f8 , 0x00000000);
-	ctl_apb_wr(0x5fc , 0x00000e0d);
-	ctl_apb_wr(0x600 , 0x00000000);
-	ctl_apb_wr(0x614 , 0x0000700f);
-	ctl_apb_wr(0x618 , 0x0000700f);
-	ctl_apb_wr(0x6a4 , 0x0020000d);
-	ctl_apb_wr(0x6a8 , 0x00000000);
-	ctl_apb_wr(0x6ac , 0x00000e0d);
-	ctl_apb_wr(0x6b0 , 0x00000000);
-	ctl_apb_wr(0x490 , 0x00000001);
-	
-	ctl_apb_wr(0x540 , 0x00000001);
-	ctl_apb_wr(0x5f0 , 0x00000001);
-	ctl_apb_wr(0x6a0 , 0x00000001);
-	
 	return 0;
 }
 
@@ -471,7 +349,7 @@ void apb_ctl_after_retention(void)
 	ctl_apb_wr(0x0d0,0xc0030003);   //skips the DRAM init routine and starts up in self_refresh mode
 	ctl_apb_wr(0x30,0x00000020);    //Keep system on self refresh state
 	ctl_apb_wr(0x1b0,0x00000050);   //indicates to controller that PHY has completed re-training/initialization
-	
+
 	MOON0_REG->sft_cfg[14] = 0x00020002;  // 0->1: de-assert DDRCTL AXI RST_N
 	MOON0_REG->sft_cfg[14] = 0x00040004;  // 0->1: de-assert DDRCTL AHB RST_N
 	MOON0_REG->sft_cfg[14] = 0x00100010;  // 0->1: de-assert DDRDFI RST_N
@@ -534,8 +412,6 @@ void ddr_retention_load(void)
 	wait_loop(1000);
 
 	apb_ctl_after_retention();
-
-	
 
 	printf("ddr_retention_load \n");
 }
