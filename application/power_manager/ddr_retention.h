@@ -9,7 +9,15 @@
 #define UMCTL2_REG(OFFSET)		     (UMCTL2_REG_BASE->umctl2_reg[OFFSET >> 2])
 #define DWC_PHY_REG(OFFSET)		     (DWC_PHY_REG_BASE->dwc_phy_reg[OFFSET ])
 
+#ifdef DRAM_TYPE_LPDDR4
 #define RET_CSRS_CNT                 1054
+#endif
+#ifdef DRAM_TYPE_DDR4
+#define RET_CSRS_CNT                 748
+#endif
+#ifdef DRAM_TYPE_DDR3
+#define RET_CSRS_CNT                 675
+#endif
 
 struct dwc_phy_regs {
 	uint16_t dwc_phy_reg[0xA0000];	/* change the size here, (area >> 2) */
@@ -22,11 +30,14 @@ struct umctl2_regs {
 inline void ctl_apb_wr(uint32_t adr, uint32_t dat)
 {
 	UMCTL2_REG(adr) = dat;
-	//printf("UMCTL2_REG adr 0x%03x dat 0x%08x\n", adr, dat);
+	//printf("ctl_apb_wr 0x%03x dat 0x%08x\n", adr, dat);
 }
 
 inline uint32_t ctl_apb_rd(uint32_t adr)
 {
+	//uint32_t dat;
+	//dat = UMCTL2_REG(adr);
+	//printf("ctl_apb_rd 0x%03x dat 0x%08x\n", adr, dat);
 	return UMCTL2_REG(adr);
 }
 
