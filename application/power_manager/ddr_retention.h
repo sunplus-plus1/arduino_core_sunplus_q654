@@ -9,16 +9,6 @@
 #define UMCTL2_REG(OFFSET)		     (UMCTL2_REG_BASE->umctl2_reg[OFFSET >> 2])
 #define DWC_PHY_REG(OFFSET)		     (DWC_PHY_REG_BASE->dwc_phy_reg[OFFSET ])
 
-#ifdef DRAM_TYPE_LPDDR4
-#define RET_CSRS_CNT                 1054
-#endif
-#ifdef DRAM_TYPE_DDR4
-#define RET_CSRS_CNT                 748
-#endif
-#ifdef DRAM_TYPE_DDR3
-#define RET_CSRS_CNT                 675
-#endif
-
 struct dwc_phy_regs {
 	uint16_t dwc_phy_reg[0xA0000];	/* change the size here, (area >> 2) */
 };
