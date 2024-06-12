@@ -182,6 +182,16 @@ int dwc_umctl2_init_before_ctl_rst(void)
 	#ifdef DRAM_TYPE_LPDDR4
 	printf("dwc_umctl2_lpddr4_1600_SP7350_for_realchip\n");
 	#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_1600_SP7350_for_realchip.txt>
+	//printf("dwc_umctl2_lpddr4_1333_SP7350\n");
+	//#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_1333_SP7350.txt>
+	//printf("dwc_umctl2_lpddr4_1200_SP7350\n");
+	//#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_1200_SP7350.txt>
+	//printf("dwc_umctl2_lpddr4_1066_SP7350\n");
+	//#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_1066_SP7350.txt>
+	//printf("dwc_umctl2_lpddr4_933_SP7350\n");
+	//#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_933_SP7350.txt>
+	//printf("dwc_umctl2_lpddr4_800_SP7350\n");
+	//#include <../../../../../boot/draminit/dwc/include/SP7350/LPDDR4/dwc_umctl2_lpddr4_800_SP7350.txt>
 	#endif
 	#ifdef DRAM_TYPE_DDR4
 	printf("Q654_DDR4_ASIC_SDRAM_DATARATE_2666\n");
@@ -285,8 +295,29 @@ void apb_ctl_after_retention(void)
 	volatile uint32_t rd_data;
 
 #ifdef DRAM_TYPE_LPDDR4
+	//PLLD_800MHz
 	MOON3_REG->sft_cfg[11] = 0x00180008;  //PLLD PSTDIV
 	MOON3_REG->sft_cfg[11] = 0x7f801000;  //PLLD FBKDIV 32
+	//PLLD_666MHz
+	//MOON3_REG->sft_cfg[11] = 0xffff0808;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[12] = 0xffffc0be;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[13] = 0xffff0107;  //PLLD PSTDIV
+	//PLLD_600MHz
+	//MOON3_REG->sft_cfg[11] = 0xffff0408;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[12] = 0xffffc0bd;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[13] = 0xffff0107;  //PLLD PSTDIV
+	//PLLD_533MHz
+	//MOON3_REG->sft_cfg[11] = 0xffff800A;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[12] = 0xffffc0bd;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[13] = 0xffff0107;  //PLLD PSTDIV
+	//PLLD_466MHz
+	//MOON3_REG->sft_cfg[11] = 0xffff9812;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[12] = 0xffffc0bf;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[13] = 0xffff0107;  //PLLD PSTDIV
+	//PLLD_400MHz
+	//MOON3_REG->sft_cfg[11] = 0xffff100a;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[12] = 0xffffc0bc;  //PLLD PSTDIV
+	//MOON3_REG->sft_cfg[13] = 0xffff0107;  //PLLD PSTDIV
 #endif
 #ifdef DRAM_TYPE_DDR4
 	MOON3_REG->sft_cfg[11] = 0xffff0808;  //PLLD PSTDIV
