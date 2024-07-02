@@ -167,7 +167,12 @@ int pmic_init(void)
 	   So it needs to cancel this GPIO_65 initialzation to let Linux kernel control the NPU power when system start up. ***/
 	//pinMode(PWR_NPU_CONTROL_PIN, OUTPUT);
 
-	pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
+	/*** This function will let PWR_VCL_CONTROL_PIN(GPIO_66) to be high after GPIO_66 is initialized.
+	   Now VCL power is controlled by Linux kernel VCL driver. CM4 doesn't need to handle VCL power during system start up process.
+	   CM4 just only handles the VCL power when system suspend and resume.
+	   So it needs to cancel this GPIO_66 initialzation to let Linux kernel control the VCL power when system start up. ***/
+	//pinMode(PWR_VCL_CONTROL_PIN, OUTPUT);
+
 	pinMode(MAIN_DOMAIN_CONTROL_PIN, OUTPUT);
 	return 0;
 }
