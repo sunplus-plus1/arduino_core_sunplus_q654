@@ -17,16 +17,16 @@ volatile Suspend_Type	suspend_state = SUSPEND_OUT;
 void suspend_resume_by_rtc(void)
 {
 #ifdef POWER_MAINDOMAIN_ALIVE
-	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x2;  // rtc irq to pmc
+	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x2;
 #else
 	system_PowerUP();
 #endif
 }
 void freeze_resume_by_rtc(void)
 {
-	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x1;
 	RTC_REGS->rtc_ctrl = 0x1;  // rtc irq to system
+	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x2;
 }
 void wakeup_shortkey()
 {
