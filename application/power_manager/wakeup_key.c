@@ -18,7 +18,13 @@ void suspend_resume_by_rtc(void)
 {
 #ifdef POWER_MAINDOMAIN_ALIVE
 	RTC_REGS->rtc_ctrl = 0x2;  // rtc irq to pmc
-	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x2;
+
+	unsigned int t1 = RTC_REGS->rtc_timer + 0x1;
+	RTC_REGS->rtc_ontime_set = t1;
+
+	if(RTC_REGS->rtc_timer == t1)
+	   RTC_REGS->rtc_ontime_set = t1 + 1;
+
 #else
 	system_PowerUP();
 #endif
@@ -26,8 +32,15 @@ void suspend_resume_by_rtc(void)
 void freeze_resume_by_rtc(void)
 {
 	RTC_REGS->rtc_ctrl = 0x1;  // rtc irq to system
-	RTC_REGS->rtc_ontime_set = RTC_REGS->rtc_timer + 0x2;
+
+	unsigned int t1 = RTC_REGS->rtc_timer + 0x1;
+	RTC_REGS->rtc_ontime_set = t1;
+
+	if(RTC_REGS->rtc_timer == t1)
+	   RTC_REGS->rtc_ontime_set = t1 + 1;
+
 }
+
 void wakeup_shortkey()
 {
 	if(suspend_state == FREEZE_CMD_IN)
