@@ -72,6 +72,54 @@ void wakeup_longkey()
 	MBOX_TO_NOTIFY=MAILBOX_IN_SUSPEND_VALUE;
 }
 
+#ifdef WAKEUP_WOL_TEST
+void wakeup_wol(void)
+{
+	int wakeup_gpio = 64;
+	static int init = 0;
+	static TickType_t xfirsttime = 0;
+	GPIO_InitTypeDef GPIO_Init;
+
+	if (init == 0)
+	{
+		init = 1;
+		memset(&GPIO_Init,0,sizeof(GPIO_Init));
+		GPIO_Init.Pin = wakeup_gpio;
+		HAL_GPIO_Init(&GPIO_Init);
+	}
+	if ((suspend_state != SUSPEND_IN) && (suspend_state != FREEZE_CMD_IN))
+	{
+		return;
+	}
+	if (HAL_GPIO_ReadPin(wakeup_gpio) == 0)
+	{
+		if (xfirsttime == 0)
+		{
+			xfirsttime = millis();
+		}
+		else if (millis() - xfirsttime >= 200)
+		{
+			xfirsttime = 0;
+			if(suspend_state == FREEZE_CMD_IN)
+			{
+				printf("wol: freeze resume by RTC \n");
+				freeze_resume_by_rtc();
+				suspend_state == FREEZE_CMD_OUT;
+			}
+			else if(suspend_state == SUSPEND_IN)
+			{
+				printf("wol: suspend resume by RTC \n");
+				suspend_resume_by_rtc();
+			}
+		}
+	}
+	else if (xfirsttime != 0)
+	{
+		xfirsttime = 0;
+	}
+}
+#endif
+
 void vWakeyupKeyTask( void *pvParameters )
 {
 	/* Remove compiler warning about unused parameter. */
@@ -146,6 +194,14 @@ void vWakeyupKeyTask( void *pvParameters )
 			xPress = false;
 			isReadyShutdown = false;
 		}
+
+#ifdef WAKEUP_WOL_TEST
+		if (xPress == false)
+		{
+			wakeup_wol();
+		}
+#endif
+
 		vTaskDelay(pdMS_TO_TICKS(10));
 	}
 }
