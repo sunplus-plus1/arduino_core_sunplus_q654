@@ -141,12 +141,14 @@ SECTIONS
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
 
+    . = ALIGN(64);     /* #######  Ensure that the file size of the IDRAM segment is aligned to 64 bytes. ########*/
+                      /*  #######  Otherwise, an error will be reported when Kernel 6.6 is loading        ########*/
+
     _edata = .;        /* define a global symbol at data end */
   } >IDRAM
 
-
   /* Uninitialized data section into "S-RAM" Ram type memory */
-  . = ALIGN(4);
+  . = ALIGN(8);
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss section */
