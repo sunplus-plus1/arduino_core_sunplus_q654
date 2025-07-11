@@ -37,6 +37,7 @@ typedef enum {
 	WDG0_INDEX,
 	WDG1_INDEX,
 	WDG2_INDEX,
+	WDG3_INDEX,
 	WDG_NUM,
 	UNKNOWN_WDG = 0XFFFF
 } watchdog_index_t;
@@ -60,7 +61,7 @@ static watchdog_index_t get_watchdog_index(WDG_TypeDef *instance)
 		index = WDG2_INDEX;
 	}
 	else if (instance == WDG3) {
-		index = WDG2_INDEX;
+		index = WDG3_INDEX;
 	}
 
 	return index;
