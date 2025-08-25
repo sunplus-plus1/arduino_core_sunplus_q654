@@ -22,6 +22,8 @@ include ./make.cfg
 LD_SRC = $(VARIANTS_PATH)/ldscript.ldi
 LD_FILE = $(VARIANTS_PATH)/ldscript.ld
 
+CCFLAGS += -DCONFIG_GPIO_AO_INT
+
 #INCLUDE PATH
 #CMSIS header files
 CCFLAGS += -I$(VARIANTS_PATH)

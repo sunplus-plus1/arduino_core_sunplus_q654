@@ -767,6 +767,23 @@ typedef struct
 	__IOM uint32_t mask[7];              /*!< \brief  mask interrupt bit 0:masked(default) 1:pass */
 }IRQ_Ctrl_Type;
 
+typedef struct
+{
+	__IOM uint32_t pre_scale;
+	__IOM uint32_t deb_time;
+	__IOM uint32_t deb_en;
+	__IOM uint32_t gpio_i;
+	__IOM uint32_t gpio_deb_i;
+	__IOM uint32_t gpio_o;
+	__IOM uint32_t gpio_oe;
+	__IOM uint32_t int_en;
+	__IOM uint32_t int_mode;
+	__IOM uint32_t int_pol;
+	__IOM uint32_t int_clr;
+	__IOM uint32_t int_status;
+	__IOM uint32_t int_mask;
+}GPIO_AO_INT_Ctrl_Type;
+
 typedef struct {
 	__IOM uint32_t C2M_normal_trigger;		//CA55 tiger the INT to CM4
 	__IOM uint32_t C2M_write_monitor_status;
@@ -867,6 +884,11 @@ typedef struct {
 /*SP7350 module rest bit*/
 #define MODULE_REST                  ((volatile Module_Reset_Type*)RF_GRP_AO(0, 1))
 
+/* GPIO AO IRQ */
+#define GPIO_AO_IRQ_CTRL             ((volatile GPIO_AO_INT_Ctrl_Type*) RF_GRP(95, 0))
+
+/* GPIO AO INT bit */
+#define GPIO_AO_INT                  ((volatile GPIO_AO_INT_Ctrl_Type*) RF_GRP_AO(95, 0))
 
 typedef struct{
 	__IOM uint32_t cpu_to_cpu_int_trigger;
