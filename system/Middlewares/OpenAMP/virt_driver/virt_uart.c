@@ -3,7 +3,7 @@
 #include "platform_info.h"
 #include "virt_uart.h"
 
-#define RPMSG_SERVICE_NAME  "rpmsg-tty-raw"
+#define RPMSG_SERVICE_NAME  "rpmsg-tty"
 
 static void *platform = NULL;
 static struct rpmsg_device *rpdev = NULL;
