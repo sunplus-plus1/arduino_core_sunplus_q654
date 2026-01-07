@@ -238,6 +238,8 @@ int dwc_umctl2_init_before_ctl_rst(void)
 	printf("K4B8G1646D, SAMSUNG 512Mx16, 2rank\n");
 	#elif defined(EM6LH32MVAJA)
 	printf("EM6LH32MVAJA, Etron, 1rank\n");
+	#elif defined(IS43LQ32K01B)
+	printf("IS43LQ32K01B, ISSI, 1rank\n");	
 	#endif
 	return 0;
 }
